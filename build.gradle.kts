@@ -22,8 +22,11 @@ repositories {
 dependencies {
     testImplementation(kotlin("test-testng"))
     implementation(compose.desktop.currentOs)
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.10.0")
     implementation(project(path = ":briar:briar-core", configuration = "default"))
     implementation(project(path = ":briar:bramble-java", configuration = "default"))
+    val daggerVersion = "2.24"
+    kapt("com.google.dagger:dagger-compiler:$daggerVersion")
 }
 
 tasks.test {
