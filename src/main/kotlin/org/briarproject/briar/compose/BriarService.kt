@@ -1,19 +1,13 @@
 package org.briarproject.briar.compose
 
-//import com.github.ajalt.clikt.core.UsageError
-//import com.github.ajalt.clikt.output.TermUi.echo
 import org.briarproject.bramble.api.account.AccountManager
 import org.briarproject.bramble.api.crypto.DecryptionException
 import org.briarproject.bramble.api.crypto.PasswordStrengthEstimator
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
-//import org.briarproject.briar.swing.AccountUtil.Companion.check
-//import org.briarproject.briar.swing.dialogs.NewAccountPrompt
-//import org.briarproject.briar.swing.dialogs.PasswordPrompt
 import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
 import javax.inject.Singleton
 import javax.swing.JOptionPane
-import kotlin.system.exitProcess
 
 interface BriarService {
     fun start()

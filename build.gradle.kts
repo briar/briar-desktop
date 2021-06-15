@@ -10,7 +10,7 @@ plugins {
     id("idea")
 }
 
-group = "app.briar.compose"
+group = "app.briar.desktop"
 version = "0.1"
 
 repositories {
@@ -42,7 +42,7 @@ compose.desktop {
         mainClass = "MainKt"
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "Briar"
+            packageName = "app.briar.desktop"
             packageVersion = "1.0.0"
         }
     }
