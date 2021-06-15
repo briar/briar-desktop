@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Briar Desktop" type="JetRunConfigurationType">
+    <option name="MAIN_CLASS_NAME" value="org.briarproject.briar.compose.MainKt" />
+    <module name="briar-desktop.main" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
