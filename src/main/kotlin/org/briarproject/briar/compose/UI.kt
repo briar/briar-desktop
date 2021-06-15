@@ -35,7 +35,7 @@ constructor(
 ) {
 
     private val logger = getLogger(UI::javaClass.name)
-    private val configuration = Configuration()
+//    private val configuration = Configuration()
 
     internal fun startBriar() {
         briarService.start();
@@ -52,7 +52,7 @@ constructor(
             privateMessageFactory,
             eventBus,
             passwordStrengthEstimator,
-            configuration
+//            configuration
         );
 
         mainUI.defaultCloseOperation = JFrame.EXIT_ON_CLOSE;

@@ -53,7 +53,7 @@ public class MainUI extends JFrame implements EventListener {
 	private final PrivateMessageFactory privateMessageFactory;
 	private final EventBus eventBus;
 	private final PasswordStrengthEstimator passwordStrengthEstimator;
-	private final Configuration configuration;
+//	private final Configuration configuration;
 
 	private JPanel mainPanel;
 	private JPanel contentPanel;
@@ -70,8 +70,8 @@ public class MainUI extends JFrame implements EventListener {
 			IntroductionManager introductionManager,
 			PrivateMessageFactory privateMessageFactory,
 			EventBus eventBus,
-			PasswordStrengthEstimator passwordStrengthEstimator,
-			Configuration configuration) {
+			PasswordStrengthEstimator passwordStrengthEstimator
+			/*Configuration configuration*/) {
 		this.briarService = briarService;
 		this.accountManager = accountManager;
 		this.contactManager = contactManager;
@@ -81,16 +81,16 @@ public class MainUI extends JFrame implements EventListener {
 		this.privateMessageFactory = privateMessageFactory;
 		this.eventBus = eventBus;
 		this.passwordStrengthEstimator = passwordStrengthEstimator;
-		this.configuration = configuration;
+//		this.configuration = configuration;
 
-		String lookAndFeel = configuration.getLookAndFeel();
-		if (lookAndFeel != null) {
-			try {
-				UIManager.setLookAndFeel(lookAndFeel);
-			} catch (Exception e) {
-				logger.error("error while setting look and feel", e);
-			}
-		}
+//		String lookAndFeel = configuration.getLookAndFeel();
+//		if (lookAndFeel != null) {
+//			try {
+//				UIManager.setLookAndFeel(lookAndFeel);
+//			} catch (Exception e) {
+//				logger.error("error while setting look and feel", e);
+//			}
+//		}
 
 		setTitle("Briar Swing");
 //		setJMenuBar(new MainMenu(this));
@@ -119,9 +119,9 @@ public class MainUI extends JFrame implements EventListener {
 //		eventBus.addListener(this);
 	}
 
-	public Configuration getConfiguration() {
-		return configuration;
-	}
+//	public Configuration getConfiguration() {
+//		return configuration;
+//	}
 
 	public AccountManager getAccountManager() {
 		return accountManager;
