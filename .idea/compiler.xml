@@ -25,14 +25,17 @@
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.j2objc/j2objc-annotations/1.1/ed28ded51a8b1c6b112568def5f4b455e6809019/j2objc-annotations-1.1.jar" />
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.codehaus.mojo/animal-sniffer-annotations/1.17/f97ce6decaea32b36101e37979f8b647f00681fb/animal-sniffer-annotations-1.17.jar" />
         </processorPath>
-        <module name="Briar-compose.briar.bramble-core.main" />
-        <module name="Briar-compose.briar.briar-core.main" />
-        <module name="Briar-compose.briar.bramble-core.test" />
-        <module name="Briar-compose.briar.bramble-java.test" />
-        <module name="Briar-compose.briar.briar-core.test" />
-        <module name="Briar-compose.briar.bramble-java.main" />
+        <module name="briar-desktop.briar.bramble-core.main" />
+        <module name="briar-desktop.briar.briar-core.main" />
+        <module name="briar-desktop.briar.bramble-java.main" />
+        <module name="briar-desktop.briar.briar-core.test" />
+        <module name="briar-desktop.briar.bramble-core.test" />
+        <module name="briar-desktop.briar.bramble-java.test" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel target="1.8" />
+    <bytecodeTargetLevel target="1.8">
+      <module name="Briar-compose.main" target="11" />
+      <module name="Briar-compose.test" target="11" />
+    </bytecodeTargetLevel>
   </component>
 </project>

@@ -6,7 +6,7 @@ pluginManagement {
     }
     
 }
-rootProject.name = "Briar-compose"
+rootProject.name = "briar-desktop"
 
 include("briar:bramble-api")
 include("briar:bramble-core")
