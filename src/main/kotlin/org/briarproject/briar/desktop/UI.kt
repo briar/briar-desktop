@@ -1,16 +1,5 @@
-package org.briarproject.briar.compose
+package org.briarproject.briar.desktop
 
-import androidx.compose.desktop.Window
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.Text
-import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.svgResource
-import androidx.compose.ui.unit.dp
 import org.briarproject.bramble.api.account.AccountManager
 import org.briarproject.bramble.api.contact.ContactManager
 import org.briarproject.bramble.api.crypto.PasswordStrengthEstimator
@@ -41,54 +30,27 @@ constructor(
 ) {
 
     private val logger = getLogger(UI::javaClass.name)
-//    private val configuration = Configuration()
 
     internal fun startBriar() {
         briarService.start();
     }
 
     internal fun startUI() {
-        Window {
-            Column(
-                modifier = Modifier.padding(16.dp)
-            ) {
-                TheImage()
-                Spacer(Modifier.height(32.dp))
-                TheText()
-                TheButton()
-            }
-        }
+        MainUI(
+            briarService,
+            accountManager,
+            contactManager,
+            conversationManager,
+            messagingManager,
+            introductionManager,
+            privateMessageFactory,
+            eventBus,
+            passwordStrengthEstimator
+        )
     }
 
     internal fun getContactManager(): ContactManager {
         return contactManager
     }
 
-}
-
-
-@Composable
-private fun TheButton() {
-    var text by remember { mutableStateOf("Start chatting") }
-    Button(onClick = {
-        text = "Sorry, not yet available"
-    }) {
-        Text(text)
-    }
-}
-
-@Composable
-private fun TheImage() {
-    Image(
-        painter = svgResource("images/logo_circle.svg"),
-        contentDescription = "Briar logo",
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(shape = RoundedCornerShape(400.dp))
-    )
-}
-
-@Composable
-private fun TheText() {
-    Text("Welcome to Briar")
 }

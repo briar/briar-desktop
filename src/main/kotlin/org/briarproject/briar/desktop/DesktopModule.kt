@@ -1,4 +1,4 @@
-package org.briarproject.briar.compose
+package org.briarproject.briar.desktop
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import dagger.Module
@@ -41,7 +41,7 @@ import javax.inject.Singleton
         SocksModule::class
     ]
 )
-internal class SwingModule(private val appDir: File) {
+internal class DesktopModule(private val appDir: File) {
 
     @Provides
     @Singleton
@@ -52,7 +52,7 @@ internal class SwingModule(private val appDir: File) {
     internal fun provideDatabaseConfig(): DatabaseConfig {
         val dbDir = File(appDir, "db")
         val keyDir = File(appDir, "key")
-        return SwingDatabaseConfig(dbDir, keyDir)
+        return DesktopDatabaseConfig(dbDir, keyDir)
     }
 
     @Provides

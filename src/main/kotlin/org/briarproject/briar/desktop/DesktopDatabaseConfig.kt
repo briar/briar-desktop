@@ -1,10 +1,10 @@
-package org.briarproject.briar.compose
+package org.briarproject.briar.desktop
 
 import org.briarproject.bramble.api.crypto.KeyStrengthener
 import org.briarproject.bramble.api.db.DatabaseConfig
 import java.io.File
 
-internal class SwingDatabaseConfig(private val dbDir: File, private val keyDir: File) :
+internal class DesktopDatabaseConfig(private val dbDir: File, private val keyDir: File) :
     DatabaseConfig {
 
     override fun getDatabaseDirectory() = dbDir

@@ -1,4 +1,4 @@
-package org.briarproject.briar.compose
+package org.briarproject.briar.desktop
 
 import dagger.Component
 import org.briarproject.bramble.BrambleCoreEagerSingletons
@@ -12,11 +12,11 @@ import javax.inject.Singleton
     modules = [
         BrambleCoreModule::class,
         BriarCoreModule::class,
-        SwingModule::class
+        DesktopModule::class
     ]
 )
 @Singleton
-internal interface BriarSwingApp : BrambleCoreEagerSingletons, BriarCoreEagerSingletons {
+internal interface BriarDesktopApp : BrambleCoreEagerSingletons, BriarCoreEagerSingletons {
 
     fun getUI(): UI
 
