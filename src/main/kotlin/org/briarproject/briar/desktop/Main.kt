@@ -1,5 +1,8 @@
 package org.briarproject.briar.desktop
 
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.window.application
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.options.counted
 import com.github.ajalt.clikt.parameters.options.default
@@ -38,7 +41,8 @@ private class Main : CliktCommand(
         envvar = "BRIAR_DATA_DIR"
     ).default(DEFAULT_DATA_DIR)
 
-    override fun run() {
+    @OptIn(ExperimentalComposeUiApi::class)
+    override fun run() = application {
         val level = if (debug) ALL else when (verbosity) {
             0 -> WARNING
             1 -> INFO
@@ -58,7 +62,6 @@ private class Main : CliktCommand(
         BriarCoreEagerSingletons.Helper.injectEagerSingletons(app)
 
         app.getUI().startBriar()
-        app.getUI().startUI()
     }
 
     private fun getDataDir(): File {

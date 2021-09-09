@@ -1,5 +1,6 @@
 package org.briarproject.briar.desktop
 
+import androidx.compose.runtime.Composable
 import org.briarproject.bramble.api.account.AccountManager
 import org.briarproject.bramble.api.contact.ContactManager
 import org.briarproject.bramble.api.crypto.PasswordStrengthEstimator
@@ -31,22 +32,9 @@ constructor(
 
     private val logger = getLogger(UI::javaClass.name)
 
+    @Composable
     internal fun startBriar() {
         briarService.start();
-    }
-
-    internal fun startUI() {
-        MainUI(
-            briarService,
-            accountManager,
-            contactManager,
-            conversationManager,
-            messagingManager,
-            introductionManager,
-            privateMessageFactory,
-            eventBus,
-            passwordStrengthEstimator
-        )
     }
 
     internal fun getContactManager(): ContactManager {

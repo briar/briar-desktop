@@ -13,21 +13,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.svgResource
 import androidx.compose.ui.unit.dp
-import org.briarproject.bramble.api.account.AccountManager
-import org.briarproject.bramble.api.lifecycle.LifecycleManager
 
 // TODO: Error handling
-fun Login(title: String, accountManager: AccountManager, lifecycleManager: LifecycleManager) =
-    Window(title = title) {
-        Column(
-            modifier = Modifier.padding(16.dp).fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            TheImage()
-            Spacer(Modifier.height(32.dp))
-            TheTextField(accountManager, lifecycleManager)
-        }
+@Composable
+fun Login(
+    title: String,
+    onResult: (result: String) -> Unit
+) =
+    Column(
+        modifier = Modifier.padding(16.dp).fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        TheImage()
+        Spacer(Modifier.height(32.dp))
+        TheTextField(onResult)
     }
 
 @Composable
@@ -42,16 +42,12 @@ private fun TheImage() {
 }
 
 @Composable
-private fun TheTextField(accountManager: AccountManager, lifecycleManager: LifecycleManager) {
+private fun TheTextField(onResult: (result: String) -> Unit) {
     var password by remember { mutableStateOf("") }
     OutlinedTextField(password, { password = it }, label = { Text("Password") })
     Spacer(Modifier.height(16.dp))
     Button(onClick = {
-        accountManager.signIn(password)
-
-        val dbKey = accountManager.databaseKey ?: throw AssertionError()
-        lifecycleManager.startServices(dbKey)
-        lifecycleManager.waitForStartup()
+        onResult.invoke(password)
     }) {
         Text("Login")
     }
