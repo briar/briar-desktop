@@ -20,7 +20,7 @@ import org.briarproject.briar.desktop.paul.theme.briarBlack
  * Multiplatform, stateless, composable are found in briarCompose (possible briar-compose project in the future)
  */
 @Composable
-fun briarUIStateManager() {
+fun BriarUIStateManager() {
     //current selected mode, changed using the sidebar buttons
     val (UIMode, onModeChange) = remember { mutableStateOf("Contacts") }
     //current selected contact
@@ -39,9 +39,9 @@ fun briarUIStateManager() {
     var Profile: String;
     //Other global state that we need to track should go here also
     Row() {
-        briarSidebar(UIMode, onModeChange)
+        BriarSidebar(UIMode, onModeChange)
         when (UIMode) {
-            "Contacts" -> privateMessageView(UIContact, onContactSelect)
+            "Contacts" -> PrivateMessageView(UIContact, onContactSelect)
             else -> Box(modifier = Modifier.fillMaxSize().background(briarBlack)) {
                 Text("TBD", modifier = Modifier.align(Alignment.Center), color = Color.White)
             }

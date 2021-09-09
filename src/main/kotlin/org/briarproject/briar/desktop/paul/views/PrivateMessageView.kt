@@ -29,10 +29,10 @@ import org.briarproject.briar.desktop.paul.theme.*
 val HEADER_SIZE = 66.dp;
 
 @Composable
-fun privateMessageView(UIContact: Contact, onContactSelect: (Contact) -> Unit) {
+fun PrivateMessageView(UIContact: Contact, onContactSelect: (Contact) -> Unit) {
     //Local State for managing the Add Contact Popup
     val (AddContactDialog, onCancelAdd) = remember { mutableStateOf(false) }
-    addContactDialog(AddContactDialog, onCancelAdd)
+    AddContactDialog(AddContactDialog, onCancelAdd)
     Column(modifier = Modifier.fillMaxHeight()) {
         Row(modifier = Modifier.fillMaxWidth()) {
             Divider(color = divider, modifier = Modifier.fillMaxHeight().width(1.dp))
@@ -57,21 +57,21 @@ fun privateMessageView(UIContact: Contact, onContactSelect: (Contact) -> Unit) {
                 Divider(color = divider, thickness = 1.dp, modifier = Modifier.fillMaxWidth())
                 Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                     for (c in ContactList.contacts) {
-                        contactCard(c, UIContact, onSel = onContactSelect)
+                        ContactCard(c, UIContact, onSel = onContactSelect)
                     }
                 }
 
             }
             Divider(color = divider, modifier = Modifier.fillMaxHeight().width(1.dp))
             Column(modifier = Modifier.weight(1f).fillMaxHeight().background(color = darkGray)) {
-                drawMessageRow(UIContact)
+                DrawMessageRow(UIContact)
             }
         }
     }
 }
 
 @Composable
-fun addContactDialog(isVisible: Boolean, onCancel: (Boolean) -> Unit) {
+fun AddContactDialog(isVisible: Boolean, onCancel: (Boolean) -> Unit) {
     if (isVisible) {
         AlertDialog(
             onDismissRequest = {
@@ -146,7 +146,7 @@ fun addContactDialog(isVisible: Boolean, onCancel: (Boolean) -> Unit) {
 }
 
 @Composable
-fun contactCard(contact: Contact, selContact: Contact, onSel: (Contact) -> Unit) {
+fun ContactCard(contact: Contact, selContact: Contact, onSel: (Contact) -> Unit) {
     var bgColor = briarBlack
     if (selContact.name == contact.name) {
         bgColor = darkGray
@@ -203,7 +203,7 @@ fun contactCard(contact: Contact, selContact: Contact, onSel: (Contact) -> Unit)
 }
 
 @Composable
-fun textBubble(m: Message) {
+fun TextBubble(m: Message) {
     Column(Modifier.fillMaxWidth()) {
         if (m.from == null) {
             Column(Modifier.fillMaxWidth(fraction = 0.9f).align(Alignment.End)) {
@@ -258,7 +258,7 @@ fun textBubble(m: Message) {
 }
 
 @Composable
-fun drawTextBubbles(msgList: List<Message>) {
+fun DrawTextBubbles(msgList: List<Message>) {
     LazyColumn(
         Modifier.fillMaxWidth().padding(horizontal = 8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -266,13 +266,13 @@ fun drawTextBubbles(msgList: List<Message>) {
         contentPadding = PaddingValues(vertical = 8.dp)
     ) {
         items(msgList) { m ->
-            textBubble(m)
+            TextBubble(m)
         }
     }
 }
 
 @Composable
-fun drawMessageRow(UIContact: Contact) {
+fun DrawMessageRow(UIContact: Contact) {
     Box(Modifier.fillMaxHeight()) {
         Box(modifier = Modifier.fillMaxWidth().height(HEADER_SIZE + 1.dp)) {
             Row(modifier = Modifier.align(Alignment.Center)) {
@@ -298,7 +298,7 @@ fun drawMessageRow(UIContact: Contact) {
             Divider(color = divider, thickness = 1.dp, modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter))
         }
         Box(Modifier.padding(top = HEADER_SIZE + 1.dp, bottom = HEADER_SIZE)) {
-            drawTextBubbles(UIContact.privateMessages)
+            DrawTextBubbles(UIContact.privateMessages)
         }
         var text by remember { mutableStateOf(TextFieldValue("")) }
         Box(Modifier.align(Alignment.BottomCenter).background(darkGray)) {

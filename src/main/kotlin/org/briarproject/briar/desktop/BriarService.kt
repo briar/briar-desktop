@@ -8,7 +8,7 @@ import org.briarproject.bramble.api.crypto.PasswordStrengthEstimator
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.briar.desktop.dialogs.Login
 import org.briarproject.briar.desktop.dialogs.Registration
-import org.briarproject.briar.desktop.paul.views.briarUIStateManager
+import org.briarproject.briar.desktop.paul.views.BriarUIStateManager
 import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -66,7 +66,7 @@ constructor(
                     })
 
                 is Screen.Main ->
-                    briarUIStateManager()
+                    BriarUIStateManager()
             }
         }
     }
