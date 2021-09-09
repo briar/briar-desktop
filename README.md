@@ -34,6 +34,21 @@ java -jar briar-desktop.jar
 
 ## Developers
 
+### Download Source Code
+
+Briar dependencies are included as [Git Submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules).
+To be able to build Briar Desktop, download the source code and the submodules using
+
+```shell
+git clone --recursive-submodules git@code.briarproject.org:briar/briar-desktop.git
+```
+
+or
+
+```shell
+git clone --recursive-submodules https://code.briarproject.org/briar/briar-desktop.git
+```
+
 ### Intellij IDEA
 
 The easiest and most convenient way to build Briar Desktop is by using
