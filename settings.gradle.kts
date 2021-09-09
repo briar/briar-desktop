@@ -6,10 +6,10 @@ pluginManagement {
     }
     
 }
-rootProject.name = "briar-desktop"
 
-include("briar:bramble-api")
-include("briar:bramble-core")
-include("briar:bramble-java")
-include("briar:briar-api")
-include("briar:briar-core")
+include(":desktop")
+include(":bramble-api")
+include(":bramble-core")
+include(":bramble-java")
+include(":briar-api")
+include(":briar-core")

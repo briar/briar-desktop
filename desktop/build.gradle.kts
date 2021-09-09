@@ -25,8 +25,8 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-databind:2.10.0")
     implementation("com.github.ajalt:clikt:2.2.0")
 
-    implementation(project(path = ":briar:briar-core", configuration = "default"))
-    implementation(project(path = ":briar:bramble-java", configuration = "default"))
+    implementation(project(path = ":briar-core", configuration = "default"))
+    implementation(project(path = ":bramble-java", configuration = "default"))
 
     val daggerVersion = "2.24"
     kapt("com.google.dagger:dagger-compiler:$daggerVersion")
