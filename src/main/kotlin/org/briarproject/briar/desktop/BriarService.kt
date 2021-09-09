@@ -1,28 +1,17 @@
 package org.briarproject.briar.desktop
 
 import androidx.compose.desktop.Window
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import org.briarproject.bramble.api.account.AccountManager
 import org.briarproject.bramble.api.crypto.DecryptionException
 import org.briarproject.bramble.api.crypto.PasswordStrengthEstimator
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.briar.desktop.dialogs.Login
 import org.briarproject.briar.desktop.dialogs.Registration
+import org.briarproject.briar.desktop.paul.views.briarUIStateManager
 import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
 import javax.inject.Singleton
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 
 interface BriarService {
     @Composable

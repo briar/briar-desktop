@@ -1,6 +1,5 @@
 package org.briarproject.briar.desktop
 
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.window.application
 import com.github.ajalt.clikt.core.CliktCommand
