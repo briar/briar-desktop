@@ -66,13 +66,7 @@ constructor(
                     })
 
                 is Screen.Main ->
-                    Column(
-                        modifier = Modifier.padding(16.dp).fillMaxSize(),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text("Welcome to Briar")
-                    }
+                    briarUIStateManager()
             }
         }
     }
