@@ -8,6 +8,7 @@ plugins {
     id("org.jetbrains.compose") version "0.4.0"
     id("java")
     id("idea")
+    id("org.jlleitschuh.gradle.ktlint") version("10.1.0")
 }
 
 group = "app.briar.desktop"
