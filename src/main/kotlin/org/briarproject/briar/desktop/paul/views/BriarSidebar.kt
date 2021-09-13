@@ -3,13 +3,24 @@ package org.briarproject.briar.desktop.paul.views
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Surface
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.ChromeReaderMode
+import androidx.compose.material.icons.filled.Contacts
+import androidx.compose.material.icons.filled.Forum
+import androidx.compose.material.icons.filled.Group
+import androidx.compose.material.icons.filled.Logout
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.WifiTethering
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,7 +38,9 @@ fun BriarSidebar(UIMode: String, onModeChange: (String) -> Unit) {
         Column(verticalArrangement = Arrangement.Top) {
             IconButton(
                 modifier = Modifier.align(Alignment.CenterHorizontally)
-                    .padding(top = 9.dp, bottom = 10.dp), onClick = {}) {
+                    .padding(top = 9.dp, bottom = 10.dp),
+                onClick = {}
+            ) {
                 Image(
                     bitmap = imageFromResource("images/profile_images/p0.png"),
                     "my_profile_image",
@@ -91,12 +104,13 @@ fun BriarSidebarButton(
     thisMode: String,
     icon: ImageVector
 ) {
-    val bg = if (UIMode == thisMode) briarBlack else briarBlue;
+    val bg = if (UIMode == thisMode) briarBlack else briarBlue
     Column() {
         IconButton(
             modifier = Modifier.align(Alignment.CenterHorizontally).background(color = bg)
                 .padding(vertical = 9.dp, horizontal = 12.dp),
-            onClick = { onModeChange(thisMode) }) {
+            onClick = { onModeChange(thisMode) }
+        ) {
             Icon(icon, thisMode, tint = Color.White, modifier = Modifier.size(30.dp))
         }
     }

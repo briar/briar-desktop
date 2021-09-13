@@ -5,5 +5,5 @@ data class Message(
     val message: String,
     val time: String,
     val delivered: Boolean,
-    //val read: Boolean,
+    // val read: Boolean,
 )

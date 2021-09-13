@@ -1,14 +1,44 @@
 package org.briarproject.briar.desktop.paul.views
 
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.*
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.Divider
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Text
+import androidx.compose.material.TextButton
+import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Send
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -23,14 +53,21 @@ import androidx.compose.ui.window.v1.DialogProperties
 import org.briarproject.briar.desktop.paul.data.ContactList
 import org.briarproject.briar.desktop.paul.model.Contact
 import org.briarproject.briar.desktop.paul.model.Message
-import org.briarproject.briar.desktop.paul.theme.*
+import org.briarproject.briar.desktop.paul.theme.briarBlack
+import org.briarproject.briar.desktop.paul.theme.briarBlue
+import org.briarproject.briar.desktop.paul.theme.briarBlueMsg
+import org.briarproject.briar.desktop.paul.theme.briarDarkGray
+import org.briarproject.briar.desktop.paul.theme.briarGrayMsg
+import org.briarproject.briar.desktop.paul.theme.briarGreen
+import org.briarproject.briar.desktop.paul.theme.darkGray
+import org.briarproject.briar.desktop.paul.theme.divider
+import org.briarproject.briar.desktop.paul.theme.lightGray
 
-
-val HEADER_SIZE = 66.dp;
+val HEADER_SIZE = 66.dp
 
 @Composable
 fun PrivateMessageView(UIContact: Contact, onContactSelect: (Contact) -> Unit) {
-    //Local State for managing the Add Contact Popup
+    // Local State for managing the Add Contact Popup
     val (AddContactDialog, onCancelAdd) = remember { mutableStateOf(false) }
     AddContactDialog(AddContactDialog, onCancelAdd)
     Column(modifier = Modifier.fillMaxHeight()) {
@@ -60,7 +97,6 @@ fun PrivateMessageView(UIContact: Contact, onContactSelect: (Contact) -> Unit) {
                         ContactCard(c, UIContact, onSel = onContactSelect)
                     }
                 }
-
             }
             Divider(color = divider, modifier = Modifier.fillMaxHeight().width(1.dp))
             Column(modifier = Modifier.weight(1f).fillMaxHeight().background(color = darkGray)) {
@@ -113,7 +149,7 @@ fun AddContactDialog(isVisible: Boolean, onCancel: (Boolean) -> Unit) {
                             "briar://ksdjlfgakslhjgaklsjdhglkasjdlk3j12h4lk2j3tkj4",
                             onValueChange = {},
                             modifier = Modifier.fillMaxWidth()
-                        );
+                        )
                     }
                 }
             },
@@ -131,7 +167,8 @@ fun AddContactDialog(isVisible: Boolean, onCancel: (Boolean) -> Unit) {
                 TextButton(
                     onClick = {
                         onCancel(false)
-                    }, modifier = Modifier.background(briarBlack)
+                    },
+                    modifier = Modifier.background(briarBlack)
                 ) {
                     Text("Cancel")
                 }
@@ -153,7 +190,8 @@ fun ContactCard(contact: Contact, selContact: Contact, onSel: (Contact) -> Unit)
     }
     Row(
         modifier = Modifier.fillMaxWidth().height(HEADER_SIZE).background(bgColor)
-            .clickable(onClick = { onSel(contact) }), horizontalArrangement = Arrangement.SpaceBetween
+            .clickable(onClick = { onSel(contact) }),
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Row(modifier = Modifier.align(Alignment.CenterVertically).padding(horizontal = 16.dp)) {
             Image(
@@ -179,7 +217,8 @@ fun ContactCard(contact: Contact, selContact: Contact, onSel: (Contact) -> Unit)
             }
         }
         androidx.compose.foundation.Canvas(
-            modifier = Modifier.padding(horizontal = 29.dp).size(22.dp).align(Alignment.CenterVertically), onDraw = {
+            modifier = Modifier.padding(horizontal = 29.dp).size(22.dp).align(Alignment.CenterVertically),
+            onDraw = {
                 val size = 16.dp.toPx()
                 drawCircle(
                     color = Color.White,
@@ -196,7 +235,8 @@ fun ContactCard(contact: Contact, selContact: Contact, onSel: (Contact) -> Unit)
                         radius = 14.dp.toPx() / 2f
                     )
                 }
-            })
+            }
+        )
     }
 
     Divider(color = divider, thickness = 1.dp, modifier = Modifier.fillMaxWidth())
@@ -247,7 +287,9 @@ fun TextBubble(m: Message) {
                                 Icons.Filled.Send,
                                 "sending",
                                 tint = Color.LightGray,
-                                modifier = Modifier.size(10.dp).align(Alignment.CenterVertically)
+                                modifier = Modifier.size(10.dp).align(
+                                    Alignment.CenterVertically
+                                )
                             )
                         }
                     }

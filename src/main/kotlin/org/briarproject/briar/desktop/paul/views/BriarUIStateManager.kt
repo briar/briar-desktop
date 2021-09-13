@@ -21,23 +21,23 @@ import org.briarproject.briar.desktop.paul.theme.briarBlack
  */
 @Composable
 fun BriarUIStateManager() {
-    //current selected mode, changed using the sidebar buttons
+    // current selected mode, changed using the sidebar buttons
     val (UIMode, onModeChange) = remember { mutableStateOf("Contacts") }
-    //current selected contact
+    // current selected contact
     val (UIContact, onContactSelect) = remember { mutableStateOf(ContactList.contacts[0]) }
-    //current selected private message
+    // current selected private message
     val (UIPrivateMsg, onPMSelect) = remember { mutableStateOf(0) }
-    //current selected forum
+    // current selected forum
     val (UIForum, onForumSelect) = remember { mutableStateOf(0) }
-    //current blog state
+    // current blog state
     val (UIBlog, onBlogSelect) = remember { mutableStateOf(0) }
-    //current transport state
+    // current transport state
     val (UITransports, onTransportSelect) = remember { mutableStateOf(0) }
-    //current settings state
+    // current settings state
     val (UISettings, onSettingSelect) = remember { mutableStateOf(0) }
-    //current profile
-    var Profile: String;
-    //Other global state that we need to track should go here also
+    // current profile
+    var Profile: String
+    // Other global state that we need to track should go here also
     Row() {
         BriarSidebar(UIMode, onModeChange)
         when (UIMode) {
@@ -47,5 +47,4 @@ fun BriarUIStateManager() {
             }
         }
     }
-
 }

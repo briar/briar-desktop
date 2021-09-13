@@ -11,4 +11,3 @@ object OptionTypeList {
         OptionType(name = "Eve", unread = 0, online = false),
     )
 }
-

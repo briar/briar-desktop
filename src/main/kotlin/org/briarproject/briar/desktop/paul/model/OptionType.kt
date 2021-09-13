@@ -4,6 +4,5 @@ data class OptionType(
     val name: String,
     val unread: Int,
     val online: Boolean
-    //val icon: Icon,
+    // val icon: Icon,
 )
-

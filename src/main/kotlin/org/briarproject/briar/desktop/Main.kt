@@ -15,8 +15,12 @@ import java.io.IOException
 import java.lang.System.getProperty
 import java.nio.file.Files.setPosixFilePermissions
 import java.nio.file.attribute.PosixFilePermission
-import java.nio.file.attribute.PosixFilePermission.*
-import java.util.logging.Level.*
+import java.nio.file.attribute.PosixFilePermission.OWNER_EXECUTE
+import java.nio.file.attribute.PosixFilePermission.OWNER_READ
+import java.nio.file.attribute.PosixFilePermission.OWNER_WRITE
+import java.util.logging.Level.ALL
+import java.util.logging.Level.INFO
+import java.util.logging.Level.WARNING
 import java.util.logging.LogManager
 
 private val DEFAULT_DATA_DIR = getProperty("user.home") + separator + ".briar"

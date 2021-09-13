@@ -1,7 +1,11 @@
 package org.briarproject.briar.desktop
 
 import androidx.compose.desktop.Window
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import org.briarproject.bramble.api.account.AccountManager
 import org.briarproject.bramble.api.crypto.DecryptionException
 import org.briarproject.bramble.api.crypto.PasswordStrengthEstimator
@@ -55,15 +59,18 @@ constructor(
         Window(title = title) {
             when (val screen = screenState) {
                 is Screen.Login ->
-                    Login("Briar", onResult = {
-                        try {
-                            accountManager.signIn(it)
-                            signedIn()
-                            screenState = Screen.Main
-                        } catch (e: DecryptionException) {
-                            // failure, try again
+                    Login(
+                        "Briar",
+                        onResult = {
+                            try {
+                                accountManager.signIn(it)
+                                signedIn()
+                                screenState = Screen.Main
+                            } catch (e: DecryptionException) {
+                                // failure, try again
+                            }
                         }
-                    })
+                    )
 
                 is Screen.Main ->
                     BriarUIStateManager()
@@ -76,5 +83,4 @@ constructor(
         lifecycleManager.startServices(dbKey)
         lifecycleManager.waitForStartup()
     }
-
 }

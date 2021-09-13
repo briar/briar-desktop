@@ -226,4 +226,3 @@ object ContactList {
         Contact(name = "Qi", online = false, profile_pic = "p5.png", last_heard = "3 days ago", privateMessages = msg5),
     )
 }
-

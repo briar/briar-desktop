@@ -21,5 +21,4 @@ internal interface BriarDesktopApp : BrambleCoreEagerSingletons, BriarCoreEagerS
     fun getUI(): UI
 
     fun getSecureRandom(): SecureRandom
-
 }
