@@ -22,26 +22,26 @@ import org.briarproject.briar.desktop.paul.theme.briarBlack
 @Composable
 fun BriarUIStateManager() {
     // current selected mode, changed using the sidebar buttons
-    val (UIMode, onModeChange) = remember { mutableStateOf("Contacts") }
+    val (uiMode, onModeChange) = remember { mutableStateOf("Contacts") }
     // current selected contact
-    val (UIContact, onContactSelect) = remember { mutableStateOf(ContactList.contacts[0]) }
+    val (uiContact, onContactSelect) = remember { mutableStateOf(ContactList.contacts[0]) }
     // current selected private message
-    val (UIPrivateMsg, onPMSelect) = remember { mutableStateOf(0) }
+    val (uiPrivateMsg, onPMSelect) = remember { mutableStateOf(0) }
     // current selected forum
-    val (UIForum, onForumSelect) = remember { mutableStateOf(0) }
+    val (uiForum, onForumSelect) = remember { mutableStateOf(0) }
     // current blog state
-    val (UIBlog, onBlogSelect) = remember { mutableStateOf(0) }
+    val (uiBlog, onBlogSelect) = remember { mutableStateOf(0) }
     // current transport state
-    val (UITransports, onTransportSelect) = remember { mutableStateOf(0) }
+    val (uiTransports, onTransportSelect) = remember { mutableStateOf(0) }
     // current settings state
-    val (UISettings, onSettingSelect) = remember { mutableStateOf(0) }
+    val (uiSettings, onSettingSelect) = remember { mutableStateOf(0) }
     // current profile
     var Profile: String
     // Other global state that we need to track should go here also
     Row() {
-        BriarSidebar(UIMode, onModeChange)
-        when (UIMode) {
-            "Contacts" -> PrivateMessageView(UIContact, onContactSelect)
+        BriarSidebar(uiMode, onModeChange)
+        when (uiMode) {
+            "Contacts" -> PrivateMessageView(uiContact, onContactSelect)
             else -> Box(modifier = Modifier.fillMaxSize().background(briarBlack)) {
                 Text("TBD", modifier = Modifier.align(Alignment.Center), color = Color.White)
             }
