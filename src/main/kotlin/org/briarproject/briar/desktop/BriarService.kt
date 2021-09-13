@@ -7,6 +7,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import org.briarproject.bramble.api.account.AccountManager
+import org.briarproject.bramble.api.contact.Contact
+import org.briarproject.bramble.api.contact.ContactManager
 import org.briarproject.bramble.api.crypto.DecryptionException
 import org.briarproject.bramble.api.crypto.PasswordStrengthEstimator
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
@@ -29,6 +31,7 @@ internal class BriarServiceImpl
 @Inject
 constructor(
     private val accountManager: AccountManager,
+    private val contactManager: ContactManager,
     private val lifecycleManager: LifecycleManager,
     private val passwordStrengthEstimator: PasswordStrengthEstimator
 ) : BriarService {
@@ -82,5 +85,10 @@ constructor(
         val dbKey = accountManager.databaseKey ?: throw AssertionError()
         lifecycleManager.startServices(dbKey)
         lifecycleManager.waitForStartup()
+        val contacts: Collection<Contact> = contactManager.getContacts()
+        // TODO: do something useful with contacts
+        for (contact in contacts) {
+            println("${contact.author.name} (${contact.alias})")
+        }
     }
 }
