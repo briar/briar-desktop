@@ -423,7 +423,8 @@ fun ChatState(
         val visitor = ChatHistoryConversationVisitor(chat, messagingManager)
         val messageHeaders: List<ConversationMessageHeader> = ArrayList(conversationManager.getMessageHeaders(id))
         Collections.sort(messageHeaders, ConversationMessageHeaderComparator())
-        // FIXME: for some reason messages are displayed in reverse order
+        // Reverse order here because we're using reverseLayout=true on the LazyColumn to display items
+        // from bottom to top
         Collections.reverse(messageHeaders)
         for (header in messageHeaders) {
             header.accept(visitor)
