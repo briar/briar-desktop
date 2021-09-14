@@ -36,6 +36,8 @@ constructor(
     private val passwordStrengthEstimator: PasswordStrengthEstimator
 ) : BriarService {
 
+    private val contacts: MutableList<Contact> = ArrayList()
+
     @Composable
     override fun start() {
         if (!accountManager.accountExists()) {
@@ -76,7 +78,7 @@ constructor(
                     )
 
                 is Screen.Main ->
-                    BriarUIStateManager()
+                    BriarUIStateManager(contacts)
             }
         }
     }
@@ -86,9 +88,9 @@ constructor(
         lifecycleManager.startServices(dbKey)
         lifecycleManager.waitForStartup()
         val contacts: Collection<Contact> = contactManager.getContacts()
-        // TODO: do something useful with contacts
         for (contact in contacts) {
             println("${contact.author.name} (${contact.alias})")
+            this.contacts.add(contact)
         }
     }
 }

@@ -50,8 +50,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.v1.DialogProperties
-import org.briarproject.briar.desktop.paul.data.ContactList
-import org.briarproject.briar.desktop.paul.model.Contact
+import org.briarproject.bramble.api.contact.Contact
 import org.briarproject.briar.desktop.paul.model.Message
 import org.briarproject.briar.desktop.paul.theme.briarBlack
 import org.briarproject.briar.desktop.paul.theme.briarBlue
@@ -66,7 +65,7 @@ import org.briarproject.briar.desktop.paul.theme.lightGray
 val HEADER_SIZE = 66.dp
 
 @Composable
-fun PrivateMessageView(uiContact: Contact, onContactSelect: (Contact) -> Unit) {
+fun PrivateMessageView(contacts: List<Contact>, uiContact: Contact, onContactSelect: (Contact) -> Unit) {
     // Local State for managing the Add Contact Popup
     val (AddContactDialog, onCancelAdd) = remember { mutableStateOf(false) }
     AddContactDialog(AddContactDialog, onCancelAdd)
@@ -93,7 +92,7 @@ fun PrivateMessageView(uiContact: Contact, onContactSelect: (Contact) -> Unit) {
                 }
                 Divider(color = divider, thickness = 1.dp, modifier = Modifier.fillMaxWidth())
                 Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                    for (c in ContactList.contacts) {
+                    for (c in contacts) {
                         ContactCard(c, uiContact, onSel = onContactSelect)
                     }
                 }
@@ -146,6 +145,7 @@ fun AddContactDialog(isVisible: Boolean, onCancel: (Boolean) -> Unit) {
                             color = lightGray
                         )
                         TextField(
+                            // TODO: use real code
                             "briar://ksdjlfgakslhjgaklsjdhglkasjdlk3j12h4lk2j3tkj4",
                             onValueChange = {},
                             modifier = Modifier.fillMaxWidth()
@@ -185,7 +185,7 @@ fun AddContactDialog(isVisible: Boolean, onCancel: (Boolean) -> Unit) {
 @Composable
 fun ContactCard(contact: Contact, selContact: Contact, onSel: (Contact) -> Unit) {
     var bgColor = briarBlack
-    if (selContact.name == contact.name) {
+    if (selContact.id == contact.id) {
         bgColor = darkGray
     }
     Row(
@@ -195,7 +195,9 @@ fun ContactCard(contact: Contact, selContact: Contact, onSel: (Contact) -> Unit)
     ) {
         Row(modifier = Modifier.align(Alignment.CenterVertically).padding(horizontal = 16.dp)) {
             Image(
-                bitmap = imageFromResource("images/profile_images/" + contact.profile_pic),
+                // TODO: use correct image
+                // bitmap = imageFromResource("images/profile_images/" + contact.profile_pic),
+                bitmap = imageFromResource("images/profile_images/p1.png"),
                 "image",
                 modifier = Modifier.size(40.dp).align(Alignment.CenterVertically).clip(
                     CircleShape
@@ -203,13 +205,13 @@ fun ContactCard(contact: Contact, selContact: Contact, onSel: (Contact) -> Unit)
             )
             Column(modifier = Modifier.align(Alignment.CenterVertically).padding(start = 12.dp)) {
                 Text(
-                    contact.name,
+                    contact.author.name,
                     fontSize = 14.sp,
                     color = Color.White,
                     modifier = Modifier.align(Alignment.Start).padding(bottom = 2.dp)
                 )
                 Text(
-                    contact.last_heard,
+                    "1 min",
                     fontSize = 10.sp,
                     color = Color.LightGray,
                     modifier = Modifier.align(Alignment.Start)
@@ -224,7 +226,8 @@ fun ContactCard(contact: Contact, selContact: Contact, onSel: (Contact) -> Unit)
                     color = Color.White,
                     radius = size / 2f
                 )
-                if (contact.online) {
+                val online = true
+                if (online) {
                     drawCircle(
                         color = briarGreen,
                         radius = 14.dp.toPx() / 2f
@@ -319,7 +322,9 @@ fun DrawMessageRow(uiContact: Contact) {
         Box(modifier = Modifier.fillMaxWidth().height(HEADER_SIZE + 1.dp)) {
             Row(modifier = Modifier.align(Alignment.Center)) {
                 Image(
-                    bitmap = imageFromResource("images/profile_images/" + uiContact.profile_pic),
+                    // TODO: use correct image
+                    // bitmap = imageFromResource("images/profile_images/" + UIContact.profile_pic),
+                    bitmap = imageFromResource("images/profile_images/p2.png"),
                     "sel_contact_prof",
                     modifier = Modifier.size(36.dp).align(
                         Alignment.CenterVertically
@@ -328,7 +333,7 @@ fun DrawMessageRow(uiContact: Contact) {
                     ).border(2.dp, color = Color.White, CircleShape)
                 )
                 Text(
-                    uiContact.name,
+                    uiContact.author.name,
                     color = Color.White,
                     modifier = Modifier.align(Alignment.CenterVertically).padding(start = 12.dp),
                     fontSize = 24.sp
@@ -340,7 +345,9 @@ fun DrawMessageRow(uiContact: Contact) {
             Divider(color = divider, thickness = 1.dp, modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter))
         }
         Box(Modifier.padding(top = HEADER_SIZE + 1.dp, bottom = HEADER_SIZE)) {
-            DrawTextBubbles(uiContact.privateMessages)
+            // TODO: use real messages
+            //DrawTextBubbles(UIContact.privateMessages)
+            DrawTextBubbles(ArrayList())
         }
         var text by remember { mutableStateOf(TextFieldValue("")) }
         Box(Modifier.align(Alignment.BottomCenter).background(darkGray)) {
@@ -351,7 +358,7 @@ fun DrawMessageRow(uiContact: Contact) {
                 modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp).fillMaxWidth(),
                 label = { Text(text = "Message") },
                 textStyle = TextStyle(color = Color.White),
-                placeholder = { Text(text = "Your message to " + uiContact.name) },
+                placeholder = { Text(text = "Your message to " + uiContact.author.name) },
                 onValueChange = {
                     text = it
                 },

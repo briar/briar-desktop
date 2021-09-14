@@ -11,7 +11,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import org.briarproject.briar.desktop.paul.data.ContactList
+import org.briarproject.bramble.api.contact.Contact
 import org.briarproject.briar.desktop.paul.theme.briarBlack
 
 /*
@@ -20,11 +20,11 @@ import org.briarproject.briar.desktop.paul.theme.briarBlack
  * Multiplatform, stateless, composable are found in briarCompose (possible briar-compose project in the future)
  */
 @Composable
-fun BriarUIStateManager() {
+fun BriarUIStateManager(contacts: List<Contact>) {
     // current selected mode, changed using the sidebar buttons
     val (uiMode, onModeChange) = remember { mutableStateOf("Contacts") }
     // current selected contact
-    val (uiContact, onContactSelect) = remember { mutableStateOf(ContactList.contacts[0]) }
+    val (uiContact, onContactSelect) = remember { mutableStateOf(contacts[0]) }
     // current selected private message
     val (uiPrivateMsg, onPMSelect) = remember { mutableStateOf(0) }
     // current selected forum
@@ -41,7 +41,7 @@ fun BriarUIStateManager() {
     Row() {
         BriarSidebar(uiMode, onModeChange)
         when (uiMode) {
-            "Contacts" -> PrivateMessageView(uiContact, onContactSelect)
+            "Contacts" -> PrivateMessageView(contacts, uiContact, onContactSelect)
             else -> Box(modifier = Modifier.fillMaxSize().background(briarBlack)) {
                 Text("TBD", modifier = Modifier.align(Alignment.Center), color = Color.White)
             }
