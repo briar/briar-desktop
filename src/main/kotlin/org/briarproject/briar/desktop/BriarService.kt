@@ -2,6 +2,8 @@ package org.briarproject.briar.desktop
 
 import androidx.compose.desktop.Window
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,6 +32,9 @@ interface BriarService {
 
     fun stop()
 }
+
+val CM = compositionLocalOf<ConversationManager> { error("Undefined ConversationManager") }
+val MM = compositionLocalOf<MessagingManager> { error("Undefined MessagingManager") }
 
 @Immutable
 @Singleton
@@ -91,7 +96,12 @@ constructor(
                     )
 
                 is Screen.Main ->
-                    BriarUIStateManager(contacts, conversationManager, messagingManager)
+                    CompositionLocalProvider(
+                        CM provides conversationManager,
+                        MM provides messagingManager
+                    ) {
+                        BriarUIStateManager(contacts)
+                    }
             }
         }
     }

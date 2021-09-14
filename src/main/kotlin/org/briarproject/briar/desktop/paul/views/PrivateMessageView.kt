@@ -55,9 +55,9 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.v1.DialogProperties
 import org.briarproject.bramble.api.contact.Contact
 import org.briarproject.bramble.api.contact.ContactId
-import org.briarproject.briar.api.conversation.ConversationManager
 import org.briarproject.briar.api.conversation.ConversationMessageHeader
-import org.briarproject.briar.api.messaging.MessagingManager
+import org.briarproject.briar.desktop.CM
+import org.briarproject.briar.desktop.MM
 import org.briarproject.briar.desktop.chat.Chat
 import org.briarproject.briar.desktop.chat.ChatHistoryConversationVisitor
 import org.briarproject.briar.desktop.chat.ConversationMessageHeaderComparator
@@ -80,9 +80,7 @@ val HEADER_SIZE = 66.dp
 @Composable
 fun PrivateMessageView(
     contacts: List<Contact>,
-    uiContact: MutableState<Contact>,
-    conversationManager: ConversationManager,
-    messagingManager: MessagingManager
+    uiContact: MutableState<Contact>
 ) {
     // Local State for managing the Add Contact Popup
     val (AddContactDialog, onCancelAdd) = remember { mutableStateOf(false) }
@@ -117,7 +115,7 @@ fun PrivateMessageView(
             }
             Divider(color = divider, modifier = Modifier.fillMaxHeight().width(1.dp))
             Column(modifier = Modifier.weight(1f).fillMaxHeight().background(color = darkGray)) {
-                DrawMessageRow(uiContact.value, conversationManager, messagingManager)
+                DrawMessageRow(uiContact.value)
             }
         }
     }
@@ -352,11 +350,7 @@ fun Loader() {
 }
 
 @Composable
-fun DrawMessageRow(
-    uiContact: Contact,
-    conversationManager: ConversationManager,
-    messagingManager: MessagingManager
-) {
+fun DrawMessageRow(uiContact: Contact) {
     Box(Modifier.fillMaxHeight()) {
         Box(modifier = Modifier.fillMaxWidth().height(HEADER_SIZE + 1.dp)) {
             Row(modifier = Modifier.align(Alignment.Center)) {
@@ -388,7 +382,7 @@ fun DrawMessageRow(
             )
         }
         Box(Modifier.padding(top = HEADER_SIZE + 1.dp, bottom = HEADER_SIZE)) {
-            val chat = ChatState(uiContact.id, conversationManager, messagingManager)
+            val chat = ChatState(uiContact.id)
             DrawTextBubbles(chat.value)
         }
         var text by remember { mutableStateOf(TextFieldValue("")) }
@@ -410,12 +404,10 @@ fun DrawMessageRow(
 }
 
 @Composable
-fun ChatState(
-    id: ContactId,
-    conversationManager: ConversationManager,
-    messagingManager: MessagingManager
-): MutableState<UiState<Chat>> {
+fun ChatState(id: ContactId): MutableState<UiState<Chat>> {
     val state: MutableState<UiState<Chat>> = remember { mutableStateOf(UiState.Loading) }
+    val messagingManager = MM.current
+    val conversationManager = CM.current
 
     DisposableEffect(id) {
         state.value = UiState.Loading

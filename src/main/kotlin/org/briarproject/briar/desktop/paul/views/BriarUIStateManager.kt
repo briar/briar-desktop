@@ -24,9 +24,7 @@ import org.briarproject.briar.desktop.paul.theme.briarBlack
  */
 @Composable
 fun BriarUIStateManager(
-    contacts: List<Contact>,
-    conversationManager: ConversationManager,
-    messagingManager: MessagingManager
+    contacts: List<Contact>
 ) {
     // current selected mode, changed using the sidebar buttons
     val (uiMode, onModeChange) = remember { mutableStateOf("Contacts") }
@@ -50,9 +48,7 @@ fun BriarUIStateManager(
         when (uiMode) {
             "Contacts" -> PrivateMessageView(
                 contacts,
-                uiContact,
-                conversationManager,
-                messagingManager
+                uiContact
             )
             else -> Box(modifier = Modifier.fillMaxSize().background(briarBlack)) {
                 Text("TBD", modifier = Modifier.align(Alignment.Center), color = Color.White)
