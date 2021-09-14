@@ -66,7 +66,7 @@ import org.briarproject.briar.desktop.paul.theme.lightGray
 val HEADER_SIZE = 66.dp
 
 @Composable
-fun PrivateMessageView(UIContact: Contact, onContactSelect: (Contact) -> Unit) {
+fun PrivateMessageView(uiContact: Contact, onContactSelect: (Contact) -> Unit) {
     // Local State for managing the Add Contact Popup
     val (AddContactDialog, onCancelAdd) = remember { mutableStateOf(false) }
     AddContactDialog(AddContactDialog, onCancelAdd)
@@ -94,13 +94,13 @@ fun PrivateMessageView(UIContact: Contact, onContactSelect: (Contact) -> Unit) {
                 Divider(color = divider, thickness = 1.dp, modifier = Modifier.fillMaxWidth())
                 Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                     for (c in ContactList.contacts) {
-                        ContactCard(c, UIContact, onSel = onContactSelect)
+                        ContactCard(c, uiContact, onSel = onContactSelect)
                     }
                 }
             }
             Divider(color = divider, modifier = Modifier.fillMaxHeight().width(1.dp))
             Column(modifier = Modifier.weight(1f).fillMaxHeight().background(color = darkGray)) {
-                DrawMessageRow(UIContact)
+                DrawMessageRow(uiContact)
             }
         }
     }
@@ -314,12 +314,12 @@ fun DrawTextBubbles(msgList: List<Message>) {
 }
 
 @Composable
-fun DrawMessageRow(UIContact: Contact) {
+fun DrawMessageRow(uiContact: Contact) {
     Box(Modifier.fillMaxHeight()) {
         Box(modifier = Modifier.fillMaxWidth().height(HEADER_SIZE + 1.dp)) {
             Row(modifier = Modifier.align(Alignment.Center)) {
                 Image(
-                    bitmap = imageFromResource("images/profile_images/" + UIContact.profile_pic),
+                    bitmap = imageFromResource("images/profile_images/" + uiContact.profile_pic),
                     "sel_contact_prof",
                     modifier = Modifier.size(36.dp).align(
                         Alignment.CenterVertically
@@ -328,7 +328,7 @@ fun DrawMessageRow(UIContact: Contact) {
                     ).border(2.dp, color = Color.White, CircleShape)
                 )
                 Text(
-                    UIContact.name,
+                    uiContact.name,
                     color = Color.White,
                     modifier = Modifier.align(Alignment.CenterVertically).padding(start = 12.dp),
                     fontSize = 24.sp
@@ -340,7 +340,7 @@ fun DrawMessageRow(UIContact: Contact) {
             Divider(color = divider, thickness = 1.dp, modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter))
         }
         Box(Modifier.padding(top = HEADER_SIZE + 1.dp, bottom = HEADER_SIZE)) {
-            DrawTextBubbles(UIContact.privateMessages)
+            DrawTextBubbles(uiContact.privateMessages)
         }
         var text by remember { mutableStateOf(TextFieldValue("")) }
         Box(Modifier.align(Alignment.BottomCenter).background(darkGray)) {
@@ -351,7 +351,7 @@ fun DrawMessageRow(UIContact: Contact) {
                 modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp).fillMaxWidth(),
                 label = { Text(text = "Message") },
                 textStyle = TextStyle(color = Color.White),
-                placeholder = { Text(text = "Your message to " + UIContact.name) },
+                placeholder = { Text(text = "Your message to " + uiContact.name) },
                 onValueChange = {
                     text = it
                 },
