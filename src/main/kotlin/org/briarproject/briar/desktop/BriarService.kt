@@ -12,6 +12,8 @@ import org.briarproject.bramble.api.contact.ContactManager
 import org.briarproject.bramble.api.crypto.DecryptionException
 import org.briarproject.bramble.api.crypto.PasswordStrengthEstimator
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
+import org.briarproject.briar.api.conversation.ConversationManager
+import org.briarproject.briar.api.messaging.MessagingManager
 import org.briarproject.briar.desktop.dialogs.Login
 import org.briarproject.briar.desktop.dialogs.Registration
 import org.briarproject.briar.desktop.paul.views.BriarUIStateManager
@@ -21,7 +23,11 @@ import javax.inject.Singleton
 
 interface BriarService {
     @Composable
-    fun start()
+    fun start(
+        conversationManager: ConversationManager,
+        messagingManager: MessagingManager
+    )
+
     fun stop()
 }
 
@@ -32,6 +38,7 @@ internal class BriarServiceImpl
 constructor(
     private val accountManager: AccountManager,
     private val contactManager: ContactManager,
+    private val messagingManager: MessagingManager,
     private val lifecycleManager: LifecycleManager,
     private val passwordStrengthEstimator: PasswordStrengthEstimator
 ) : BriarService {
@@ -39,11 +46,14 @@ constructor(
     private val contacts: MutableList<Contact> = ArrayList()
 
     @Composable
-    override fun start() {
+    override fun start(
+        conversationManager: ConversationManager,
+        messagingManager: MessagingManager
+    ) {
         if (!accountManager.accountExists()) {
             createAccount()
         } else {
-            login()
+            login(conversationManager, messagingManager)
         }
     }
 
@@ -58,7 +68,10 @@ constructor(
     }
 
     @Composable
-    private fun login() {
+    private fun login(
+        conversationManager: ConversationManager,
+        messagingManager: MessagingManager
+    ) {
         val title = "Briar Desktop"
         var screenState by remember { mutableStateOf<Screen>(Screen.Login) }
         Window(title = title) {
@@ -78,7 +91,7 @@ constructor(
                     )
 
                 is Screen.Main ->
-                    BriarUIStateManager(contacts)
+                    BriarUIStateManager(contacts, conversationManager, messagingManager)
             }
         }
     }

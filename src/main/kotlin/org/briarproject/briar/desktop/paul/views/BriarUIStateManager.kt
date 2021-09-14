@@ -6,12 +6,15 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import org.briarproject.bramble.api.contact.Contact
+import org.briarproject.briar.api.conversation.ConversationManager
+import org.briarproject.briar.api.messaging.MessagingManager
 import org.briarproject.briar.desktop.paul.theme.briarBlack
 
 /*
@@ -20,11 +23,15 @@ import org.briarproject.briar.desktop.paul.theme.briarBlack
  * Multiplatform, stateless, composable are found in briarCompose (possible briar-compose project in the future)
  */
 @Composable
-fun BriarUIStateManager(contacts: List<Contact>) {
+fun BriarUIStateManager(
+    contacts: List<Contact>,
+    conversationManager: ConversationManager,
+    messagingManager: MessagingManager
+) {
     // current selected mode, changed using the sidebar buttons
     val (uiMode, onModeChange) = remember { mutableStateOf("Contacts") }
     // current selected contact
-    val (uiContact, onContactSelect) = remember { mutableStateOf(contacts[0]) }
+    val uiContact: MutableState<Contact> = remember { mutableStateOf(contacts[0]) }
     // current selected private message
     val (uiPrivateMsg, onPMSelect) = remember { mutableStateOf(0) }
     // current selected forum
@@ -41,7 +48,12 @@ fun BriarUIStateManager(contacts: List<Contact>) {
     Row() {
         BriarSidebar(uiMode, onModeChange)
         when (uiMode) {
-            "Contacts" -> PrivateMessageView(contacts, uiContact, onContactSelect)
+            "Contacts" -> PrivateMessageView(
+                contacts,
+                uiContact,
+                conversationManager,
+                messagingManager
+            )
             else -> Box(modifier = Modifier.fillMaxSize().background(briarBlack)) {
                 Text("TBD", modifier = Modifier.align(Alignment.Center), color = Color.White)
             }

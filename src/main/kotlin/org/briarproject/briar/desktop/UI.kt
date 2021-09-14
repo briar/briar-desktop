@@ -34,7 +34,7 @@ constructor(
 
     @Composable
     internal fun startBriar() {
-        briarService.start()
+        briarService.start(conversationManager, messagingManager)
     }
 
     internal fun getContactManager(): ContactManager {
