@@ -72,7 +72,7 @@ import org.briarproject.briar.desktop.paul.theme.briarGreen
 import org.briarproject.briar.desktop.paul.theme.darkGray
 import org.briarproject.briar.desktop.paul.theme.divider
 import org.briarproject.briar.desktop.paul.theme.lightGray
-import java.util.*
+import java.util.Collections
 
 
 val HEADER_SIZE = 66.dp
