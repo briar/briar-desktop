@@ -1,6 +1,7 @@
 package org.briarproject.briar.desktop
 
 import androidx.compose.desktop.Window
+import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
@@ -18,6 +19,7 @@ import org.briarproject.briar.api.conversation.ConversationManager
 import org.briarproject.briar.api.messaging.MessagingManager
 import org.briarproject.briar.desktop.dialogs.Login
 import org.briarproject.briar.desktop.dialogs.Registration
+import org.briarproject.briar.desktop.paul.theme.DarkColorPallet
 import org.briarproject.briar.desktop.paul.views.BriarUIStateManager
 import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
@@ -80,28 +82,30 @@ constructor(
         val title = "Briar Desktop"
         var screenState by remember { mutableStateOf<Screen>(Screen.Login) }
         Window(title = title) {
-            when (val screen = screenState) {
-                is Screen.Login ->
-                    Login(
-                        "Briar",
-                        onResult = {
-                            try {
-                                accountManager.signIn(it)
-                                signedIn()
-                                screenState = Screen.Main
-                            } catch (e: DecryptionException) {
-                                // failure, try again
+            MaterialTheme(colors = DarkColorPallet) {
+                when (val screen = screenState) {
+                    is Screen.Login ->
+                        Login(
+                            "Briar",
+                            onResult = {
+                                try {
+                                    accountManager.signIn(it)
+                                    signedIn()
+                                    screenState = Screen.Main
+                                } catch (e: DecryptionException) {
+                                    // failure, try again
+                                }
                             }
-                        }
-                    )
+                        )
 
-                is Screen.Main ->
-                    CompositionLocalProvider(
-                        CM provides conversationManager,
-                        MM provides messagingManager
-                    ) {
-                        BriarUIStateManager(contacts)
-                    }
+                    is Screen.Main ->
+                        CompositionLocalProvider(
+                            CM provides conversationManager,
+                            MM provides messagingManager
+                        ) {
+                            BriarUIStateManager(contacts)
+                        }
+                }
             }
         }
     }

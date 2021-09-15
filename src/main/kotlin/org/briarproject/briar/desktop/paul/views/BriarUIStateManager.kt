@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -25,28 +24,26 @@ fun BriarUIStateManager(
     contacts: List<Contact>
 ) {
     // current selected mode, changed using the sidebar buttons
-    val (uiMode, onModeChange) = remember { mutableStateOf("Contacts") }
+    val (uiMode, setMode) = remember { mutableStateOf("Contacts") }
+    // TODO Figure out how to handle accounts with 0 contacts
     // current selected contact
-    val uiContact: MutableState<Contact> = remember { mutableStateOf(contacts[0]) }
-    // current selected private message
-    val (uiPrivateMsg, onPMSelect) = remember { mutableStateOf(0) }
+    val (contact, setContact) = remember { mutableStateOf(contacts[0]) }
     // current selected forum
-    val (uiForum, onForumSelect) = remember { mutableStateOf(0) }
+    val (forum, setForum) = remember { mutableStateOf(0) }
     // current blog state
-    val (uiBlog, onBlogSelect) = remember { mutableStateOf(0) }
+    val (blog, setBlog) = remember { mutableStateOf(0) }
     // current transport state
-    val (uiTransports, onTransportSelect) = remember { mutableStateOf(0) }
+    val (transport, setTransport) = remember { mutableStateOf(0) }
     // current settings state
-    val (uiSettings, onSettingSelect) = remember { mutableStateOf(0) }
-    // current profile
-    var Profile: String
+    val (setting, setSetting) = remember { mutableStateOf(0) }
     // Other global state that we need to track should go here also
     Row() {
-        BriarSidebar(uiMode, onModeChange)
+        BriarSidebar(uiMode, setMode)
         when (uiMode) {
             "Contacts" -> PrivateMessageView(
+                contact,
                 contacts,
-                uiContact
+                setContact
             )
             else -> Box(modifier = Modifier.fillMaxSize().background(briarBlack)) {
                 Text("TBD", modifier = Modifier.align(Alignment.Center), color = Color.White)

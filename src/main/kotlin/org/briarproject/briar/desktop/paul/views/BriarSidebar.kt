@@ -33,43 +33,42 @@ import org.briarproject.briar.desktop.paul.theme.briarBlack
 import org.briarproject.briar.desktop.paul.theme.briarBlue
 
 @Composable
-fun BriarSidebar(uiMode: String, onModeChange: (String) -> Unit) {
-    Surface(modifier = Modifier.width(66.dp).fillMaxHeight(), color = briarBlue) {
+fun BriarSidebar(uiMode: String, setMode: (String) -> Unit) {
+    Surface(modifier = Modifier.width(56.dp).fillMaxHeight(), color = briarBlue) {
         Column(verticalArrangement = Arrangement.Top) {
             IconButton(
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-                    .padding(top = 9.dp, bottom = 10.dp),
+                modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 5.dp, bottom = 4.dp),
                 onClick = {}
             ) {
                 Image(
                     bitmap = imageFromResource("images/profile_images/p0.png"),
                     "my_profile_image",
-                    modifier = Modifier.size(48.dp).align(Alignment.CenterHorizontally).clip(
+                    modifier = Modifier.size(44.dp).align(Alignment.CenterHorizontally).clip(
                         CircleShape
                     ).border(2.dp, color = Color.White, CircleShape)
                 )
             }
             BriarSidebarButton(
                 uiMode = uiMode,
-                onModeChange = onModeChange,
+                setMode = setMode,
                 "Contacts",
                 Icons.Filled.Contacts
             )
             BriarSidebarButton(
                 uiMode = uiMode,
-                onModeChange = onModeChange,
+                setMode = setMode,
                 "Private Groups",
                 Icons.Filled.Group
             )
             BriarSidebarButton(
                 uiMode = uiMode,
-                onModeChange = onModeChange,
+                setMode = setMode,
                 "Forums",
                 Icons.Filled.Forum
             )
             BriarSidebarButton(
                 uiMode = uiMode,
-                onModeChange = onModeChange,
+                setMode = setMode,
                 "Blogs",
                 Icons.Filled.ChromeReaderMode
             )
@@ -77,19 +76,19 @@ fun BriarSidebar(uiMode: String, onModeChange: (String) -> Unit) {
         Column(verticalArrangement = Arrangement.Bottom) {
             BriarSidebarButton(
                 uiMode = uiMode,
-                onModeChange = onModeChange,
+                setMode = setMode,
                 "Transports",
                 Icons.Filled.WifiTethering
             )
             BriarSidebarButton(
                 uiMode = uiMode,
-                onModeChange = onModeChange,
+                setMode = setMode,
                 "Settings",
                 Icons.Filled.Settings
             )
             BriarSidebarButton(
                 uiMode = uiMode,
-                onModeChange = onModeChange,
+                setMode = setMode,
                 "Sign Out",
                 Icons.Filled.Logout
             )
@@ -98,18 +97,13 @@ fun BriarSidebar(uiMode: String, onModeChange: (String) -> Unit) {
 }
 
 @Composable
-fun BriarSidebarButton(
-    uiMode: String,
-    onModeChange: (String) -> Unit,
-    thisMode: String,
-    icon: ImageVector
-) {
+fun BriarSidebarButton(uiMode: String, setMode: (String) -> Unit, thisMode: String, icon: ImageVector) {
     val bg = if (uiMode == thisMode) briarBlack else briarBlue
-    Column() {
+    Column {
         IconButton(
             modifier = Modifier.align(Alignment.CenterHorizontally).background(color = bg)
-                .padding(vertical = 9.dp, horizontal = 12.dp),
-            onClick = { onModeChange(thisMode) }
+                .padding(vertical = 4.dp, horizontal = 12.dp),
+            onClick = { setMode(thisMode) }
         ) {
             Icon(icon, thisMode, tint = Color.White, modifier = Modifier.size(30.dp))
         }
