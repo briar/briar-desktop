@@ -65,7 +65,8 @@ class ChatHistoryConversationVisitor(
 
     override fun visitIntroductionRequest(r: IntroductionRequest): Void? {
         chat.appendMessage(
-            r.isLocal, r.timestamp, String.format(
+            r.isLocal, r.timestamp,
+            String.format(
                 "You received an introduction request! Username: %s, Message: %s",
                 r.name, r.text
             )
@@ -94,5 +95,4 @@ class ChatHistoryConversationVisitor(
         }
         return null
     }
-
 }

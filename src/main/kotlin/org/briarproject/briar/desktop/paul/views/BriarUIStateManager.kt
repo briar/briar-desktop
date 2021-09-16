@@ -13,8 +13,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import org.briarproject.bramble.api.contact.Contact
-import org.briarproject.briar.api.conversation.ConversationManager
-import org.briarproject.briar.api.messaging.MessagingManager
 import org.briarproject.briar.desktop.paul.theme.briarBlack
 
 /*

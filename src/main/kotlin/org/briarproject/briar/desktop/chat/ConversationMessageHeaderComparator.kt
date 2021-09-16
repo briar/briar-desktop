@@ -10,5 +10,4 @@ class ConversationMessageHeaderComparator : Comparator<ConversationMessageHeader
     ): Int {
         return h1.timestamp.compareTo(h2.timestamp)
     }
-
 }

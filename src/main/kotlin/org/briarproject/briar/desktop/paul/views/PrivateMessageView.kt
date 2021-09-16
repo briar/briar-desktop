@@ -74,7 +74,6 @@ import org.briarproject.briar.desktop.paul.theme.divider
 import org.briarproject.briar.desktop.paul.theme.lightGray
 import java.util.Collections
 
-
 val HEADER_SIZE = 66.dp
 
 @Composable
@@ -206,9 +205,11 @@ fun ContactCard(selContact: MutableState<Contact>, contact: Contact) {
     }
     Row(
         modifier = Modifier.fillMaxWidth().height(HEADER_SIZE).background(bgColor)
-            .clickable(onClick = {
-                selContact.value = contact
-            }),
+            .clickable(
+                onClick = {
+                    selContact.value = contact
+                }
+            ),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Row(modifier = Modifier.align(Alignment.CenterVertically).padding(horizontal = 16.dp)) {

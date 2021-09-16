@@ -25,5 +25,4 @@ class Chat {
         val author = String.format("%s (%s): ", name, formatter.format(dateTime))
         messages.add(SimpleMessage(local, author, messageText!!, "time", true))
     }
-
 }
