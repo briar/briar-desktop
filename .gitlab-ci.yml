@@ -1,0 +1,34 @@
+image: briar/ci-image-android:latest
+
+stages:
+  - test
+
+workflow:
+  # when to create a CI pipeline
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS'
+      when: never # avoids duplicate jobs for branch and MR
+    - if: '$CI_COMMIT_BRANCH'
+    - if: '$CI_COMMIT_TAG'
+
+test:
+  stage: test
+  before_script:
+    - set -e
+    - export GRADLE_USER_HOME=$PWD/.gradle
+  script:
+    - ./gradlew --no-daemon ktlintCheck
+  after_script:
+    # these file change every time and should not be cached
+    - rm -f $GRADLE_USER_HOME/caches/modules-2/modules-2.lock
+    - rm -fr $GRADLE_USER_HOME/caches/*/plugin-resolution/
+  cache:
+    key: "$CI_COMMIT_REF_SLUG"
+    paths:
+      - .gradle/wrapper
+      - .gradle/caches
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: always
+    - when: always
