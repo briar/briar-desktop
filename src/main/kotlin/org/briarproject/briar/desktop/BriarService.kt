@@ -1,6 +1,7 @@
 package org.briarproject.briar.desktop
 
 import androidx.compose.desktop.Window
+import androidx.compose.foundation.background
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -9,6 +10,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import org.briarproject.bramble.api.account.AccountManager
 import org.briarproject.bramble.api.contact.Contact
 import org.briarproject.bramble.api.contact.ContactManager
@@ -20,6 +22,7 @@ import org.briarproject.briar.api.messaging.MessagingManager
 import org.briarproject.briar.desktop.dialogs.Login
 import org.briarproject.briar.desktop.dialogs.Registration
 import org.briarproject.briar.desktop.paul.theme.DarkColorPallet
+import org.briarproject.briar.desktop.paul.theme.briarBlack
 import org.briarproject.briar.desktop.paul.views.BriarUIStateManager
 import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
@@ -87,6 +90,7 @@ constructor(
                     is Screen.Login ->
                         Login(
                             "Briar",
+                            modifier = Modifier.background(briarBlack),
                             onResult = {
                                 try {
                                     accountManager.signIn(it)

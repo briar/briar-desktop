@@ -1,7 +1,6 @@
 package org.briarproject.briar.desktop.dialogs
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -24,17 +23,17 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.svgResource
 import androidx.compose.ui.unit.dp
-import org.briarproject.briar.desktop.paul.theme.briarBlack
 
 // TODO: Error handling
 @Composable
 fun Login(
     title: String,
+    modifier: Modifier = Modifier,
     onResult: (result: String) -> Unit
 ) =
     // All the changes in this file are be temporary -Paul, just changing colors so I can see the button and text field
     Column(
-        modifier = Modifier.padding(16.dp).fillMaxSize().background(briarBlack),
+        modifier = modifier.padding(16.dp).fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
