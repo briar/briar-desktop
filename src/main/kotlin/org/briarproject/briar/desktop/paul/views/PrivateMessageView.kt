@@ -255,15 +255,11 @@ fun SearchTextField(searchValue: String, onValueChange: (String) -> Unit, onCont
 
 @Composable
 fun ProfileCircle(bitmap: ImageBitmap, size: Dp) {
-    Row() {
-        Image(
-            bitmap = bitmap,
-            "image",
-            modifier = Modifier.size(size).align(Alignment.CenterVertically).clip(
-                CircleShape
-            ).border(2.dp, color = Color.White, CircleShape)
-        )
-    }
+    Image(
+        bitmap = bitmap,
+        "image",
+        modifier = Modifier.size(size).clip(CircleShape).border(2.dp, color = Color.White, CircleShape)
+    )
 }
 
 @Composable
