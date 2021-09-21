@@ -372,62 +372,40 @@ fun ContactList(
 
 @Composable
 fun TextBubble(m: SimpleMessage) {
+    if (m.local) {
+        TextBubble(m, Alignment.End, briarBlueMsg)
+    } else {
+        TextBubble(m, Alignment.Start, briarGrayMsg)
+    }
+}
+
+@Composable
+fun TextBubble(m: SimpleMessage, alignment: Alignment.Horizontal, color: Color) {
     Column(Modifier.fillMaxWidth()) {
-        if (m.local) {
-            Column(Modifier.fillMaxWidth(fraction = 0.8f).align(Alignment.End)) {
-                Column(
-                    Modifier.background(
-                        briarBlueMsg,
-                        RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp, bottomStart = 10.dp)
-                    ).padding(8.dp).align(Alignment.End)
-                ) {
-                    Text(m.message, fontSize = 14.sp, color = Color.White, modifier = Modifier.align(Alignment.Start))
-                    Row(modifier = Modifier.padding(top = 4.dp)) {
-                        Text(m.time, Modifier.padding(end = 4.dp), fontSize = 10.sp, color = Color.LightGray)
-                        if (m.delivered) {
-                            Icon(
-                                Icons.Filled.DoneAll,
-                                "sent",
-                                tint = Color.LightGray,
-                                modifier = Modifier.size(12.dp).align(Alignment.CenterVertically)
-                            )
-                        } else {
-                            Icon(
-                                Icons.Filled.Schedule,
-                                "sending",
-                                tint = Color.LightGray,
-                                modifier = Modifier.size(12.dp).align(Alignment.CenterVertically)
-                            )
-                        }
-                    }
-                }
-            }
-        } else {
-            Column(Modifier.fillMaxWidth(fraction = 0.9f).align(Alignment.Start)) {
-                Column(
-                    Modifier.background(
-                        briarGrayMsg,
-                        RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp, bottomEnd = 10.dp)
-                    ).padding(8.dp).align(Alignment.Start)
-                ) {
-                    Text(m.message, fontSize = 14.sp, color = Color.White, modifier = Modifier.align(Alignment.Start))
-                    Row(modifier = Modifier.padding(top = 4.dp)) {
-                        Text(m.time, Modifier.padding(end = 4.dp), fontSize = 10.sp, color = Color.LightGray)
-                        if (m.delivered) {
-                            Icon(
-                                Icons.Filled.DoneAll,
-                                "sent",
-                                tint = Color.LightGray,
-                                modifier = Modifier.size(12.dp).align(Alignment.CenterVertically)
-                            )
-                        } else {
-                            Icon(
-                                Icons.Filled.Schedule,
-                                "sending",
-                                tint = Color.LightGray,
-                                modifier = Modifier.size(12.dp).align(Alignment.CenterVertically)
-                            )
-                        }
+        Column(Modifier.fillMaxWidth(fraction = 0.8f).align(alignment)) {
+            Column(
+                Modifier.background(
+                    color,
+                    RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp, bottomStart = 10.dp)
+                ).padding(8.dp).align(alignment)
+            ) {
+                Text(m.message, fontSize = 14.sp, color = Color.White, modifier = Modifier.align(Alignment.Start))
+                Row(modifier = Modifier.padding(top = 4.dp)) {
+                    Text(m.time, Modifier.padding(end = 4.dp), fontSize = 10.sp, color = Color.LightGray)
+                    if (m.delivered) {
+                        Icon(
+                            Icons.Filled.DoneAll,
+                            "sent",
+                            tint = Color.LightGray,
+                            modifier = Modifier.size(12.dp).align(Alignment.CenterVertically)
+                        )
+                    } else {
+                        Icon(
+                            Icons.Filled.Schedule,
+                            "sending",
+                            tint = Color.LightGray,
+                            modifier = Modifier.size(12.dp).align(Alignment.CenterVertically)
+                        )
                     }
                 }
             }
