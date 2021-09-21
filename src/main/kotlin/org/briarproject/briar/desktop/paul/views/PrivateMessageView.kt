@@ -25,7 +25,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.CircularProgressIndicator
@@ -62,7 +61,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.graphics.imageFromResource
 import androidx.compose.ui.text.TextStyle
@@ -212,44 +210,31 @@ fun AddContactDialog(isVisible: Boolean, onCancel: (Boolean) -> Unit) {
 
 @Composable
 fun SearchTextField(searchValue: String, onValueChange: (String) -> Unit, onContactAdd: (Boolean) -> Unit) {
-    BasicTextField(
+    TextField(
         value = searchValue,
         onValueChange = onValueChange,
         singleLine = true,
         modifier = Modifier.padding(horizontal = 8.dp),
         textStyle = TextStyle(color = Color.White, fontSize = 16.sp),
-        decorationBox = { innerTextField ->
-            Row(
-                Modifier
-                    .background(darkGray, CircleShape)
-                    .border(1.dp, divider, CircleShape)
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Icon(
-                    Icons.Filled.Search,
-                    "search contacts",
-                    tint = Color.White,
-                    modifier = Modifier.padding(top = 8.dp, bottom = 8.dp, start = 16.dp)
-                )
-                Box(Modifier.width(132.dp).padding(vertical = 8.dp, horizontal = 2.dp)) {
-                    if (searchValue.isEmpty()) {
-                        Text("Contacts", color = Color.Gray)
-                    }
-                    innerTextField()
-                }
-                IconButton(
-                    onClick = { onContactAdd(true) },
-                    modifier = Modifier.padding(end = 4.dp).size(32.dp).background(
-                        briarBlueMsg, CircleShape
-                    )
-                ) {
-                    Icon(Icons.Filled.PersonAdd, "add contact", tint = Color.White, modifier = Modifier.size(20.dp))
-                }
-            }
+        placeholder = { Text("Contacts", color = Color.Gray) },
+        leadingIcon = {
+            Icon(
+                Icons.Filled.Search,
+                "search contacts",
+                tint = Color.White,
+                modifier = Modifier.padding(top = 8.dp, bottom = 8.dp, start = 16.dp)
+            )
         },
-        cursorBrush = SolidColor(Color.White),
+        trailingIcon = {
+            IconButton(
+                onClick = { onContactAdd(true) },
+                modifier = Modifier.padding(end = 4.dp).size(32.dp).background(
+                    briarBlueMsg, CircleShape
+                )
+            ) {
+                Icon(Icons.Filled.PersonAdd, "add contact", tint = Color.White, modifier = Modifier.size(20.dp))
+            }
+        }
     )
 }
 
@@ -602,48 +587,34 @@ fun MsgInput(contact: Contact) {
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.padding(8.dp)
     ) {
-        BasicTextField(
+        TextField(
             value = text,
             onValueChange = { text = it },
             maxLines = 10,
             textStyle = TextStyle(color = Color.White, fontSize = 16.sp, lineHeight = 16.sp),
-            decorationBox = { innerTextField ->
-                Box(
-                    Modifier
-                        .background(darkGray, RoundedCornerShape(size = 20.dp))
-                        .border(1.dp, divider, RoundedCornerShape(size = 20.dp))
-                        .fillMaxWidth(),
-                    contentAlignment = Alignment.TopCenter,
+            placeholder = { Text("Message", color = Color.Gray) },
+            modifier = Modifier.fillMaxWidth(),
+            leadingIcon = {
+                IconButton(
+                    onClick = {},
+                    Modifier.padding(4.dp).size(32.dp)
+                        .background(briarBlueMsg, CircleShape),
                 ) {
-                    IconButton(
-                        onClick = {},
-                        Modifier.padding(4.dp).size(32.dp).align(Alignment.TopStart)
-                            .background(briarBlueMsg, CircleShape),
-                    ) {
-                        Icon(
-                            Icons.Filled.Add,
-                            "add attachment",
-                            tint = Color.White,
-                            modifier = Modifier.size(24.dp),
-                        )
-                    }
-                    Box(
-                        Modifier.padding(vertical = 8.dp, horizontal = 48.dp).align(Alignment.Center).fillMaxWidth()
-                    ) {
-                        if (text.isEmpty()) {
-                            Text("Message", color = Color.Gray)
-                        }
-                        innerTextField()
-                    }
-                    IconButton(
-                        onClick = { },
-                        modifier = Modifier.padding(4.dp).size(32.dp).align(Alignment.TopEnd),
-                    ) {
-                        Icon(Icons.Filled.Send, "send message", tint = briarGreen, modifier = Modifier.size(24.dp))
-                    }
+                    Icon(
+                        Icons.Filled.Add,
+                        "add attachment",
+                        tint = Color.White,
+                        modifier = Modifier.size(24.dp),
+                    )
                 }
             },
-            cursorBrush = SolidColor(Color.White),
+            trailingIcon = {
+                IconButton(
+                    onClick = { }, modifier = Modifier.padding(4.dp).size(32.dp),
+                ) {
+                    Icon(Icons.Filled.Send, "send message", tint = briarGreen, modifier = Modifier.size(24.dp))
+                }
+            }
         )
     }
 }
