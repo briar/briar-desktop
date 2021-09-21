@@ -267,11 +267,15 @@ fun ProfileCircle(bitmap: ImageBitmap, size: Dp) {
 }
 
 @Composable
-fun ContactCard(contact: Contact, selContact: Contact, onSel: (Contact) -> Unit, drawDetails: Boolean) {
-    var bgColor = briarBlack
-    if (selContact.id == contact.id && drawDetails) {
-        bgColor = darkGray
-    }
+fun ContactCard(
+    contact: Contact,
+    selContact: Contact,
+    onSel: (Contact) -> Unit,
+    selected: Boolean,
+    drawNotifications: Boolean
+) {
+    // selContact.id == contact.id && drawNotifications
+    val bgColor = if (selected) darkGray else briarBlack
     Row(
         modifier = Modifier.fillMaxWidth().height(HEADER_SIZE).background(bgColor)
             .clickable(onClick = { onSel(contact) }),
@@ -281,7 +285,7 @@ fun ContactCard(contact: Contact, selContact: Contact, onSel: (Contact) -> Unit,
             // TODO Pull profile pictures
             ProfileCircle(imageFromResource("images/profile_images/p0.png"), 36.dp)
             // Draw notification badges
-            if (drawDetails) {
+            if (drawNotifications) {
                 androidx.compose.foundation.Canvas(
                     modifier = Modifier.align(Alignment.CenterVertically),
                     onDraw = {
@@ -378,7 +382,7 @@ fun ContactList(
         content = {
             Column(Modifier.verticalScroll(rememberScrollState())) {
                 for (c in filteredContacts) {
-                    ContactCard(c, currContact, onContactSelect, true)
+                    ContactCard(c, currContact, onContactSelect, currContact.id == c.id, true)
                 }
             }
         },
@@ -672,7 +676,7 @@ fun ContactDrawerMakeIntro(currContact: Contact, contacts: List<Contact>, setInf
             Column(Modifier.verticalScroll(rememberScrollState())) {
                 for (c in contacts) {
                     if (c.id != currContact.id) {
-                        ContactCard(c, currContact, { onCancelSel(c); introNextPg = true }, false)
+                        ContactCard(c, currContact, { onCancelSel(c); introNextPg = true }, false, false)
                     }
                 }
             }
