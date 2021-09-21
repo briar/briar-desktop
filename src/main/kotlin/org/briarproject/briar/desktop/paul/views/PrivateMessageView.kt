@@ -104,7 +104,7 @@ enum class ContactInfoDrawerState {
 
 @Composable
 fun PrivateMessageView(
-    currContact: Contact,
+    contact: Contact,
     contacts: List<Contact>,
     onContactSelect: (Contact) -> Unit
 ) {
@@ -114,13 +114,13 @@ fun PrivateMessageView(
     val (contactDrawerState, setDrawerState) = remember { mutableStateOf(ContactInfoDrawerState.MakeIntro) }
     AddContactDialog(addContactDialog, onContactAdd)
     Divider(color = divider, modifier = Modifier.fillMaxHeight().width(1.dp))
-    ContactList(currContact, contacts, onContactSelect, onContactAdd)
+    ContactList(contact, contacts, onContactSelect, onContactAdd)
     Column(modifier = Modifier.fillMaxHeight()) {
         Row(modifier = Modifier.fillMaxWidth()) {
             Divider(color = divider, modifier = Modifier.fillMaxHeight().width(1.dp))
             Column(modifier = Modifier.weight(1f).fillMaxHeight().background(color = darkGray)) {
                 DrawMessageRow(
-                    currContact,
+                    contact,
                     contacts,
                     dropdownExpanded,
                     setExpanded,
@@ -347,7 +347,7 @@ fun ContactCard(
 
 @Composable
 fun ContactList(
-    currContact: Contact,
+    contact: Contact,
     contacts: List<Contact>,
     onContactSelect: (Contact) -> Unit,
     onContactAdd: (Boolean) -> Unit
@@ -382,7 +382,7 @@ fun ContactList(
         content = {
             Column(Modifier.verticalScroll(rememberScrollState())) {
                 for (c in filteredContacts) {
-                    ContactCard(c, currContact, onContactSelect, currContact.id == c.id, true)
+                    ContactCard(c, contact, onContactSelect, contact.id == c.id, true)
                 }
             }
         },
@@ -600,7 +600,7 @@ fun MsgColumnHeader(
 }
 
 @Composable
-fun MsgInput(currContact: Contact) {
+fun MsgInput(contact: Contact) {
     var text by remember { mutableStateOf("") }
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -653,9 +653,9 @@ fun MsgInput(currContact: Contact) {
 }
 
 @Composable
-fun ContactDrawerMakeIntro(currContact: Contact, contacts: List<Contact>, setInfoDrawer: (Boolean) -> Unit) {
+fun ContactDrawerMakeIntro(contact: Contact, contacts: List<Contact>, setInfoDrawer: (Boolean) -> Unit) {
     var introNextPg by remember { mutableStateOf(false) }
-    val (introContact, onCancelSel) = remember { mutableStateOf(currContact) }
+    val (introContact, onCancelSel) = remember { mutableStateOf(contact) }
     if (!introNextPg) {
         Column() {
             Row(Modifier.fillMaxWidth().height(HEADER_SIZE)) {
@@ -666,7 +666,7 @@ fun ContactDrawerMakeIntro(currContact: Contact, contacts: List<Contact>, setInf
                     Icon(Icons.Filled.Close, "close make intro screen", tint = Color.White)
                 }
                 Text(
-                    text = "Introduce " + currContact.author.name + " to:",
+                    text = "Introduce " + contact.author.name + " to:",
                     color = Color.White,
                     fontSize = 16.sp,
                     modifier = Modifier.align(Alignment.CenterVertically)
@@ -675,8 +675,8 @@ fun ContactDrawerMakeIntro(currContact: Contact, contacts: List<Contact>, setInf
             Divider(color = divider, modifier = Modifier.fillMaxWidth().height(1.dp))
             Column(Modifier.verticalScroll(rememberScrollState())) {
                 for (c in contacts) {
-                    if (c.id != currContact.id) {
-                        ContactCard(c, currContact, { onCancelSel(c); introNextPg = true }, false, false)
+                    if (c.id != contact.id) {
+                        ContactCard(c, contact, { onCancelSel(c); introNextPg = true }, false, false)
                     }
                 }
             }
@@ -702,7 +702,7 @@ fun ContactDrawerMakeIntro(currContact: Contact, contacts: List<Contact>, setInf
                 Column(Modifier.align(Alignment.CenterVertically)) {
                     ProfileCircle(imageFromResource("images/profile_images/p0.png"), 40.dp)
                     Text(
-                        currContact.author.name,
+                        contact.author.name,
                         color = Color.White,
                         fontSize = 16.sp,
                         modifier = Modifier.padding(top = 4.dp)
@@ -743,21 +743,21 @@ fun ContactDrawerMakeIntro(currContact: Contact, contacts: List<Contact>, setInf
 
 @Composable
 fun ContactInfoDrawer(
-    currContact: Contact,
+    contact: Contact,
     contacts: List<Contact>,
     setInfoDrawer: (Boolean) -> Unit,
     drawerState: ContactInfoDrawerState
 ) {
     Row() {
         when (drawerState) {
-            ContactInfoDrawerState.MakeIntro -> ContactDrawerMakeIntro(currContact, contacts, setInfoDrawer)
+            ContactInfoDrawerState.MakeIntro -> ContactDrawerMakeIntro(contact, contacts, setInfoDrawer)
         }
     }
 }
 
 @Composable
 fun DrawMessageRow(
-    currContact: Contact,
+    contact: Contact,
     contacts: List<Contact>,
     expanded: Boolean,
     setExpanded: (Boolean) -> Unit,
@@ -774,14 +774,14 @@ fun DrawMessageRow(
             }
         )
         Scaffold(
-            topBar = { MsgColumnHeader(currContact, expanded, setExpanded, setInfoDrawer) },
+            topBar = { MsgColumnHeader(contact, expanded, setExpanded, setInfoDrawer) },
             content = { padding ->
                 Box(modifier = Modifier.padding(padding)) {
-                    val chat = ChatState(currContact.id)
+                    val chat = ChatState(contact.id)
                     DrawTextBubbles(chat.value)
                 }
             },
-            bottomBar = { MsgInput(currContact) },
+            bottomBar = { MsgInput(contact) },
             backgroundColor = darkGray,
             modifier = Modifier.offset()
         )
@@ -794,7 +794,7 @@ fun DrawMessageRow(
                 modifier = Modifier.fillMaxHeight().width(275.dp).offset(maxWidth + animatedInfoDrawerOffsetX)
                     .background(briarBlack, RoundedCornerShape(topStart = 10.dp, bottomStart = 10.dp))
             ) {
-                ContactInfoDrawer(currContact, contacts, setInfoDrawer, drawerState)
+                ContactInfoDrawer(contact, contacts, setInfoDrawer, drawerState)
             }
         }
     }
