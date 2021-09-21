@@ -31,7 +31,6 @@ fun Login(
     modifier: Modifier = Modifier,
     onResult: (result: String) -> Unit
 ) =
-    // All the changes in this file are be temporary -Paul, just changing colors so I can see the button and text field
     Column(
         modifier = modifier.padding(16.dp).fillMaxSize(),
         verticalArrangement = Arrangement.Center,
