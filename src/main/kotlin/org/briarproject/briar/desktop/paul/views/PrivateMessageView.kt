@@ -473,7 +473,7 @@ fun Loader() {
 fun ContactDropDown(
     expanded: Boolean,
     isExpanded: (Boolean) -> Unit,
-    isInfoDrawer: (Boolean) -> Unit
+    setInfoDrawer: (Boolean) -> Unit
 ) {
     var connectionMode by remember { mutableStateOf(false) }
     var contactMode by remember { mutableStateOf(false) }
@@ -482,7 +482,7 @@ fun ContactDropDown(
         onDismissRequest = { isExpanded(false) },
         modifier = Modifier.background(briarBlack)
     ) {
-        DropdownMenuItem(onClick = { isInfoDrawer(true); isExpanded(false) }) {
+        DropdownMenuItem(onClick = { setInfoDrawer(true); isExpanded(false) }) {
             Text("Make Introduction", fontSize = 14.sp)
         }
         DropdownMenuItem(onClick = {}) {
@@ -542,10 +542,10 @@ fun ContactDropDown(
 
 @Composable
 fun MsgColumnHeader(
-    uiContact: Contact,
+    contact: Contact,
     expanded: Boolean,
     isExpanded: (Boolean) -> Unit,
-    isInfoDrawer: (Boolean) -> Unit
+    setInfoDrawer: (Boolean) -> Unit
 ) {
     Box(modifier = Modifier.fillMaxWidth().height(HEADER_SIZE + 1.dp)) {
         Row(modifier = Modifier.align(Alignment.Center)) {
@@ -578,7 +578,7 @@ fun MsgColumnHeader(
                 }
             )
             Text(
-                uiContact.author.name,
+                contact.author.name,
                 color = Color.White,
                 modifier = Modifier.align(Alignment.CenterVertically).padding(start = 12.dp),
                 fontSize = 20.sp
@@ -589,7 +589,7 @@ fun MsgColumnHeader(
             modifier = Modifier.align(Alignment.CenterEnd).padding(end = 16.dp)
         ) {
             Icon(Icons.Filled.MoreVert, "contact info", tint = Color.White, modifier = Modifier.size(24.dp))
-            ContactDropDown(expanded, isExpanded, isInfoDrawer)
+            ContactDropDown(expanded, isExpanded, setInfoDrawer)
         }
         Divider(color = divider, thickness = 1.dp, modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter))
     }
@@ -649,14 +649,14 @@ fun MsgInput(currContact: Contact) {
 }
 
 @Composable
-fun ContactDrawerMakeIntro(currContact: Contact, contacts: List<Contact>, isInfoDrawer: (Boolean) -> Unit) {
+fun ContactDrawerMakeIntro(currContact: Contact, contacts: List<Contact>, setInfoDrawer: (Boolean) -> Unit) {
     var introNextPg by remember { mutableStateOf(false) }
     val (introContact, onCancelSel) = remember { mutableStateOf(currContact) }
     if (!introNextPg) {
         Column() {
             Row(Modifier.fillMaxWidth().height(HEADER_SIZE)) {
                 IconButton(
-                    onClick = { isInfoDrawer(false) },
+                    onClick = { setInfoDrawer(false) },
                     Modifier.padding(horizontal = 11.dp).size(32.dp).align(Alignment.CenterVertically)
                 ) {
                     Icon(Icons.Filled.Close, "close make intro screen", tint = Color.White)
@@ -740,7 +740,7 @@ fun ContactDrawerMakeIntro(currContact: Contact, contacts: List<Contact>, isInfo
             }
             Row(Modifier.padding(8.dp)) {
                 TextButton(
-                    onClick = { isInfoDrawer(false); introNextPg = false; },
+                    onClick = { setInfoDrawer(false); introNextPg = false; },
                     Modifier.fillMaxWidth().background(briarDarkGray)
                 ) {
                     Text("MAKE INTRODUCTION")
@@ -754,12 +754,12 @@ fun ContactDrawerMakeIntro(currContact: Contact, contacts: List<Contact>, isInfo
 fun ContactInfoDrawer(
     currContact: Contact,
     contacts: List<Contact>,
-    isInfoDrawer: (Boolean) -> Unit,
+    setInfoDrawer: (Boolean) -> Unit,
     drawerState: ContactInfoDrawerState
 ) {
     Row() {
         when (drawerState) {
-            ContactInfoDrawerState.MakeIntro -> ContactDrawerMakeIntro(currContact, contacts, isInfoDrawer)
+            ContactInfoDrawerState.MakeIntro -> ContactDrawerMakeIntro(currContact, contacts, setInfoDrawer)
         }
     }
 }

@@ -24,7 +24,7 @@ fun BriarUIStateManager(
     contacts: List<Contact>
 ) {
     // current selected mode, changed using the sidebar buttons
-    val (uiMode, setMode) = remember { mutableStateOf("Contacts") }
+    val (uiMode, setUiMode) = remember { mutableStateOf("Contacts") }
     // TODO Figure out how to handle accounts with 0 contacts
     // current selected contact
     val (contact, setContact) = remember { mutableStateOf(contacts[0]) }
@@ -38,7 +38,7 @@ fun BriarUIStateManager(
     val (setting, setSetting) = remember { mutableStateOf(0) }
     // Other global state that we need to track should go here also
     Row() {
-        BriarSidebar(uiMode, setMode)
+        BriarSidebar(uiMode, setUiMode)
         when (uiMode) {
             "Contacts" -> PrivateMessageView(
                 contact,
