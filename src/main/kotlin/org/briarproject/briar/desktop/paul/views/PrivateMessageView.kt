@@ -782,8 +782,9 @@ fun DrawMessageRow(
             modifier = Modifier.offset()
         )
         if (infoDrawer) {
-            // TODO Find non-hacky way of setting scrim
-            // This dims the entire app while the drawer is open by making a very very large slightly see-through black box
+            // TODO Find non-hacky way of setting scrim on entire app
+            // Currently this dims the message view while the drawer is open by making a very very large slightly
+            // see-through black box
             Box(Modifier.requiredSize(maxWidth, maxHeight).background(Color(0, 0, 0, 100)))
             Column(
                 modifier = Modifier.fillMaxHeight().width(275.dp).offset(maxWidth + animatedInfoDrawerOffsetX)
