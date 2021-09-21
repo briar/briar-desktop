@@ -61,11 +61,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.graphics.imageFromResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -252,6 +254,19 @@ fun SearchTextField(searchValue: String, onValueChange: (String) -> Unit, onCont
 }
 
 @Composable
+fun ProfileCircle(bitmap: ImageBitmap, size: Dp) {
+    Row() {
+        Image(
+            bitmap = bitmap,
+            "image",
+            modifier = Modifier.size(size).align(Alignment.CenterVertically).clip(
+                CircleShape
+            ).border(2.dp, color = Color.White, CircleShape)
+        )
+    }
+}
+
+@Composable
 fun ContactCard(contact: Contact, selContact: Contact, onSel: (Contact) -> Unit, drawDetails: Boolean) {
     var bgColor = briarBlack
     if (selContact.id == contact.id && drawDetails) {
@@ -264,13 +279,7 @@ fun ContactCard(contact: Contact, selContact: Contact, onSel: (Contact) -> Unit,
     ) {
         Row(modifier = Modifier.align(Alignment.CenterVertically).padding(horizontal = 16.dp)) {
             // TODO Pull profile pictures
-            Image(
-                bitmap = imageFromResource("images/profile_images/p0.png"),
-                "image",
-                modifier = Modifier.size(36.dp).align(Alignment.CenterVertically).clip(
-                    CircleShape
-                ).border(2.dp, color = Color.White, CircleShape)
-            )
+            ProfileCircle(imageFromResource("images/profile_images/p0.png"), 36.dp)
             // Draw notification badges
             if (drawDetails) {
                 androidx.compose.foundation.Canvas(
@@ -549,16 +558,7 @@ fun MsgColumnHeader(
 ) {
     Box(modifier = Modifier.fillMaxWidth().height(HEADER_SIZE + 1.dp)) {
         Row(modifier = Modifier.align(Alignment.Center)) {
-            Image(
-                // TODO Fix profile picture resources
-                bitmap = imageFromResource("images/profile_images/p0.png"),
-                "sel_contact_prof",
-                modifier = Modifier.size(36.dp).align(
-                    Alignment.CenterVertically
-                ).clip(
-                    CircleShape
-                ).border(2.dp, color = Color.White, CircleShape)
-            )
+            ProfileCircle(imageFromResource("images/profile_images/p0.png"), 36.dp)
             androidx.compose.foundation.Canvas(
                 modifier = Modifier.align(Alignment.CenterVertically),
                 onDraw = {
@@ -696,14 +696,7 @@ fun ContactDrawerMakeIntro(currContact: Contact, contacts: List<Contact>, setInf
             // Divider(color = divider, modifier = Modifier.fillMaxWidth().height(1.dp) )
             Row(Modifier.fillMaxWidth().padding(12.dp), horizontalArrangement = Arrangement.SpaceAround) {
                 Column(Modifier.align(Alignment.CenterVertically)) {
-                    Image(
-                        // TODO Proper profile pic
-                        bitmap = imageFromResource("images/profile_images/p0.png"),
-                        "image",
-                        modifier = Modifier.size(40.dp).align(Alignment.CenterHorizontally).clip(
-                            CircleShape
-                        ).border(2.dp, color = Color.White, CircleShape)
-                    )
+                    ProfileCircle(imageFromResource("images/profile_images/p0.png"), 40.dp)
                     Text(
                         currContact.author.name,
                         color = Color.White,
@@ -714,13 +707,7 @@ fun ContactDrawerMakeIntro(currContact: Contact, contacts: List<Contact>, setInf
                 Icon(Icons.Filled.SwapHoriz, "swap", tint = Color.White, modifier = Modifier.size(48.dp))
                 Column(Modifier.align(Alignment.CenterVertically)) {
                     // TODO Profile pic again
-                    Image(
-                        bitmap = imageFromResource("images/profile_images/p0.png"),
-                        "image",
-                        modifier = Modifier.size(40.dp).align(Alignment.CenterHorizontally).clip(
-                            CircleShape
-                        ).border(2.dp, color = Color.White, CircleShape)
-                    )
+                    ProfileCircle(imageFromResource("images/profile_images/p0.png"), 40.dp)
                     Text(
                         introContact.author.name,
                         color = Color.White,
@@ -829,6 +816,5 @@ fun ChatState(id: ContactId): MutableState<UiState<Chat>> {
         state.value = UiState.Success(chat)
         onDispose { }
     }
-
     return state
 }
