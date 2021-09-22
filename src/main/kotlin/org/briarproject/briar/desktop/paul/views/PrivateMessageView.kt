@@ -1,6 +1,7 @@
 package org.briarproject.briar.desktop.paul.views
 
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -256,7 +257,7 @@ fun ContactCard(
             ProfileCircle(imageFromResource("images/profile_images/p0.png"), 36.dp)
             // Draw notification badges
             if (drawNotifications) {
-                androidx.compose.foundation.Canvas(
+                Canvas(
                     modifier = Modifier.align(Alignment.CenterVertically),
                     onDraw = {
                         val size = 10.dp.toPx()
@@ -283,7 +284,7 @@ fun ContactCard(
                 )
             }
         }
-        androidx.compose.foundation.Canvas(
+        Canvas(
             modifier = Modifier.padding(start = 32.dp, end = 18.dp).size(22.dp).align(Alignment.CenterVertically),
             onDraw = {
                 val size = 16.dp.toPx()
@@ -484,7 +485,7 @@ fun MsgColumnHeader(
     Box(modifier = Modifier.fillMaxWidth().height(HEADER_SIZE + 1.dp)) {
         Row(modifier = Modifier.align(Alignment.Center)) {
             ProfileCircle(imageFromResource("images/profile_images/p0.png"), 36.dp)
-            androidx.compose.foundation.Canvas(
+            Canvas(
                 modifier = Modifier.align(Alignment.CenterVertically),
                 onDraw = {
                     val size = 10.dp.toPx()
