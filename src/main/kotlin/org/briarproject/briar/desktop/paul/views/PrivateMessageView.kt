@@ -516,7 +516,7 @@ fun MsgColumnHeader(
 }
 
 @Composable
-fun MsgInput(contact: Contact) {
+fun MsgInput() {
     var text by remember { mutableStateOf("") }
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -651,13 +651,7 @@ fun DrawMessageRow(
     drawerState: ContactInfoDrawerState
 ) {
     BoxWithConstraints(Modifier.fillMaxSize()) {
-        val animatedInfoDrawerOffsetX by animateDpAsState(
-            if (infoDrawer) {
-                -275.dp
-            } else {
-                0.dp
-            }
-        )
+        val animatedInfoDrawerOffsetX by animateDpAsState(if (infoDrawer) (-275).dp else 0.dp)
         Scaffold(
             topBar = { MsgColumnHeader(contact, expanded, setExpanded, setInfoDrawer) },
             content = { padding ->
@@ -666,7 +660,7 @@ fun DrawMessageRow(
                     DrawTextBubbles(chat.value)
                 }
             },
-            bottomBar = { MsgInput(contact) },
+            bottomBar = { MsgInput() },
             backgroundColor = darkGray,
             modifier = Modifier.offset()
         )
