@@ -112,22 +112,19 @@ fun PrivateMessageView(
     val (infoDrawer, setInfoDrawer) = remember { mutableStateOf(false) }
     val (contactDrawerState, setDrawerState) = remember { mutableStateOf(ContactInfoDrawerState.MakeIntro) }
     AddContactDialog(addContactDialog, onContactAdd)
-    Divider(color = divider, modifier = Modifier.fillMaxHeight().width(1.dp))
-    ContactList(contact, contacts, onContactSelect, onContactAdd)
-    Column(modifier = Modifier.fillMaxHeight()) {
-        Row(modifier = Modifier.fillMaxWidth()) {
-            Divider(color = divider, modifier = Modifier.fillMaxHeight().width(1.dp))
-            Column(modifier = Modifier.weight(1f).fillMaxHeight().background(color = darkGray)) {
-                DrawMessageRow(
-                    contact,
-                    contacts,
-                    dropdownExpanded,
-                    setExpanded,
-                    infoDrawer,
-                    setInfoDrawer,
-                    contactDrawerState
-                )
-            }
+    Row(modifier = Modifier.fillMaxWidth()) {
+        ContactList(contact, contacts, onContactSelect, onContactAdd)
+        Divider(color = divider, modifier = Modifier.fillMaxHeight().width(1.dp))
+        Column(modifier = Modifier.weight(1f).fillMaxHeight().background(color = darkGray)) {
+            DrawMessageRow(
+                contact,
+                contacts,
+                dropdownExpanded,
+                setExpanded,
+                infoDrawer,
+                setInfoDrawer,
+                contactDrawerState
+            )
         }
     }
 }
