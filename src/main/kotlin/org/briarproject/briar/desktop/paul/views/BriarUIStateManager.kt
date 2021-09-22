@@ -32,7 +32,7 @@ fun BriarUIStateManager(
     val (uiMode, setUiMode) = remember { mutableStateOf("Contacts") }
     // TODO Figure out how to handle accounts with 0 contacts
     // current selected contact
-    val (contact, setContact) = remember { mutableStateOf(contacts[0]) }
+    val (contact, setContact) = remember { mutableStateOf(contact(contacts)) }
     // current selected forum
     val (forum, setForum) = remember { mutableStateOf(0) }
     // current blog state
@@ -46,7 +46,7 @@ fun BriarUIStateManager(
         BriarSidebar(uiMode, setUiMode)
         Divider(color = divider, modifier = Modifier.fillMaxHeight().width(1.dp))
         when (uiMode) {
-            "Contacts" -> PrivateMessageView(
+            "Contacts" -> if (contact != null) PrivateMessageView(
                 contact,
                 contacts,
                 setContact
@@ -56,4 +56,8 @@ fun BriarUIStateManager(
             }
         }
     }
+}
+
+fun contact(contacts: List<Contact>): Contact? {
+    return if (contacts.isEmpty()) null else contacts[0]
 }
