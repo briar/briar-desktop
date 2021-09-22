@@ -29,6 +29,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 enum class Screen {
+    REGISTRATION,
     LOGIN,
     MAIN
 }
@@ -60,41 +61,40 @@ constructor(
 
     private val contacts: MutableList<Contact> = ArrayList()
 
-    @Composable
-    override fun start(
-        conversationManager: ConversationManager,
-        messagingManager: MessagingManager
-    ) {
-        if (!accountManager.accountExists()) {
-            createAccount()
-        } else {
-            login(conversationManager, messagingManager)
-        }
-    }
-
     override fun stop() {
         lifecycleManager.stopServices()
         lifecycleManager.waitForShutdown()
     }
 
-    private fun createAccount() {
-        print("No account found. Let's create one!\n\n")
-        Registration("Briar", accountManager, lifecycleManager)
-    }
-
     @Composable
-    private fun login(
+    override fun start(
         conversationManager: ConversationManager,
         messagingManager: MessagingManager
     ) {
         val title = "Briar Desktop"
-        var screenState by remember { mutableStateOf(Screen.LOGIN) }
+        var screenState by remember {
+            mutableStateOf(
+                if (accountManager.accountExists()) {
+                    Screen.LOGIN
+                } else {
+                    Screen.REGISTRATION
+                }
+            )
+        }
         Window(title = title) {
             MaterialTheme(colors = DarkColorPallet) {
                 when (screenState) {
+                    Screen.REGISTRATION ->
+                        Registration(
+                            modifier = Modifier.background(briarBlack),
+                            onSubmit = { username, password ->
+                                accountManager.createAccount(username, password)
+                                signedIn()
+                                screenState = Screen.MAIN
+                            }
+                        )
                     Screen.LOGIN ->
                         Login(
-                            "Briar",
                             modifier = Modifier.background(briarBlack),
                             onResult = {
                                 try {
@@ -123,7 +123,10 @@ constructor(
         val dbKey = accountManager.databaseKey ?: throw AssertionError()
         lifecycleManager.startServices(dbKey)
         lifecycleManager.waitForStartup()
-        val contacts: Collection<Contact> = contactManager.getContacts()
+        val contacts = contactManager.getContacts()
+        if (contacts.isEmpty()) {
+            //todo: add some dummy account to db
+        }
         for (contact in contacts) {
             println("${contact.author.name} (${contact.alias})")
             this.contacts.add(contact)

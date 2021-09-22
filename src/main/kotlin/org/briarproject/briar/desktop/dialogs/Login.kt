@@ -22,46 +22,39 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.svgResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 
 // TODO: Error handling
 @Composable
 fun Login(
-    title: String,
     modifier: Modifier = Modifier,
     onResult: (result: String) -> Unit
-) =
+) {
+    var password by remember { mutableStateOf("") }
     Column(
         modifier = modifier.padding(16.dp).fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        TheImage()
+        BriarLogo()
         Spacer(Modifier.height(32.dp))
-        TheTextField(onResult)
-    }
-
-@Composable
-private fun TheImage() {
-    Image(
-        painter = svgResource("images/logo_circle.svg"),
-        contentDescription = "Briar logo",
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(shape = RoundedCornerShape(400.dp))
-    )
-}
-
-@Composable
-private fun TheTextField(onResult: (result: String) -> Unit) {
-    var password by remember { mutableStateOf("") }
-    OutlinedTextField(password, { password = it }, label = { Text("Password") })
-    Spacer(Modifier.height(16.dp))
-    Button(
-        onClick = {
-            onResult.invoke(password)
+        OutlinedTextField(
+            value = password,
+            onValueChange = { password = it },
+            label = { Text("Password") },
+            singleLine = true,
+            textStyle = TextStyle(color = Color.White),
+            visualTransformation = PasswordVisualTransformation()
+        )
+        Spacer(Modifier.height(16.dp))
+        Button(onClick = { onResult.invoke(password) }) {
+            Text("Login", color = Color.Black)
         }
-    ) {
-        Text("Login", color = Color.Black)
     }
 }
+
+@Composable
+fun BriarLogo(modifier: Modifier = Modifier.fillMaxWidth().clip(shape = RoundedCornerShape(400.dp))) =
+    Image(svgResource("images/logo_circle.svg"), "Briar logo", modifier)
