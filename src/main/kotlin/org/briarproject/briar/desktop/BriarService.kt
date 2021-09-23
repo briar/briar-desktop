@@ -125,7 +125,7 @@ constructor(
         lifecycleManager.waitForStartup()
         val contacts = contactManager.getContacts()
         if (contacts.isEmpty()) {
-            //todo: add some dummy account to db
+            // todo: add some dummy account to db
         }
         for (contact in contacts) {
             println("${contact.author.name} (${contact.alias})")

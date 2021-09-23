@@ -67,11 +67,11 @@ fun Login(
             modifier = Modifier
                 .focusRequester(initialFocusRequester)
                 .onPreviewKeyEvent {
-                if (it.type == KeyEventType.KeyUp && it.key == Key.Enter) {
-                    onResult.invoke(password)
-                }
-                false
-            },
+                    if (it.type == KeyEventType.KeyUp && it.key == Key.Enter) {
+                        onResult.invoke(password)
+                    }
+                    false
+                },
         )
         Spacer(Modifier.height(16.dp))
         Button(onClick = { onResult.invoke(password) }) {
