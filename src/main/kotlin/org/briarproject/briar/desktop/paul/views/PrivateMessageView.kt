@@ -1,6 +1,7 @@
 package org.briarproject.briar.desktop.paul.views
 
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -35,6 +36,7 @@ import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
@@ -68,10 +70,8 @@ import androidx.compose.ui.graphics.imageFromResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.v1.DialogProperties
 import org.briarproject.bramble.api.contact.Contact
 import org.briarproject.bramble.api.contact.ContactId
 import org.briarproject.briar.api.conversation.ConversationMessageHeader
@@ -82,6 +82,7 @@ import org.briarproject.briar.desktop.chat.ChatHistoryConversationVisitor
 import org.briarproject.briar.desktop.chat.ConversationMessageHeaderComparator
 import org.briarproject.briar.desktop.chat.SimpleMessage
 import org.briarproject.briar.desktop.chat.UiState
+import org.briarproject.briar.desktop.paul.theme.DarkColorPallet
 import org.briarproject.briar.desktop.paul.theme.briarBlack
 import org.briarproject.briar.desktop.paul.theme.briarBlue
 import org.briarproject.briar.desktop.paul.theme.briarBlueMsg
@@ -199,7 +200,6 @@ fun AddContactDialog(isVisible: Boolean, onCancel: (Boolean) -> Unit) {
         modifier = Modifier.border(1.dp, color = divider).size(600.dp, 300.dp),
     )
 }
-
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -542,6 +542,16 @@ fun MsgInput() {
                 }
             }
         )
+    }
+}
+
+@Preview
+@Composable
+fun PreviewMsgInput() {
+    MaterialTheme(colors = DarkColorPallet) {
+        Row(Modifier.background(briarBlack)) {
+            MsgInput()
+        }
     }
 }
 
