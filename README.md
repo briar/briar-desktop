@@ -54,6 +54,14 @@ git clone --recursive-submodules https://code.briarproject.org/briar/briar-deskt
 The easiest and most convenient way to build Briar Desktop is by using
 [Intellij IDEA](https://www.jetbrains.com/idea/).
 
+### UI Previews
+
+Briar Desktop makes use of [Compose for Desktop](https://www.jetbrains.com/lp/compose/)
+to build its UI. The Intellij IDEA plugin
+[Compose Multiplatform IDE Support](https://plugins.jetbrains.com/plugin/16541-compose-multiplatform-ide-support)
+provides static previews of
+composable functions without parameters which are annotated with `@Preview`.
+
 ## Translations
 
 See [TRANSLATION.md](./TRANSLATION.md) for more information.
