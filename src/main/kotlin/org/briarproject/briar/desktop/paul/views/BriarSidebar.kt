@@ -28,6 +28,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.imageFromResource
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.loadImageBitmap
+import androidx.compose.ui.res.useResource
 import androidx.compose.ui.unit.dp
 import org.briarproject.briar.desktop.paul.theme.briarBlack
 import org.briarproject.briar.desktop.paul.theme.briarBlue
@@ -41,7 +43,7 @@ fun BriarSidebar(uiMode: UiModes, setUiMode: (UiModes) -> Unit) {
                 onClick = {}
             ) {
                 Image(
-                    bitmap = imageFromResource("images/profile_images/p0.png"),
+                    bitmap = useResource("images/profile_images/p0.png") { loadImageBitmap(it) },
                     "my_profile_image",
                     modifier = Modifier.size(44.dp).align(Alignment.CenterHorizontally).clip(
                         CircleShape

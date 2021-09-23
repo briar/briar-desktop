@@ -32,6 +32,7 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
@@ -129,6 +130,7 @@ fun PrivateMessageView(
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun AddContactDialog(isVisible: Boolean, onCancel: (Boolean) -> Unit) {
     if (!isVisible) {
@@ -194,11 +196,12 @@ fun AddContactDialog(isVisible: Boolean, onCancel: (Boolean) -> Unit) {
 
         backgroundColor = briarBlue,
         contentColor = Color.White,
-        modifier = Modifier.border(1.dp, color = divider),
-        properties = DialogProperties(resizable = false, undecorated = true, size = IntSize(600, 300))
+        modifier = Modifier.border(1.dp, color = divider).size(600.dp, 300.dp),
     )
 }
 
+
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun SearchTextField(searchValue: String, onValueChange: (String) -> Unit, onContactAdd: (Boolean) -> Unit) {
     TextField(

@@ -3,9 +3,9 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.5.10"
-    kotlin("kapt") version "1.5.10"
-    id("org.jetbrains.compose") version "0.4.0"
+    kotlin("jvm") version "1.5.21"
+    kotlin("kapt") version "1.5.21"
+    id("org.jetbrains.compose") version "1.0.0-alpha3"
     id("java")
     id("idea")
     id("org.jlleitschuh.gradle.ktlint") version("10.1.0")
@@ -17,11 +17,13 @@ version = "0.1"
 repositories {
     mavenCentral()
     maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+    google()
     jcenter()
 }
 
 dependencies {
     implementation(compose.desktop.currentOs)
+    implementation(compose.uiTooling)
 
     implementation("com.fasterxml.jackson.core:jackson-databind:2.10.0")
     implementation("com.github.ajalt:clikt:2.2.0")
