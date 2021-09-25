@@ -693,9 +693,8 @@ fun DrawMessageRow(
         )
         if (infoDrawer) {
             // TODO Find non-hacky way of setting scrim on entire app
-            // Currently this dims the message view while the drawer is open by making a very very large slightly
-            // see-through black box
-            Box(Modifier.requiredSize(maxWidth, maxHeight).background(Color(0, 0, 0, 100)))
+            // We're able to make this work because the ContactList and BriarSidebar have constant widths which add to 302.dp
+            Box(Modifier.offset(-302.dp).requiredSize(maxWidth + 302.dp, maxHeight).background(Color(0, 0, 0, 100)))
             Column(
                 modifier = Modifier.fillMaxHeight().width(275.dp).offset(maxWidth + animatedInfoDrawerOffsetX)
                     .background(briarBlack, RoundedCornerShape(topStart = 10.dp, bottomStart = 10.dp))
