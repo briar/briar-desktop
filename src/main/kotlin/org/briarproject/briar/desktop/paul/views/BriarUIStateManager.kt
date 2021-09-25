@@ -19,6 +19,16 @@ import org.briarproject.bramble.api.contact.Contact
 import org.briarproject.briar.desktop.paul.theme.briarBlack
 import org.briarproject.briar.desktop.paul.theme.divider
 
+enum class uiModes {
+    Contacts,
+    Groups,
+    Forums,
+    Blogs,
+    Transports,
+    Settings,
+    SignOut
+}
+
 /*
  * This is the root of the tree, all state is held here and passed down to stateless composables, which render the UI
  * Desktop specific kotlin files are found in briarComposeDesktop (possibly briar-compose-desktop project in the future)
@@ -29,10 +39,12 @@ fun BriarUIStateManager(
     contacts: List<Contact>
 ) {
     // current selected mode, changed using the sidebar buttons
-    val (uiMode, setUiMode) = remember { mutableStateOf("Contacts") }
+    val (uiMode, setUiMode) = remember { mutableStateOf(uiModes.Contacts) }
     // TODO Figure out how to handle accounts with 0 contacts
     // current selected contact
     val (contact, setContact) = remember { mutableStateOf(contact(contacts)) }
+    // current selected private group
+    val (group, setGroup) = remember { mutableStateOf(contact(contacts)) }
     // current selected forum
     val (forum, setForum) = remember { mutableStateOf(0) }
     // current blog state
@@ -46,7 +58,7 @@ fun BriarUIStateManager(
         BriarSidebar(uiMode, setUiMode)
         Divider(color = divider, modifier = Modifier.fillMaxHeight().width(1.dp))
         when (uiMode) {
-            "Contacts" -> if (contact != null) PrivateMessageView(
+            uiModes.Contacts -> if (contact != null) PrivateMessageView(
                 contact,
                 contacts,
                 setContact

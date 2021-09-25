@@ -33,7 +33,7 @@ import org.briarproject.briar.desktop.paul.theme.briarBlack
 import org.briarproject.briar.desktop.paul.theme.briarBlue
 
 @Composable
-fun BriarSidebar(uiMode: String, setUiMode: (String) -> Unit) {
+fun BriarSidebar(uiMode: uiModes, setUiMode: (uiModes) -> Unit) {
     Surface(modifier = Modifier.width(56.dp).fillMaxHeight(), color = briarBlue) {
         Column(verticalArrangement = Arrangement.Top) {
             IconButton(
@@ -51,25 +51,25 @@ fun BriarSidebar(uiMode: String, setUiMode: (String) -> Unit) {
             BriarSidebarButton(
                 uiMode = uiMode,
                 setUiMode = setUiMode,
-                "Contacts",
+                uiModes.Contacts,
                 Icons.Filled.Contacts
             )
             BriarSidebarButton(
                 uiMode = uiMode,
                 setUiMode = setUiMode,
-                "Private Groups",
+                uiModes.Groups,
                 Icons.Filled.Group
             )
             BriarSidebarButton(
                 uiMode = uiMode,
                 setUiMode = setUiMode,
-                "Forums",
+                uiModes.Forums,
                 Icons.Filled.Forum
             )
             BriarSidebarButton(
                 uiMode = uiMode,
                 setUiMode = setUiMode,
-                "Blogs",
+                uiModes.Blogs,
                 Icons.Filled.ChromeReaderMode
             )
         }
@@ -77,19 +77,19 @@ fun BriarSidebar(uiMode: String, setUiMode: (String) -> Unit) {
             BriarSidebarButton(
                 uiMode = uiMode,
                 setUiMode = setUiMode,
-                "Transports",
+                uiModes.Transports,
                 Icons.Filled.WifiTethering
             )
             BriarSidebarButton(
                 uiMode = uiMode,
                 setUiMode = setUiMode,
-                "Settings",
+                uiModes.Settings,
                 Icons.Filled.Settings
             )
             BriarSidebarButton(
                 uiMode = uiMode,
                 setUiMode = setUiMode,
-                "Sign Out",
+                uiModes.SignOut,
                 Icons.Filled.Logout
             )
         }
@@ -97,7 +97,7 @@ fun BriarSidebar(uiMode: String, setUiMode: (String) -> Unit) {
 }
 
 @Composable
-fun BriarSidebarButton(uiMode: String, setUiMode: (String) -> Unit, thisMode: String, icon: ImageVector) {
+fun BriarSidebarButton(uiMode: uiModes, setUiMode: (uiModes) -> Unit, thisMode: uiModes, icon: ImageVector) {
     val bg = if (uiMode == thisMode) briarBlack else briarBlue
     Column {
         IconButton(
@@ -105,7 +105,7 @@ fun BriarSidebarButton(uiMode: String, setUiMode: (String) -> Unit, thisMode: St
                 .padding(vertical = 4.dp, horizontal = 12.dp),
             onClick = { setUiMode(thisMode) }
         ) {
-            Icon(icon, thisMode, tint = Color.White, modifier = Modifier.size(30.dp))
+            Icon(icon, thisMode.toString(), tint = Color.White, modifier = Modifier.size(30.dp))
         }
     }
 }
