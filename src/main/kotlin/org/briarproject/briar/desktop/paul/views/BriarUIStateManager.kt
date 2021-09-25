@@ -20,6 +20,7 @@ import org.briarproject.briar.desktop.paul.theme.briarBlack
 import org.briarproject.briar.desktop.paul.theme.divider
 
 enum class uiModes {
+    Login,
     Contacts,
     Groups,
     Forums,

@@ -24,6 +24,7 @@ import org.briarproject.briar.desktop.dialogs.Registration
 import org.briarproject.briar.desktop.paul.theme.DarkColorPallet
 import org.briarproject.briar.desktop.paul.theme.briarBlack
 import org.briarproject.briar.desktop.paul.views.BriarUIStateManager
+import org.briarproject.briar.desktop.paul.views.uiModes
 import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -83,11 +84,11 @@ constructor(
         messagingManager: MessagingManager
     ) {
         val title = "Briar Desktop"
-        var screenState by remember { mutableStateOf<Screen>(Screen.Login) }
+        var screenState by remember { mutableStateOf(uiModes.Login) }
         Window(title = title) {
             MaterialTheme(colors = DarkColorPallet) {
                 when (val screen = screenState) {
-                    is Screen.Login ->
+                    uiModes.Login ->
                         Login(
                             "Briar",
                             modifier = Modifier.background(briarBlack),
@@ -95,14 +96,14 @@ constructor(
                                 try {
                                     accountManager.signIn(it)
                                     signedIn()
-                                    screenState = Screen.Main
+                                    screenState = uiModes.Contacts
                                 } catch (e: DecryptionException) {
                                     // failure, try again
                                 }
                             }
                         )
 
-                    is Screen.Main ->
+                    else ->
                         CompositionLocalProvider(
                             CM provides conversationManager,
                             MM provides messagingManager
