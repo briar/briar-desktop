@@ -19,15 +19,14 @@ import org.briarproject.bramble.api.contact.Contact
 import org.briarproject.briar.desktop.paul.theme.briarBlack
 import org.briarproject.briar.desktop.paul.theme.divider
 
-enum class uiModes {
-    Login,
-    Contacts,
-    Groups,
-    Forums,
-    Blogs,
-    Transports,
-    Settings,
-    SignOut
+enum class UiModes {
+    CONTACTS,
+    GROUPS,
+    FORUMS,
+    BLOGS,
+    TRANSPORTS,
+    SETTINGS,
+    SIGNOUT
 }
 
 /*
@@ -40,7 +39,7 @@ fun BriarUIStateManager(
     contacts: List<Contact>
 ) {
     // current selected mode, changed using the sidebar buttons
-    val (uiMode, setUiMode) = remember { mutableStateOf(uiModes.Contacts) }
+    val (uiMode, setUiMode) = remember { mutableStateOf(UiModes.CONTACTS) }
     // TODO Figure out how to handle accounts with 0 contacts
     // current selected contact
     val (contact, setContact) = remember { mutableStateOf(contact(contacts)) }
@@ -59,7 +58,7 @@ fun BriarUIStateManager(
         BriarSidebar(uiMode, setUiMode)
         Divider(color = divider, modifier = Modifier.fillMaxHeight().width(1.dp))
         when (uiMode) {
-            uiModes.Contacts -> if (contact != null) PrivateMessageView(
+            UiModes.CONTACTS -> if (contact != null) PrivateMessageView(
                 contact,
                 contacts,
                 setContact
