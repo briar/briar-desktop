@@ -91,7 +91,7 @@ constructor(
         var screenState by remember { mutableStateOf(Screen.LOGIN) }
         Window(title = title) {
             MaterialTheme(colors = DarkColorPallet) {
-                when (val screen = screenState) {
+                when (screenState) {
                     Screen.LOGIN ->
                         Login(
                             "Briar",
