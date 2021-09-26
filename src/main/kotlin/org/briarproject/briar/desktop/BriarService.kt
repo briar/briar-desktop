@@ -24,10 +24,14 @@ import org.briarproject.briar.desktop.dialogs.Registration
 import org.briarproject.briar.desktop.paul.theme.DarkColorPallet
 import org.briarproject.briar.desktop.paul.theme.briarBlack
 import org.briarproject.briar.desktop.paul.views.BriarUIStateManager
-import org.briarproject.briar.desktop.paul.views.uiModes
 import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
 import javax.inject.Singleton
+
+enum class Screen {
+    LOGIN,
+    MAIN
+}
 
 interface BriarService {
     @Composable
@@ -84,11 +88,11 @@ constructor(
         messagingManager: MessagingManager
     ) {
         val title = "Briar Desktop"
-        var screenState by remember { mutableStateOf(uiModes.Login) }
+        var screenState by remember { mutableStateOf(Screen.LOGIN) }
         Window(title = title) {
             MaterialTheme(colors = DarkColorPallet) {
                 when (val screen = screenState) {
-                    uiModes.Login ->
+                    Screen.LOGIN ->
                         Login(
                             "Briar",
                             modifier = Modifier.background(MaterialTheme.colors.background),
@@ -96,7 +100,7 @@ constructor(
                                 try {
                                     accountManager.signIn(it)
                                     signedIn()
-                                    screenState = uiModes.Contacts
+                                    screenState = Screen.MAIN
                                 } catch (e: DecryptionException) {
                                     // failure, try again
                                 }
