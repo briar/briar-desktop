@@ -18,15 +18,13 @@ import org.briarproject.bramble.battery.DefaultBatteryManagerModule
 import org.briarproject.bramble.event.DefaultEventExecutorModule
 import org.briarproject.bramble.network.JavaNetworkModule
 import org.briarproject.bramble.plugin.tor.CircumventionModule
-import org.briarproject.bramble.plugin.tor.UnixTorPluginFactory
+import org.briarproject.bramble.plugin.tor.DesktopTorPluginFactory
 import org.briarproject.bramble.socks.SocksModule
 import org.briarproject.bramble.system.ClockModule
 import org.briarproject.bramble.system.DefaultTaskSchedulerModule
 import org.briarproject.bramble.system.DefaultWakefulIoExecutorModule
 import org.briarproject.bramble.system.DesktopSecureRandomModule
 import org.briarproject.bramble.system.JavaSystemModule
-import org.briarproject.bramble.util.OsUtils.isLinux
-import org.briarproject.bramble.util.OsUtils.isMac
 import org.briarproject.briar.desktop.ui.BriarUi
 import org.briarproject.briar.desktop.ui.BriarUiImpl
 import java.io.File
@@ -84,9 +82,8 @@ internal class DesktopModule(
     internal fun provideTorControlPort() = controlPort
 
     @Provides
-    internal fun providePluginConfig(tor: UnixTorPluginFactory): PluginConfig {
-        val duplex: List<DuplexPluginFactory> =
-            if (isLinux() || isMac()) listOf(tor) else emptyList()
+    internal fun providePluginConfig(tor: DesktopTorPluginFactory): PluginConfig {
+        val duplex: List<DuplexPluginFactory> = listOf(tor)
         return object : PluginConfig {
             override fun getDuplexFactories(): Collection<DuplexPluginFactory> = duplex
             override fun getSimplexFactories(): Collection<SimplexPluginFactory> = emptyList()
