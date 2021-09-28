@@ -8,6 +8,9 @@ import com.github.ajalt.clikt.parameters.options.default
 import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.option
 import org.briarproject.bramble.BrambleCoreEagerSingletons
+import org.briarproject.bramble.util.OsUtils.isLinux
+import org.briarproject.bramble.util.OsUtils.isMac
+import org.briarproject.bramble.util.OsUtils.isWindows
 import org.briarproject.briar.BriarCoreEagerSingletons
 import java.io.File
 import java.io.File.separator
@@ -74,11 +77,17 @@ private class Main : CliktCommand(
         } else if (!file.isDirectory) {
             throw IOException("Data dir is not a directory: ${file.absolutePath}")
         }
-        val perms = HashSet<PosixFilePermission>()
-        perms.add(OWNER_READ)
-        perms.add(OWNER_WRITE)
-        perms.add(OWNER_EXECUTE)
-        setPosixFilePermissions(file.toPath(), perms)
+        if (isLinux() || isMac()) {
+            val perms = HashSet<PosixFilePermission>()
+            perms.add(OWNER_READ)
+            perms.add(OWNER_WRITE)
+            perms.add(OWNER_EXECUTE)
+            setPosixFilePermissions(file.toPath(), perms)
+        } else if (isWindows()) {
+            file.setReadable(true, true)
+            file.setWritable(true, true)
+            file.setExecutable(true, true)
+        }
         return file
     }
 }
