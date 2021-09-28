@@ -49,9 +49,21 @@ compose.desktop {
     application {
         mainClass = "org.briarproject.briar.desktop.MainKt"
         nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "app.briar.desktop"
-            packageVersion = "1.0.0"
+            targetFormats(TargetFormat.Msi, TargetFormat.Exe, TargetFormat.Deb, TargetFormat.Rpm)
+            packageName = "Briar"
+            packageVersion = "0.0.1"
+            description = "Secure messaging, anywhere"
+            vendor = "The Briar Project"
+            linux {
+                packageName = "briar-desktop"
+                iconFile.set(project.file("src/main/resources/images/logo_circle.png"))
+                debMaintainer = "contact@briarproject.org"
+                appCategory = "comm"
+            }
+            windows {
+                iconFile.set(project.file("src/main/resources/images/logo_circle.ico"))
+                upgradeUuid = "cc8b40f7-f190-4cea-bfec-ceb9ef85df09"
+            }
         }
     }
 }
