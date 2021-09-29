@@ -26,7 +26,7 @@ import java.util.logging.Level.INFO
 import java.util.logging.Level.WARNING
 import java.util.logging.LogManager
 
-private val DEFAULT_DATA_DIR = getProperty("user.home") + separator + ".briar"
+private val DEFAULT_DATA_DIR = getProperty("user.home") + separator + ".briar" + separator + "desktop"
 
 private class Main : CliktCommand(
     name = "briar-desktop",
