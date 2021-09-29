@@ -54,7 +54,7 @@ fun BriarUIStateManager(
     // current settings state
     val (setting, setSetting) = remember { mutableStateOf(0) }
     // Other global state that we need to track should go here also
-    Row() {
+    Row {
         BriarSidebar(uiMode, setUiMode)
         Divider(color = divider, modifier = Modifier.fillMaxHeight().width(1.dp))
         when (uiMode) {

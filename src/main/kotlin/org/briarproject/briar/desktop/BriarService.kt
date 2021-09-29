@@ -123,10 +123,7 @@ constructor(
         val dbKey = accountManager.databaseKey ?: throw AssertionError()
         lifecycleManager.startServices(dbKey)
         lifecycleManager.waitForStartup()
-        val contacts = contactManager.getContacts()
-        if (contacts.isEmpty()) {
-            // todo: add some dummy account to db
-        }
+        val contacts = contactManager.contacts
         for (contact in contacts) {
             println("${contact.author.name} (${contact.alias})")
             this.contacts.add(contact)

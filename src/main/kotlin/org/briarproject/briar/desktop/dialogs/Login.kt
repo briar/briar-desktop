@@ -32,7 +32,7 @@ import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
-import androidx.compose.ui.res.svgResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -87,4 +87,4 @@ fun Login(
 
 @Composable
 fun BriarLogo(modifier: Modifier = Modifier.fillMaxWidth().clip(shape = RoundedCornerShape(400.dp))) =
-    Image(svgResource("images/logo_circle.svg"), "Briar logo", modifier)
+    Image(painterResource("images/logo_circle.svg"), "Briar logo", modifier)
