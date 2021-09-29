@@ -8,7 +8,7 @@ plugins {
     id("org.jetbrains.compose") version "1.0.0-alpha3"
     id("java")
     id("idea")
-    id("org.jlleitschuh.gradle.ktlint") version("10.1.0")
+    id("org.jlleitschuh.gradle.ktlint") version "10.1.0"
 }
 
 group = "app.briar.desktop"
@@ -23,7 +23,6 @@ repositories {
 
 dependencies {
     implementation(compose.desktop.currentOs)
-    implementation(compose.uiTooling)
 
     implementation("com.fasterxml.jackson.core:jackson-databind:2.10.0")
     implementation("com.github.ajalt:clikt:2.2.0")

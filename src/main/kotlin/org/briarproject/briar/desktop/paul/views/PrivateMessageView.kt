@@ -66,7 +66,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.drawscope.withTransform
-import androidx.compose.ui.graphics.imageFromResource
+import androidx.compose.ui.res.loadImageBitmap
+import androidx.compose.ui.res.useResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.Dp
@@ -201,7 +202,6 @@ fun AddContactDialog(isVisible: Boolean, onCancel: (Boolean) -> Unit) {
     )
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun SearchTextField(searchValue: String, onValueChange: (String) -> Unit, onContactAdd: (Boolean) -> Unit) {
     TextField(
@@ -250,7 +250,7 @@ fun ContactCard(
     ) {
         Row(modifier = Modifier.align(Alignment.CenterVertically).padding(horizontal = 16.dp)) {
             // TODO Pull profile pictures
-            ProfileCircle(imageFromResource("images/profile_images/p0.png"), 36.dp)
+            ProfileCircle(useResource("images/profile_images/p0.png") { loadImageBitmap(it) }, 36.dp)
             // Draw notification badges
             if (drawNotifications) {
                 Canvas(
@@ -480,7 +480,7 @@ fun MsgColumnHeader(
 ) {
     Box(modifier = Modifier.fillMaxWidth().height(HEADER_SIZE + 1.dp)) {
         Row(modifier = Modifier.align(Alignment.Center)) {
-            ProfileCircle(imageFromResource("images/profile_images/p0.png"), 36.dp)
+            ProfileCircle(useResource("images/profile_images/p0.png") { loadImageBitmap(it) }, 36.dp)
             Canvas(
                 modifier = Modifier.align(Alignment.CenterVertically),
                 onDraw = {
@@ -603,13 +603,13 @@ fun ContactDrawerMakeIntro(contact: Contact, contacts: List<Contact>, setInfoDra
             // Divider(color = divider, modifier = Modifier.fillMaxWidth().height(1.dp) )
             Row(Modifier.fillMaxWidth().padding(12.dp), horizontalArrangement = Arrangement.SpaceAround) {
                 Column(Modifier.align(Alignment.CenterVertically)) {
-                    ProfileCircle(imageFromResource("images/profile_images/p0.png"), 40.dp)
+                    ProfileCircle(useResource("images/profile_images/p0.png") { loadImageBitmap(it) }, 40.dp)
                     Text(contact.author.name, Modifier.padding(top = 4.dp), Color.White, 16.sp)
                 }
                 Icon(Filled.SwapHoriz, "swap", tint = Color.White, modifier = Modifier.size(48.dp))
                 Column(Modifier.align(Alignment.CenterVertically)) {
                     // TODO Profile pic again
-                    ProfileCircle(imageFromResource("images/profile_images/p0.png"), 40.dp)
+                    ProfileCircle(useResource("images/profile_images/p0.png") { loadImageBitmap(it) }, 40.dp)
                     Text(introContact.author.name, Modifier.padding(top = 4.dp), Color.White, 16.sp)
                 }
             }
