@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -22,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.svgResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 
 // TODO: Error handling
@@ -55,13 +57,13 @@ private fun TheImage() {
 @Composable
 private fun TheTextField(onResult: (result: String) -> Unit) {
     var password by remember { mutableStateOf("") }
-    OutlinedTextField(password, { password = it }, label = { Text("Password") })
+    OutlinedTextField(password, { password = it }, label = { Text("Password") }, textStyle = TextStyle(color = MaterialTheme.colors.onBackground))
     Spacer(Modifier.height(16.dp))
     Button(
         onClick = {
             onResult.invoke(password)
         }
     ) {
-        Text("Login", color = Color.Black)
+        Text("Login")
     }
 }

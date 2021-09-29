@@ -90,7 +90,7 @@ constructor(
                     is Screen.Login ->
                         Login(
                             "Briar",
-                            modifier = Modifier.background(briarBlack),
+                            modifier = Modifier.background(MaterialTheme.colors.background),
                             onResult = {
                                 try {
                                     accountManager.signIn(it)

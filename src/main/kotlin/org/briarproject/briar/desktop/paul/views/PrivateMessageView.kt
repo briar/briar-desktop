@@ -28,12 +28,14 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.AlertDialog
+import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
@@ -238,58 +240,58 @@ fun ContactCard(
     selected: Boolean,
     drawNotifications: Boolean
 ) {
-    // selContact.id == contact.id && drawNotifications
-    val bgColor = if (selected) darkGray else briarBlack
-    Row(
-        modifier = Modifier.fillMaxWidth().height(HEADER_SIZE).background(bgColor)
-            .clickable(onClick = { onSel(contact) }),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Row(modifier = Modifier.align(Alignment.CenterVertically).padding(horizontal = 16.dp)) {
-            // TODO Pull profile pictures
-            ProfileCircle(imageFromResource("images/profile_images/p0.png"), 36.dp)
-            // Draw notification badges
-            if (drawNotifications) {
-                Canvas(
-                    modifier = Modifier.align(Alignment.CenterVertically),
-                    onDraw = {
-                        val size = 10.dp.toPx()
-                        withTransform({ translate(left = -6f, top = -12f) }) {
-                            drawCircle(color = Color.White, radius = (size + 2.dp.toPx()) / 2f)
-                            drawCircle(color = briarBlueMsg, radius = size / 2f)
+    val elevation = if (selected) 8.dp else 0.dp
+    Card(elevation = elevation, modifier = Modifier.fillMaxWidth().height(HEADER_SIZE)
+        .clickable(onClick = { onSel(contact) }), shape = RoundedCornerShape(0.dp)) {
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Row(modifier = Modifier.align(Alignment.CenterVertically).padding(horizontal = 16.dp)) {
+                // TODO Pull profile pictures
+                ProfileCircle(imageFromResource("images/profile_images/p0.png"), 36.dp)
+                // Draw notification badges
+                if (drawNotifications) {
+                    Canvas(
+                        modifier = Modifier.align(Alignment.CenterVertically),
+                        onDraw = {
+                            val size = 10.dp.toPx()
+                            withTransform({ translate(left = -6f, top = -12f) }) {
+                                drawCircle(color = Color.White, radius = (size + 2.dp.toPx()) / 2f)
+                                drawCircle(color = briarBlueMsg, radius = size / 2f)
+                            }
                         }
-                    }
-                )
-            }
-            Column(modifier = Modifier.align(Alignment.CenterVertically).padding(start = 12.dp)) {
-                Text(
-                    contact.author.name,
-                    fontSize = 14.sp,
-                    color = Color.White,
-                    modifier = Modifier.align(Alignment.Start).padding(bottom = 2.dp)
-                )
-                // TODO add proper last message time
-                Text(
-                    "10 min ago",
-                    fontSize = 10.sp,
-                    color = Color.LightGray,
-                    modifier = Modifier.align(Alignment.Start)
-                )
-            }
-        }
-        Canvas(
-            modifier = Modifier.padding(start = 32.dp, end = 18.dp).size(22.dp).align(Alignment.CenterVertically),
-            onDraw = {
-                val size = 16.dp.toPx()
-                drawCircle(color = Color.White, radius = size / 2f)
-                // TODO check if contact online
-                if (true) {
-                    drawCircle(color = briarGreen, radius = 14.dp.toPx() / 2f)
-                } else {
-                    drawCircle(color = briarBlack, radius = 14.dp.toPx() / 2f)
+                    )
+                }
+                Column(modifier = Modifier.align(Alignment.CenterVertically).padding(start = 12.dp)) {
+                    Text(
+                        contact.author.name,
+                        fontSize = 14.sp,
+                        color = Color.White,
+                        modifier = Modifier.align(Alignment.Start).padding(bottom = 2.dp)
+                    )
+                    // TODO add proper last message time
+                    Text(
+                        "10 min ago",
+                        fontSize = 10.sp,
+                        color = Color.LightGray,
+                        modifier = Modifier.align(Alignment.Start)
+                    )
                 }
             }
-        )
+            Canvas(
+                modifier = Modifier.padding(start = 32.dp, end = 18.dp).size(22.dp).align(Alignment.CenterVertically),
+                onDraw = {
+                    val size = 16.dp.toPx()
+                    drawCircle(color = Color.White, radius = size / 2f)
+                    // TODO check if contact online
+                    if (true) {
+                        drawCircle(color = briarGreen, radius = 14.dp.toPx() / 2f)
+                    } else {
+                        drawCircle(color = briarBlack, radius = 14.dp.toPx() / 2f)
+                    }
+                }
+            )
+        }
     }
     Divider(color = divider, thickness = 1.dp, modifier = Modifier.fillMaxWidth())
 }
@@ -315,7 +317,6 @@ fun ContactList(
     }
     Scaffold(
         modifier = Modifier.fillMaxHeight().width(246.dp),
-        backgroundColor = briarBlack,
         topBar = {
             Column(
                 modifier = Modifier.fillMaxWidth().background(briarBlack),
@@ -654,7 +655,6 @@ fun DrawMessageRow(
                 }
             },
             bottomBar = { MsgInput() },
-            backgroundColor = darkGray,
             modifier = Modifier.offset()
         )
         if (infoDrawer) {
