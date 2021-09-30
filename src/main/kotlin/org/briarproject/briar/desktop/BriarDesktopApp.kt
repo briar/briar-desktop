@@ -3,7 +3,6 @@ package org.briarproject.briar.desktop
 import dagger.Component
 import org.briarproject.bramble.BrambleCoreEagerSingletons
 import org.briarproject.bramble.BrambleCoreModule
-import org.briarproject.bramble.api.account.AccountManager
 import org.briarproject.briar.BriarCoreEagerSingletons
 import org.briarproject.briar.BriarCoreModule
 import java.security.SecureRandom
@@ -22,6 +21,4 @@ internal interface BriarDesktopApp : BrambleCoreEagerSingletons, BriarCoreEagerS
     fun getUI(): UI
 
     fun getSecureRandom(): SecureRandom
-
-    fun getAccountManager(): AccountManager
 }
