@@ -18,10 +18,11 @@ val briarBlueMsg = Color(0xFF1b69b6)
 val briarBlueSpecialMsg = Color(0xFF134a80)
 val briarGrayMsg = Color(0xff3b4047)
 val briarGraySpecialMsg = Color(0xFF212d3b)
+val Night700 = Color(0xff2E3D4F )
 
 val DarkColorPallet = darkColors(
-    primary = Color(0xff2962FF),
-    primaryVariant = Color(0xff134a80),
+    primary = Color(0xff1f78d1),
+    primaryVariant = Color(0xff435b77 ),
     secondary = briarGreen,
     background = Color(0xff121212),
     surface = Color(0xff121212),

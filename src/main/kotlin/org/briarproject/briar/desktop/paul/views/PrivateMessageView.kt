@@ -36,10 +36,15 @@ import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Scaffold
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.TextField
+import androidx.compose.material.TextFieldColors
+import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
@@ -207,17 +212,18 @@ fun SearchTextField(searchValue: String, onValueChange: (String) -> Unit, onCont
         value = searchValue,
         onValueChange = onValueChange,
         singleLine = true,
-        modifier = Modifier.padding(horizontal = 8.dp),
-        textStyle = TextStyle(color = Color.White, fontSize = 16.sp),
+        textStyle = TextStyle(color = Color.White, fontSize = 14.sp),
         placeholder = { Text("Contacts", color = Color.Gray) },
+        //colors = TextFieldDefaults.outlinedTextFieldColors(backgroundColor = MaterialTheme.colors.background),
+        shape = RoundedCornerShape(0.dp),
         leadingIcon = {
-            val padding = Modifier.padding(top = 8.dp, bottom = 8.dp, start = 16.dp)
+            val padding = Modifier.padding(top = 8.dp, bottom = 8.dp, start = 12.dp)
             Icon(Filled.Search, "search contacts", padding, Color.White)
         },
         trailingIcon = {
             IconButton(
                 onClick = { onContactAdd(true) },
-                modifier = Modifier.padding(end = 4.dp).size(32.dp).background(
+                modifier = Modifier.padding(end = 8.dp).size(32.dp).background(
                     briarBlueMsg, CircleShape
                 )
             ) {
@@ -240,7 +246,9 @@ fun ContactCard(
     selected: Boolean,
     drawNotifications: Boolean
 ) {
-    val elevation = if (selected) 8.dp else 0.dp
+    val elevation = if (selected) 48.dp else 8.dp
+    val mod = if (selected) Modifier.fillMaxWidth().height(HEADER_SIZE).border(1.dp, Color.White) else Modifier.fillMaxWidth().height(
+        HEADER_SIZE)
     Card(elevation = elevation, modifier = Modifier.fillMaxWidth().height(HEADER_SIZE)
         .clickable(onClick = { onSel(contact) }), shape = RoundedCornerShape(0.dp)) {
         Row(
@@ -264,7 +272,8 @@ fun ContactCard(
                 }
                 Column(modifier = Modifier.align(Alignment.CenterVertically).padding(start = 12.dp)) {
                     Text(
-                        contact.author.name,
+                        //contact.author.name,
+                        "test",
                         fontSize = 14.sp,
                         color = Color.White,
                         modifier = Modifier.align(Alignment.Start).padding(bottom = 2.dp)
@@ -318,19 +327,26 @@ fun ContactList(
     Scaffold(
         modifier = Modifier.fillMaxHeight().width(246.dp),
         topBar = {
-            Column(
-                modifier = Modifier.fillMaxWidth().background(briarBlack),
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                elevation = 8.dp
             ) {
-                Row(Modifier.height(HEADER_SIZE), verticalAlignment = Alignment.CenterVertically) {
+                // Extra pixel in height to make the TextField line up with the horizontal divider lines
+                Row(Modifier.height(HEADER_SIZE + 1.dp), verticalAlignment = Alignment.CenterVertically) {
                     SearchTextField(searchValue, onValueChange = { searchValue = it }, onContactAdd)
                 }
-                Divider(color = divider, thickness = 1.dp, modifier = Modifier.fillMaxWidth())
             }
         },
         content = {
-            Column(Modifier.verticalScroll(rememberScrollState())) {
-                for (c in filteredContacts) {
-                    ContactCard(c, contact, onContactSelect, contact.id == c.id, true)
+            Surface(
+                modifier = Modifier.fillMaxSize(),
+                elevation = 1.dp
+            ) {
+                Column(Modifier.verticalScroll(rememberScrollState())) {
+                    for (c in filteredContacts) {
+                        ContactCard(c, contact, onContactSelect, contact.id == c.id, true)
+                    }
+
                 }
             }
         },
@@ -340,32 +356,35 @@ fun ContactList(
 @Composable
 fun TextBubble(m: SimpleMessage) {
     if (m.local) {
-        TextBubble(m, Alignment.End, briarBlueMsg)
+        TextBubble(m, Alignment.End, MaterialTheme.colors.primary, RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp, bottomStart = 10.dp))
     } else {
-        TextBubble(m, Alignment.Start, briarGrayMsg)
+        TextBubble(m, Alignment.Start, MaterialTheme.colors.surface, RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp, bottomEnd = 10.dp))
     }
 }
 
 @Composable
-fun TextBubble(m: SimpleMessage, alignment: Alignment.Horizontal, color: Color) {
+fun TextBubble(m: SimpleMessage, alignment: Alignment.Horizontal, color: Color, shape: RoundedCornerShape) {
     Column(Modifier.fillMaxWidth()) {
         Column(Modifier.fillMaxWidth(fraction = 0.8f).align(alignment)) {
-            Column(
-                Modifier.background(
-                    color,
-                    RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp, bottomStart = 10.dp)
-                ).padding(8.dp).align(alignment)
+            Card(
+                Modifier.align(alignment),
+                backgroundColor = color,
+                elevation = 24.dp,
+                shape = shape
             ) {
-                Text(m.message, fontSize = 14.sp, color = Color.White, modifier = Modifier.align(Alignment.Start))
-                Row(modifier = Modifier.padding(top = 4.dp)) {
-                    Text(m.time, Modifier.padding(end = 4.dp), fontSize = 10.sp, color = Color.LightGray)
-                    if (m.delivered) {
-                        val modifier = Modifier.size(12.dp).align(Alignment.CenterVertically)
-                        Icon(Filled.DoneAll, "sent", modifier, Color.LightGray)
-                    } else {
-                        val modifier = Modifier.size(12.dp).align(Alignment.CenterVertically)
-                        Icon(Filled.Schedule, "sending", modifier, Color.LightGray)
+                Column(Modifier.padding(8.dp)) {
+                    Text(m.message, fontSize = 14.sp, color = Color.White, modifier = Modifier.align(Alignment.Start))
+                    Row(modifier = Modifier.padding(top = 4.dp)) {
+                        Text(m.time, Modifier.padding(end = 4.dp), fontSize = 10.sp, color = Color.LightGray)
+                        if (m.delivered) {
+                            val modifier = Modifier.size(12.dp).align(Alignment.CenterVertically)
+                            Icon(Filled.DoneAll, "sent", modifier, Color.LightGray)
+                        } else {
+                            val modifier = Modifier.size(12.dp).align(Alignment.CenterVertically)
+                            Icon(Filled.Schedule, "sending", modifier, Color.LightGray)
+                        }
                     }
+
                 }
             }
         }
@@ -381,7 +400,7 @@ fun DrawTextBubbles(chat: UiState<Chat>) {
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 reverseLayout = true,
-                contentPadding = PaddingValues(top = 8.dp, start = 8.dp, end = 8.dp)
+                contentPadding = PaddingValues(8.dp)
             ) {
                 items(chat.data.messages) { m -> TextBubble(m) }
             }
@@ -476,46 +495,48 @@ fun MsgColumnHeader(
     isExpanded: (Boolean) -> Unit,
     setInfoDrawer: (Boolean) -> Unit
 ) {
-    Box(modifier = Modifier.fillMaxWidth().height(HEADER_SIZE + 1.dp)) {
-        Row(modifier = Modifier.align(Alignment.Center)) {
-            ProfileCircle(imageFromResource("images/profile_images/p0.png"), 36.dp)
-            Canvas(
-                modifier = Modifier.align(Alignment.CenterVertically),
-                onDraw = {
-                    val size = 10.dp.toPx()
-                    // TODO hook up online indicator logic
-                    val onlineColor = if (true) briarGreen else briarBlack
-                    withTransform({ translate(left = -6f, top = 12f) }) {
-                        drawCircle(color = Color.White, radius = (size + 2.dp.toPx()) / 2f)
-                        drawCircle(color = onlineColor, radius = size / 2f)
+    Surface(elevation = 1.dp) {
+        Box(modifier = Modifier.fillMaxWidth().height(HEADER_SIZE + 1.dp)) {
+            Row(modifier = Modifier.align(Alignment.Center)) {
+                ProfileCircle(imageFromResource("images/profile_images/p0.png"), 36.dp)
+                Canvas(
+                    modifier = Modifier.align(Alignment.CenterVertically),
+                    onDraw = {
+                        val size = 10.dp.toPx()
+                        // TODO hook up online indicator logic
+                        val onlineColor = if (true) briarGreen else briarBlack
+                        withTransform({ translate(left = -6f, top = 12f) }) {
+                            drawCircle(color = Color.White, radius = (size + 2.dp.toPx()) / 2f)
+                            drawCircle(color = onlineColor, radius = size / 2f)
+                        }
                     }
-                }
-            )
-            Text(
-                contact.author.name,
-                color = Color.White,
-                modifier = Modifier.align(Alignment.CenterVertically).padding(start = 12.dp),
-                fontSize = 20.sp
-            )
+                )
+                Text(
+                    //contact.author.name,
+                    "test",
+                    color = Color.White,
+                    modifier = Modifier.align(Alignment.CenterVertically).padding(start = 12.dp),
+                    fontSize = 20.sp
+                )
+            }
+            IconButton(
+                onClick = { isExpanded(!expanded) },
+                modifier = Modifier.align(Alignment.CenterEnd).padding(end = 16.dp)
+            ) {
+                Icon(Filled.MoreVert, "contact info", tint = Color.White, modifier = Modifier.size(24.dp))
+                ContactDropDown(expanded, isExpanded, setInfoDrawer)
+            }
+            Divider(color = divider, thickness = 1.dp, modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter))
         }
-        IconButton(
-            onClick = { isExpanded(!expanded) },
-            modifier = Modifier.align(Alignment.CenterEnd).padding(end = 16.dp)
-        ) {
-            Icon(Filled.MoreVert, "contact info", tint = Color.White, modifier = Modifier.size(24.dp))
-            ContactDropDown(expanded, isExpanded, setInfoDrawer)
-        }
-        Divider(color = divider, thickness = 1.dp, modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter))
     }
 }
 
 @Composable
 fun MsgInput() {
     var text by remember { mutableStateOf("") }
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(8.dp)
+    Column(
     ) {
+        Divider(color = divider, thickness = 1.dp, modifier = Modifier.fillMaxWidth())
         TextField(
             value = text,
             onValueChange = { text = it },
@@ -523,11 +544,13 @@ fun MsgInput() {
             textStyle = TextStyle(color = Color.White, fontSize = 16.sp, lineHeight = 16.sp),
             placeholder = { Text("Message", color = Color.Gray) },
             modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(0.dp),
+            colors = TextFieldDefaults.textFieldColors(backgroundColor = MaterialTheme.colors.background),
             leadingIcon = {
                 IconButton(
                     onClick = {},
                     Modifier.padding(4.dp).size(32.dp)
-                        .background(briarBlueMsg, CircleShape),
+                        .background(MaterialTheme.colors.primary, CircleShape),
                 ) {
                     Icon(Filled.Add, "add attachment", Modifier.size(24.dp), Color.White)
                 }

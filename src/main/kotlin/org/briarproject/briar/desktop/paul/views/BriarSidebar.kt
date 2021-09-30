@@ -30,12 +30,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.imageFromResource
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import org.briarproject.briar.desktop.paul.theme.Night700
 import org.briarproject.briar.desktop.paul.theme.briarBlack
 import org.briarproject.briar.desktop.paul.theme.briarBlue
 
 @Composable
 fun BriarSidebar(uiMode: UiModes, setUiMode: (UiModes) -> Unit) {
-    Surface(modifier = Modifier.width(56.dp).fillMaxHeight(), color = briarBlue) {
+    Surface(modifier = Modifier.width(56.dp).fillMaxHeight(), elevation = 24.dp) {
         Column(verticalArrangement = Arrangement.Top) {
             IconButton(
                 modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 5.dp, bottom = 4.dp),
@@ -99,7 +100,7 @@ fun BriarSidebar(uiMode: UiModes, setUiMode: (UiModes) -> Unit) {
 
 @Composable
 fun BriarSidebarButton(uiMode: UiModes, setUiMode: (UiModes) -> Unit, thisMode: UiModes, icon: ImageVector) {
-    val tint = if (uiMode == thisMode) MaterialTheme.colors.primary else Color.White
+    val tint = if (uiMode == thisMode) MaterialTheme.colors.primary else MaterialTheme.colors.onSurface
     Column {
         IconButton(
             modifier = Modifier.align(Alignment.CenterHorizontally)
