@@ -35,6 +35,7 @@ dependencies {
     kapt("com.google.dagger:dagger-compiler:$daggerVersion")
 
     testImplementation(kotlin("test-testng"))
+    kaptTest("com.google.dagger:dagger-compiler:$daggerVersion")
 }
 
 tasks.test {
