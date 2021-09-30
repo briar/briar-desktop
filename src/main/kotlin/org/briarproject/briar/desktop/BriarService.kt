@@ -80,7 +80,9 @@ constructor(
         val title = "Briar Desktop"
         var screenState by remember {
             mutableStateOf(
-                if (accountManager.accountExists()) {
+                if (accountManager.hasDatabaseKey()) {
+                    Screen.MAIN
+                } else if (accountManager.accountExists()) {
                     Screen.LOGIN
                 } else {
                     Screen.REGISTRATION

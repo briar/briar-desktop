@@ -37,6 +37,9 @@ private class TestWithTemporaryAccount {
         BrambleCoreEagerSingletons.Helper.injectEagerSingletons(app)
         BriarCoreEagerSingletons.Helper.injectEagerSingletons(app)
 
+        val password = "verySecret123!"
+        app.getAccountManager().createAccount("alice", password)
+
         app.getUI().startBriar()
     }
 
