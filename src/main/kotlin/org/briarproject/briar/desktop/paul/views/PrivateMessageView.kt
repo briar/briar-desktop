@@ -545,7 +545,7 @@ fun MsgInput() {
             placeholder = { Text("Message", color = Color.Gray) },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(0.dp),
-            colors = TextFieldDefaults.textFieldColors(backgroundColor = MaterialTheme.colors.background),
+            colors = TextFieldDefaults.textFieldColors(backgroundColor = MaterialTheme.colors.background, focusedIndicatorColor = MaterialTheme.colors.background, unfocusedIndicatorColor = MaterialTheme.colors.background),
             leadingIcon = {
                 IconButton(
                     onClick = {},
