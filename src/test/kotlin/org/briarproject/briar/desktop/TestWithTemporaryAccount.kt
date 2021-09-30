@@ -29,16 +29,29 @@ private class TestWithTemporaryAccount {
         println("Using data directory '$dataDir'")
 
         val app =
-            DaggerBriarDesktopApp.builder().desktopModule(
-                DesktopModule(dataDir.toFile())
+            DaggerBriarDesktopTestApp.builder().desktopTestModule(
+                DesktopTestModule(dataDir.toFile())
             ).build()
         // We need to load the eager singletons directly after making the
         // dependency graphs
         BrambleCoreEagerSingletons.Helper.injectEagerSingletons(app)
         BriarCoreEagerSingletons.Helper.injectEagerSingletons(app)
 
+        val lifecycleManager = app.getLifecycleManager()
+        val accountManager = app.getAccountManager()
+
         val password = "verySecret123!"
-        app.getAccountManager().createAccount("alice", password)
+        accountManager.createAccount("alice", password)
+
+        val dbKey = accountManager.databaseKey ?: throw AssertionError()
+        lifecycleManager.startServices(dbKey)
+        lifecycleManager.waitForStartup()
+
+        app.getTestDataCreator().createTestData(10, 20, 50, 4, 4, 10)
+
+        // Creating test data happens on a background thread. As we do not get notified about updates to the conact
+        // list yet, we need to wait a moment in order for that to finish (hopefully).
+        Thread.sleep(1000)
 
         app.getUI().startBriar()
     }

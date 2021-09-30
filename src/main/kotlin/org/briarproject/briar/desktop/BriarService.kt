@@ -81,6 +81,7 @@ constructor(
         var screenState by remember {
             mutableStateOf(
                 if (accountManager.hasDatabaseKey()) {
+                    loadContacts()
                     Screen.MAIN
                 } else if (accountManager.accountExists()) {
                     Screen.LOGIN
@@ -101,6 +102,7 @@ constructor(
                             onSubmit = { username, password ->
                                 accountManager.createAccount(username, password)
                                 signedIn()
+                                loadContacts()
                                 screenState = Screen.MAIN
                             }
                         )
@@ -110,6 +112,7 @@ constructor(
                                 try {
                                     accountManager.signIn(it)
                                     signedIn()
+                                    loadContacts()
                                     screenState = Screen.MAIN
                                 } catch (e: DecryptionException) {
                                     // failure, try again
@@ -135,6 +138,9 @@ constructor(
         val dbKey = accountManager.databaseKey ?: throw AssertionError()
         lifecycleManager.startServices(dbKey)
         lifecycleManager.waitForStartup()
+    }
+
+    private fun loadContacts() {
         val contacts = contactManager.contacts
         for (contact in contacts) {
             println("${contact.author.name} (${contact.alias})")
