@@ -62,6 +62,21 @@ to build its UI. The Intellij IDEA plugin
 provides static previews of
 composable functions without parameters which are annotated with `@Preview`.
 
+### Building and Running
+
+In order to build and run the application from the command line, execute this:
+
+    ./gradlew run
+
+You can specify arguments to the app using the `--args` option of the
+Gradle task. For example to show the usage info:
+
+    ./gradlew run --args="--help"
+
+To specify a different data directory and enable the debug output:
+
+    ./gradlew run --args="--debug --data-dir=/tmp/briar-tmp"
+
 ## Translations
 
 See [TRANSLATION.md](./TRANSLATION.md) for more information.
