@@ -5,6 +5,7 @@ import org.briarproject.bramble.BrambleCoreEagerSingletons
 import org.briarproject.bramble.BrambleCoreModule
 import org.briarproject.bramble.api.account.AccountManager
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
+import org.briarproject.bramble.api.lifecycle.ShutdownManager
 import org.briarproject.briar.BriarCoreEagerSingletons
 import org.briarproject.briar.BriarCoreModule
 import org.briarproject.briar.api.test.TestDataCreator
@@ -26,6 +27,8 @@ internal interface BriarDesktopTestApp : BrambleCoreEagerSingletons, BriarCoreEa
     fun getSecureRandom(): SecureRandom
 
     fun getLifecycleManager(): LifecycleManager
+
+    fun getShutdownManager(): ShutdownManager
 
     fun getAccountManager(): AccountManager
 

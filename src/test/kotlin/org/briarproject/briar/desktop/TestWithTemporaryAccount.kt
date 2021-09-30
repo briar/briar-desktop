@@ -2,6 +2,7 @@ package org.briarproject.briar.desktop
 
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.window.application
+import org.apache.commons.io.FileUtils
 import org.briarproject.bramble.BrambleCoreEagerSingletons
 import org.briarproject.bramble.util.OsUtils.isLinux
 import org.briarproject.bramble.util.OsUtils.isMac
@@ -32,6 +33,12 @@ private class TestWithTemporaryAccount {
             DaggerBriarDesktopTestApp.builder().desktopTestModule(
                 DesktopTestModule(dataDir.toFile())
             ).build()
+
+        app.getShutdownManager().addShutdownHook {
+            println("deleting temporary account at $dataDir")
+            FileUtils.deleteDirectory(dataDir.toFile())
+        }
+
         // We need to load the eager singletons directly after making the
         // dependency graphs
         BrambleCoreEagerSingletons.Helper.injectEagerSingletons(app)
