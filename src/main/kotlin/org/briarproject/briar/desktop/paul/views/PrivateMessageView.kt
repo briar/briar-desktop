@@ -30,6 +30,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Colors
 import androidx.compose.material.Divider
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
@@ -121,7 +122,7 @@ fun PrivateMessageView(
     AddContactDialog(addContactDialog, onContactAdd)
     Row(modifier = Modifier.fillMaxWidth()) {
         ContactList(contact, contacts, onContactSelect, onContactAdd)
-        Divider(color = divider, modifier = Modifier.fillMaxHeight().width(1.dp))
+        Divider(color = MaterialTheme.colors.divider, modifier = Modifier.fillMaxHeight().width(1.dp))
         Column(modifier = Modifier.weight(1f).fillMaxHeight().background(color = darkGray)) {
             DrawMessageRow(
                 contact,
@@ -149,7 +150,6 @@ fun AddContactDialog(isVisible: Boolean, onCancel: (Boolean) -> Unit) {
                     Text(
                         text = "Add Contact at a Distance",
                         fontSize = 24.sp,
-                        color = Color.White,
                         modifier = Modifier.align(Alignment.CenterVertically)
                     )
                 }
@@ -157,7 +157,6 @@ fun AddContactDialog(isVisible: Boolean, onCancel: (Boolean) -> Unit) {
                     Text(
                         "Contact's Link",
                         Modifier.width(128.dp).align(Alignment.CenterVertically),
-                        color = lightGray
                     )
                     TextField("", onValueChange = {}, modifier = Modifier.fillMaxWidth())
                 }
@@ -165,7 +164,6 @@ fun AddContactDialog(isVisible: Boolean, onCancel: (Boolean) -> Unit) {
                     Text(
                         "Contact's Name",
                         Modifier.width(128.dp).align(Alignment.CenterVertically),
-                        color = lightGray
                     )
                     TextField("", onValueChange = {}, modifier = Modifier.fillMaxWidth())
                 }
@@ -173,7 +171,6 @@ fun AddContactDialog(isVisible: Boolean, onCancel: (Boolean) -> Unit) {
                     Text(
                         "Your Link",
                         modifier = Modifier.width(128.dp).align(Alignment.CenterVertically),
-                        color = lightGray
                     )
                     TextField(
                         // TODO: use real code
@@ -201,7 +198,7 @@ fun AddContactDialog(isVisible: Boolean, onCancel: (Boolean) -> Unit) {
 
         backgroundColor = briarBlue,
         contentColor = Color.White,
-        modifier = Modifier.border(1.dp, color = divider),
+        modifier = Modifier.border(1.dp, color = MaterialTheme.colors.divider),
         properties = DialogProperties(resizable = false, undecorated = true, size = IntSize(600, 300))
     )
 }
@@ -212,13 +209,13 @@ fun SearchTextField(searchValue: String, onValueChange: (String) -> Unit, onCont
         value = searchValue,
         onValueChange = onValueChange,
         singleLine = true,
-        textStyle = TextStyle(color = Color.White, fontSize = 14.sp),
-        placeholder = { Text("Contacts", color = Color.Gray) },
+        textStyle = TextStyle(fontSize = 14.sp),
+        placeholder = { Text("Contacts") },
         //colors = TextFieldDefaults.outlinedTextFieldColors(backgroundColor = MaterialTheme.colors.background),
         shape = RoundedCornerShape(0.dp),
         leadingIcon = {
             val padding = Modifier.padding(top = 8.dp, bottom = 8.dp, start = 12.dp)
-            Icon(Filled.Search, "search contacts", padding, Color.White)
+            Icon(Filled.Search, "search contacts", padding)
         },
         trailingIcon = {
             IconButton(
@@ -275,14 +272,12 @@ fun ContactCard(
                         //contact.author.name,
                         "test",
                         fontSize = 14.sp,
-                        color = Color.White,
                         modifier = Modifier.align(Alignment.Start).padding(bottom = 2.dp)
                     )
                     // TODO add proper last message time
                     Text(
                         "10 min ago",
                         fontSize = 10.sp,
-                        color = Color.LightGray,
                         modifier = Modifier.align(Alignment.Start)
                     )
                 }
@@ -302,7 +297,7 @@ fun ContactCard(
             )
         }
     }
-    Divider(color = divider, thickness = 1.dp, modifier = Modifier.fillMaxWidth())
+    Divider(color = MaterialTheme.colors.divider, thickness = 1.dp, modifier = Modifier.fillMaxWidth())
 }
 
 @Composable
@@ -373,9 +368,9 @@ fun TextBubble(m: SimpleMessage, alignment: Alignment.Horizontal, color: Color, 
                 shape = shape
             ) {
                 Column(Modifier.padding(8.dp)) {
-                    Text(m.message, fontSize = 14.sp, color = Color.White, modifier = Modifier.align(Alignment.Start))
+                    Text(m.message, fontSize = 14.sp, modifier = Modifier.align(Alignment.Start))
                     Row(modifier = Modifier.padding(top = 4.dp)) {
-                        Text(m.time, Modifier.padding(end = 4.dp), fontSize = 10.sp, color = Color.LightGray)
+                        Text(m.time, Modifier.padding(end = 4.dp), fontSize = 10.sp)
                         if (m.delivered) {
                             val modifier = Modifier.size(12.dp).align(Alignment.CenterVertically)
                             Icon(Filled.DoneAll, "sent", modifier, Color.LightGray)
@@ -459,7 +454,7 @@ fun ContactDropDown(
             modifier = Modifier.background(briarBlack)
         ) {
             DropdownMenuItem(onClick = { false }) {
-                Text("Connections", color = lightGray, fontSize = 12.sp)
+                Text("Connections", fontSize = 12.sp)
             }
             DropdownMenuItem(onClick = { false }) {
                 Text("Connect via Bluetooth", fontSize = 14.sp)
@@ -476,7 +471,7 @@ fun ContactDropDown(
             modifier = Modifier.background(briarBlack)
         ) {
             DropdownMenuItem(onClick = { false }) {
-                Text("Contact", color = lightGray, fontSize = 12.sp)
+                Text("Contact", fontSize = 12.sp)
             }
             DropdownMenuItem(onClick = { false }) {
                 Text("Change contact name", fontSize = 14.sp)
@@ -514,7 +509,6 @@ fun MsgColumnHeader(
                 Text(
                     //contact.author.name,
                     "test",
-                    color = Color.White,
                     modifier = Modifier.align(Alignment.CenterVertically).padding(start = 12.dp),
                     fontSize = 20.sp
                 )
@@ -526,7 +520,7 @@ fun MsgColumnHeader(
                 Icon(Filled.MoreVert, "contact info", tint = Color.White, modifier = Modifier.size(24.dp))
                 ContactDropDown(expanded, isExpanded, setInfoDrawer)
             }
-            Divider(color = divider, thickness = 1.dp, modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter))
+            Divider(color = MaterialTheme.colors.divider, thickness = 1.dp, modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter))
         }
     }
 }
@@ -536,12 +530,12 @@ fun MsgInput() {
     var text by remember { mutableStateOf("") }
     Column(
     ) {
-        Divider(color = divider, thickness = 1.dp, modifier = Modifier.fillMaxWidth())
+        Divider(color = MaterialTheme.colors.divider, thickness = 1.dp, modifier = Modifier.fillMaxWidth())
         TextField(
             value = text,
             onValueChange = { text = it },
             maxLines = 10,
-            textStyle = TextStyle(color = Color.White, fontSize = 16.sp, lineHeight = 16.sp),
+            textStyle = TextStyle(fontSize = 16.sp, lineHeight = 16.sp),
             placeholder = { Text("Message", color = Color.Gray) },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(0.dp),
@@ -581,12 +575,11 @@ fun ContactDrawerMakeIntro(contact: Contact, contacts: List<Contact>, setInfoDra
                 }
                 Text(
                     text = "Introduce " + contact.author.name + " to:",
-                    color = Color.White,
                     fontSize = 16.sp,
                     modifier = Modifier.align(Alignment.CenterVertically)
                 )
             }
-            Divider(color = divider, modifier = Modifier.fillMaxWidth().height(1.dp))
+            Divider(color = MaterialTheme.colors.divider, modifier = Modifier.fillMaxWidth().height(1.dp))
             Column(Modifier.verticalScroll(rememberScrollState())) {
                 for (c in contacts) {
                     if (c.id != contact.id) {
@@ -606,7 +599,6 @@ fun ContactDrawerMakeIntro(contact: Contact, contacts: List<Contact>, setInfoDra
                 }
                 Text(
                     text = "Introduce Contacts",
-                    color = Color.White,
                     fontSize = 16.sp,
                     modifier = Modifier.align(Alignment.CenterVertically)
                 )
@@ -615,13 +607,13 @@ fun ContactDrawerMakeIntro(contact: Contact, contacts: List<Contact>, setInfoDra
             Row(Modifier.fillMaxWidth().padding(12.dp), horizontalArrangement = Arrangement.SpaceAround) {
                 Column(Modifier.align(Alignment.CenterVertically)) {
                     ProfileCircle(imageFromResource("images/profile_images/p0.png"), 40.dp)
-                    Text(contact.author.name, Modifier.padding(top = 4.dp), Color.White, 16.sp)
+                    Text(contact.author.name, Modifier.padding(top = 4.dp), fontSize = 16.sp)
                 }
                 Icon(Filled.SwapHoriz, "swap", tint = Color.White, modifier = Modifier.size(48.dp))
                 Column(Modifier.align(Alignment.CenterVertically)) {
                     // TODO Profile pic again
                     ProfileCircle(imageFromResource("images/profile_images/p0.png"), 40.dp)
-                    Text(introContact.author.name, Modifier.padding(top = 4.dp), Color.White, 16.sp)
+                    Text(introContact.author.name, Modifier.padding(top = 4.dp), fontSize = 16.sp)
                 }
             }
             var introText by remember { mutableStateOf(TextFieldValue("")) }
@@ -630,7 +622,6 @@ fun ContactDrawerMakeIntro(contact: Contact, contacts: List<Contact>, setInfoDra
                     introText,
                     { introText = it },
                     placeholder = { Text(text = "Add a message (optional)") },
-                    textStyle = TextStyle(color = Color.White)
                 )
             }
             Row(Modifier.padding(8.dp)) {

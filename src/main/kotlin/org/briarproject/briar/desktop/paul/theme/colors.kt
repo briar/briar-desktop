@@ -1,6 +1,9 @@
 package org.briarproject.briar.desktop.paul.theme
 
+import androidx.compose.material.Colors
 import androidx.compose.material.darkColors
+import androidx.compose.material.lightColors
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 val graySurface = Color(0xFF2A2A2A)
@@ -10,7 +13,7 @@ val briarBlack = Color(0xff1E2228)
 val briarSelBlack = Color(0xff495261)
 val briarDarkGray = Color(0xFF3D4552)
 val darkGray = Color(0xFF151515)
-val divider = Color(0xff35383D)
+//val divider = Color(0xff35383D)
 val briarBlue = Color(0xFF2D3E50)
 val briarLightBlue = Color(0xFFEBEFF2)
 val briarGreen = Color(0xff61d800 )
@@ -20,7 +23,12 @@ val briarGrayMsg = Color(0xff3b4047)
 val briarGraySpecialMsg = Color(0xFF212d3b)
 val Night700 = Color(0xff2E3D4F )
 
-val DarkColorPallet = darkColors(
+val Colors.divider: Color
+    @Composable get() = if (isLight) lightGray else Color(0xff35383D)
+val Colors.primary: Color
+    @Composable get() = if (isLight) lightGray else divider
+
+val DarkColors = darkColors(
     primary = Color(0xff1f78d1),
     primaryVariant = Color(0xff435b77 ),
     secondary = briarGreen,
@@ -30,5 +38,18 @@ val DarkColorPallet = darkColors(
     onSecondary = Color.White,
     onBackground = Color.White,
     onSurface = Color.White,
+    error = Color(0xffb00020),
+)
+
+val LightColors= lightColors(
+    primary = Color(0xff1f78d1),
+    primaryVariant = Color(0xff435b77 ),
+    secondary = briarGreen,
+    background = Color.White,
+    surface = Color.White,
+    onPrimary = Color.White,
+    onSecondary = Color.Black,
+    onBackground = Color.Black,
+    onSurface = Color.Black,
     error = Color(0xffb00020),
 )

@@ -6,7 +6,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.Colors
 import androidx.compose.material.Divider
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -56,7 +58,7 @@ fun BriarUIStateManager(
     // Other global state that we need to track should go here also
     Row() {
         BriarSidebar(uiMode, setUiMode)
-        Divider(color = divider, modifier = Modifier.fillMaxHeight().width(1.dp))
+        Divider(color = MaterialTheme.colors.divider, modifier = Modifier.fillMaxHeight().width(1.dp))
         when (uiMode) {
             UiModes.CONTACTS -> if (contact != null) PrivateMessageView(
                 contact,

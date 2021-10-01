@@ -21,7 +21,8 @@ import org.briarproject.briar.api.conversation.ConversationManager
 import org.briarproject.briar.api.messaging.MessagingManager
 import org.briarproject.briar.desktop.dialogs.Login
 import org.briarproject.briar.desktop.dialogs.Registration
-import org.briarproject.briar.desktop.paul.theme.DarkColorPallet
+import org.briarproject.briar.desktop.paul.theme.DarkColors
+import org.briarproject.briar.desktop.paul.theme.LightColors
 import org.briarproject.briar.desktop.paul.theme.briarBlack
 import org.briarproject.briar.desktop.paul.views.BriarUIStateManager
 import javax.annotation.concurrent.Immutable
@@ -90,7 +91,7 @@ constructor(
         val title = "Briar Desktop"
         var screenState by remember { mutableStateOf(Screen.LOGIN) }
         Window(title = title) {
-            MaterialTheme(colors = DarkColorPallet) {
+            MaterialTheme(colors = LightColors) {
                 when (screenState) {
                     Screen.LOGIN ->
                         Login(
