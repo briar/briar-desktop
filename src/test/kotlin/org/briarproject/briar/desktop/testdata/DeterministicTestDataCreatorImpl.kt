@@ -32,22 +32,25 @@ import org.briarproject.briar.api.avatar.AvatarMessageEncoder
 import org.briarproject.briar.api.messaging.MessagingManager
 import org.briarproject.briar.api.messaging.PrivateMessageFactory
 import org.briarproject.briar.api.test.TestAvatarCreator
-import org.briarproject.briar.test.TestData
 import java.io.IOException
 import java.io.InputStream
+import java.time.ZoneOffset
 import java.util.Random
 import java.util.UUID
 import java.util.concurrent.Executor
 import java.util.logging.Level
 import java.util.logging.Logger
 import javax.inject.Inject
+import kotlin.math.min
 
 class DeterministicTestDataCreatorImpl @Inject internal constructor(
-    private val authorFactory: AuthorFactory, private val clock: Clock,
+    private val authorFactory: AuthorFactory,
+    private val clock: Clock,
     private val groupFactory: GroupFactory,
     private val privateMessageFactory: PrivateMessageFactory,
     private val db: DatabaseComponent,
-    private val identityManager: IdentityManager, private val contactManager: ContactManager,
+    private val identityManager: IdentityManager,
+    private val contactManager: ContactManager,
     private val transportPropertyManager: TransportPropertyManager,
     private val messagingManager: MessagingManager,
     private val testAvatarCreator: TestAvatarCreator,
@@ -58,7 +61,8 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
     private val random = Random()
     private val localAuthors: MutableMap<Contact, LocalAuthor> = HashMap()
     override fun createTestData(
-        numContacts: Int, numPrivateMsgs: Int,
+        numContacts: Int,
+        numPrivateMsgs: Int,
         avatarPercent: Int
     ) {
         require(numContacts != 0)
@@ -66,7 +70,7 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
         ioExecutor.execute {
             try {
                 createTestDataOnIoExecutor(
-                    numContacts, numPrivateMsgs,
+                    min(numContacts, conversations.persons.size), numPrivateMsgs,
                     avatarPercent
                 )
             } catch (e: DbException) {
@@ -78,7 +82,8 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
     @IoExecutor
     @Throws(DbException::class)
     private fun createTestDataOnIoExecutor(
-        numContacts: Int, numPrivateMsgs: Int,
+        numContacts: Int,
+        numPrivateMsgs: Int,
         avatarPercent: Int
     ) {
         val contacts = createContacts(numContacts, avatarPercent)
@@ -89,12 +94,11 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
     private fun createContacts(numContacts: Int, avatarPercent: Int): List<Contact> {
         val contacts: MutableList<Contact> = ArrayList(numContacts)
         val localAuthor = identityManager.localAuthor
+
         for (i in 0 until numContacts) {
-            val remote = randomAuthor
-            val contact = addContact(
-                localAuthor.id, remote,
-                random.nextBoolean(), avatarPercent
-            )
+            val person = conversations.persons[i]
+            val remote = authorFactory.createLocalAuthor(person.name)
+            val contact = addContact(localAuthor.id, remote, null, avatarPercent)
             contacts.add(contact)
         }
         return contacts
@@ -102,8 +106,10 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
 
     @Throws(DbException::class)
     private fun addContact(
-        localAuthorId: AuthorId, remote: LocalAuthor,
-        alias: Boolean, avatarPercent: Int
+        localAuthorId: AuthorId,
+        remote: LocalAuthor,
+        alias: String?,
+        avatarPercent: Int
     ): Contact {
         // prepare to add contact
         val secretKey = secretKey
@@ -114,44 +120,30 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
         val props = randomTransportProperties
         val contact = db.transactionWithResult<Contact, RuntimeException>(false) { txn: Transaction? ->
             val contactId = contactManager.addContact(
-                txn, remote,
-                localAuthorId, secretKey, timestamp, true, verified, true
+                txn, remote, localAuthorId, secretKey, timestamp, true, verified, true
             )
-            if (alias) {
-                contactManager.setContactAlias(
-                    txn, contactId,
-                    randomAuthorName
-                )
+            if (alias != null) {
+                contactManager.setContactAlias(txn, contactId, alias)
             }
             transportPropertyManager.addRemoteProperties(txn, contactId, props)
             db.getContact(txn, contactId)
         }
         if (random.nextInt(100) + 1 <= avatarPercent) addAvatar(contact)
         if (LOG.isLoggable(Level.INFO)) {
-            LOG.info(
-                "Added contact " + remote.name +
-                        " with transport properties: " + props
-            )
+            LOG.info("Added contact ${remote.name} with transport properties: $props")
         }
         localAuthors[contact] = remote
         return contact
     }
 
     @Throws(DbException::class)
-    override fun addContact(name: String?, alias: Boolean, avatar: Boolean): Contact? {
+    override fun addContact(name: String?, alias: String?, avatar: Boolean): Contact? {
         val localAuthor = identityManager.localAuthor
         val remote = authorFactory.createLocalAuthor(name)
         val avatarPercent = if (avatar) 100 else 0
         return addContact(localAuthor.id, remote, alias, avatarPercent)
     }
 
-    private val randomAuthorName: String
-        private get() {
-            val i = random.nextInt(TestData.AUTHOR_NAMES.size)
-            return TestData.AUTHOR_NAMES[i]
-        }
-    private val randomAuthor: LocalAuthor
-        private get() = authorFactory.createLocalAuthor(randomAuthorName)
     private val secretKey: SecretKey
         private get() {
             val b = ByteArray(SecretKey.LENGTH)
@@ -289,29 +281,29 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
         contacts: List<Contact>,
         numPrivateMsgs: Int
     ) {
-        for (contact in contacts) {
+        for (i in contacts.indices) {
+            val contact = contacts[i]
+            val person = conversations.persons[i]
             val group = messagingManager.getContactGroup(contact)
             shareGroup(contact.id, group.id)
-            for (i in 0 until numPrivateMsgs) {
-                createRandomPrivateMessage(contact.id, group.id, i)
+            for (k in 0 until min(numPrivateMsgs, person.messages.size)) {
+                createPrivateMessage(contact.id, group.id, person.messages[k])
             }
         }
         if (LOG.isLoggable(Level.INFO)) {
-            LOG.info(
-                "Created " + numPrivateMsgs +
-                        " private messages per contact."
-            )
+            LOG.info("Created $numPrivateMsgs private messages per contact.")
         }
     }
 
     @Throws(DbException::class)
-    private fun createRandomPrivateMessage(
+    private fun createPrivateMessage(
         contactId: ContactId,
-        groupId: GroupId, num: Int
+        groupId: GroupId,
+        message: org.briarproject.briar.desktop.testdata.Message
     ) {
-        val timestamp = clock.currentTimeMillis() - num * 60 * 1000
-        val text = randomText
-        val local = random.nextBoolean()
+        val timestamp = message.date.toEpochSecond(ZoneOffset.UTC)
+        val text = message.text
+        val local = message.direction == Direction.OUTGOING
         val autoDelete = random.nextBoolean()
         createPrivateMessage(
             contactId, groupId, text, timestamp, local,
@@ -321,8 +313,12 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
 
     @Throws(DbException::class)
     private fun createPrivateMessage(
-        contactId: ContactId, groupId: GroupId,
-        text: String, timestamp: Long, local: Boolean, autoDelete: Boolean
+        contactId: ContactId,
+        groupId: GroupId,
+        text: String,
+        timestamp: Long,
+        local: Boolean,
+        autoDelete: Boolean
     ) {
         val timer =
             if (autoDelete) AutoDeleteConstants.MIN_AUTO_DELETE_TIMER_MS else AutoDeleteConstants.NO_AUTO_DELETE_TIMER
