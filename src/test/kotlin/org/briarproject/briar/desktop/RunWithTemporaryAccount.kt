@@ -20,7 +20,7 @@ import java.util.logging.Level.INFO
 import java.util.logging.LogManager
 import kotlin.io.path.absolute
 
-private class TestWithTemporaryAccount {
+internal class RunWithTemporaryAccount(val customization: BriarDesktopTestApp.() -> Unit) {
 
     @OptIn(ExperimentalComposeUiApi::class)
     fun run() = application {
@@ -54,8 +54,7 @@ private class TestWithTemporaryAccount {
         lifecycleManager.startServices(dbKey)
         lifecycleManager.waitForStartup()
 
-        app.getDeterministicTestDataCreator().createTestData(5, 20, 50)
-        app.getTestDataCreator().createTestData(5, 20, 50, 4, 4, 10)
+        customization(app)
 
         // Creating test data happens on a background thread. As we do not get notified about updates to the conact
         // list yet, we need to wait a moment in order for that to finish (hopefully).
@@ -86,5 +85,3 @@ private class TestWithTemporaryAccount {
         return dataDir
     }
 }
-
-fun main(args: Array<String>) = TestWithTemporaryAccount().run()
