@@ -9,6 +9,7 @@ import org.briarproject.bramble.api.lifecycle.ShutdownManager
 import org.briarproject.briar.BriarCoreEagerSingletons
 import org.briarproject.briar.BriarCoreModule
 import org.briarproject.briar.api.test.TestDataCreator
+import org.briarproject.briar.desktop.testdata.DeterministicTestDataCreator
 import java.security.SecureRandom
 import javax.inject.Singleton
 
@@ -33,4 +34,6 @@ internal interface BriarDesktopTestApp : BrambleCoreEagerSingletons, BriarCoreEa
     fun getAccountManager(): AccountManager
 
     fun getTestDataCreator(): TestDataCreator
+
+    fun getDeterministicTestDataCreator(): DeterministicTestDataCreator
 }

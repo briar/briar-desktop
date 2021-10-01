@@ -25,6 +25,8 @@ import org.briarproject.bramble.system.JavaSystemModule
 import org.briarproject.bramble.util.OsUtils.isLinux
 import org.briarproject.bramble.util.OsUtils.isMac
 import org.briarproject.briar.api.test.TestAvatarCreator
+import org.briarproject.briar.desktop.testdata.DeterministicTestDataCreator
+import org.briarproject.briar.desktop.testdata.DeterministicTestDataCreatorImpl
 import org.briarproject.briar.test.TestModule
 import java.io.File
 import java.util.Collections.emptyList
@@ -93,4 +95,10 @@ internal class DesktopTestModule(private val appDir: File) {
 
     @Provides
     internal fun provideTestAvatarCreator() = TestAvatarCreator { null }
+
+    @Provides
+    @Singleton
+    internal fun getDeterministicTestDataCreator(testDataCreator: DeterministicTestDataCreatorImpl): DeterministicTestDataCreator {
+        return testDataCreator
+    }
 }

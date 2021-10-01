@@ -54,7 +54,8 @@ private class TestWithTemporaryAccount {
         lifecycleManager.startServices(dbKey)
         lifecycleManager.waitForStartup()
 
-        app.getTestDataCreator().createTestData(10, 20, 50, 4, 4, 10)
+        app.getDeterministicTestDataCreator().createTestData(5, 20, 50)
+        app.getTestDataCreator().createTestData(5, 20, 50, 4, 4, 10)
 
         // Creating test data happens on a background thread. As we do not get notified about updates to the conact
         // list yet, we need to wait a moment in order for that to finish (hopefully).
