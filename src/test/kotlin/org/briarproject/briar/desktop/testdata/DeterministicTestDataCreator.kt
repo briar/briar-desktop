@@ -18,5 +18,5 @@ interface DeterministicTestDataCreator {
 
     @IoExecutor
     @Throws(DbException::class)
-    fun addContact(name: String?, alias: String?, avatar: Boolean): Contact?
+    fun addContact(name: String, alias: String?, avatar: Boolean): Contact
 }

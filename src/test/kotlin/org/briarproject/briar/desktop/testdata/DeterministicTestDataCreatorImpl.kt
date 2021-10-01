@@ -25,7 +25,6 @@ import org.briarproject.bramble.api.sync.GroupId
 import org.briarproject.bramble.api.sync.Message
 import org.briarproject.bramble.api.system.Clock
 import org.briarproject.bramble.util.LogUtils
-import org.briarproject.bramble.util.StringUtils
 import org.briarproject.briar.api.autodelete.AutoDeleteConstants
 import org.briarproject.briar.api.avatar.AvatarManager
 import org.briarproject.briar.api.avatar.AvatarMessageEncoder
@@ -57,7 +56,11 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
     private val avatarMessageEncoder: AvatarMessageEncoder,
     @field:IoExecutor @param:IoExecutor private val ioExecutor: Executor
 ) : DeterministicTestDataCreator {
-    private val LOG = Logger.getLogger(DeterministicTestDataCreatorImpl::class.java.name)
+
+    companion object {
+        private val LOG = Logger.getLogger(DeterministicTestDataCreatorImpl::class.java.name)
+    }
+
     private val random = Random()
     private val localAuthors: MutableMap<Contact, LocalAuthor> = HashMap()
     override fun createTestData(
@@ -118,7 +121,7 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
 
         // prepare transport properties
         val props = randomTransportProperties
-        val contact = db.transactionWithResult<Contact, RuntimeException>(false) { txn: Transaction? ->
+        val contact = db.transactionWithResult<Contact, RuntimeException>(false) { txn: Transaction ->
             val contactId = contactManager.addContact(
                 txn, remote, localAuthorId, secretKey, timestamp, true, verified, true
             )
@@ -137,7 +140,7 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
     }
 
     @Throws(DbException::class)
-    override fun addContact(name: String?, alias: String?, avatar: Boolean): Contact? {
+    override fun addContact(name: String, alias: String?, avatar: Boolean): Contact {
         val localAuthor = identityManager.localAuthor
         val remote = authorFactory.createLocalAuthor(name)
         val avatarPercent = if (avatar) 100 else 0
@@ -145,7 +148,7 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
     }
 
     private val secretKey: SecretKey
-        private get() {
+        get() {
             val b = ByteArray(SecretKey.LENGTH)
             random.nextBytes(b)
             return SecretKey(b)
@@ -153,7 +156,7 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
 
     // Bluetooth
     private val randomTransportProperties: Map<TransportId, TransportProperties>
-        private get() {
+        get() {
             val props: MutableMap<TransportId, TransportProperties> = HashMap()
             // Bluetooth
             val bt = TransportProperties()
@@ -167,7 +170,7 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
             val lan = TransportProperties()
             val sb = StringBuilder()
             for (i in 0..3) {
-                if (sb.length > 0) sb.append(',')
+                if (sb.isNotEmpty()) sb.append(',')
                 sb.append(randomLanAddress)
             }
             lan[LanTcpConstants.PROP_IP_PORTS] = sb.toString()
@@ -183,18 +186,18 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
             return props
         }
     private val randomBluetoothAddress: String
-        private get() {
+        get() {
             val mac = ByteArray(6)
             random.nextBytes(mac)
             val sb = StringBuilder(18)
             for (b in mac) {
-                if (sb.length > 0) sb.append(":")
+                if (sb.isNotEmpty()) sb.append(":")
                 sb.append(String.format("%02X", b))
             }
             return sb.toString()
         }
     private val randomUUID: String
-        private get() {
+        get() {
             val uuid = ByteArray(BluetoothConstants.UUID_BYTES)
             random.nextBytes(uuid)
             return UUID.nameUUIDFromBytes(uuid).toString()
@@ -203,7 +206,7 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
     // address
     // port
     private val randomLanAddress: String
-        private get() {
+        get() {
             val sb = StringBuilder()
             // address
             if (random.nextInt(5) == 0) {
@@ -219,15 +222,15 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
             return sb.toString()
         }
     private val randomPortNumber: Int
-        private get() = 32768 + random.nextInt(32768)
+        get() = 32768 + random.nextInt(32768)
 
     // address
     private val randomTorAddress: String
-        private get() {
+        get() {
             val sb = StringBuilder()
             // address
             for (i in 0..15) {
-                if (random.nextBoolean()) sb.append(2 + random.nextInt(6)) else sb.append((random.nextInt(26) + 'a'.toInt()).toChar())
+                if (random.nextBoolean()) sb.append(2 + random.nextInt(6)) else sb.append((random.nextInt(26) + 'a'.code).toChar())
             }
             return sb.toString()
         }
@@ -239,24 +242,18 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
             AvatarManager.CLIENT_ID,
             AvatarManager.MAJOR_VERSION, authorId.bytes
         ).id
-        val `is`: InputStream?
-        `is` = try {
+        val `is`: InputStream = try {
             testAvatarCreator.avatarInputStream
         } catch (e: IOException) {
             LogUtils.logException(LOG, Level.WARNING, e)
             return
-        }
-        if (`is` == null) return
-        val m: Message
-        m = try {
-            avatarMessageEncoder.encodeUpdateMessage(
-                groupId, 0,
-                "image/jpeg", `is`
-            ).first
+        } ?: return
+        val m: Message = try {
+            avatarMessageEncoder.encodeUpdateMessage(groupId, 0, "image/jpeg", `is`).first
         } catch (e: IOException) {
             throw DbException(e)
         }
-        db.transaction<RuntimeException>(false) { txn: Transaction? ->
+        db.transaction<RuntimeException>(false) { txn: Transaction ->
             // TODO: Do this properly via clients without breaking encapsulation
             db.setGroupVisibility(txn, c.id, groupId, Group.Visibility.SHARED)
             db.receiveMessage(txn, c.id, m)
@@ -266,13 +263,8 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
     // TODO: Do this properly via clients without breaking encapsulation
     @Throws(DbException::class)
     private fun shareGroup(contactId: ContactId, groupId: GroupId) {
-        db.transaction<RuntimeException>(false) { txn: Transaction? ->
-            db.setGroupVisibility(
-                txn,
-                contactId,
-                groupId,
-                Group.Visibility.SHARED
-            )
+        db.transaction<RuntimeException>(false) { txn: Transaction ->
+            db.setGroupVisibility(txn, contactId, groupId, Group.Visibility.SHARED)
         }
     }
 
@@ -305,10 +297,7 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
         val text = message.text
         val local = message.direction == Direction.OUTGOING
         val autoDelete = random.nextBoolean()
-        createPrivateMessage(
-            contactId, groupId, text, timestamp, local,
-            autoDelete
-        )
+        createPrivateMessage(contactId, groupId, text, timestamp, local, autoDelete)
     }
 
     @Throws(DbException::class)
@@ -329,31 +318,12 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
             if (local) {
                 messagingManager.addLocalMessage(m)
             } else {
-                db.transaction<RuntimeException>(false) { txn: Transaction? ->
-                    db.receiveMessage(
-                        txn,
-                        contactId,
-                        m.message
-                    )
+                db.transaction<RuntimeException>(false) { txn: Transaction ->
+                    db.receiveMessage(txn, contactId, m.message)
                 }
             }
         } catch (e: FormatException) {
             throw AssertionError(e)
         }
     }
-
-    private val randomText: String
-        private get() {
-            val minLength = 3 + random.nextInt(500)
-            val maxWordLength = 15
-            val sb = StringBuilder()
-            while (sb.length < minLength) {
-                if (sb.length > 0) sb.append(' ')
-                sb.append(StringUtils.getRandomString(random.nextInt(maxWordLength) + 1))
-            }
-            if (random.nextBoolean()) {
-                sb.append(" \uD83D\uDC96 \uD83E\uDD84 \uD83C\uDF08")
-            }
-            return sb.toString()
-        }
 }
