@@ -93,6 +93,12 @@ import org.briarproject.briar.desktop.paul.theme.briarGreen
 import org.briarproject.briar.desktop.paul.theme.darkGray
 import org.briarproject.briar.desktop.paul.theme.divider
 import org.briarproject.briar.desktop.paul.theme.lightGray
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
+import java.time.temporal.ChronoUnit
 import java.util.Collections
 
 val HEADER_SIZE = 56.dp
@@ -271,9 +277,9 @@ fun ContactCard(
                     color = Color.White,
                     modifier = Modifier.align(Alignment.Start).padding(bottom = 2.dp)
                 )
-                // TODO add proper last message time
+                val latestMsgTime = CM.current.getGroupCount(contact.id).latestMsgTime
                 Text(
-                    "10 min ago",
+                    getFormattedTimestamp(latestMsgTime),
                     fontSize = 10.sp,
                     color = Color.LightGray,
                     modifier = Modifier.align(Alignment.Start)
@@ -295,6 +301,21 @@ fun ContactCard(
         )
     }
     Divider(color = divider, thickness = 1.dp, modifier = Modifier.fillMaxWidth())
+}
+
+fun getFormattedTimestamp(timestamp: Long): String {
+    val messageTime = LocalDateTime.ofInstant(
+        Instant.ofEpochMilli(timestamp), ZoneId.systemDefault()
+    )
+    val currentTime = LocalDateTime.now()
+    val difference = ChronoUnit.MINUTES.between(messageTime, currentTime)
+
+    val formatter = if (difference < 1440) { // = 1 day
+        DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
+    } else {
+        DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
+    }
+    return messageTime.format(formatter)
 }
 
 @Composable
