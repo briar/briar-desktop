@@ -77,6 +77,14 @@ To specify a different data directory and enable the debug output:
 
     ./gradlew run --args="--debug --data-dir=/tmp/briar-tmp"
 
+In case you want to build a self-contained Debian package, note that you need at least JDK 15 and that you might need to install `binutils` and `fakeroot` before running the respective task:
+
+    ./gradlew packageDeb
+
+If you want to use the JDKs downloaded by Intellij IDEA, you can for example specify the path like this:
+
+    ./gradlew packageDeb -Dorg.gradle.java.home=/home/briar/.jdks/azul-15.0.4
+
 ## Translations
 
 See [TRANSLATION.md](./TRANSLATION.md) for more information.
