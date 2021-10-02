@@ -13,6 +13,7 @@ import org.briarproject.bramble.api.contact.Contact
 import org.briarproject.bramble.api.contact.ContactManager
 import org.briarproject.bramble.api.crypto.DecryptionException
 import org.briarproject.bramble.api.crypto.PasswordStrengthEstimator
+import org.briarproject.bramble.api.identity.IdentityManager
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.briar.api.conversation.ConversationManager
 import org.briarproject.briar.api.messaging.MessagingManager
@@ -37,7 +38,8 @@ interface BriarService {
     fun start(
         contactManager: ContactManager,
         conversationManager: ConversationManager,
-        messagingManager: MessagingManager
+        messagingManager: MessagingManager,
+        identityManager: IdentityManager,
     )
 
     fun stop()
@@ -46,6 +48,7 @@ interface BriarService {
 val CVM = compositionLocalOf<ConversationManager> { error("Undefined ConversationManager") }
 val CTM = compositionLocalOf<ContactManager> { error("Undefined ContactManager") }
 val MM = compositionLocalOf<MessagingManager> { error("Undefined MessagingManager") }
+val IM = compositionLocalOf<IdentityManager> { error("Undefined IdentityManager") }
 
 @Immutable
 @Singleton
@@ -70,7 +73,8 @@ constructor(
     override fun start(
         contactManager: ContactManager,
         conversationManager: ConversationManager,
-        messagingManager: MessagingManager
+        messagingManager: MessagingManager,
+        identityManager: IdentityManager,
     ) {
         val (isDark, setDark) = remember { mutableStateOf(true) }
         val title = "Briar Desktop"
@@ -115,7 +119,8 @@ constructor(
                         CompositionLocalProvider(
                             CVM provides conversationManager,
                             CTM provides contactManager,
-                            MM provides messagingManager
+                            MM provides messagingManager,
+                            IM provides identityManager,
                         ) {
                             BriarUIStateManager(contacts, isDark, setDark)
                         }

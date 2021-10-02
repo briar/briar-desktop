@@ -3,7 +3,6 @@ package org.briarproject.briar.desktop.paul.views
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -67,15 +66,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.drawscope.withTransform
-import androidx.compose.ui.res.loadImageBitmap
-import androidx.compose.ui.res.useResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.briarproject.bramble.api.FormatException
@@ -295,15 +289,6 @@ fun SearchTextField(searchValue: String, onValueChange: (String) -> Unit, onCont
 }
 
 @Composable
-fun ProfileCircle(bitmap: ImageBitmap, size: Dp) {
-    Image(
-        bitmap,
-        "image",
-        Modifier.size(size).clip(CircleShape).border(2.dp, MaterialTheme.colors.outline, CircleShape)
-    )
-}
-
-@Composable
 fun ContactCard(
     contact: Contact,
     selContact: Contact,
@@ -326,7 +311,7 @@ fun ContactCard(
         Row(horizontalArrangement = Arrangement.SpaceBetween) {
             Row(modifier = Modifier.align(Alignment.CenterVertically).padding(horizontal = 16.dp)) {
                 // TODO Pull profile pictures
-                ProfileCircle(useResource("images/profile_images/p0.png") { loadImageBitmap(it) }, 36.dp)
+                ProfileCircle(36.dp, contact.author.id.bytes)
                 // Draw notification badges
                 if (drawNotifications) {
                     Canvas(
@@ -340,7 +325,6 @@ fun ContactCard(
                         }
                     )
                 }
-
                 Column(modifier = Modifier.align(Alignment.CenterVertically).padding(start = 12.dp)) {
                     Text(
                         contact.author.name,
@@ -578,7 +562,7 @@ fun ConversationHeader(
 
     Box(modifier = Modifier.fillMaxWidth().height(HEADER_SIZE + 1.dp)) {
         Row(modifier = Modifier.align(Alignment.Center)) {
-            ProfileCircle(useResource("images/profile_images/p0.png") { loadImageBitmap(it) }, 36.dp)
+            ProfileCircle(36.dp, contact.author.id.bytes)
             Canvas(
                 modifier = Modifier.align(Alignment.CenterVertically),
                 onDraw = {
@@ -704,14 +688,14 @@ fun ContactDrawerMakeIntro(contact: Contact, contacts: List<Contact>, setInfoDra
             }
             Row(Modifier.fillMaxWidth().padding(12.dp), horizontalArrangement = Arrangement.SpaceAround) {
                 Column(Modifier.align(Alignment.CenterVertically)) {
-                    ProfileCircle(useResource("images/profile_images/p0.png") { loadImageBitmap(it) }, 40.dp)
-                    Text(contact.author.name, Modifier.padding(top = 4.dp), fontSize = 16.sp)
+                    ProfileCircle(40.dp, contact.author.id.bytes)
+                    Text(contact.author.name, Modifier.padding(top = 4.dp), Color.White, 16.sp)
                 }
                 Icon(Filled.SwapHoriz, "swap", modifier = Modifier.size(48.dp))
                 Column(Modifier.align(Alignment.CenterVertically)) {
                     // TODO Profile pic again
-                    ProfileCircle(useResource("images/profile_images/p0.png") { loadImageBitmap(it) }, 40.dp)
-                    Text(introContact.author.name, Modifier.padding(top = 4.dp), fontSize = 16.sp)
+                    ProfileCircle(40.dp, contact.author.id.bytes)
+                    Text(introContact.author.name, Modifier.padding(top = 4.dp), Color.White, 16.sp)
                 }
             }
             var introText by remember { mutableStateOf(TextFieldValue("")) }

@@ -5,6 +5,7 @@ import org.briarproject.bramble.api.account.AccountManager
 import org.briarproject.bramble.api.contact.ContactManager
 import org.briarproject.bramble.api.crypto.PasswordStrengthEstimator
 import org.briarproject.bramble.api.event.EventBus
+import org.briarproject.bramble.api.identity.IdentityManager
 import org.briarproject.briar.api.conversation.ConversationManager
 import org.briarproject.briar.api.introduction.IntroductionManager
 import org.briarproject.briar.api.messaging.MessagingManager
@@ -25,6 +26,7 @@ constructor(
     private val messagingManager: MessagingManager,
     private val introductionManager: IntroductionManager,
     private val conversationManager: ConversationManager,
+    private val identityManager: IdentityManager,
     private val privateMessageFactory: PrivateMessageFactory,
     private val eventBus: EventBus,
     private val passwordStrengthEstimator: PasswordStrengthEstimator
@@ -37,7 +39,12 @@ constructor(
         briarService.start(
             contactManager,
             conversationManager,
-            messagingManager
+            messagingManager,
+            identityManager
         )
+    }
+
+    internal fun getContactManager(): ContactManager {
+        return contactManager
     }
 }
