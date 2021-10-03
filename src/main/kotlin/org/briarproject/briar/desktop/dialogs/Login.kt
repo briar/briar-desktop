@@ -21,12 +21,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.svgResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 
 // TODO: Error handling
+
 @Composable
 fun Login(
     title: String,
@@ -57,7 +57,12 @@ private fun TheImage() {
 @Composable
 private fun TheTextField(onResult: (result: String) -> Unit) {
     var password by remember { mutableStateOf("") }
-    OutlinedTextField(password, { password = it }, label = { Text("Password") }, textStyle = TextStyle(color = MaterialTheme.colors.onBackground))
+    OutlinedTextField(
+        password,
+        { password = it },
+        label = { Text("Password") },
+        textStyle = TextStyle(color = MaterialTheme.colors.onBackground)
+    )
     Spacer(Modifier.height(16.dp))
     Button(
         onClick = {

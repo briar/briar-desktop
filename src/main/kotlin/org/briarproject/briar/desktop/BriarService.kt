@@ -21,9 +21,7 @@ import org.briarproject.briar.api.conversation.ConversationManager
 import org.briarproject.briar.api.messaging.MessagingManager
 import org.briarproject.briar.desktop.dialogs.Login
 import org.briarproject.briar.desktop.dialogs.Registration
-import org.briarproject.briar.desktop.paul.theme.DarkColors
 import org.briarproject.briar.desktop.paul.theme.LightColors
-import org.briarproject.briar.desktop.paul.theme.briarBlack
 import org.briarproject.briar.desktop.paul.views.BriarUIStateManager
 import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
