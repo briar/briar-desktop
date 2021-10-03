@@ -22,25 +22,31 @@ val briarBlueMsg = Color(0xFF1b69b6)
 val briarBlueSpecialMsg = Color(0xFF134a80)
 val briarGrayMsg = Color(0xff3b4047)
 val briarGraySpecialMsg = Color(0xFF212d3b)
+val briarPrimary = Color(0xff1f78d1)
 
 val Colors.divider: Color
-    @Composable get() = if (isLight) Gray300 else Gray800
+    @Composable get() = if (isLight) Gray300 else Gray900
 val Colors.outline: Color
-    @Composable get() = if (isLight) Gray500 else Color.White
+    @Composable get() = Color.White
 
 val Colors.surfaceVariant: Color
-    @Composable get() = if (isLight) Color.Red else Color.Blue
+    @Composable get() = if (isLight) Gray100 else Gray950
 val Colors.sidebarSurface: Color
-    @Composable get() = if (isLight) Color.Red else Color.Blue
+    @Composable get() = if (isLight) Gray300 else Gray900
 val Colors.topBarSurface: Color
     @Composable get() = if (isLight) Color.Red else Color.Blue
 val Colors.selectedCard: Color
-    @Composable get() = if (isLight) Color.Red else Color.Blue
+    @Composable get() = if (isLight) Gray400 else Gray700
+
+val Colors.localMsgBubble: Color
+    @Composable get() = if (isLight) briarPrimary else briarPrimary
+val Colors.awayMsgBubble: Color
+    @Composable get() = if (isLight) Gray300 else Gray800
 
 val DarkColors = darkColors(
     primary = Color(0xff1f78d1),
     primaryVariant = Color(0xff435b77),
-    secondary = briarGreen,
+    secondary = Lime500,
     background = Color(0xff121212),
     surface = Color(0xff121212),
     onPrimary = Color.White,
@@ -53,7 +59,7 @@ val DarkColors = darkColors(
 val LightColors = lightColors(
     primary = Color(0xff1f78d1),
     primaryVariant = Color(0xff435b77),
-    secondary = briarGreen,
+    secondary = Lime300,
     background = Color.White,
     surface = Color.White,
     onPrimary = Color.White,

@@ -14,10 +14,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import org.briarproject.bramble.api.contact.Contact
-import org.briarproject.briar.desktop.paul.theme.briarBlack
 import org.briarproject.briar.desktop.paul.theme.divider
 
 enum class UiModes {
@@ -64,8 +62,8 @@ fun BriarUIStateManager(
                 contacts,
                 setContact
             )
-            else -> Box(modifier = Modifier.fillMaxSize().background(briarBlack)) {
-                Text("TBD", modifier = Modifier.align(Alignment.Center), color = Color.White)
+            else -> Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colors.surface)) {
+                Text("TBD", modifier = Modifier.align(Alignment.Center), color = MaterialTheme.colors.onSurface)
             }
         }
     }
