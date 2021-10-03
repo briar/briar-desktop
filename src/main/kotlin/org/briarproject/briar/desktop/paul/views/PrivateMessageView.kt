@@ -206,7 +206,7 @@ fun SearchTextField(searchValue: String, onValueChange: (String) -> Unit, onCont
         singleLine = true,
         textStyle = TextStyle(fontSize = 14.sp),
         placeholder = { Text("Contacts") },
-        //colors = TextFieldDefaults.outlinedTextFieldColors(backgroundColor = MaterialTheme.colors.background),
+        // colors = TextFieldDefaults.outlinedTextFieldColors(backgroundColor = MaterialTheme.colors.background),
         shape = RoundedCornerShape(0.dp),
         leadingIcon = {
             val padding = Modifier.padding(top = 8.dp, bottom = 8.dp, start = 12.dp)
@@ -249,8 +249,9 @@ fun ContactCard(
                 HEADER_SIZE
             )
     Card(
-        elevation = elevation, modifier = Modifier.fillMaxWidth().height(HEADER_SIZE)
-            .clickable(onClick = { onSel(contact) }), shape = RoundedCornerShape(0.dp)
+        elevation = elevation,
+        modifier = Modifier.fillMaxWidth().height(HEADER_SIZE).clickable(onClick = { onSel(contact) }),
+        shape = RoundedCornerShape(0.dp)
     ) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween
@@ -273,8 +274,7 @@ fun ContactCard(
                 }
                 Column(modifier = Modifier.align(Alignment.CenterVertically).padding(start = 12.dp)) {
                     Text(
-                        //contact.author.name,
-                        "test",
+                        contact.author.name,
                         fontSize = 14.sp,
                         modifier = Modifier.align(Alignment.Start).padding(bottom = 2.dp)
                     )
@@ -345,7 +345,6 @@ fun ContactList(
                     for (c in filteredContacts) {
                         ContactCard(c, contact, onContactSelect, contact.id == c.id, true)
                     }
-
                 }
             }
         },
@@ -393,7 +392,6 @@ fun TextBubble(m: SimpleMessage, alignment: Alignment.Horizontal, color: Color, 
                             Icon(Filled.Schedule, "sending", modifier, Color.LightGray)
                         }
                     }
-
                 }
             }
         }
@@ -521,8 +519,7 @@ fun MsgColumnHeader(
                     }
                 )
                 Text(
-                    //contact.author.name,
-                    "test",
+                    contact.author.name,
                     modifier = Modifier.align(Alignment.CenterVertically).padding(start = 12.dp),
                     fontSize = 20.sp
                 )
@@ -546,8 +543,7 @@ fun MsgColumnHeader(
 @Composable
 fun MsgInput() {
     var text by remember { mutableStateOf("") }
-    Column(
-    ) {
+    Column {
         Divider(color = MaterialTheme.colors.divider, thickness = 1.dp, modifier = Modifier.fillMaxWidth())
         TextField(
             value = text,

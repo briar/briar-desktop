@@ -14,7 +14,7 @@ val briarSelBlack = Color(0xff495261)
 val briarDarkGray = Color(0xFF3D4552)
 val darkGray = Color(0xFF151515)
 
-//val divider = Color(0xff35383D)
+// val divider = Color(0xff35383D)
 val briarBlue = Color(0xFF2D3E50)
 val briarLightBlue = Color(0xFFEBEFF2)
 val briarGreen = Color(0xff61d800)
