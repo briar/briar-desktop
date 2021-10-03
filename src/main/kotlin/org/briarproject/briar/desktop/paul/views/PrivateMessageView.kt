@@ -98,6 +98,7 @@ import org.briarproject.briar.desktop.paul.theme.briarGreen
 import org.briarproject.briar.desktop.paul.theme.darkGray
 import org.briarproject.briar.desktop.paul.theme.divider
 import org.briarproject.briar.desktop.paul.theme.lightGray
+import org.briarproject.briar.desktop.paul.theme.outline
 import java.util.Collections
 
 val HEADER_SIZE = 56.dp
@@ -232,7 +233,7 @@ fun SearchTextField(searchValue: String, onValueChange: (String) -> Unit, onCont
 
 @Composable
 fun ProfileCircle(bitmap: ImageBitmap, size: Dp) {
-    Image(bitmap, "image", Modifier.size(size).clip(CircleShape).border(2.dp, Color.White, CircleShape))
+    Image(bitmap, "image", Modifier.size(size).clip(CircleShape).border(2.dp, MaterialTheme.colors.outline, CircleShape))
 }
 
 @Composable

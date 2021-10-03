@@ -21,12 +21,20 @@ val briarBlueMsg = Color(0xFF1b69b6)
 val briarBlueSpecialMsg = Color(0xFF134a80)
 val briarGrayMsg = Color(0xff3b4047)
 val briarGraySpecialMsg = Color(0xFF212d3b)
-val Night700 = Color(0xff2E3D4F )
 
 val Colors.divider: Color
-    @Composable get() = if (isLight) lightGray else Color(0xff35383D)
-val Colors.primary: Color
-    @Composable get() = if (isLight) lightGray else divider
+    @Composable get() = if (isLight) Gray300 else Gray800
+val Colors.outline: Color
+    @Composable get() = if (isLight) Gray500 else Color.White
+
+val Colors.surfaceVariant: Color
+    @Composable get() = if (isLight) Color.Red else Color.Blue
+val Colors.sidebarSurface: Color
+    @Composable get() = if (isLight) Color.Red else Color.Blue
+val Colors.topBarSurface: Color
+    @Composable get() = if (isLight) Color.Red else Color.Blue
+val Colors.selectedCard: Color
+    @Composable get() = if (isLight) Color.Red else Color.Blue
 
 val DarkColors = darkColors(
     primary = Color(0xff1f78d1),
