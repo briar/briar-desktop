@@ -87,8 +87,6 @@ import org.briarproject.briar.desktop.chat.ConversationMessageHeaderComparator
 import org.briarproject.briar.desktop.chat.SimpleMessage
 import org.briarproject.briar.desktop.chat.UiState
 import org.briarproject.briar.desktop.paul.theme.awayMsgBubble
-import org.briarproject.briar.desktop.paul.theme.briarDarkGray
-import org.briarproject.briar.desktop.paul.theme.darkGray
 import org.briarproject.briar.desktop.paul.theme.divider
 import org.briarproject.briar.desktop.paul.theme.localMsgBubble
 import org.briarproject.briar.desktop.paul.theme.outline
@@ -120,7 +118,7 @@ fun PrivateMessageView(
     Row(modifier = Modifier.fillMaxWidth()) {
         ContactList(contact, contacts, onContactSelect, onContactAdd)
         Divider(color = MaterialTheme.colors.divider, modifier = Modifier.fillMaxHeight().width(1.dp))
-        Column(modifier = Modifier.weight(1f).fillMaxHeight().background(color = darkGray)) {
+        Column(modifier = Modifier.weight(1f).fillMaxHeight()) {
             DrawMessageColumn(
                 contact,
                 contacts,
@@ -660,7 +658,7 @@ fun ContactDrawerMakeIntro(contact: Contact, contacts: List<Contact>, setInfoDra
             Row(Modifier.padding(8.dp)) {
                 TextButton(
                     onClick = { setInfoDrawer(false); introNextPg = false; },
-                    Modifier.fillMaxWidth().background(briarDarkGray)
+                    Modifier.fillMaxWidth()
                 ) {
                     Text("MAKE INTRODUCTION")
                 }
