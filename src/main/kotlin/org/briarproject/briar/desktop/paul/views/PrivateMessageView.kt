@@ -30,22 +30,18 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Colors
 import androidx.compose.material.Divider
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.TextField
-import androidx.compose.material.TextFieldColors
 import androidx.compose.material.TextFieldDefaults
-import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
@@ -93,11 +89,9 @@ import org.briarproject.briar.desktop.paul.theme.briarBlack
 import org.briarproject.briar.desktop.paul.theme.briarBlue
 import org.briarproject.briar.desktop.paul.theme.briarBlueMsg
 import org.briarproject.briar.desktop.paul.theme.briarDarkGray
-import org.briarproject.briar.desktop.paul.theme.briarGrayMsg
 import org.briarproject.briar.desktop.paul.theme.briarGreen
 import org.briarproject.briar.desktop.paul.theme.darkGray
 import org.briarproject.briar.desktop.paul.theme.divider
-import org.briarproject.briar.desktop.paul.theme.lightGray
 import org.briarproject.briar.desktop.paul.theme.outline
 import java.util.Collections
 
@@ -233,7 +227,11 @@ fun SearchTextField(searchValue: String, onValueChange: (String) -> Unit, onCont
 
 @Composable
 fun ProfileCircle(bitmap: ImageBitmap, size: Dp) {
-    Image(bitmap, "image", Modifier.size(size).clip(CircleShape).border(2.dp, MaterialTheme.colors.outline, CircleShape))
+    Image(
+        bitmap,
+        "image",
+        Modifier.size(size).clip(CircleShape).border(2.dp, MaterialTheme.colors.outline, CircleShape)
+    )
 }
 
 @Composable
@@ -245,10 +243,15 @@ fun ContactCard(
     drawNotifications: Boolean
 ) {
     val elevation = if (selected) 48.dp else 8.dp
-    val mod = if (selected) Modifier.fillMaxWidth().height(HEADER_SIZE).border(1.dp, Color.White) else Modifier.fillMaxWidth().height(
-        HEADER_SIZE)
-    Card(elevation = elevation, modifier = Modifier.fillMaxWidth().height(HEADER_SIZE)
-        .clickable(onClick = { onSel(contact) }), shape = RoundedCornerShape(0.dp)) {
+    val mod =
+        if (selected) Modifier.fillMaxWidth().height(HEADER_SIZE).border(1.dp, Color.White) else Modifier.fillMaxWidth()
+            .height(
+                HEADER_SIZE
+            )
+    Card(
+        elevation = elevation, modifier = Modifier.fillMaxWidth().height(HEADER_SIZE)
+            .clickable(onClick = { onSel(contact) }), shape = RoundedCornerShape(0.dp)
+    ) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
@@ -352,9 +355,19 @@ fun ContactList(
 @Composable
 fun TextBubble(m: SimpleMessage) {
     if (m.local) {
-        TextBubble(m, Alignment.End, MaterialTheme.colors.primary, RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp, bottomStart = 10.dp))
+        TextBubble(
+            m,
+            Alignment.End,
+            MaterialTheme.colors.primary,
+            RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp, bottomStart = 10.dp)
+        )
     } else {
-        TextBubble(m, Alignment.Start, MaterialTheme.colors.surface, RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp, bottomEnd = 10.dp))
+        TextBubble(
+            m,
+            Alignment.Start,
+            MaterialTheme.colors.surface,
+            RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp, bottomEnd = 10.dp)
+        )
     }
 }
 
@@ -521,7 +534,11 @@ fun MsgColumnHeader(
                 Icon(Filled.MoreVert, "contact info", tint = Color.White, modifier = Modifier.size(24.dp))
                 ContactDropDown(expanded, isExpanded, setInfoDrawer)
             }
-            Divider(color = MaterialTheme.colors.divider, thickness = 1.dp, modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter))
+            Divider(
+                color = MaterialTheme.colors.divider,
+                thickness = 1.dp,
+                modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter)
+            )
         }
     }
 }
@@ -540,7 +557,11 @@ fun MsgInput() {
             placeholder = { Text("Message", color = Color.Gray) },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(0.dp),
-            colors = TextFieldDefaults.textFieldColors(backgroundColor = MaterialTheme.colors.background, focusedIndicatorColor = MaterialTheme.colors.background, unfocusedIndicatorColor = MaterialTheme.colors.background),
+            colors = TextFieldDefaults.textFieldColors(
+                backgroundColor = MaterialTheme.colors.background,
+                focusedIndicatorColor = MaterialTheme.colors.background,
+                unfocusedIndicatorColor = MaterialTheme.colors.background
+            ),
             leadingIcon = {
                 IconButton(
                     onClick = {},

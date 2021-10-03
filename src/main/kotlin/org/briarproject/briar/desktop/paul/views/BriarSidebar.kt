@@ -1,7 +1,6 @@
 package org.briarproject.briar.desktop.paul.views
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -30,9 +29,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.imageFromResource
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import org.briarproject.briar.desktop.paul.theme.Night700
-import org.briarproject.briar.desktop.paul.theme.briarBlack
-import org.briarproject.briar.desktop.paul.theme.briarBlue
 
 @Composable
 fun BriarSidebar(uiMode: UiModes, setUiMode: (UiModes) -> Unit) {
