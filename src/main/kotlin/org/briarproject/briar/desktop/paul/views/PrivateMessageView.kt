@@ -7,6 +7,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -698,7 +699,11 @@ fun DrawMessageRow(
                 Modifier.offset(-(CONTACTLIST_WIDTH + SIDEBAR_WIDTH))
                     .requiredSize(maxWidth + CONTACTLIST_WIDTH + SIDEBAR_WIDTH, maxHeight)
                     .background(Color(0, 0, 0, 100))
-                    .clickable { setInfoDrawer(false) }
+                    .clickable(
+                        // prevent visual indication
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null
+                    ) { setInfoDrawer(false) }
             )
             Column(
                 modifier = Modifier.fillMaxHeight().width(CONTACTLIST_WIDTH)
