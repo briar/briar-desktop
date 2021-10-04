@@ -65,7 +65,8 @@ fun SearchTextField(
             Icon(
                 Icons.Filled.ArrowBack,
                 "search contacts",
-                padding.size(28.dp).clickable { setFocus(false); onValueChange("") })
+                padding.size(28.dp).clickable { setFocus(false); onValueChange("") }
+            )
         },
         trailingIcon = {
         },
