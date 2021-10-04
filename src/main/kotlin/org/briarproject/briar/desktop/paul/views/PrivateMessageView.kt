@@ -102,6 +102,7 @@ import java.time.temporal.ChronoUnit
 import java.util.Collections
 
 val HEADER_SIZE = 56.dp
+val CONTACTLIST_WIDTH = 275.dp
 
 // Right drawer state
 enum class ContactInfoDrawerState {
@@ -338,7 +339,7 @@ fun ContactList(
         resultList
     }
     Scaffold(
-        modifier = Modifier.fillMaxHeight().width(246.dp),
+        modifier = Modifier.fillMaxHeight().width(CONTACTLIST_WIDTH),
         backgroundColor = briarBlack,
         topBar = {
             Column(
@@ -694,9 +695,14 @@ fun DrawMessageRow(
         if (infoDrawer) {
             // TODO Find non-hacky way of setting scrim on entire app
             // We're able to make this work because the ContactList and BriarSidebar have constant widths which add to 302.dp
-            Box(Modifier.offset(-302.dp).requiredSize(maxWidth + 302.dp, maxHeight).background(Color(0, 0, 0, 100)))
+            Box(
+                Modifier.offset(-(CONTACTLIST_WIDTH + SIDEBAR_WIDTH))
+                    .requiredSize(maxWidth + CONTACTLIST_WIDTH + SIDEBAR_WIDTH, maxHeight)
+                    .background(Color(0, 0, 0, 100))
+            )
             Column(
-                modifier = Modifier.fillMaxHeight().width(275.dp).offset(maxWidth + animatedInfoDrawerOffsetX)
+                modifier = Modifier.fillMaxHeight().width(CONTACTLIST_WIDTH)
+                    .offset(maxWidth + animatedInfoDrawerOffsetX)
                     .background(briarBlack, RoundedCornerShape(topStart = 10.dp, bottomStart = 10.dp))
             ) {
                 ContactInfoDrawer(contact, contacts, setInfoDrawer, drawerState)

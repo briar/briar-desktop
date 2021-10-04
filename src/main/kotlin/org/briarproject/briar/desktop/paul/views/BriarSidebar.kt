@@ -33,9 +33,11 @@ import androidx.compose.ui.unit.dp
 import org.briarproject.briar.desktop.paul.theme.briarBlack
 import org.briarproject.briar.desktop.paul.theme.briarBlue
 
+val SIDEBAR_WIDTH = 56.dp
+
 @Composable
 fun BriarSidebar(uiMode: UiModes, setUiMode: (UiModes) -> Unit) {
-    Surface(modifier = Modifier.width(56.dp).fillMaxHeight(), color = briarBlue) {
+    Surface(modifier = Modifier.width(SIDEBAR_WIDTH).fillMaxHeight(), color = briarBlue) {
         Column(verticalArrangement = Arrangement.Top) {
             IconButton(
                 modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 5.dp, bottom = 4.dp),
