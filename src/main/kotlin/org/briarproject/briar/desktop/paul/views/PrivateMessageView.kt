@@ -694,11 +694,11 @@ fun DrawMessageRow(
         )
         if (infoDrawer) {
             // TODO Find non-hacky way of setting scrim on entire app
-            // We're able to make this work because the ContactList and BriarSidebar have constant widths which add to 302.dp
             Box(
                 Modifier.offset(-(CONTACTLIST_WIDTH + SIDEBAR_WIDTH))
                     .requiredSize(maxWidth + CONTACTLIST_WIDTH + SIDEBAR_WIDTH, maxHeight)
                     .background(Color(0, 0, 0, 100))
+                    .clickable { setInfoDrawer(false) }
             )
             Column(
                 modifier = Modifier.fillMaxHeight().width(CONTACTLIST_WIDTH)
