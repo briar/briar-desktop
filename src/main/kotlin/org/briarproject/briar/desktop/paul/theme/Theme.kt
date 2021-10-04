@@ -24,6 +24,9 @@ val briarGrayMsg = Color(0xff3b4047)
 val briarGraySpecialMsg = Color(0xFF212d3b)
 val briarPrimary = Color(0xff1f78d1)
 
+val Colors.placeholder: Color
+    @Composable get() = if (isLight) Gray700 else Gray300
+
 val Colors.divider: Color
     @Composable get() = if (isLight) Gray300 else Gray900
 val Colors.outline: Color

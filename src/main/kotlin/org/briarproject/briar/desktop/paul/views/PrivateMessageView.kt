@@ -50,9 +50,7 @@ import androidx.compose.material.icons.filled.ArrowRight
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.DoneAll
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.material.icons.filled.Schedule
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.SwapHoriz
 import androidx.compose.runtime.Composable
@@ -93,6 +91,7 @@ import org.briarproject.briar.desktop.paul.theme.outline
 import org.briarproject.briar.desktop.paul.theme.selectedCard
 import org.briarproject.briar.desktop.paul.theme.surfaceVariant
 import org.briarproject.briar.desktop.paul.theme.topBarSurface
+import org.briarproject.briar.desktop.paul.widgets.SearchHeader
 import java.util.Collections
 
 val HEADER_SIZE = 56.dp
@@ -206,33 +205,6 @@ fun AddContactDialog(isVisible: Boolean, onCancel: (Boolean) -> Unit) {
 }
 
 @Composable
-fun SearchTextField(searchValue: String, onValueChange: (String) -> Unit, onContactAdd: (Boolean) -> Unit) {
-    TextField(
-        value = searchValue,
-        onValueChange = onValueChange,
-        singleLine = true,
-        textStyle = TextStyle(fontSize = 14.sp),
-        placeholder = { Text("Contacts") },
-        // colors = TextFieldDefaults.outlinedTextFieldColors(backgroundColor = MaterialTheme.colors.background),
-        shape = RoundedCornerShape(0.dp),
-        leadingIcon = {
-            val padding = Modifier.padding(top = 8.dp, bottom = 8.dp, start = 12.dp)
-            Icon(Filled.Search, "search contacts", padding)
-        },
-        trailingIcon = {
-            IconButton(
-                onClick = { onContactAdd(true) },
-                modifier = Modifier.padding(end = 8.dp).size(32.dp).background(
-                    MaterialTheme.colors.primary, CircleShape
-                )
-            ) {
-                Icon(Filled.PersonAdd, "add contact", tint = Color.White, modifier = Modifier.size(20.dp))
-            }
-        }
-    )
-}
-
-@Composable
 fun ProfileCircle(bitmap: ImageBitmap, size: Dp) {
     Image(
         bitmap,
@@ -299,7 +271,7 @@ fun ContactCard(
                 }
             }
             Canvas(
-                modifier = Modifier.padding(start = 32.dp, end = 18.dp).size(22.dp).align(Alignment.CenterVertically),
+                modifier = Modifier.padding(start = 32.dp, end = 16.dp).size(22.dp).align(Alignment.CenterVertically),
                 onDraw = {
                     val size = 16.dp.toPx()
                     drawCircle(color = Color.White, radius = size / 2f)
@@ -324,26 +296,22 @@ fun ContactList(
     onContactAdd: (Boolean) -> Unit
 ) {
     var searchValue by remember { mutableStateOf("") }
-    val filteredContacts = if (searchValue.isEmpty()) {
-        ArrayList(contacts)
-    } else {
-        val resultList = ArrayList<Contact>()
-        for (c in contacts) {
-            if (c.author.name.lowercase().contains(searchValue.lowercase())) {
-                resultList.add(c)
-            }
+    val resultList = ArrayList<Contact>()
+    for (c in contacts) {
+        if (c.author.name.lowercase().contains(searchValue.lowercase())) {
+            resultList.add(c)
         }
-        resultList
     }
+    val filteredContacts = resultList
     Scaffold(
-        modifier = Modifier.fillMaxHeight().width(246.dp),
+        modifier = Modifier.fillMaxHeight().width(275.dp),
         topBar = {
             Surface(
                 modifier = Modifier.fillMaxWidth().height(HEADER_SIZE + 1.dp),
                 color = MaterialTheme.colors.surfaceVariant
             ) {
                 // Extra pixel in height to make the TextField line up with the horizontal divider lines
-                SearchTextField(searchValue, onValueChange = { searchValue = it }, onContactAdd)
+                SearchHeader(searchValue, onValueChange = { searchValue = it }, onContactAdd)
             }
         },
         content = {
@@ -352,8 +320,10 @@ fun ContactList(
                 color = MaterialTheme.colors.surfaceVariant
             ) {
                 Column(Modifier.verticalScroll(rememberScrollState())) {
-                    for (c in filteredContacts) {
-                        ContactCard(c, contact, onContactSelect, contact.id == c.id, true)
+                    if (filteredContacts.isNotEmpty()) {
+                        for (c in filteredContacts) {
+                            ContactCard(c, contact, onContactSelect, contact.id == c.id, true)
+                        }
                     }
                 }
             }
