@@ -34,10 +34,10 @@ constructor(
 
     @Composable
     internal fun startBriar() {
-        briarService.start(conversationManager, messagingManager)
-    }
-
-    internal fun getContactManager(): ContactManager {
-        return contactManager
+        briarService.start(
+            contactManager,
+            conversationManager,
+            messagingManager
+        )
     }
 }

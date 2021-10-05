@@ -39,6 +39,7 @@ enum class Screen {
 interface BriarService {
     @Composable
     fun start(
+        contactManager: ContactManager,
         conversationManager: ConversationManager,
         messagingManager: MessagingManager
     )
@@ -46,7 +47,8 @@ interface BriarService {
     fun stop()
 }
 
-val CM = compositionLocalOf<ConversationManager> { error("Undefined ConversationManager") }
+val CVM = compositionLocalOf<ConversationManager> { error("Undefined ConversationManager") }
+val CTM = compositionLocalOf<ContactManager> { error("Undefined ContactManager") }
 val MM = compositionLocalOf<MessagingManager> { error("Undefined MessagingManager") }
 
 @Immutable
@@ -70,6 +72,7 @@ constructor(
 
     @Composable
     override fun start(
+        contactManager: ContactManager,
         conversationManager: ConversationManager,
         messagingManager: MessagingManager
     ) {
@@ -115,7 +118,8 @@ constructor(
 
                     else ->
                         CompositionLocalProvider(
-                            CM provides conversationManager,
+                            CVM provides conversationManager,
+                            CTM provides contactManager,
                             MM provides messagingManager
                         ) {
                             BriarUIStateManager(contacts)

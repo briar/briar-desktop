@@ -74,10 +74,17 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.briarproject.bramble.api.FormatException
 import org.briarproject.bramble.api.contact.Contact
 import org.briarproject.bramble.api.contact.ContactId
+import org.briarproject.bramble.api.contact.ContactManager
+import org.briarproject.bramble.api.db.ContactExistsException
+import org.briarproject.bramble.api.db.PendingContactExistsException
+import org.briarproject.bramble.api.identity.AuthorConstants
+import org.briarproject.bramble.util.StringUtils
 import org.briarproject.briar.api.conversation.ConversationMessageHeader
-import org.briarproject.briar.desktop.CM
+import org.briarproject.briar.desktop.CTM
+import org.briarproject.briar.desktop.CVM
 import org.briarproject.briar.desktop.MM
 import org.briarproject.briar.desktop.chat.Chat
 import org.briarproject.briar.desktop.chat.ChatHistoryConversationVisitor
@@ -94,6 +101,7 @@ import org.briarproject.briar.desktop.paul.theme.briarGreen
 import org.briarproject.briar.desktop.paul.theme.darkGray
 import org.briarproject.briar.desktop.paul.theme.divider
 import org.briarproject.briar.desktop.paul.theme.lightGray
+import java.security.GeneralSecurityException
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -142,12 +150,16 @@ fun PrivateMessageView(
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun AddContactDialog(isVisible: Boolean, onCancel: (Boolean) -> Unit) {
+fun AddContactDialog(isVisible: Boolean, setDialogVisibility: (Boolean) -> Unit) {
     if (!isVisible) {
         return
     }
+    var contactAlias by remember { mutableStateOf("") }
+    var contactLink by remember { mutableStateOf("") }
+    val contactManager = CTM.current
+    val ownLink = CTM.current.handshakeLink
     AlertDialog(
-        onDismissRequest = { onCancel(false) },
+        onDismissRequest = { setDialogVisibility(false) },
         text = {
             Column(modifier = Modifier.fillMaxWidth()) {
                 Row(Modifier.fillMaxWidth().padding(vertical = 16.dp)) {
@@ -164,7 +176,7 @@ fun AddContactDialog(isVisible: Boolean, onCancel: (Boolean) -> Unit) {
                         Modifier.width(128.dp).align(Alignment.CenterVertically),
                         color = lightGray
                     )
-                    TextField("", onValueChange = {}, modifier = Modifier.fillMaxWidth())
+                    TextField(contactLink, onValueChange = { contactLink = it }, modifier = Modifier.fillMaxWidth())
                 }
                 Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
                     Text(
@@ -172,7 +184,7 @@ fun AddContactDialog(isVisible: Boolean, onCancel: (Boolean) -> Unit) {
                         Modifier.width(128.dp).align(Alignment.CenterVertically),
                         color = lightGray
                     )
-                    TextField("", onValueChange = {}, modifier = Modifier.fillMaxWidth())
+                    TextField(contactAlias, onValueChange = { contactAlias = it }, modifier = Modifier.fillMaxWidth())
                 }
                 Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
                     Text(
@@ -181,8 +193,7 @@ fun AddContactDialog(isVisible: Boolean, onCancel: (Boolean) -> Unit) {
                         color = lightGray
                     )
                     TextField(
-                        // TODO: use real code
-                        "briar://ksdjlfgakslhjgaklsjdhglkasjdlk3j12h4lk2j3tkj4",
+                        ownLink,
                         onValueChange = {},
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -191,14 +202,23 @@ fun AddContactDialog(isVisible: Boolean, onCancel: (Boolean) -> Unit) {
         },
         confirmButton = {
             TextButton(
-                onClick = { onCancel(false) }, modifier = Modifier.background(briarGreen)
+                onClick = {
+                    if (ownLink.equals(contactLink)) {
+                        println("Please enter contact's link, not your own")
+                        setDialogVisibility(false)
+                        return@TextButton
+                    }
+                    addPendingContact(contactManager, contactAlias, contactLink)
+                    setDialogVisibility(false)
+                },
+                modifier = Modifier.background(briarGreen)
             ) {
                 Text("Add")
             }
         },
         dismissButton = {
             TextButton(
-                onClick = { onCancel(false) }, modifier = Modifier.background(briarBlack)
+                onClick = { setDialogVisibility(false) }, modifier = Modifier.background(briarBlack)
             ) {
                 Text("Cancel")
             }
@@ -208,6 +228,41 @@ fun AddContactDialog(isVisible: Boolean, onCancel: (Boolean) -> Unit) {
         contentColor = Color.White,
         modifier = Modifier.border(1.dp, color = divider).size(600.dp, 300.dp),
     )
+}
+
+private fun addPendingContact(contactManager: ContactManager, alias: String, link: String) {
+    if (aliasIsInvalid(alias)) {
+        println("Alias is invalid")
+        return
+    }
+    try {
+        contactManager.addPendingContact(link, alias)
+    } catch (e: FormatException) {
+        println("Link is invalid")
+        println(e.stackTrace)
+    } catch (e: GeneralSecurityException) {
+        println("Public key is invalid")
+        println(e.stackTrace)
+    }
+    /*
+    TODO: Warn user that the following two errors might be an attack
+
+     Use `e.pendingContact.id.bytes` and `e.pendingContact.alias` to implement the following logic:
+     https://code.briarproject.org/briar/briar-gtk/-/merge_requests/97
+
+    */
+    catch (e: ContactExistsException) {
+        println("Contact already exists")
+        println(e.stackTrace)
+    } catch (e: PendingContactExistsException) {
+        println("Pending Contact already exists")
+        println(e.stackTrace)
+    }
+}
+
+private fun aliasIsInvalid(alias: String): Boolean {
+    val aliasUtf8 = StringUtils.toUtf8(alias)
+    return aliasUtf8.isEmpty() || aliasUtf8.size > AuthorConstants.MAX_AUTHOR_NAME_LENGTH
 }
 
 @Composable
@@ -279,7 +334,7 @@ fun ContactCard(
                     color = Color.White,
                     modifier = Modifier.align(Alignment.Start).padding(bottom = 2.dp)
                 )
-                val latestMsgTime = CM.current.getGroupCount(contact.id).latestMsgTime
+                val latestMsgTime = CVM.current.getGroupCount(contact.id).latestMsgTime
                 Text(
                     getFormattedTimestamp(latestMsgTime),
                     fontSize = 10.sp,
@@ -720,7 +775,7 @@ fun DrawMessageRow(
 fun ChatState(id: ContactId): MutableState<UiState<Chat>> {
     val state: MutableState<UiState<Chat>> = remember { mutableStateOf(UiState.Loading) }
     val messagingManager = MM.current
-    val conversationManager = CM.current
+    val conversationManager = CVM.current
 
     DisposableEffect(id) {
         state.value = UiState.Loading
