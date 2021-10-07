@@ -293,7 +293,7 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
         groupId: GroupId,
         message: org.briarproject.briar.desktop.testdata.Message
     ) {
-        val timestamp = message.date.toEpochSecond(ZoneOffset.UTC)
+        val timestamp = message.date.toEpochSecond(ZoneOffset.UTC) * 1000
         val text = message.text
         val local = message.direction == Direction.OUTGOING
         val autoDelete = random.nextBoolean()
