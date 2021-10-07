@@ -30,6 +30,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.AlertDialog
+import androidx.compose.material.Button
+import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.DropdownMenu
@@ -39,9 +41,11 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.TextField
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons.Filled
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
@@ -91,16 +95,13 @@ import org.briarproject.briar.desktop.chat.ChatHistoryConversationVisitor
 import org.briarproject.briar.desktop.chat.ConversationMessageHeaderComparator
 import org.briarproject.briar.desktop.chat.SimpleMessage
 import org.briarproject.briar.desktop.chat.UiState
-import org.briarproject.briar.desktop.paul.theme.DarkColorPallet
-import org.briarproject.briar.desktop.paul.theme.briarBlack
-import org.briarproject.briar.desktop.paul.theme.briarBlue
-import org.briarproject.briar.desktop.paul.theme.briarBlueMsg
-import org.briarproject.briar.desktop.paul.theme.briarDarkGray
-import org.briarproject.briar.desktop.paul.theme.briarGrayMsg
-import org.briarproject.briar.desktop.paul.theme.briarGreen
-import org.briarproject.briar.desktop.paul.theme.darkGray
+import org.briarproject.briar.desktop.paul.theme.DarkColors
+import org.briarproject.briar.desktop.paul.theme.awayMsgBubble
 import org.briarproject.briar.desktop.paul.theme.divider
-import org.briarproject.briar.desktop.paul.theme.lightGray
+import org.briarproject.briar.desktop.paul.theme.localMsgBubble
+import org.briarproject.briar.desktop.paul.theme.outline
+import org.briarproject.briar.desktop.paul.theme.selectedCard
+import org.briarproject.briar.desktop.paul.theme.surfaceVariant
 import java.security.GeneralSecurityException
 import java.time.Instant
 import java.time.LocalDateTime
@@ -121,21 +122,31 @@ enum class ContactInfoDrawerState {
 }
 
 @Composable
+fun HorizontalDivider(modifier: Modifier = Modifier) {
+    Divider(color = MaterialTheme.colors.divider, thickness = 1.dp, modifier = modifier.fillMaxWidth())
+}
+
+@Composable
+fun VerticalDivider() {
+    Divider(color = MaterialTheme.colors.divider, modifier = Modifier.fillMaxHeight().width(1.dp))
+}
+
+@Composable
 fun PrivateMessageView(
     contact: Contact,
     contacts: List<Contact>,
     onContactSelect: (Contact) -> Unit
 ) {
-    val (addContactDialog, onContactAdd) = remember { mutableStateOf(false) }
+    val (isDialogVisible, setDialogVisibility) = remember { mutableStateOf(false) }
     val (dropdownExpanded, setExpanded) = remember { mutableStateOf(false) }
     val (infoDrawer, setInfoDrawer) = remember { mutableStateOf(false) }
     val (contactDrawerState, setDrawerState) = remember { mutableStateOf(ContactInfoDrawerState.MakeIntro) }
-    AddContactDialog(addContactDialog, onContactAdd)
+    AddContactDialog(isDialogVisible, setDialogVisibility)
     Row(modifier = Modifier.fillMaxWidth()) {
-        ContactList(contact, contacts, onContactSelect, onContactAdd)
-        Divider(color = divider, modifier = Modifier.fillMaxHeight().width(1.dp))
-        Column(modifier = Modifier.weight(1f).fillMaxHeight().background(color = darkGray)) {
-            DrawMessageRow(
+        ContactList(contact, contacts, onContactSelect, setDialogVisibility)
+        VerticalDivider()
+        Column(modifier = Modifier.weight(1f).fillMaxHeight()) {
+            Conversation(
                 contact,
                 contacts,
                 dropdownExpanded,
@@ -166,7 +177,6 @@ fun AddContactDialog(isVisible: Boolean, setDialogVisibility: (Boolean) -> Unit)
                     Text(
                         text = "Add Contact at a Distance",
                         fontSize = 24.sp,
-                        color = Color.White,
                         modifier = Modifier.align(Alignment.CenterVertically)
                     )
                 }
@@ -174,7 +184,6 @@ fun AddContactDialog(isVisible: Boolean, setDialogVisibility: (Boolean) -> Unit)
                     Text(
                         "Contact's Link",
                         Modifier.width(128.dp).align(Alignment.CenterVertically),
-                        color = lightGray
                     )
                     TextField(contactLink, onValueChange = { contactLink = it }, modifier = Modifier.fillMaxWidth())
                 }
@@ -182,7 +191,6 @@ fun AddContactDialog(isVisible: Boolean, setDialogVisibility: (Boolean) -> Unit)
                     Text(
                         "Contact's Name",
                         Modifier.width(128.dp).align(Alignment.CenterVertically),
-                        color = lightGray
                     )
                     TextField(contactAlias, onValueChange = { contactAlias = it }, modifier = Modifier.fillMaxWidth())
                 }
@@ -190,7 +198,6 @@ fun AddContactDialog(isVisible: Boolean, setDialogVisibility: (Boolean) -> Unit)
                     Text(
                         "Your Link",
                         modifier = Modifier.width(128.dp).align(Alignment.CenterVertically),
-                        color = lightGray
                     )
                     TextField(
                         ownLink,
@@ -201,32 +208,28 @@ fun AddContactDialog(isVisible: Boolean, setDialogVisibility: (Boolean) -> Unit)
             }
         },
         confirmButton = {
-            TextButton(
+            Button(
                 onClick = {
                     if (ownLink.equals(contactLink)) {
                         println("Please enter contact's link, not your own")
                         setDialogVisibility(false)
-                        return@TextButton
+                        return@Button
                     }
                     addPendingContact(contactManager, contactAlias, contactLink)
                     setDialogVisibility(false)
                 },
-                modifier = Modifier.background(briarGreen)
             ) {
                 Text("Add")
             }
         },
         dismissButton = {
             TextButton(
-                onClick = { setDialogVisibility(false) }, modifier = Modifier.background(briarBlack)
+                onClick = { setDialogVisibility(false) }
             ) {
-                Text("Cancel")
+                Text("Cancel", color = MaterialTheme.colors.onSurface)
             }
         },
-
-        backgroundColor = briarBlue,
-        contentColor = Color.White,
-        modifier = Modifier.border(1.dp, color = divider).size(600.dp, 300.dp),
+        modifier = Modifier.size(600.dp, 300.dp),
     )
 }
 
@@ -271,29 +274,33 @@ fun SearchTextField(searchValue: String, onValueChange: (String) -> Unit, onCont
         value = searchValue,
         onValueChange = onValueChange,
         singleLine = true,
-        modifier = Modifier.padding(horizontal = 8.dp),
-        textStyle = TextStyle(color = Color.White, fontSize = 16.sp),
-        placeholder = { Text("Contacts", color = Color.Gray) },
+        textStyle = TextStyle(fontSize = 16.sp, color = MaterialTheme.colors.onSurface),
+        placeholder = { Text("Contacts") },
+        shape = RoundedCornerShape(0.dp),
         leadingIcon = {
-            val padding = Modifier.padding(top = 8.dp, bottom = 8.dp, start = 16.dp)
-            Icon(Filled.Search, "search contacts", padding, Color.White)
+            val padding = Modifier.padding(top = 8.dp, bottom = 8.dp, start = 12.dp)
+            Icon(Filled.Search, "search contacts", padding)
         },
         trailingIcon = {
             IconButton(
                 onClick = { onContactAdd(true) },
-                modifier = Modifier.padding(end = 4.dp).size(32.dp).background(
-                    briarBlueMsg, CircleShape
-                )
+                modifier = Modifier.padding(end = 10.dp).size(32.dp)
+                    .background(MaterialTheme.colors.primary, CircleShape)
             ) {
                 Icon(Filled.PersonAdd, "add contact", tint = Color.White, modifier = Modifier.size(20.dp))
             }
-        }
+        },
+        modifier = Modifier.fillMaxSize()
     )
 }
 
 @Composable
 fun ProfileCircle(bitmap: ImageBitmap, size: Dp) {
-    Image(bitmap, "image", Modifier.size(size).clip(CircleShape).border(2.dp, Color.White, CircleShape))
+    Image(
+        bitmap,
+        "image",
+        Modifier.size(size).clip(CircleShape).border(2.dp, MaterialTheme.colors.outline, CircleShape)
+    )
 }
 
 @Composable
@@ -304,60 +311,66 @@ fun ContactCard(
     selected: Boolean,
     drawNotifications: Boolean
 ) {
-    // selContact.id == contact.id && drawNotifications
-    val bgColor = if (selected) darkGray else briarBlack
-    Row(
-        modifier = Modifier.fillMaxWidth().height(HEADER_SIZE).background(bgColor)
-            .clickable(onClick = { onSel(contact) }),
-        horizontalArrangement = Arrangement.SpaceBetween
+    val bgColor = if (selected) MaterialTheme.colors.selectedCard else MaterialTheme.colors.surfaceVariant
+    val outlineColor = MaterialTheme.colors.outline
+    val briarPrimary = MaterialTheme.colors.primary
+    val briarSecondary = MaterialTheme.colors.secondary
+    val briarSurfaceVar = MaterialTheme.colors.surfaceVariant
+
+    Card(
+        modifier = Modifier.fillMaxWidth().height(HEADER_SIZE).clickable(onClick = { onSel(contact) }),
+        shape = RoundedCornerShape(0.dp),
+        backgroundColor = bgColor,
+        contentColor = MaterialTheme.colors.onSurface
     ) {
-        Row(modifier = Modifier.align(Alignment.CenterVertically).padding(horizontal = 16.dp)) {
-            // TODO Pull profile pictures
-            ProfileCircle(useResource("images/profile_images/p0.png") { loadImageBitmap(it) }, 36.dp)
-            // Draw notification badges
-            if (drawNotifications) {
-                Canvas(
-                    modifier = Modifier.align(Alignment.CenterVertically),
-                    onDraw = {
-                        val size = 10.dp.toPx()
-                        withTransform({ translate(left = -6f, top = -12f) }) {
-                            drawCircle(color = Color.White, radius = (size + 2.dp.toPx()) / 2f)
-                            drawCircle(color = briarBlueMsg, radius = size / 2f)
+        Row(horizontalArrangement = Arrangement.SpaceBetween) {
+            Row(modifier = Modifier.align(Alignment.CenterVertically).padding(horizontal = 16.dp)) {
+                // TODO Pull profile pictures
+                ProfileCircle(useResource("images/profile_images/p0.png") { loadImageBitmap(it) }, 36.dp)
+                // Draw notification badges
+                if (drawNotifications) {
+                    Canvas(
+                        modifier = Modifier.align(Alignment.CenterVertically),
+                        onDraw = {
+                            val size = 10.dp.toPx()
+                            withTransform({ translate(left = -6f, top = -12f) }) {
+                                drawCircle(color = outlineColor, radius = (size + 2.dp.toPx()) / 2f)
+                                drawCircle(color = briarPrimary, radius = size / 2f)
+                            }
                         }
-                    }
-                )
-            }
-            Column(modifier = Modifier.align(Alignment.CenterVertically).padding(start = 12.dp)) {
-                Text(
-                    contact.author.name,
-                    fontSize = 14.sp,
-                    color = Color.White,
-                    modifier = Modifier.align(Alignment.Start).padding(bottom = 2.dp)
-                )
-                val latestMsgTime = CVM.current.getGroupCount(contact.id).latestMsgTime
-                Text(
-                    getFormattedTimestamp(latestMsgTime),
-                    fontSize = 10.sp,
-                    color = Color.LightGray,
-                    modifier = Modifier.align(Alignment.Start)
-                )
-            }
-        }
-        Canvas(
-            modifier = Modifier.padding(start = 32.dp, end = 18.dp).size(22.dp).align(Alignment.CenterVertically),
-            onDraw = {
-                val size = 16.dp.toPx()
-                drawCircle(color = Color.White, radius = size / 2f)
-                // TODO check if contact online
-                if (true) {
-                    drawCircle(color = briarGreen, radius = 14.dp.toPx() / 2f)
-                } else {
-                    drawCircle(color = briarBlack, radius = 14.dp.toPx() / 2f)
+                    )
+                }
+
+                Column(modifier = Modifier.align(Alignment.CenterVertically).padding(start = 12.dp)) {
+                    Text(
+                        contact.author.name,
+                        fontSize = 14.sp,
+                        modifier = Modifier.align(Alignment.Start).padding(bottom = 2.dp)
+                    )
+                    val latestMsgTime = CVM.current.getGroupCount(contact.id).latestMsgTime
+                    Text(
+                        getFormattedTimestamp(latestMsgTime),
+                        fontSize = 10.sp,
+                        modifier = Modifier.align(Alignment.Start)
+                    )
                 }
             }
-        )
+            Canvas(
+                modifier = Modifier.padding(start = 32.dp, end = 18.dp).size(22.dp).align(Alignment.CenterVertically),
+                onDraw = {
+                    val size = 16.dp.toPx()
+                    drawCircle(color = outlineColor, radius = size / 2f)
+                    // TODO check if contact online
+                    if (true) {
+                        drawCircle(color = briarSecondary, radius = 14.dp.toPx() / 2f)
+                    } else {
+                        drawCircle(color = briarSurfaceVar, radius = 14.dp.toPx() / 2f)
+                    }
+                }
+            )
+        }
     }
-    Divider(color = divider, thickness = 1.dp, modifier = Modifier.fillMaxWidth())
+    HorizontalDivider()
 }
 
 fun getFormattedTimestamp(timestamp: Long): String {
@@ -396,15 +409,12 @@ fun ContactList(
     }
     Scaffold(
         modifier = Modifier.fillMaxHeight().width(CONTACTLIST_WIDTH),
-        backgroundColor = briarBlack,
+        backgroundColor = MaterialTheme.colors.surfaceVariant,
         topBar = {
             Column(
-                modifier = Modifier.fillMaxWidth().background(briarBlack),
+                modifier = Modifier.fillMaxWidth().height(HEADER_SIZE + 1.dp),
             ) {
-                Row(Modifier.height(HEADER_SIZE), verticalAlignment = Alignment.CenterVertically) {
-                    SearchTextField(searchValue, onValueChange = { searchValue = it }, onContactAdd)
-                }
-                Divider(color = divider, thickness = 1.dp, modifier = Modifier.fillMaxWidth())
+                SearchTextField(searchValue, onValueChange = { searchValue = it }, onContactAdd)
             }
         },
         content = {
@@ -420,31 +430,40 @@ fun ContactList(
 @Composable
 fun TextBubble(m: SimpleMessage) {
     if (m.local) {
-        TextBubble(m, Alignment.End, briarBlueMsg)
+        TextBubble(
+            m,
+            Alignment.End,
+            MaterialTheme.colors.localMsgBubble,
+            RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp, bottomStart = 10.dp)
+        )
     } else {
-        TextBubble(m, Alignment.Start, briarGrayMsg)
+        TextBubble(
+            m,
+            Alignment.Start,
+            MaterialTheme.colors.awayMsgBubble,
+            RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp, bottomEnd = 10.dp)
+        )
     }
 }
 
 @Composable
-fun TextBubble(m: SimpleMessage, alignment: Alignment.Horizontal, color: Color) {
+fun TextBubble(m: SimpleMessage, alignment: Alignment.Horizontal, color: Color, shape: RoundedCornerShape) {
     Column(Modifier.fillMaxWidth()) {
         Column(Modifier.fillMaxWidth(fraction = 0.8f).align(alignment)) {
-            Column(
-                Modifier.background(
-                    color,
-                    RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp, bottomStart = 10.dp)
-                ).padding(8.dp).align(alignment)
-            ) {
-                Text(m.message, fontSize = 14.sp, color = Color.White, modifier = Modifier.align(Alignment.Start))
-                Row(modifier = Modifier.padding(top = 4.dp)) {
-                    Text(m.time, Modifier.padding(end = 4.dp), fontSize = 10.sp, color = Color.LightGray)
-                    if (m.delivered) {
-                        val modifier = Modifier.size(12.dp).align(Alignment.CenterVertically)
-                        Icon(Filled.DoneAll, "sent", modifier, Color.LightGray)
-                    } else {
-                        val modifier = Modifier.size(12.dp).align(Alignment.CenterVertically)
-                        Icon(Filled.Schedule, "sending", modifier, Color.LightGray)
+            Card(Modifier.align(alignment), backgroundColor = color, shape = shape) {
+                Column(
+                    Modifier.padding(8.dp)
+                ) {
+                    Text(m.message, fontSize = 14.sp, modifier = Modifier.align(Alignment.Start))
+                    Row(modifier = Modifier.padding(top = 4.dp)) {
+                        Text(m.time, Modifier.padding(end = 4.dp), fontSize = 10.sp)
+                        if (m.delivered) {
+                            val modifier = Modifier.size(12.dp).align(Alignment.CenterVertically)
+                            Icon(Filled.DoneAll, "sent", modifier)
+                        } else {
+                            val modifier = Modifier.size(12.dp).align(Alignment.CenterVertically)
+                            Icon(Filled.Schedule, "sending", modifier)
+                        }
                     }
                 }
             }
@@ -461,7 +480,7 @@ fun DrawTextBubbles(chat: UiState<Chat>) {
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 reverseLayout = true,
-                contentPadding = PaddingValues(top = 8.dp, start = 8.dp, end = 8.dp)
+                contentPadding = PaddingValues(8.dp)
             ) {
                 items(chat.data.messages) { m -> TextBubble(m) }
             }
@@ -489,7 +508,6 @@ fun ContactDropDown(
     DropdownMenu(
         expanded = expanded,
         onDismissRequest = { isExpanded(false) },
-        modifier = Modifier.background(briarBlack)
     ) {
         DropdownMenuItem(onClick = { setInfoDrawer(true); isExpanded(false) }) {
             Text("Make Introduction", fontSize = 14.sp)
@@ -517,10 +535,9 @@ fun ContactDropDown(
         DropdownMenu(
             expanded = connectionMode,
             onDismissRequest = { connectionMode = false },
-            modifier = Modifier.background(briarBlack)
         ) {
             DropdownMenuItem(onClick = { false }) {
-                Text("Connections", color = lightGray, fontSize = 12.sp)
+                Text("Connections", fontSize = 12.sp)
             }
             DropdownMenuItem(onClick = { false }) {
                 Text("Connect via Bluetooth", fontSize = 14.sp)
@@ -534,10 +551,9 @@ fun ContactDropDown(
         DropdownMenu(
             expanded = contactMode,
             onDismissRequest = { contactMode = false },
-            modifier = Modifier.background(briarBlack)
         ) {
             DropdownMenuItem(onClick = { false }) {
-                Text("Contact", color = lightGray, fontSize = 12.sp)
+                Text("Contact", fontSize = 12.sp)
             }
             DropdownMenuItem(onClick = { false }) {
                 Text("Change contact name", fontSize = 14.sp)
@@ -550,12 +566,16 @@ fun ContactDropDown(
 }
 
 @Composable
-fun MsgColumnHeader(
+fun ConversationHeader(
     contact: Contact,
     expanded: Boolean,
     isExpanded: (Boolean) -> Unit,
     setInfoDrawer: (Boolean) -> Unit
 ) {
+    // TODO hook up online indicator logic
+    val onlineColor = MaterialTheme.colors.secondary
+    val outlineColor = MaterialTheme.colors.outline
+
     Box(modifier = Modifier.fillMaxWidth().height(HEADER_SIZE + 1.dp)) {
         Row(modifier = Modifier.align(Alignment.Center)) {
             ProfileCircle(useResource("images/profile_images/p0.png") { loadImageBitmap(it) }, 36.dp)
@@ -563,17 +583,14 @@ fun MsgColumnHeader(
                 modifier = Modifier.align(Alignment.CenterVertically),
                 onDraw = {
                     val size = 10.dp.toPx()
-                    // TODO hook up online indicator logic
-                    val onlineColor = if (true) briarGreen else briarBlack
                     withTransform({ translate(left = -6f, top = 12f) }) {
-                        drawCircle(color = Color.White, radius = (size + 2.dp.toPx()) / 2f)
+                        drawCircle(color = outlineColor, radius = (size + 2.dp.toPx()) / 2f)
                         drawCircle(color = onlineColor, radius = size / 2f)
                     }
                 }
             )
             Text(
                 contact.author.name,
-                color = Color.White,
                 modifier = Modifier.align(Alignment.CenterVertically).padding(start = 12.dp),
                 fontSize = 20.sp
             )
@@ -582,32 +599,36 @@ fun MsgColumnHeader(
             onClick = { isExpanded(!expanded) },
             modifier = Modifier.align(Alignment.CenterEnd).padding(end = 16.dp)
         ) {
-            Icon(Filled.MoreVert, "contact info", tint = Color.White, modifier = Modifier.size(24.dp))
+            Icon(Filled.MoreVert, "contact info", modifier = Modifier.size(24.dp))
             ContactDropDown(expanded, isExpanded, setInfoDrawer)
         }
-        Divider(color = divider, thickness = 1.dp, modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter))
+        HorizontalDivider(modifier = Modifier.align(Alignment.BottomCenter))
     }
 }
 
 @Composable
-fun MsgInput() {
+fun ConversationInput() {
     var text by remember { mutableStateOf("") }
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(8.dp)
-    ) {
+    Column {
+        HorizontalDivider()
         TextField(
             value = text,
             onValueChange = { text = it },
             maxLines = 10,
-            textStyle = TextStyle(color = Color.White, fontSize = 16.sp, lineHeight = 16.sp),
-            placeholder = { Text("Message", color = Color.Gray) },
+            textStyle = TextStyle(fontSize = 16.sp, lineHeight = 16.sp),
+            placeholder = { Text("Message") },
             modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(0.dp),
+            colors = TextFieldDefaults.textFieldColors(
+                backgroundColor = MaterialTheme.colors.background,
+                focusedIndicatorColor = MaterialTheme.colors.background,
+                unfocusedIndicatorColor = MaterialTheme.colors.background
+            ),
             leadingIcon = {
                 IconButton(
                     onClick = {},
                     Modifier.padding(4.dp).size(32.dp)
-                        .background(briarBlueMsg, CircleShape),
+                        .background(MaterialTheme.colors.primary, CircleShape),
                 ) {
                     Icon(Filled.Add, "add attachment", Modifier.size(24.dp), Color.White)
                 }
@@ -616,7 +637,12 @@ fun MsgInput() {
                 IconButton(
                     onClick = { }, modifier = Modifier.padding(4.dp).size(32.dp),
                 ) {
-                    Icon(Filled.Send, "send message", tint = briarGreen, modifier = Modifier.size(24.dp))
+                    Icon(
+                        Filled.Send,
+                        "send message",
+                        tint = MaterialTheme.colors.secondary,
+                        modifier = Modifier.size(24.dp)
+                    )
                 }
             }
         )
@@ -626,9 +652,9 @@ fun MsgInput() {
 @Preview
 @Composable
 fun PreviewMsgInput() {
-    MaterialTheme(colors = DarkColorPallet) {
-        Row(Modifier.background(briarBlack)) {
-            MsgInput()
+    MaterialTheme(colors = DarkColors) {
+        Surface {
+            ConversationInput()
         }
     }
 }
@@ -638,22 +664,21 @@ fun ContactDrawerMakeIntro(contact: Contact, contacts: List<Contact>, setInfoDra
     var introNextPg by remember { mutableStateOf(false) }
     val (introContact, onCancelSel) = remember { mutableStateOf(contact) }
     if (!introNextPg) {
-        Column {
+        Surface {
             Row(Modifier.fillMaxWidth().height(HEADER_SIZE)) {
                 IconButton(
                     onClick = { setInfoDrawer(false) },
                     Modifier.padding(horizontal = 11.dp).size(32.dp).align(Alignment.CenterVertically)
                 ) {
-                    Icon(Filled.Close, "close make intro screen", tint = Color.White)
+                    Icon(Filled.Close, "close make intro screen")
                 }
                 Text(
                     text = "Introduce " + contact.author.name + " to:",
-                    color = Color.White,
                     fontSize = 16.sp,
                     modifier = Modifier.align(Alignment.CenterVertically)
                 )
             }
-            Divider(color = divider, modifier = Modifier.fillMaxWidth().height(1.dp))
+            HorizontalDivider()
             Column(Modifier.verticalScroll(rememberScrollState())) {
                 for (c in contacts) {
                     if (c.id != contact.id) {
@@ -673,22 +698,20 @@ fun ContactDrawerMakeIntro(contact: Contact, contacts: List<Contact>, setInfoDra
                 }
                 Text(
                     text = "Introduce Contacts",
-                    color = Color.White,
                     fontSize = 16.sp,
                     modifier = Modifier.align(Alignment.CenterVertically)
                 )
             }
-            // Divider(color = divider, modifier = Modifier.fillMaxWidth().height(1.dp) )
             Row(Modifier.fillMaxWidth().padding(12.dp), horizontalArrangement = Arrangement.SpaceAround) {
                 Column(Modifier.align(Alignment.CenterVertically)) {
                     ProfileCircle(useResource("images/profile_images/p0.png") { loadImageBitmap(it) }, 40.dp)
-                    Text(contact.author.name, Modifier.padding(top = 4.dp), Color.White, 16.sp)
+                    Text(contact.author.name, Modifier.padding(top = 4.dp), fontSize = 16.sp)
                 }
-                Icon(Filled.SwapHoriz, "swap", tint = Color.White, modifier = Modifier.size(48.dp))
+                Icon(Filled.SwapHoriz, "swap", modifier = Modifier.size(48.dp))
                 Column(Modifier.align(Alignment.CenterVertically)) {
                     // TODO Profile pic again
                     ProfileCircle(useResource("images/profile_images/p0.png") { loadImageBitmap(it) }, 40.dp)
-                    Text(introContact.author.name, Modifier.padding(top = 4.dp), Color.White, 16.sp)
+                    Text(introContact.author.name, Modifier.padding(top = 4.dp), fontSize = 16.sp)
                 }
             }
             var introText by remember { mutableStateOf(TextFieldValue("")) }
@@ -697,13 +720,12 @@ fun ContactDrawerMakeIntro(contact: Contact, contacts: List<Contact>, setInfoDra
                     introText,
                     { introText = it },
                     placeholder = { Text(text = "Add a message (optional)") },
-                    textStyle = TextStyle(color = Color.White)
                 )
             }
             Row(Modifier.padding(8.dp)) {
                 TextButton(
                     onClick = { setInfoDrawer(false); introNextPg = false; },
-                    Modifier.fillMaxWidth().background(briarDarkGray)
+                    Modifier.fillMaxWidth()
                 ) {
                     Text("MAKE INTRODUCTION")
                 }
@@ -725,7 +747,7 @@ fun ContactInfoDrawer(
 }
 
 @Composable
-fun DrawMessageRow(
+fun Conversation(
     contact: Contact,
     contacts: List<Contact>,
     expanded: Boolean,
@@ -737,16 +759,14 @@ fun DrawMessageRow(
     BoxWithConstraints(Modifier.fillMaxSize()) {
         val animatedInfoDrawerOffsetX by animateDpAsState(if (infoDrawer) (-275).dp else 0.dp)
         Scaffold(
-            topBar = { MsgColumnHeader(contact, expanded, setExpanded, setInfoDrawer) },
+            topBar = { ConversationHeader(contact, expanded, setExpanded, setInfoDrawer) },
             content = { padding ->
                 Box(modifier = Modifier.padding(padding)) {
                     val chat = ChatState(contact.id)
                     DrawTextBubbles(chat.value)
                 }
             },
-            bottomBar = { MsgInput() },
-            backgroundColor = darkGray,
-            modifier = Modifier.offset()
+            bottomBar = { ConversationInput() },
         )
         if (infoDrawer) {
             // TODO Find non-hacky way of setting scrim on entire app
@@ -763,7 +783,10 @@ fun DrawMessageRow(
             Column(
                 modifier = Modifier.fillMaxHeight().width(CONTACTLIST_WIDTH)
                     .offset(maxWidth + animatedInfoDrawerOffsetX)
-                    .background(briarBlack, RoundedCornerShape(topStart = 10.dp, bottomStart = 10.dp))
+                    .background(
+                        MaterialTheme.colors.surfaceVariant,
+                        RoundedCornerShape(topStart = 10.dp, bottomStart = 10.dp)
+                    )
             ) {
                 ContactInfoDrawer(contact, contacts, setInfoDrawer, drawerState)
             }

@@ -1,7 +1,6 @@
 package org.briarproject.briar.desktop.paul.views
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,6 +11,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChromeReaderMode
@@ -30,14 +30,13 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.loadImageBitmap
 import androidx.compose.ui.res.useResource
 import androidx.compose.ui.unit.dp
-import org.briarproject.briar.desktop.paul.theme.briarBlack
-import org.briarproject.briar.desktop.paul.theme.briarBlue
+import org.briarproject.briar.desktop.paul.theme.sidebarSurface
 
 val SIDEBAR_WIDTH = 56.dp
 
 @Composable
 fun BriarSidebar(uiMode: UiModes, setUiMode: (UiModes) -> Unit) {
-    Surface(modifier = Modifier.width(SIDEBAR_WIDTH).fillMaxHeight(), color = briarBlue) {
+    Surface(modifier = Modifier.width(SIDEBAR_WIDTH).fillMaxHeight(), color = MaterialTheme.colors.sidebarSurface) {
         Column(verticalArrangement = Arrangement.Top) {
             IconButton(
                 modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 5.dp, bottom = 4.dp),
@@ -101,14 +100,14 @@ fun BriarSidebar(uiMode: UiModes, setUiMode: (UiModes) -> Unit) {
 
 @Composable
 fun BriarSidebarButton(uiMode: UiModes, setUiMode: (UiModes) -> Unit, thisMode: UiModes, icon: ImageVector) {
-    val bg = if (uiMode == thisMode) briarBlack else briarBlue
+    val tint = if (uiMode == thisMode) MaterialTheme.colors.primary else MaterialTheme.colors.onSurface
     Column {
         IconButton(
-            modifier = Modifier.align(Alignment.CenterHorizontally).background(color = bg)
+            modifier = Modifier.align(Alignment.CenterHorizontally)
                 .padding(vertical = 4.dp, horizontal = 12.dp),
             onClick = { setUiMode(thisMode) }
         ) {
-            Icon(icon, thisMode.toString(), tint = Color.White, modifier = Modifier.size(30.dp))
+            Icon(icon, thisMode.toString(), tint = tint, modifier = Modifier.size(30.dp))
         }
     }
 }

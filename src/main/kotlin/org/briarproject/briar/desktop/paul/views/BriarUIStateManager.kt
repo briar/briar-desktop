@@ -3,21 +3,16 @@ package org.briarproject.briar.desktop.paul.views
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.width
-import androidx.compose.material.Divider
+import androidx.compose.material.Button
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 import org.briarproject.bramble.api.contact.Contact
-import org.briarproject.briar.desktop.paul.theme.briarBlack
-import org.briarproject.briar.desktop.paul.theme.divider
 
 enum class UiModes {
     CONTACTS,
@@ -36,7 +31,9 @@ enum class UiModes {
  */
 @Composable
 fun BriarUIStateManager(
-    contacts: List<Contact>
+    contacts: List<Contact>,
+    isDark: Boolean,
+    setDark: (Boolean) -> Unit
 ) {
     // current selected mode, changed using the sidebar buttons
     val (uiMode, setUiMode) = remember { mutableStateOf(UiModes.CONTACTS) }
@@ -56,15 +53,27 @@ fun BriarUIStateManager(
     // Other global state that we need to track should go here also
     Row {
         BriarSidebar(uiMode, setUiMode)
-        Divider(color = divider, modifier = Modifier.fillMaxHeight().width(1.dp))
+        VerticalDivider()
         when (uiMode) {
             UiModes.CONTACTS -> if (contact != null) PrivateMessageView(
                 contact,
                 contacts,
                 setContact
             )
-            else -> Box(modifier = Modifier.fillMaxSize().background(briarBlack)) {
-                Text("TBD", modifier = Modifier.align(Alignment.Center), color = Color.White)
+            UiModes.SETTINGS -> PlaceHolderSettingsView(isDark, setDark)
+            else -> Surface(modifier = Modifier.fillMaxSize().background(MaterialTheme.colors.background)) {
+                Text("TBD")
+            }
+        }
+    }
+}
+
+@Composable
+fun PlaceHolderSettingsView(isDark: Boolean, setDark: (Boolean) -> Unit) {
+    Surface(Modifier.fillMaxSize()) {
+        Box {
+            Button(onClick = { setDark(!isDark) }) {
+                Text("Change Theme")
             }
         }
     }

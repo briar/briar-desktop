@@ -1,7 +1,5 @@
 package org.briarproject.briar.desktop
 
-import androidx.compose.foundation.background
-import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
@@ -9,7 +7,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.Window
 import org.briarproject.bramble.api.account.AccountManager
 import org.briarproject.bramble.api.contact.Contact
@@ -21,8 +18,7 @@ import org.briarproject.briar.api.conversation.ConversationManager
 import org.briarproject.briar.api.messaging.MessagingManager
 import org.briarproject.briar.desktop.dialogs.Login
 import org.briarproject.briar.desktop.dialogs.Registration
-import org.briarproject.briar.desktop.paul.theme.DarkColorPallet
-import org.briarproject.briar.desktop.paul.theme.briarBlack
+import org.briarproject.briar.desktop.paul.theme.BriarTheme
 import org.briarproject.briar.desktop.paul.views.BriarUIStateManager
 import java.awt.Dimension
 import javax.annotation.concurrent.Immutable
@@ -76,6 +72,7 @@ constructor(
         conversationManager: ConversationManager,
         messagingManager: MessagingManager
     ) {
+        val (isDark, setDark) = remember { mutableStateOf(true) }
         val title = "Briar Desktop"
         var screenState by remember {
             mutableStateOf(
@@ -91,11 +88,10 @@ constructor(
             onCloseRequest = { exitProcess(0) },
         ) {
             window.minimumSize = Dimension(800, 600)
-            MaterialTheme(colors = DarkColorPallet) {
+            BriarTheme(isDarkTheme = isDark) {
                 when (screenState) {
                     Screen.REGISTRATION ->
                         Registration(
-                            modifier = Modifier.background(briarBlack),
                             onSubmit = { username, password ->
                                 accountManager.createAccount(username, password)
                                 signedIn()
@@ -104,7 +100,6 @@ constructor(
                         )
                     Screen.LOGIN ->
                         Login(
-                            modifier = Modifier.background(briarBlack),
                             onResult = {
                                 try {
                                     accountManager.signIn(it)
@@ -122,7 +117,7 @@ constructor(
                             CTM provides contactManager,
                             MM provides messagingManager
                         ) {
-                            BriarUIStateManager(contacts)
+                            BriarUIStateManager(contacts, isDark, setDark)
                         }
                 }
             }
