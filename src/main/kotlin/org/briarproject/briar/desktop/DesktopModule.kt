@@ -25,6 +25,7 @@ import org.briarproject.bramble.system.JavaSystemModule
 import org.briarproject.bramble.util.OsUtils.isLinux
 import org.briarproject.bramble.util.OsUtils.isMac
 import java.io.File
+import java.nio.file.Path
 import java.util.Collections.emptyList
 import javax.inject.Singleton
 
@@ -43,7 +44,7 @@ import javax.inject.Singleton
         SocksModule::class
     ]
 )
-internal class DesktopModule(private val appDir: File) {
+internal class DesktopModule(private val appDir: Path) {
 
     @Provides
     @Singleton
@@ -52,15 +53,15 @@ internal class DesktopModule(private val appDir: File) {
     @Provides
     @Singleton
     internal fun provideDatabaseConfig(): DatabaseConfig {
-        val dbDir = File(appDir, "db")
-        val keyDir = File(appDir, "key")
-        return DesktopDatabaseConfig(dbDir, keyDir)
+        val dbDir = appDir.resolve("db")
+        val keyDir = appDir.resolve("key")
+        return DesktopDatabaseConfig(dbDir.toFile(), keyDir.toFile())
     }
 
     @Provides
     @TorDirectory
     internal fun provideTorDirectory(): File {
-        return File(appDir, "tor")
+        return appDir.resolve("tor").toFile()
     }
 
     @Provides

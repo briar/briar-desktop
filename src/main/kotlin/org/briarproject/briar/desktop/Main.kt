@@ -8,19 +8,13 @@ import com.github.ajalt.clikt.parameters.options.default
 import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.option
 import org.briarproject.bramble.BrambleCoreEagerSingletons
-import org.briarproject.bramble.util.OsUtils.isLinux
-import org.briarproject.bramble.util.OsUtils.isMac
-import org.briarproject.bramble.util.OsUtils.isWindows
 import org.briarproject.briar.BriarCoreEagerSingletons
-import java.io.File
 import java.io.File.separator
 import java.io.IOException
 import java.lang.System.getProperty
-import java.nio.file.Files.setPosixFilePermissions
-import java.nio.file.attribute.PosixFilePermission
-import java.nio.file.attribute.PosixFilePermission.OWNER_EXECUTE
-import java.nio.file.attribute.PosixFilePermission.OWNER_READ
-import java.nio.file.attribute.PosixFilePermission.OWNER_WRITE
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.Paths
 import java.util.logging.Level.ALL
 import java.util.logging.Level.INFO
 import java.util.logging.Level.WARNING
@@ -70,24 +64,18 @@ private class Main : CliktCommand(
         app.getUI().startBriar()
     }
 
-    private fun getDataDir(): File {
-        val file = File(dataDir)
-        if (!file.exists() && !file.mkdirs()) {
-            throw IOException("Could not create directory: ${file.absolutePath}")
-        } else if (!file.isDirectory) {
-            throw IOException("Data dir is not a directory: ${file.absolutePath}")
+    private fun getDataDir(): Path {
+        val file = Paths.get(dataDir)
+        if (!Files.exists(file)) {
+            Files.createDirectories(file)
+            if (!Files.exists(file)) {
+                throw IOException("Could not create directory: ${file.toAbsolutePath()}")
+            }
         }
-        if (isLinux() || isMac()) {
-            val perms = HashSet<PosixFilePermission>()
-            perms.add(OWNER_READ)
-            perms.add(OWNER_WRITE)
-            perms.add(OWNER_EXECUTE)
-            setPosixFilePermissions(file.toPath(), perms)
-        } else if (isWindows()) {
-            file.setReadable(true, true)
-            file.setWritable(true, true)
-            file.setExecutable(true, true)
+        if (!Files.isDirectory(file)) {
+            throw IOException("Data dir is not a directory: ${file.toAbsolutePath()}")
         }
+        FileUtils.setRWX(file)
         return file
     }
 }
