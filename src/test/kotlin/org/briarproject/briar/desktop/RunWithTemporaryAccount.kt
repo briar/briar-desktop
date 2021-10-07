@@ -9,16 +9,21 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.util.logging.Level.INFO
 import java.util.logging.LogManager
+import java.util.logging.Logger
 import kotlin.io.path.absolute
 
 internal class RunWithTemporaryAccount(val customization: BriarDesktopTestApp.() -> Unit) {
+
+    companion object {
+        private val LOG = Logger.getLogger(RunWithTemporaryAccount::class.java.name)
+    }
 
     @OptIn(ExperimentalComposeUiApi::class)
     fun run() = application {
         LogManager.getLogManager().getLogger("").level = INFO
 
         val dataDir = getDataDir()
-        println("Using data directory '$dataDir'")
+        LOG.info("Using data directory '$dataDir'")
 
         val app =
             DaggerBriarDesktopTestApp.builder().desktopTestModule(
@@ -26,7 +31,7 @@ internal class RunWithTemporaryAccount(val customization: BriarDesktopTestApp.()
             ).build()
 
         app.getShutdownManager().addShutdownHook {
-            println("deleting temporary account at $dataDir")
+            LOG.info("deleting temporary account at $dataDir")
             org.apache.commons.io.FileUtils.deleteDirectory(dataDir.toFile())
         }
 

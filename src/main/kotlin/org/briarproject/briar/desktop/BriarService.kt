@@ -22,6 +22,7 @@ import org.briarproject.briar.desktop.dialogs.Registration
 import org.briarproject.briar.desktop.paul.theme.BriarTheme
 import org.briarproject.briar.desktop.paul.views.BriarUIStateManager
 import java.awt.Dimension
+import java.util.logging.Logger
 import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -61,6 +62,10 @@ constructor(
     private val lifecycleManager: LifecycleManager,
     private val passwordStrengthEstimator: PasswordStrengthEstimator
 ) : BriarService {
+
+    companion object {
+        private val LOG = Logger.getLogger(BriarServiceImpl::class.java.name)
+    }
 
     private val contacts: MutableList<Contact> = ArrayList()
 
@@ -145,7 +150,7 @@ constructor(
     private fun loadContacts() {
         val contacts = contactManager.contacts
         for (contact in contacts) {
-            println("${contact.author.name} (${contact.alias})")
+            LOG.info("loaded contact: ${contact.author.name} (${contact.alias})")
             this.contacts.add(contact)
         }
     }

@@ -1,6 +1,7 @@
 package org.briarproject.briar.desktop.chat
 
 import org.briarproject.bramble.api.db.DbException
+import org.briarproject.bramble.util.LogUtils
 import org.briarproject.briar.api.blog.BlogInvitationRequest
 import org.briarproject.briar.api.blog.BlogInvitationResponse
 import org.briarproject.briar.api.conversation.ConversationMessageHeader
@@ -13,7 +14,8 @@ import org.briarproject.briar.api.messaging.MessagingManager
 import org.briarproject.briar.api.messaging.PrivateMessageHeader
 import org.briarproject.briar.api.privategroup.invitation.GroupInvitationRequest
 import org.briarproject.briar.api.privategroup.invitation.GroupInvitationResponse
-import org.slf4j.LoggerFactory
+import java.util.logging.Level.WARNING
+import java.util.logging.Logger
 
 class ChatHistoryConversationVisitor(
     private val chat: Chat,
@@ -22,7 +24,7 @@ class ChatHistoryConversationVisitor(
     ConversationMessageVisitor<Void?> {
 
     companion object {
-        val logger = LoggerFactory.getLogger(ChatHistoryConversationVisitor::class.java)
+        private val LOG = Logger.getLogger(ChatHistoryConversationVisitor::class.java.name)
     }
 
     fun appendMessage(header: ConversationMessageHeader) {
@@ -30,7 +32,8 @@ class ChatHistoryConversationVisitor(
             val messageText = messagingManager.getMessageText(header.id)
             chat.appendMessage(header.isLocal, header.timestamp, messageText)
         } catch (e: DbException) {
-            logger.warn("Error while getting message text", e)
+            LOG.warning("Error while getting message text")
+            LogUtils.logException(LOG, WARNING, e)
         }
     }
 
