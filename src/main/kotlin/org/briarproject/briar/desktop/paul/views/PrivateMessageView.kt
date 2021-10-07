@@ -688,13 +688,12 @@ fun ContactDrawerMakeIntro(contact: Contact, contacts: List<Contact>, setInfoDra
             }
             Row(Modifier.fillMaxWidth().padding(12.dp), horizontalArrangement = Arrangement.SpaceAround) {
                 Column(Modifier.align(Alignment.CenterVertically)) {
-                    ProfileCircle(40.dp, contact.author.id.bytes)
+                    ProfileCircle(36.dp, contact.author.id.bytes)
                     Text(contact.author.name, Modifier.padding(top = 4.dp), Color.White, 16.sp)
                 }
                 Icon(Filled.SwapHoriz, "swap", modifier = Modifier.size(48.dp))
                 Column(Modifier.align(Alignment.CenterVertically)) {
-                    // TODO Profile pic again
-                    ProfileCircle(40.dp, contact.author.id.bytes)
+                    ProfileCircle(36.dp, introContact.author.id.bytes)
                     Text(introContact.author.name, Modifier.padding(top = 4.dp), Color.White, 16.sp)
                 }
             }

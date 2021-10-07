@@ -47,11 +47,7 @@ internal class Identicon(private val input: ByteArray, width: Float, height: Flo
         colors = Array(ROWS) { Array(COLUMNS) { Color(0) } }
         for (r in 0 until ROWS) {
             for (c in 0 until COLUMNS) {
-                if (isCellVisible(r, c)) {
-                    colors[r][c] = foregroundColor
-                } else {
-                    colors[r][c] = backgroundColor
-                }
+                colors[r][c] = if (isCellVisible(r, c)) foregroundColor else backgroundColor
             }
         }
     }
