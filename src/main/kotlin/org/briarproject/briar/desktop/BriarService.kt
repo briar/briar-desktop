@@ -81,6 +81,8 @@ constructor(
         var screenState by remember {
             mutableStateOf(
                 if (accountManager.hasDatabaseKey()) {
+                    // this should only happen during testing when we launch the main UI directly
+                    // without a need to enter the password.
                     loadContacts()
                     Screen.MAIN
                 } else if (accountManager.accountExists()) {
