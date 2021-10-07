@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 val Colors.divider: Color get() = if (isLight) Gray300 else Gray800
-val Colors.outline: Color get() = Color.White
+val Colors.outline: Color get() = if (isLight) Color.Black else Color.White
 val Colors.surfaceVariant: Color get() = if (isLight) Gray100 else Gray950
 val Colors.sidebarSurface: Color get() = if (isLight) Gray200 else Gray900
 val Colors.selectedCard: Color get() = if (isLight) Gray400 else Gray700

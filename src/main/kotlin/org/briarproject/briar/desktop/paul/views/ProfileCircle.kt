@@ -5,12 +5,13 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import org.briarproject.briar.desktop.paul.theme.outline
 
 @Preview
 @Composable
@@ -25,7 +26,7 @@ fun PreviewProfileCircle() {
 
 @Composable
 fun ProfileCircle(size: Dp, input: ByteArray) {
-    Canvas(Modifier.size(size).clip(CircleShape).border(2.dp, Color.White, CircleShape)) {
+    Canvas(Modifier.size(size).clip(CircleShape).border(2.dp, MaterialTheme.colors.outline, CircleShape)) {
         Identicon(input, this.size.width, this.size.height).draw(this)
     }
 }
