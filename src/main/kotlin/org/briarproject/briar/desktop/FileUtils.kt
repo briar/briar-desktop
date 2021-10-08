@@ -12,16 +12,18 @@ object FileUtils {
      */
     fun setRWX(file: Path) {
         if (OsUtils.isLinux() || OsUtils.isMac()) {
-            val perms = HashSet<PosixFilePermission>()
-            perms.add(PosixFilePermission.OWNER_READ)
-            perms.add(PosixFilePermission.OWNER_WRITE)
-            perms.add(PosixFilePermission.OWNER_EXECUTE)
+            val perms = HashSet<PosixFilePermission>().apply {
+                add(PosixFilePermission.OWNER_READ)
+                add(PosixFilePermission.OWNER_WRITE)
+                add(PosixFilePermission.OWNER_EXECUTE)
+            }
             Files.setPosixFilePermissions(file, perms)
         } else if (OsUtils.isWindows()) {
-            val f = file.toFile()
-            f.setReadable(true, true)
-            f.setWritable(true, true)
-            f.setExecutable(true, true)
+            file.toFile().apply {
+                setReadable(true, true)
+                setWritable(true, true)
+                setExecutable(true, true)
+            }
         }
     }
 }

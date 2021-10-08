@@ -98,7 +98,7 @@ internal class DesktopTestModule(private val appDir: File) {
 
     @Provides
     @Singleton
-    internal fun getDeterministicTestDataCreator(testDataCreator: DeterministicTestDataCreatorImpl): DeterministicTestDataCreator {
+    internal fun provideDeterministicTestDataCreator(testDataCreator: DeterministicTestDataCreatorImpl): DeterministicTestDataCreator {
         return testDataCreator
     }
 }

@@ -72,10 +72,7 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
         require(!(avatarPercent < 0 || avatarPercent > 100))
         ioExecutor.execute {
             try {
-                createTestDataOnIoExecutor(
-                    min(numContacts, conversations.persons.size), numPrivateMsgs,
-                    avatarPercent
-                )
+                createTestDataOnIoExecutor(numContacts, numPrivateMsgs, avatarPercent)
             } catch (e: DbException) {
                 LogUtils.logException(LOG, Level.WARNING, e)
             }
@@ -98,7 +95,7 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
         val contacts: MutableList<Contact> = ArrayList(numContacts)
         val localAuthor = identityManager.localAuthor
 
-        for (i in 0 until numContacts) {
+        for (i in 0 until min(numContacts, conversations.persons.size)) {
             val person = conversations.persons[i]
             val remote = authorFactory.createLocalAuthor(person.name)
             val contact = addContact(localAuthor.id, remote, null, avatarPercent)
@@ -275,6 +272,9 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
     ) {
         for (i in contacts.indices) {
             val contact = contacts[i]
+            // this cannot cause an IndexOutOfBoundsException here with conversation.persons
+            // because we already made sure to only create as many contacts as we have
+            // conversation templates available.
             val person = conversations.persons[i]
             val group = messagingManager.getContactGroup(contact)
             shareGroup(contact.id, group.id)
