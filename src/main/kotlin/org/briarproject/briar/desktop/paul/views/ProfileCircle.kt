@@ -24,6 +24,11 @@ fun PreviewProfileCircle() {
     ProfileCircle(90.dp, bytes)
 }
 
+/**
+ * Display an [Identicon] as a profile image within a circle based on a user's author id.
+ * @param size the size of the circle. In order to avoid aliasing effects, pass a multiple
+ *             of 9 here. That helps as the image is based on a 9x9 square grid.
+ */
 @Composable
 fun ProfileCircle(size: Dp, input: ByteArray) {
     Canvas(Modifier.size(size).clip(CircleShape).border(2.dp, MaterialTheme.colors.outline, CircleShape)) {
