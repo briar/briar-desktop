@@ -32,8 +32,8 @@ internal class Identicon(private val input: ByteArray, width: Float, height: Flo
     }
 
     private val colors: Array<Array<Color>>
-    private var cellWidth = 0f
-    private var cellHeight = 0f
+    private val cellWidth: Float
+    private val cellHeight: Float
     private fun getByte(index: Int): Byte {
         return input[index % input.size]
     }

@@ -43,8 +43,4 @@ constructor(
             identityManager
         )
     }
-
-    internal fun getContactManager(): ContactManager {
-        return contactManager
-    }
 }
