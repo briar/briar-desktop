@@ -1,7 +1,6 @@
 package org.briarproject.briar.desktop
 
 import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.compose.ui.window.application
 import org.briarproject.bramble.BrambleCoreEagerSingletons
 import org.briarproject.briar.BriarCoreEagerSingletons
 import org.briarproject.briar.desktop.utils.FileUtils
@@ -20,7 +19,7 @@ internal class RunWithTemporaryAccount(val customization: BriarDesktopTestApp.()
     }
 
     @OptIn(ExperimentalComposeUiApi::class)
-    fun run() = application {
+    fun run() {
         LogManager.getLogManager().getLogger("").level = INFO
 
         val dataDir = getDataDir()
