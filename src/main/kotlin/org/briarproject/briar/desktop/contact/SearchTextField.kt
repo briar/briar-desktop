@@ -1,4 +1,4 @@
-package org.briarproject.briar.desktop.conversation
+package org.briarproject.briar.desktop.contact
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize

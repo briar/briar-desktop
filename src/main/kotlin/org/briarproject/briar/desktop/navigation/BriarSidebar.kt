@@ -1,4 +1,4 @@
-package org.briarproject.briar.desktop.views
+package org.briarproject.briar.desktop.navigation
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -23,9 +23,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import org.briarproject.briar.desktop.IM
 import org.briarproject.briar.desktop.contact.ProfileCircle
 import org.briarproject.briar.desktop.theme.sidebarSurface
+import org.briarproject.briar.desktop.ui.IM
 import org.briarproject.briar.desktop.ui.UiMode
 
 val SIDEBAR_WIDTH = 56.dp

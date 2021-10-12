@@ -27,6 +27,8 @@ import org.briarproject.bramble.util.OsUtils.isMac
 import org.briarproject.briar.api.test.TestAvatarCreator
 import org.briarproject.briar.desktop.testdata.DeterministicTestDataCreator
 import org.briarproject.briar.desktop.testdata.DeterministicTestDataCreatorImpl
+import org.briarproject.briar.desktop.ui.BriarUi
+import org.briarproject.briar.desktop.ui.BriarUiImpl
 import org.briarproject.briar.test.TestModule
 import java.io.File
 import java.util.Collections.emptyList

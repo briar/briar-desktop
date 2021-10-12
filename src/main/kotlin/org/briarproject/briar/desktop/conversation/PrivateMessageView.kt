@@ -9,8 +9,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import org.briarproject.bramble.api.contact.Contact
+import org.briarproject.briar.desktop.contact.AddContactDialog
 import org.briarproject.briar.desktop.contact.ContactInfoDrawerState.MakeIntro
+import org.briarproject.briar.desktop.contact.ContactList
 import org.briarproject.briar.desktop.contact.ContactsViewModel
+import org.briarproject.briar.desktop.ui.VerticalDivider
 
 @Composable
 fun PrivateMessageView(

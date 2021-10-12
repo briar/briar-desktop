@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
+import org.briarproject.briar.desktop.ui.Loader
 import org.briarproject.briar.desktop.ui.UiState
 
 @Composable

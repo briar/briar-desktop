@@ -25,9 +25,9 @@ import androidx.compose.ui.unit.dp
 import org.briarproject.bramble.api.contact.Contact
 import org.briarproject.briar.desktop.contact.ContactInfoDrawer
 import org.briarproject.briar.desktop.contact.ContactInfoDrawerState
+import org.briarproject.briar.desktop.navigation.SIDEBAR_WIDTH
 import org.briarproject.briar.desktop.theme.surfaceVariant
 import org.briarproject.briar.desktop.ui.Constants.CONTACTLIST_WIDTH
-import org.briarproject.briar.desktop.views.SIDEBAR_WIDTH
 
 @Composable
 fun Conversation(

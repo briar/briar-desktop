@@ -1,4 +1,4 @@
-package org.briarproject.briar.desktop.conversation
+package org.briarproject.briar.desktop.contact
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row

@@ -1,4 +1,4 @@
-package org.briarproject.briar.desktop.conversation
+package org.briarproject.briar.desktop.contact
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -31,8 +31,8 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.briarproject.bramble.api.contact.Contact
-import org.briarproject.briar.desktop.contact.ProfileCircle
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
+import org.briarproject.briar.desktop.ui.HorizontalDivider
 
 @Composable
 fun ContactDrawerMakeIntro(contact: Contact, contacts: List<Contact>, setInfoDrawer: (Boolean) -> Unit) {

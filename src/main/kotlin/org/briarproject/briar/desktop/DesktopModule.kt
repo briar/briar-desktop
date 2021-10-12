@@ -24,6 +24,8 @@ import org.briarproject.bramble.system.DesktopSecureRandomModule
 import org.briarproject.bramble.system.JavaSystemModule
 import org.briarproject.bramble.util.OsUtils.isLinux
 import org.briarproject.bramble.util.OsUtils.isMac
+import org.briarproject.briar.desktop.ui.BriarUi
+import org.briarproject.briar.desktop.ui.BriarUiImpl
 import java.io.File
 import java.nio.file.Path
 import java.util.Collections.emptyList

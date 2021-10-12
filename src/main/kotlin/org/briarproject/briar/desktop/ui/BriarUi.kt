@@ -1,4 +1,4 @@
-package org.briarproject.briar.desktop
+package org.briarproject.briar.desktop.ui
 
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
@@ -21,7 +21,6 @@ import org.briarproject.briar.desktop.login.LoginViewModel
 import org.briarproject.briar.desktop.login.Registration
 import org.briarproject.briar.desktop.login.RegistrationViewModel
 import org.briarproject.briar.desktop.theme.BriarTheme
-import org.briarproject.briar.desktop.ui.MainScreen
 import java.awt.Dimension
 import java.util.logging.Logger
 import javax.annotation.concurrent.Immutable

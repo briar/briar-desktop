@@ -20,9 +20,11 @@ import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.briarproject.bramble.api.contact.Contact
+import org.briarproject.briar.desktop.contact.ContactDropDown
 import org.briarproject.briar.desktop.contact.ProfileCircle
 import org.briarproject.briar.desktop.theme.outline
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
+import org.briarproject.briar.desktop.ui.HorizontalDivider
 
 @Composable
 fun ConversationHeader(

@@ -1,4 +1,4 @@
-package org.briarproject.briar.desktop.conversation
+package org.briarproject.briar.desktop.contact
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight

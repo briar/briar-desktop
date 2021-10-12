@@ -12,9 +12,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import org.briarproject.briar.desktop.contact.ContactsViewModel
 import org.briarproject.briar.desktop.conversation.PrivateMessageView
-import org.briarproject.briar.desktop.conversation.VerticalDivider
+import org.briarproject.briar.desktop.navigation.BriarSidebar
 import org.briarproject.briar.desktop.settings.PlaceHolderSettingsView
-import org.briarproject.briar.desktop.views.BriarSidebar
 
 /*
  * This is the root of the tree, all state is held here and passed down to stateless composables, which render the UI

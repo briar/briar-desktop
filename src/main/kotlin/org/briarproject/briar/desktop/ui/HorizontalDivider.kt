@@ -1,4 +1,4 @@
-package org.briarproject.briar.desktop.conversation
+package org.briarproject.briar.desktop.ui
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Divider

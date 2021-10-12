@@ -7,8 +7,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import org.briarproject.bramble.api.contact.ContactId
 import org.briarproject.briar.api.conversation.ConversationMessageHeader
-import org.briarproject.briar.desktop.CVM
-import org.briarproject.briar.desktop.MM
+import org.briarproject.briar.desktop.ui.CVM
+import org.briarproject.briar.desktop.ui.MM
 import org.briarproject.briar.desktop.ui.UiState
 import java.util.Collections
 

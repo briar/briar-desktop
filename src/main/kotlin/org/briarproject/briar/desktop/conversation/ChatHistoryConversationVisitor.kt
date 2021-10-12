@@ -27,7 +27,7 @@ class ChatHistoryConversationVisitor(
         private val LOG = Logger.getLogger(ChatHistoryConversationVisitor::class.java.name)
     }
 
-    fun appendMessage(header: ConversationMessageHeader) {
+    private fun appendMessage(header: ConversationMessageHeader) {
         try {
             val messageText = messagingManager.getMessageText(header.id)
             chat.appendMessage(header.isLocal, header.timestamp, messageText)

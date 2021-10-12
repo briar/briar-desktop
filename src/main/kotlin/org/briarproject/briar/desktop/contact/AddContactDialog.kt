@@ -1,4 +1,4 @@
-package org.briarproject.briar.desktop.conversation
+package org.briarproject.briar.desktop.contact
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -29,7 +29,7 @@ import org.briarproject.bramble.api.db.ContactExistsException
 import org.briarproject.bramble.api.db.PendingContactExistsException
 import org.briarproject.bramble.api.identity.AuthorConstants
 import org.briarproject.bramble.util.StringUtils
-import org.briarproject.briar.desktop.CTM
+import org.briarproject.briar.desktop.ui.CTM
 import java.security.GeneralSecurityException
 
 @OptIn(ExperimentalMaterialApi::class)

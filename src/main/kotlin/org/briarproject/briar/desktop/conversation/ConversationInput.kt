@@ -29,6 +29,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.briarproject.briar.desktop.theme.DarkColors
+import org.briarproject.briar.desktop.ui.HorizontalDivider
 
 @Preview
 @Composable
