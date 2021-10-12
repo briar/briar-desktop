@@ -4,6 +4,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.window.application
 import org.briarproject.bramble.BrambleCoreEagerSingletons
 import org.briarproject.briar.BriarCoreEagerSingletons
+import org.briarproject.briar.desktop.utils.FileUtils
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Path

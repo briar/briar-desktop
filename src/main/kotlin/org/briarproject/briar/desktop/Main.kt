@@ -8,6 +8,7 @@ import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.option
 import org.briarproject.bramble.BrambleCoreEagerSingletons
 import org.briarproject.briar.BriarCoreEagerSingletons
+import org.briarproject.briar.desktop.utils.FileUtils
 import java.io.File.separator
 import java.io.IOException
 import java.lang.System.getProperty
