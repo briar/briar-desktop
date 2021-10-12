@@ -88,6 +88,7 @@ import org.briarproject.briar.desktop.chat.ChatHistoryConversationVisitor
 import org.briarproject.briar.desktop.chat.ConversationMessageHeaderComparator
 import org.briarproject.briar.desktop.chat.SimpleMessage
 import org.briarproject.briar.desktop.chat.UiState
+import org.briarproject.briar.desktop.dialogs.ContactsViewModel
 import org.briarproject.briar.desktop.paul.theme.DarkColors
 import org.briarproject.briar.desktop.paul.theme.awayMsgBubble
 import org.briarproject.briar.desktop.paul.theme.divider
@@ -127,7 +128,7 @@ fun VerticalDivider() {
 @Composable
 fun PrivateMessageView(
     contact: Contact,
-    contacts: List<Contact>,
+    contacts: ContactsViewModel,
     onContactSelect: (Contact) -> Unit
 ) {
     val (isDialogVisible, setDialogVisibility) = remember { mutableStateOf(false) }
@@ -136,12 +137,12 @@ fun PrivateMessageView(
     val (contactDrawerState, setDrawerState) = remember { mutableStateOf(ContactInfoDrawerState.MakeIntro) }
     AddContactDialog(isDialogVisible, setDialogVisibility)
     Row(modifier = Modifier.fillMaxWidth()) {
-        ContactList(contact, contacts, onContactSelect, setDialogVisibility)
+        ContactList(contact, contacts.contacts, onContactSelect, setDialogVisibility)
         VerticalDivider()
         Column(modifier = Modifier.weight(1f).fillMaxHeight()) {
             Conversation(
                 contact,
-                contacts,
+                contacts.contacts,
                 dropdownExpanded,
                 setExpanded,
                 infoDrawer,

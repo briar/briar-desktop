@@ -13,6 +13,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import org.briarproject.bramble.api.contact.Contact
+import org.briarproject.briar.desktop.dialogs.ContactsViewModel
 
 enum class UiModes {
     CONTACTS,
@@ -31,7 +32,7 @@ enum class UiModes {
  */
 @Composable
 fun BriarUIStateManager(
-    contacts: List<Contact>,
+    contactsViewModel: ContactsViewModel,
     isDark: Boolean,
     setDark: (Boolean) -> Unit
 ) {
@@ -39,9 +40,9 @@ fun BriarUIStateManager(
     val (uiMode, setUiMode) = remember { mutableStateOf(UiModes.CONTACTS) }
     // TODO Figure out how to handle accounts with 0 contacts
     // current selected contact
-    val (contact, setContact) = remember { mutableStateOf(contact(contacts)) }
+    val (contact, setContact) = remember { mutableStateOf(contact(contactsViewModel)) }
     // current selected private group
-    val (group, setGroup) = remember { mutableStateOf(contact(contacts)) }
+    val (group, setGroup) = remember { mutableStateOf(contact(contactsViewModel)) }
     // current selected forum
     val (forum, setForum) = remember { mutableStateOf(0) }
     // current blog state
@@ -57,7 +58,7 @@ fun BriarUIStateManager(
         when (uiMode) {
             UiModes.CONTACTS -> if (contact != null) PrivateMessageView(
                 contact,
-                contacts,
+                contactsViewModel,
                 setContact
             )
             UiModes.SETTINGS -> PlaceHolderSettingsView(isDark, setDark)
@@ -79,6 +80,6 @@ fun PlaceHolderSettingsView(isDark: Boolean, setDark: (Boolean) -> Unit) {
     }
 }
 
-fun contact(contacts: List<Contact>): Contact? {
-    return if (contacts.isEmpty()) null else contacts[0]
+fun contact(contacts: ContactsViewModel): Contact? {
+    return if (contacts.contacts.isEmpty()) null else contacts.contacts[0]
 }

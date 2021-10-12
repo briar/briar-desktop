@@ -1,7 +1,6 @@
 package org.briarproject.briar.desktop
 
 import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.compose.ui.window.application
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.options.counted
 import com.github.ajalt.clikt.parameters.options.default
@@ -42,7 +41,7 @@ private class Main : CliktCommand(
     ).default(DEFAULT_DATA_DIR)
 
     @OptIn(ExperimentalComposeUiApi::class)
-    override fun run() = application {
+    override fun run() {
         val level = if (debug) ALL else when (verbosity) {
             0 -> WARNING
             1 -> INFO
@@ -61,7 +60,7 @@ private class Main : CliktCommand(
         BrambleCoreEagerSingletons.Helper.injectEagerSingletons(app)
         BriarCoreEagerSingletons.Helper.injectEagerSingletons(app)
 
-        app.getUI().startBriar()
+        app.getBriarUi().start()
     }
 
     private fun getDataDir(): Path {

@@ -48,7 +48,7 @@ internal class DesktopModule(private val appDir: Path) {
 
     @Provides
     @Singleton
-    internal fun provideBriarService(briarService: BriarServiceImpl): BriarService = briarService
+    internal fun provideBriarService(briarService: BriarUiImpl): BriarUi = briarService
 
     @Provides
     @Singleton

@@ -52,7 +52,7 @@ internal class DesktopTestModule(private val appDir: File) {
 
     @Provides
     @Singleton
-    internal fun provideBriarService(briarService: BriarServiceImpl): BriarService = briarService
+    internal fun provideBriarService(briarService: BriarUiImpl): BriarUi = briarService
 
     @Provides
     @Singleton

@@ -10,13 +10,11 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Button
 import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -40,61 +38,68 @@ import androidx.compose.ui.unit.dp
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun Registration(
+    viewModel: RegistrationViewModel,
     modifier: Modifier = Modifier,
-    onSubmit: (username: String, password: String) -> Unit
+    onSignedUp: () -> Unit
 ) {
-    var username by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    val signUp = {
+        viewModel.signUp {
+            onSignedUp()
+        }
+    }
+
     val initialFocusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
-    Column(
-        modifier = modifier.padding(16.dp).fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        BriarLogo()
-        Spacer(Modifier.height(32.dp))
-        OutlinedTextField(
-            value = username,
-            onValueChange = { username = it },
-            label = { Text("Username") },
-            singleLine = true,
-            textStyle = TextStyle(color = Color.White),
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-            keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Next) }),
-            modifier = Modifier
-                .focusRequester(initialFocusRequester)
-                .onPreviewKeyEvent {
+    Surface {
+        Column(
+            modifier = modifier.padding(16.dp).fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            BriarLogo()
+            Spacer(Modifier.height(32.dp))
+            OutlinedTextField(
+                value = viewModel.username.value,
+                onValueChange = { viewModel.setUsername(it) },
+                label = { Text("Username") },
+                singleLine = true,
+                textStyle = TextStyle(color = Color.White),
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Next) }),
+                modifier = Modifier
+                    .focusRequester(initialFocusRequester)
+                    .onPreviewKeyEvent {
+                        if (it.type == KeyEventType.KeyUp && it.key == Key.Enter) {
+                            focusManager.moveFocus(FocusDirection.Next)
+                        }
+                        false
+                    },
+            )
+            OutlinedTextField(
+                value = viewModel.password.value,
+                onValueChange = { viewModel.setPassword(it) },
+                label = { Text("Password") },
+                singleLine = true,
+                textStyle = TextStyle(color = Color.White),
+                visualTransformation = PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(onDone = { signUp() }),
+                modifier = Modifier.onPreviewKeyEvent {
                     if (it.type == KeyEventType.KeyUp && it.key == Key.Enter) {
-                        focusManager.moveFocus(FocusDirection.Next)
+                        signUp()
                     }
                     false
                 },
-        )
-        OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
-            label = { Text("Password") },
-            singleLine = true,
-            textStyle = TextStyle(color = Color.White),
-            visualTransformation = PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions(onDone = { onSubmit.invoke(username, password) }),
-            modifier = Modifier.onPreviewKeyEvent {
-                if (it.type == KeyEventType.KeyUp && it.key == Key.Enter) {
-                    onSubmit.invoke(username, password)
-                }
-                false
-            },
-        )
-        Spacer(Modifier.height(16.dp))
-        Button(onClick = { onSubmit.invoke(username, password) }) {
-            Text("Register", color = Color.Black)
-        }
+            )
+            Spacer(Modifier.height(16.dp))
+            Button(onClick = { signUp() }) {
+                Text("Register", color = Color.Black)
+            }
 
-        DisposableEffect(Unit) {
-            initialFocusRequester.requestFocus()
-            onDispose { }
+            DisposableEffect(Unit) {
+                initialFocusRequester.requestFocus()
+                onDispose { }
+            }
         }
     }
 }

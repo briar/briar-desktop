@@ -17,10 +17,7 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -42,10 +39,16 @@ import androidx.compose.ui.unit.dp
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun Login(
+    viewModel: LoginViewModel,
     modifier: Modifier = Modifier,
-    onResult: (result: String) -> Unit
+    onSignedIn: () -> Unit
 ) {
-    var password by remember { mutableStateOf("") }
+    val signIn = {
+        viewModel.signIn {
+            onSignedIn()
+        }
+    }
+
     val initialFocusRequester = remember { FocusRequester() }
     Surface {
         Column(
@@ -56,24 +59,24 @@ fun Login(
             BriarLogo()
             Spacer(Modifier.height(32.dp))
             OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
+                value = viewModel.password.value,
+                onValueChange = viewModel::setPassword,
                 label = { Text("Password") },
                 singleLine = true,
                 visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
-                keyboardActions = KeyboardActions(onDone = { onResult.invoke(password) }),
+                keyboardActions = KeyboardActions(onDone = { signIn() }),
                 modifier = Modifier
                     .focusRequester(initialFocusRequester)
                     .onPreviewKeyEvent {
                         if (it.type == KeyEventType.KeyUp && it.key == Key.Enter) {
-                            onResult.invoke(password)
+                            signIn()
                         }
                         false
                     },
             )
             Spacer(Modifier.height(16.dp))
-            Button(onClick = { onResult.invoke(password) }) {
+            Button(onClick = { signIn() }) {
                 Text("Login")
             }
 

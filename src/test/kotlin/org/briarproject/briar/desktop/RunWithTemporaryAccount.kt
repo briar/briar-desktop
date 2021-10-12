@@ -56,7 +56,7 @@ internal class RunWithTemporaryAccount(val customization: BriarDesktopTestApp.()
         // list yet, we need to wait a moment in order for that to finish (hopefully).
         Thread.sleep(1000)
 
-        app.getUI().startBriar()
+        app.getBriarUi().start()
     }
 
     private fun getDataDir(): Path {

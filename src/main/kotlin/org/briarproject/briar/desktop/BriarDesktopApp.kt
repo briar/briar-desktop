@@ -18,7 +18,7 @@ import javax.inject.Singleton
 @Singleton
 internal interface BriarDesktopApp : BrambleCoreEagerSingletons, BriarCoreEagerSingletons {
 
-    fun getUI(): UI
+    fun getBriarUi(): BriarUi
 
     fun getSecureRandom(): SecureRandom
 }
