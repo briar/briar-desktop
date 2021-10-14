@@ -2,6 +2,29 @@ import org.jetbrains.compose.compose
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+buildscript {
+    repositories {
+        jcenter()
+        mavenLocal()
+        google()
+        maven("https://plugins.gradle.org/m2/")
+    }
+
+    // keep version here in sync when updating briar
+    dependencies {
+        classpath("com.android.tools.build:gradle:4.1.3")
+        classpath("ru.vyarus:gradle-animalsniffer-plugin:1.5.0")
+        classpath(files("briar/libs/gradle-witness.jar"))
+    }
+
+    // keep version here in sync when updating briar
+    extra.apply {
+        set("dagger_version", "2.33")
+        set("junit_version", "4.13.2")
+        set("jmock_version", "2.12.0")
+    }
+}
+
 plugins {
     kotlin("jvm") version "1.5.21"
     kotlin("kapt") version "1.5.21"
@@ -14,11 +37,13 @@ plugins {
 group = "app.briar.desktop"
 version = "0.1"
 
-repositories {
-    mavenCentral()
-    maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
-    google()
-    jcenter()
+allprojects {
+    repositories {
+        mavenCentral()
+        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+        google()
+        jcenter()
+    }
 }
 
 dependencies {
@@ -28,8 +53,8 @@ dependencies {
     implementation("com.github.ajalt:clikt:2.2.0")
     implementation("org.jetbrains.compose.material:material-icons-extended:0.4.0")
 
-    implementation(project(path = ":briar:briar-core", configuration = "default"))
-    implementation(project(path = ":briar:bramble-java", configuration = "default"))
+    implementation(project(path = ":briar-core", configuration = "default"))
+    implementation(project(path = ":bramble-java", configuration = "default"))
 
     val daggerVersion = "2.24"
     kapt("com.google.dagger:dagger-compiler:$daggerVersion")

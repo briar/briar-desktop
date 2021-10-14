@@ -7,8 +7,13 @@ pluginManagement {
 
 rootProject.name = "briar-desktop"
 
-include("briar:bramble-api")
-include("briar:bramble-core")
-include("briar:bramble-java")
-include("briar:briar-api")
-include("briar:briar-core")
+include(":bramble-api")
+include(":bramble-core")
+include(":bramble-java")
+include(":briar-api")
+include(":briar-core")
+project(":bramble-api").projectDir = file("briar/bramble-api")
+project(":bramble-core").projectDir = file("briar/bramble-core")
+project(":bramble-java").projectDir = file("briar/bramble-java")
+project(":briar-api").projectDir = file("briar/briar-api")
+project(":briar-core").projectDir = file("briar/briar-core")
