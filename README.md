@@ -40,13 +40,13 @@ Briar dependencies are included as [Git Submodules](https://git-scm.com/book/en/
 To be able to build Briar Desktop, download the source code and the submodules using
 
 ```shell
-git clone --recursive-submodules git@code.briarproject.org:briar/briar-desktop.git
+git clone --recurse-submodules git@code.briarproject.org:briar/briar-desktop.git
 ```
 
 or
 
 ```shell
-git clone --recursive-submodules https://code.briarproject.org/briar/briar-desktop.git
+git clone --recurse-submodules https://code.briarproject.org/briar/briar-desktop.git
 ```
 
 ### Intellij IDEA
