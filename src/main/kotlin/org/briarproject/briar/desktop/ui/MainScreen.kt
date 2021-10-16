@@ -1,15 +1,9 @@
 package org.briarproject.briar.desktop.ui
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
 import org.briarproject.briar.desktop.contact.ContactsViewModel
 import org.briarproject.briar.desktop.conversation.PrivateMessageView
 import org.briarproject.briar.desktop.navigation.BriarSidebar
@@ -35,9 +29,7 @@ fun MainScreen(
         when (uiMode) {
             UiMode.CONTACTS -> PrivateMessageView(contactsViewModel)
             UiMode.SETTINGS -> PlaceHolderSettingsView(isDark, setDark)
-            else -> Surface(modifier = Modifier.fillMaxSize().background(MaterialTheme.colors.background)) {
-                Text("TBD")
-            }
+            else -> UiPlaceholder()
         }
     }
 }

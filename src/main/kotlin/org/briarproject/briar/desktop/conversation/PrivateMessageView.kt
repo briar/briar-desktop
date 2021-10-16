@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import org.briarproject.briar.desktop.contact.ContactInfoDrawerState.MakeIntro
 import org.briarproject.briar.desktop.contact.ContactList
 import org.briarproject.briar.desktop.contact.ContactsViewModel
+import org.briarproject.briar.desktop.ui.UiPlaceholder
 import org.briarproject.briar.desktop.ui.VerticalDivider
 
 @Composable
@@ -24,7 +25,7 @@ fun PrivateMessageView(
         ContactList(contacts)
         VerticalDivider()
         Column(modifier = Modifier.weight(1f).fillMaxHeight()) {
-            contacts.selectedContact.value?.let { selectedContact ->
+            contacts.selectedContact.value?.also { selectedContact ->
                 Conversation(
                     selectedContact,
                     contacts.contactList,
@@ -34,7 +35,7 @@ fun PrivateMessageView(
                     setInfoDrawer,
                     contactDrawerState
                 )
-            }
+            } ?: UiPlaceholder()
         }
     }
 }
