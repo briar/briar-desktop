@@ -31,7 +31,6 @@ import org.briarproject.briar.desktop.utils.TimeUtils.getFormattedTimestamp
 @Composable
 fun ContactCard(
     contact: Contact,
-    selContact: Contact,
     onSel: (Contact) -> Unit,
     selected: Boolean,
     drawNotifications: Boolean

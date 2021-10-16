@@ -28,19 +28,12 @@ fun MainScreen(
 ) {
     // current selected mode, changed using the sidebar buttons
     val (uiMode, setUiMode) = remember { mutableStateOf(UiMode.CONTACTS) }
-    // TODO Figure out how to handle accounts with 0 contacts
-    // current selected contact
-    val (contact, setContact) = remember { mutableStateOf(contactsViewModel.getFirst()) }
     // Other global state that we need to track should go here also
     Row {
         BriarSidebar(uiMode, setUiMode)
         VerticalDivider()
         when (uiMode) {
-            UiMode.CONTACTS -> if (contact != null) PrivateMessageView(
-                contact,
-                contactsViewModel,
-                setContact
-            )
+            UiMode.CONTACTS -> PrivateMessageView(contactsViewModel)
             UiMode.SETTINGS -> PlaceHolderSettingsView(isDark, setDark)
             else -> Surface(modifier = Modifier.fillMaxSize().background(MaterialTheme.colors.background)) {
                 Text("TBD")

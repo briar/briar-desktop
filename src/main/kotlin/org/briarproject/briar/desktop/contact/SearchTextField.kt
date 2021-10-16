@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun SearchTextField(searchValue: String, onValueChange: (String) -> Unit, onContactAdd: (Boolean) -> Unit) {
+fun SearchTextField(searchValue: String, onValueChange: (String) -> Unit, onContactAdd: () -> Unit) {
     TextField(
         value = searchValue,
         onValueChange = onValueChange,
@@ -36,7 +36,7 @@ fun SearchTextField(searchValue: String, onValueChange: (String) -> Unit, onCont
         },
         trailingIcon = {
             IconButton(
-                onClick = { onContactAdd(true) },
+                onClick = onContactAdd,
                 modifier = Modifier.padding(end = 10.dp).size(32.dp)
                     .background(MaterialTheme.colors.primary, CircleShape)
             ) {
