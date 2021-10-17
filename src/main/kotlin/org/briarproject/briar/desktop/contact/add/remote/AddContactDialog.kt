@@ -1,4 +1,4 @@
-package org.briarproject.briar.desktop.contact
+package org.briarproject.briar.desktop.contact.add.remote
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,6 +15,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -22,9 +23,13 @@ import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun AddContactDialog(viewModel: ContactsViewModel) {
+fun AddContactDialog(viewModel: AddContactViewModel, onClose: () -> Unit) {
+    LaunchedEffect("fetchHandshake") {
+        //todo: should instead be done automatically as soon as DB is loaded -> in view model
+        viewModel.fetchHandshakeLink()
+    }
     AlertDialog(
-        onDismissRequest = viewModel::closeAddContactDialog,
+        onDismissRequest = onClose,
         text = {
             Column(modifier = Modifier.fillMaxWidth()) {
                 Row(Modifier.fillMaxWidth().padding(vertical = 16.dp)) {
@@ -40,8 +45,8 @@ fun AddContactDialog(viewModel: ContactsViewModel) {
                         Modifier.width(128.dp).align(Alignment.CenterVertically),
                     )
                     TextField(
-                        viewModel.addContactLink.value,
-                        viewModel::setAddContactLink,
+                        viewModel.remoteHandshakeLink.value,
+                        viewModel::setRemoteHandshakeLink,
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -51,7 +56,7 @@ fun AddContactDialog(viewModel: ContactsViewModel) {
                         Modifier.width(128.dp).align(Alignment.CenterVertically),
                     )
                     TextField(
-                        viewModel.addContactAlias.value,
+                        viewModel.alias.value,
                         viewModel::setAddContactAlias,
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -62,7 +67,7 @@ fun AddContactDialog(viewModel: ContactsViewModel) {
                         modifier = Modifier.width(128.dp).align(Alignment.CenterVertically),
                     )
                     TextField(
-                        viewModel.addContactOwnLink,
+                        viewModel.handshakeLink.value,
                         onValueChange = {},
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -70,13 +75,13 @@ fun AddContactDialog(viewModel: ContactsViewModel) {
             }
         },
         confirmButton = {
-            Button(onClick = viewModel::onSubmitAddContactDialog) {
+            Button(onClick = { viewModel.onSubmitAddContactDialog(); onClose() }) {
                 Text("Add")
             }
         },
         dismissButton = {
             TextButton(
-                onClick = viewModel::closeAddContactDialog
+                onClick = onClose
             ) {
                 Text("Cancel", color = MaterialTheme.colors.onSurface)
             }

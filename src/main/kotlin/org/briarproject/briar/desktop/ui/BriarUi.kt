@@ -16,6 +16,7 @@ import org.briarproject.bramble.api.lifecycle.LifecycleManager.LifecycleState.RU
 import org.briarproject.briar.api.conversation.ConversationManager
 import org.briarproject.briar.api.messaging.MessagingManager
 import org.briarproject.briar.desktop.contact.ContactsViewModel
+import org.briarproject.briar.desktop.contact.add.remote.AddContactViewModel
 import org.briarproject.briar.desktop.login.Login
 import org.briarproject.briar.desktop.login.LoginViewModel
 import org.briarproject.briar.desktop.login.Registration
@@ -53,6 +54,7 @@ constructor(
     private val registrationViewModel: RegistrationViewModel,
     private val loginViewModel: LoginViewModel,
     private val contactsViewModel: ContactsViewModel,
+    private val addContactViewModel: AddContactViewModel,
     private val accountManager: AccountManager,
     private val contactManager: ContactManager,
     private val conversationManager: ConversationManager,
@@ -115,7 +117,7 @@ constructor(
                                 MM provides messagingManager,
                                 IM provides identityManager,
                             ) {
-                                MainScreen(contactsViewModel, isDark, setDark)
+                                MainScreen(contactsViewModel, addContactViewModel, isDark, setDark)
                             }
                     }
                 }

@@ -10,8 +10,14 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import org.briarproject.briar.desktop.contact.add.remote.AddContactDialog
+import org.briarproject.briar.desktop.contact.add.remote.AddContactViewModel
 import org.briarproject.briar.desktop.theme.surfaceVariant
 import org.briarproject.briar.desktop.ui.Constants.CONTACTLIST_WIDTH
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
@@ -19,8 +25,10 @@ import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
 @Composable
 fun ContactList(
     viewModel: ContactsViewModel,
+    addContactViewModel: AddContactViewModel,
 ) {
-    if (viewModel.addContactDialogVisible.value) AddContactDialog(viewModel)
+    var isContactDialogVisible by remember { mutableStateOf(false) }
+    if (isContactDialogVisible) AddContactDialog(addContactViewModel) { isContactDialogVisible = false }
     Scaffold(
         modifier = Modifier.fillMaxHeight().width(CONTACTLIST_WIDTH),
         backgroundColor = MaterialTheme.colors.surfaceVariant,
@@ -31,7 +39,7 @@ fun ContactList(
                 SearchTextField(
                     viewModel.filterBy.value,
                     onValueChange = viewModel::setFilterBy,
-                    onContactAdd = viewModel::openAddContactDialog
+                    onContactAdd = { isContactDialogVisible = true }
                 )
             }
         },
