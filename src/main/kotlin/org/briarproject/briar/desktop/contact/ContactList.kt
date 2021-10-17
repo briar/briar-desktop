@@ -38,7 +38,7 @@ fun ContactList(
         content = {
             LazyColumn {
                 itemsIndexed(viewModel.contactList) { index, contactItem ->
-                    ContactCard(contactItem, { viewModel.selectContact(index) }, viewModel.isSelected(index), true)
+                    ContactCard(contactItem, { viewModel.selectContact(index) }, viewModel.isSelected(index))
                 }
             }
         },

@@ -31,7 +31,6 @@ fun ContactCard(
     contactItem: ContactItem,
     onSel: () -> Unit,
     selected: Boolean,
-    drawNotifications: Boolean
 ) {
     val bgColor = if (selected) MaterialTheme.colors.selectedCard else MaterialTheme.colors.surfaceVariant
     val outlineColor = MaterialTheme.colors.outline
@@ -50,7 +49,7 @@ fun ContactCard(
                 // TODO Pull profile pictures
                 ProfileCircle(36.dp, contactItem.contact.author.id.bytes)
                 // Draw notification badges
-                if (drawNotifications) {
+                if (contactItem.unread > 0) {
                     Canvas(
                         modifier = Modifier.align(Alignment.CenterVertically),
                         onDraw = {
