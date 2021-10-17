@@ -19,19 +19,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.briarproject.bramble.api.contact.Contact
 import org.briarproject.briar.desktop.theme.outline
 import org.briarproject.briar.desktop.theme.selectedCard
 import org.briarproject.briar.desktop.theme.surfaceVariant
-import org.briarproject.briar.desktop.ui.CVM
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
 import org.briarproject.briar.desktop.ui.HorizontalDivider
 import org.briarproject.briar.desktop.utils.TimeUtils.getFormattedTimestamp
 
 @Composable
 fun ContactCard(
-    contact: Contact,
-    onSel: (Contact) -> Unit,
+    contactItem: ContactItem,
+    onSel: () -> Unit,
     selected: Boolean,
     drawNotifications: Boolean
 ) {
@@ -42,7 +40,7 @@ fun ContactCard(
     val briarSurfaceVar = MaterialTheme.colors.surfaceVariant
 
     Card(
-        modifier = Modifier.fillMaxWidth().height(HEADER_SIZE).clickable(onClick = { onSel(contact) }),
+        modifier = Modifier.fillMaxWidth().height(HEADER_SIZE).clickable(onClick = onSel),
         shape = RoundedCornerShape(0.dp),
         backgroundColor = bgColor,
         contentColor = MaterialTheme.colors.onSurface
@@ -50,7 +48,7 @@ fun ContactCard(
         Row(horizontalArrangement = Arrangement.SpaceBetween) {
             Row(modifier = Modifier.align(Alignment.CenterVertically).padding(horizontal = 16.dp)) {
                 // TODO Pull profile pictures
-                ProfileCircle(36.dp, contact.author.id.bytes)
+                ProfileCircle(36.dp, contactItem.contact.author.id.bytes)
                 // Draw notification badges
                 if (drawNotifications) {
                     Canvas(
@@ -66,13 +64,12 @@ fun ContactCard(
                 }
                 Column(modifier = Modifier.align(Alignment.CenterVertically).padding(start = 12.dp)) {
                     Text(
-                        contact.author.name,
+                        contactItem.contact.author.name,
                         fontSize = 14.sp,
                         modifier = Modifier.align(Alignment.Start).padding(bottom = 2.dp)
                     )
-                    val latestMsgTime = CVM.current.getGroupCount(contact.id).latestMsgTime
                     Text(
-                        getFormattedTimestamp(latestMsgTime),
+                        if (contactItem.isEmpty) "No messages." else getFormattedTimestamp(contactItem.timestamp),
                         fontSize = 10.sp,
                         modifier = Modifier.align(Alignment.Start)
                     )
@@ -81,14 +78,12 @@ fun ContactCard(
             Canvas(
                 modifier = Modifier.padding(start = 32.dp, end = 18.dp).size(22.dp).align(Alignment.CenterVertically),
                 onDraw = {
-                    val size = 16.dp.toPx()
-                    drawCircle(color = outlineColor, radius = size / 2f)
-                    // TODO check if contact online
-                    if (true) {
-                        drawCircle(color = briarSecondary, radius = 14.dp.toPx() / 2f)
-                    } else {
-                        drawCircle(color = briarSurfaceVar, radius = 14.dp.toPx() / 2f)
-                    }
+                    val size = 16.dp
+                    drawCircle(color = outlineColor, radius = size.toPx() / 2f)
+                    drawCircle(
+                        color = if (contactItem.isConnected) briarSecondary else briarSurfaceVar,
+                        radius = (size - 2.dp).toPx() / 2f
+                    )
                 }
             )
         }

@@ -4,12 +4,14 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import org.briarproject.bramble.api.FormatException
-import org.briarproject.bramble.api.contact.Contact
+import org.briarproject.bramble.api.connection.ConnectionRegistry
 import org.briarproject.bramble.api.contact.ContactManager
 import org.briarproject.bramble.api.db.ContactExistsException
 import org.briarproject.bramble.api.db.PendingContactExistsException
 import org.briarproject.bramble.api.identity.AuthorConstants
 import org.briarproject.bramble.util.StringUtils
+import org.briarproject.briar.api.conversation.ConversationManager
+import org.briarproject.briar.api.identity.AuthorManager
 import java.security.GeneralSecurityException
 import java.util.logging.Logger
 import javax.inject.Inject
@@ -18,37 +20,48 @@ class ContactsViewModel
 @Inject
 constructor(
     private val contactManager: ContactManager,
+    private val authorManager: AuthorManager,
+    private val conversationManager: ConversationManager,
+    private val connectionRegistry: ConnectionRegistry,
 ) {
 
     companion object {
         private val LOG = Logger.getLogger(ContactsViewModel::class.java.name)
     }
 
-    private val _contactList = mutableListOf<Contact>()
-    private val _filteredContactList = mutableStateListOf<Contact>()
+    private val _contactList = mutableListOf<ContactItem>()
+    private val _filteredContactList = mutableStateListOf<ContactItem>()
     private val _filterBy = mutableStateOf("")
     private var _selectedContactIndex = -1;
-    private val _selectedContact = mutableStateOf<Contact?>(null)
+    private val _selectedContact = mutableStateOf<ContactItem?>(null)
 
     private val _addContactDialogVisible = mutableStateOf(false)
     private val _addContactAlias = mutableStateOf("")
     private val _addContactLink = mutableStateOf("")
 
-    val contactList: List<Contact> = _filteredContactList
+    val contactList: List<ContactItem> = _filteredContactList
     val filterBy: State<String> = _filterBy
-    val selectedContact: State<Contact?> = _selectedContact
+    val selectedContact: State<ContactItem?> = _selectedContact
 
     val addContactDialogVisible: State<Boolean> = _addContactDialogVisible
     val addContactAlias: State<String> = _addContactAlias
     val addContactLink: State<String> = _addContactLink
-    val addContactOwnLink = contactManager.handshakeLink
+    var addContactOwnLink = ""
 
     internal fun loadContacts() {
         _contactList.apply {
             clear()
-            addAll(contactManager.contacts)
+            addAll(contactManager.contacts.map { contact ->
+                ContactItem(
+                    contact,
+                    authorManager.getAuthorInfo(contact),
+                    connectionRegistry.isConnected(contact.id),
+                    conversationManager.getGroupCount(contact.id)
+                )
+            })
         }
         updateFilteredList()
+        addContactOwnLink = contactManager.handshakeLink
     }
 
     fun selectContact(index: Int) {
@@ -63,7 +76,7 @@ constructor(
             clear()
             addAll(_contactList.filter {
                 // todo: also filter on alias?
-                it.author.name.lowercase().contains(_filterBy.value)
+                it.contact.author.name.lowercase().contains(_filterBy.value)
             })
         }
     }

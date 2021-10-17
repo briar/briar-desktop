@@ -57,7 +57,8 @@ fun ContactDrawerMakeIntro(contact: Contact, contacts: List<Contact>, setInfoDra
             Column(Modifier.verticalScroll(rememberScrollState())) {
                 for (c in contacts) {
                     if (c.id != contact.id) {
-                        ContactCard(c, { onCancelSel(c); introNextPg = true }, false, false)
+                        // todo: refactor to use contactItem in IntroductionViewModel
+                        //ContactCard(c, { onCancelSel(c); introNextPg = true }, false, false)
                     }
                 }
             }

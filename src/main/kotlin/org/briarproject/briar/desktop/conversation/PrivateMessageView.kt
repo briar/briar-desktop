@@ -27,8 +27,8 @@ fun PrivateMessageView(
         Column(modifier = Modifier.weight(1f).fillMaxHeight()) {
             contacts.selectedContact.value?.also { selectedContact ->
                 Conversation(
-                    selectedContact,
-                    contacts.contactList,
+                    selectedContact.contact,
+                    contacts.contactList.map { c -> c.contact },
                     dropdownExpanded,
                     setExpanded,
                     infoDrawer,
