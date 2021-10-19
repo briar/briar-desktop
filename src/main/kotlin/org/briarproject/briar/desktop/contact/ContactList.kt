@@ -24,7 +24,7 @@ import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
 
 @Composable
 fun ContactList(
-    viewModel: ContactsViewModel,
+    viewModel: ContactListViewModel,
     addContactViewModel: AddContactViewModel,
 ) {
     var isContactDialogVisible by remember { mutableStateOf(false) }

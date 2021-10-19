@@ -4,9 +4,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import org.briarproject.briar.desktop.contact.ContactsViewModel
+import org.briarproject.briar.desktop.contact.ContactListViewModel
 import org.briarproject.briar.desktop.contact.add.remote.AddContactViewModel
 import org.briarproject.briar.desktop.conversation.PrivateMessageView
+import org.briarproject.briar.desktop.introduction.IntroductionViewModel
 import org.briarproject.briar.desktop.navigation.BriarSidebar
 import org.briarproject.briar.desktop.settings.PlaceHolderSettingsView
 
@@ -17,8 +18,9 @@ import org.briarproject.briar.desktop.settings.PlaceHolderSettingsView
  */
 @Composable
 fun MainScreen(
-    contactsViewModel: ContactsViewModel,
+    contactListViewModel: ContactListViewModel,
     addContactViewModel: AddContactViewModel,
+    introductionViewModel: IntroductionViewModel,
     isDark: Boolean,
     setDark: (Boolean) -> Unit
 ) {
@@ -29,7 +31,7 @@ fun MainScreen(
         BriarSidebar(uiMode, setUiMode)
         VerticalDivider()
         when (uiMode) {
-            UiMode.CONTACTS -> PrivateMessageView(contactsViewModel, addContactViewModel)
+            UiMode.CONTACTS -> PrivateMessageView(contactListViewModel, addContactViewModel, introductionViewModel)
             UiMode.SETTINGS -> PlaceHolderSettingsView(isDark, setDark)
             else -> UiPlaceholder()
         }

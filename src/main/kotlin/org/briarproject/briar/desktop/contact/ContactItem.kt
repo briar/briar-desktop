@@ -3,19 +3,24 @@ package org.briarproject.briar.desktop.contact
 import org.briarproject.bramble.api.contact.Contact
 import org.briarproject.briar.api.client.MessageTracker
 import org.briarproject.briar.api.conversation.ConversationMessageHeader
-import org.briarproject.briar.api.identity.AuthorInfo
 import kotlin.math.max
 
 data class ContactItem(
     val contact: Contact,
-    private val authorInfo: AuthorInfo,
-    private val groupCount: MessageTracker.GroupCount,
-
     val isConnected: Boolean,
-    val isEmpty: Boolean = groupCount.msgCount == 0,
-    val unread: Int = groupCount.unreadCount,
-    val timestamp: Long = groupCount.latestMsgTime
+    val isEmpty: Boolean,
+    val unread: Int,
+    val timestamp: Long
 ) {
+
+    constructor(contact: Contact, isConnected: Boolean, groupCount: MessageTracker.GroupCount)
+            : this(
+        contact, isConnected,
+        isEmpty = groupCount.msgCount == 0,
+        unread = groupCount.unreadCount,
+        timestamp = groupCount.latestMsgTime
+    )
+
     fun updateFromMessageHeader(h: ConversationMessageHeader): ContactItem {
         return copy(
             isEmpty = false,

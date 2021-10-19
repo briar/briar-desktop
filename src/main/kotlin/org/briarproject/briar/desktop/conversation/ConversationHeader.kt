@@ -14,6 +14,8 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.drawscope.withTransform
@@ -29,10 +31,9 @@ import org.briarproject.briar.desktop.ui.HorizontalDivider
 @Composable
 fun ConversationHeader(
     contact: Contact,
-    expanded: Boolean,
-    isExpanded: (Boolean) -> Unit,
-    setInfoDrawer: (Boolean) -> Unit
+    onMakeIntroduction: () -> Unit,
 ) {
+    val (isExpanded, setExpanded) = remember { mutableStateOf(false) }
     // TODO hook up online indicator logic
     val onlineColor = MaterialTheme.colors.secondary
     val outlineColor = MaterialTheme.colors.outline
@@ -57,11 +58,11 @@ fun ConversationHeader(
             )
         }
         IconButton(
-            onClick = { isExpanded(!expanded) },
+            onClick = { setExpanded(!isExpanded) },
             modifier = Modifier.align(Alignment.CenterEnd).padding(end = 16.dp)
         ) {
             Icon(Icons.Filled.MoreVert, "contact info", modifier = Modifier.size(24.dp))
-            ContactDropDown(expanded, isExpanded, setInfoDrawer)
+            ContactDropDown(isExpanded, setExpanded, onMakeIntroduction)
         }
         HorizontalDivider(modifier = Modifier.align(Alignment.BottomCenter))
     }

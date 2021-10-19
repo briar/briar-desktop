@@ -18,6 +18,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import org.briarproject.bramble.api.contact.Contact
 import org.briarproject.briar.desktop.contact.ContactInfoDrawer
 import org.briarproject.briar.desktop.contact.ContactInfoDrawerState
+import org.briarproject.briar.desktop.introduction.IntroductionViewModel
 import org.briarproject.briar.desktop.navigation.SIDEBAR_WIDTH
 import org.briarproject.briar.desktop.theme.surfaceVariant
 import org.briarproject.briar.desktop.ui.Constants.CONTACTLIST_WIDTH
@@ -32,17 +34,25 @@ import org.briarproject.briar.desktop.ui.Constants.CONTACTLIST_WIDTH
 @Composable
 fun Conversation(
     contact: Contact,
-    contacts: List<Contact>,
-    expanded: Boolean,
-    setExpanded: (Boolean) -> Unit,
-    infoDrawer: Boolean,
-    setInfoDrawer: (Boolean) -> Unit,
-    drawerState: ContactInfoDrawerState
+    introductionViewModel: IntroductionViewModel,
 ) {
+    val (infoDrawer, setInfoDrawer) = remember { mutableStateOf(false) }
+    val (contactDrawerState, setDrawerState) = remember { mutableStateOf(ContactInfoDrawerState.MakeIntro) }
     BoxWithConstraints(Modifier.fillMaxSize()) {
         val animatedInfoDrawerOffsetX by animateDpAsState(if (infoDrawer) (-275).dp else 0.dp)
         Scaffold(
-            topBar = { ConversationHeader(contact, expanded, setExpanded, setInfoDrawer) },
+            topBar = {
+                ConversationHeader(
+                    contact,
+                    onMakeIntroduction = {
+                        introductionViewModel.apply {
+                            setFirstContact(contact)
+                            loadContacts()
+                        }
+                        setInfoDrawer(true)
+                    }
+                )
+            },
             content = { padding ->
                 Box(modifier = Modifier.padding(padding)) {
                     val chat = ChatState(contact.id)
@@ -71,7 +81,7 @@ fun Conversation(
                         RoundedCornerShape(topStart = 10.dp, bottomStart = 10.dp)
                     )
             ) {
-                ContactInfoDrawer(contact, contacts, setInfoDrawer, drawerState)
+                ContactInfoDrawer(introductionViewModel, setInfoDrawer, contactDrawerState)
             }
         }
     }

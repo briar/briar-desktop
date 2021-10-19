@@ -15,8 +15,9 @@ import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.bramble.api.lifecycle.LifecycleManager.LifecycleState.RUNNING
 import org.briarproject.briar.api.conversation.ConversationManager
 import org.briarproject.briar.api.messaging.MessagingManager
-import org.briarproject.briar.desktop.contact.ContactsViewModel
+import org.briarproject.briar.desktop.contact.ContactListViewModel
 import org.briarproject.briar.desktop.contact.add.remote.AddContactViewModel
+import org.briarproject.briar.desktop.introduction.IntroductionViewModel
 import org.briarproject.briar.desktop.login.Login
 import org.briarproject.briar.desktop.login.LoginViewModel
 import org.briarproject.briar.desktop.login.Registration
@@ -53,8 +54,9 @@ internal class BriarUiImpl
 constructor(
     private val registrationViewModel: RegistrationViewModel,
     private val loginViewModel: LoginViewModel,
-    private val contactsViewModel: ContactsViewModel,
+    private val contactListViewModel: ContactListViewModel,
     private val addContactViewModel: AddContactViewModel,
+    private val introductionViewModel: IntroductionViewModel,
     private val accountManager: AccountManager,
     private val contactManager: ContactManager,
     private val conversationManager: ConversationManager,
@@ -84,7 +86,7 @@ constructor(
                     if (accountManager.hasDatabaseKey()) {
                         // this should only happen during testing when we launch the main UI directly
                         // without a need to enter the password.
-                        contactsViewModel.loadContacts()
+                        contactListViewModel.loadContacts()
                         Screen.MAIN
                     } else if (accountManager.accountExists()) {
                         Screen.LOGIN
@@ -102,12 +104,12 @@ constructor(
                     when (screenState) {
                         Screen.REGISTRATION ->
                             Registration(registrationViewModel) {
-                                contactsViewModel.loadContacts()
+                                contactListViewModel.loadContacts()
                                 screenState = Screen.MAIN
                             }
                         Screen.LOGIN ->
                             Login(loginViewModel) {
-                                contactsViewModel.loadContacts()
+                                contactListViewModel.loadContacts()
                                 screenState = Screen.MAIN
                             }
                         else ->
@@ -117,7 +119,13 @@ constructor(
                                 MM provides messagingManager,
                                 IM provides identityManager,
                             ) {
-                                MainScreen(contactsViewModel, addContactViewModel, isDark, setDark)
+                                MainScreen(
+                                    contactListViewModel,
+                                    addContactViewModel,
+                                    introductionViewModel,
+                                    isDark,
+                                    setDark
+                                )
                             }
                     }
                 }

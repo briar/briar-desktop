@@ -1,8 +1,9 @@
 package org.briarproject.briar.desktop.contact
 
 import androidx.compose.runtime.Composable
-import org.briarproject.bramble.api.contact.Contact
 import org.briarproject.briar.desktop.contact.ContactInfoDrawerState.MakeIntro
+import org.briarproject.briar.desktop.introduction.ContactDrawerMakeIntro
+import org.briarproject.briar.desktop.introduction.IntroductionViewModel
 
 // Right drawer state
 enum class ContactInfoDrawerState {
@@ -13,12 +14,11 @@ enum class ContactInfoDrawerState {
 
 @Composable
 fun ContactInfoDrawer(
-    contact: Contact,
-    contacts: List<Contact>,
+    introductionViewModel: IntroductionViewModel,
     setInfoDrawer: (Boolean) -> Unit,
     drawerState: ContactInfoDrawerState
 ) {
     when (drawerState) {
-        MakeIntro -> ContactDrawerMakeIntro(contact, contacts, setInfoDrawer)
+        MakeIntro -> ContactDrawerMakeIntro(introductionViewModel, setInfoDrawer)
     }
 }

@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.sp
 fun ContactDropDown(
     expanded: Boolean,
     isExpanded: (Boolean) -> Unit,
-    setInfoDrawer: (Boolean) -> Unit
+    onMakeIntroduction: () -> Unit,
 ) {
     var connectionMode by remember { mutableStateOf(false) }
     var contactMode by remember { mutableStateOf(false) }
@@ -30,7 +30,7 @@ fun ContactDropDown(
         expanded = expanded,
         onDismissRequest = { isExpanded(false) },
     ) {
-        DropdownMenuItem(onClick = { setInfoDrawer(true); isExpanded(false) }) {
+        DropdownMenuItem(onClick = { isExpanded(false); onMakeIntroduction() }) {
             Text("Make Introduction", fontSize = 14.sp)
         }
         DropdownMenuItem(onClick = {}) {
