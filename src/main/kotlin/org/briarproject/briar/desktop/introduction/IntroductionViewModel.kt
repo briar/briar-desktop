@@ -26,7 +26,7 @@ constructor(
     }
 
     init {
-        //todo: where/when to remove listener again?
+        // todo: where/when to remove listener again?
         eventBus.addListener(this)
     }
 

@@ -28,13 +28,13 @@ constructor(
     }
 
     init {
-        //todo: where/when to remove listener again?
+        // todo: where/when to remove listener again?
         eventBus.addListener(this)
     }
 
     private val _filteredContactList = mutableStateListOf<ContactItem>()
     private val _filterBy = mutableStateOf("")
-    private var _selectedContactIndex = -1;
+    private var _selectedContactIndex = -1
     private val _selectedContact = mutableStateOf<ContactItem?>(null)
 
     override val contactList: List<ContactItem> = _filteredContactList
@@ -56,10 +56,12 @@ constructor(
     private fun updateFilteredList() {
         _filteredContactList.apply {
             clear()
-            addAll(_contactList.filter {
-                // todo: also filter on alias?
-                it.contact.author.name.lowercase().contains(_filterBy.value)
-            })
+            addAll(
+                _contactList.filter {
+                    // todo: also filter on alias?
+                    it.contact.author.name.lowercase().contains(_filterBy.value)
+                }
+            )
         }
     }
 
@@ -75,7 +77,7 @@ constructor(
                 LOG.info("Conversation message received, updating item")
                 updateItem(e.contactId) { it.updateFromMessageHeader(e.messageHeader) }
             }
-            //is AvatarUpdatedEvent -> {}
+            // is AvatarUpdatedEvent -> {}
             is ContactAliasChangedEvent -> {
                 updateItem(e.contactId) { it.updateAlias(e.alias) }
             }

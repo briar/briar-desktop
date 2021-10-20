@@ -34,13 +34,15 @@ abstract class ContactsViewModel(
     open fun loadContacts() {
         _contactList.apply {
             clear()
-            addAll(contactManager.contacts.filter(::filterContact).map { contact ->
-                ContactItem(
-                    contact,
-                    connectionRegistry.isConnected(contact.id),
-                    conversationManager.getGroupCount(contact.id),
-                )
-            })
+            addAll(
+                contactManager.contacts.filter(::filterContact).map { contact ->
+                    ContactItem(
+                        contact,
+                        connectionRegistry.isConnected(contact.id),
+                        conversationManager.getGroupCount(contact.id),
+                    )
+                }
+            )
         }
     }
 

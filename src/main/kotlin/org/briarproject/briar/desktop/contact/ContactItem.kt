@@ -13,13 +13,13 @@ data class ContactItem(
     val timestamp: Long
 ) {
 
-    constructor(contact: Contact, isConnected: Boolean, groupCount: MessageTracker.GroupCount)
-            : this(
-        contact, isConnected,
-        isEmpty = groupCount.msgCount == 0,
-        unread = groupCount.unreadCount,
-        timestamp = groupCount.latestMsgTime
-    )
+    constructor(contact: Contact, isConnected: Boolean, groupCount: MessageTracker.GroupCount) :
+        this(
+            contact, isConnected,
+            isEmpty = groupCount.msgCount == 0,
+            unread = groupCount.unreadCount,
+            timestamp = groupCount.latestMsgTime
+        )
 
     fun updateFromMessageHeader(h: ConversationMessageHeader): ContactItem {
         return copy(

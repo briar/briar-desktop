@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun AddContactDialog(viewModel: AddContactViewModel, onClose: () -> Unit) {
     LaunchedEffect("fetchHandshake") {
-        //todo: should instead be done automatically as soon as DB is loaded -> in view model
+        // todo: should instead be done automatically as soon as DB is loaded -> in view model
         viewModel.fetchHandshakeLink()
     }
     AlertDialog(
