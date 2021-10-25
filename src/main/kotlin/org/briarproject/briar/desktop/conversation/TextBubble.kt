@@ -11,53 +11,41 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.DoneAll
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.briarproject.briar.desktop.theme.awayMsgBubble
 import org.briarproject.briar.desktop.theme.localMsgBubble
+import org.briarproject.briar.desktop.utils.TimeUtils
 
 @Composable
-fun TextBubble(m: SimpleMessage) {
-    if (m.local) {
-        TextBubble(
-            m,
-            Alignment.End,
-            MaterialTheme.colors.localMsgBubble,
-            RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp, bottomStart = 10.dp)
-        )
-    } else {
-        TextBubble(
-            m,
-            Alignment.Start,
-            MaterialTheme.colors.awayMsgBubble,
-            RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp, bottomEnd = 10.dp)
-        )
-    }
-}
+fun TextBubble(m: ConversationMessageItem) {
+    val alignment = if (m.isIncoming) Alignment.Start else Alignment.End
+    val color = if (m.isIncoming) MaterialTheme.colors.awayMsgBubble else MaterialTheme.colors.localMsgBubble
+    val shape = if (m.isIncoming)
+        RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp, bottomEnd = 10.dp)
+    else
+        RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp, bottomStart = 10.dp)
 
-@Composable
-fun TextBubble(m: SimpleMessage, alignment: Alignment.Horizontal, color: Color, shape: RoundedCornerShape) {
     Column(Modifier.fillMaxWidth()) {
         Column(Modifier.fillMaxWidth(fraction = 0.8f).align(alignment)) {
             Card(Modifier.align(alignment), backgroundColor = color, shape = shape) {
                 Column(
                     Modifier.padding(8.dp)
                 ) {
-                    Text(m.message, fontSize = 14.sp, modifier = Modifier.align(Alignment.Start))
+                    Text(m.text!!, fontSize = 14.sp, modifier = Modifier.align(Alignment.Start))
                     Row(modifier = Modifier.padding(top = 4.dp)) {
-                        Text(m.time, Modifier.padding(end = 4.dp), fontSize = 10.sp)
-                        if (m.delivered) {
+                        Text(TimeUtils.getFormattedTimestamp(m.time), Modifier.padding(end = 4.dp), fontSize = 10.sp)
+                        if (!m.isIncoming) {
                             val modifier = Modifier.size(12.dp).align(Alignment.CenterVertically)
-                            Icon(Icons.Filled.DoneAll, "sent", modifier)
-                        } else {
-                            val modifier = Modifier.size(12.dp).align(Alignment.CenterVertically)
-                            Icon(Icons.Filled.Schedule, "sending", modifier)
+                            val icon =
+                                if (m.isSeen) Icons.Filled.DoneAll else if (m.isSent) Icons.Filled.Done else Icons.Filled.Schedule
+                            Icon(icon, "sent", modifier)
                         }
                     }
                 }

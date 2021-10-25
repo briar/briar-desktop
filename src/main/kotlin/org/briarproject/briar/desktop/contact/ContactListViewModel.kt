@@ -4,12 +4,14 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import org.briarproject.bramble.api.connection.ConnectionRegistry
 import org.briarproject.bramble.api.contact.Contact
+import org.briarproject.bramble.api.contact.ContactId
 import org.briarproject.bramble.api.contact.ContactManager
 import org.briarproject.bramble.api.contact.event.ContactAliasChangedEvent
 import org.briarproject.bramble.api.event.Event
 import org.briarproject.bramble.api.event.EventBus
 import org.briarproject.briar.api.conversation.ConversationManager
 import org.briarproject.briar.api.conversation.event.ConversationMessageReceivedEvent
+import org.briarproject.briar.desktop.conversation.ConversationMessageToBeSentEvent
 import java.util.logging.Logger
 import javax.inject.Inject
 
@@ -32,16 +34,16 @@ constructor(
     }
 
     private val _filterBy = mutableStateOf("")
-    private val _selectedContact = mutableStateOf<Contact?>(null)
+    private val _selectedContactId = mutableStateOf<ContactId?>(null)
 
     val filterBy: State<String> = _filterBy
-    val selectedContact: State<Contact?> = _selectedContact
+    val selectedContactId: State<ContactId?> = _selectedContactId
 
-    fun selectContact(contact: Contact) {
-        _selectedContact.value = contact
+    fun selectContact(contactId: ContactId) {
+        _selectedContactId.value = contactId
     }
 
-    fun isSelected(contact: Contact) = _selectedContact.value?.id == contact.id
+    fun isSelected(contactId: ContactId) = _selectedContactId.value == contactId
 
     override fun filterContact(contact: Contact) =
         // todo: also filter on alias
@@ -54,7 +56,11 @@ constructor(
 
     override fun updateFilteredList() {
         super.updateFilteredList()
-        _selectedContact.value?.let { if (!filterContact(it)) _selectedContact.value = null }
+
+        _selectedContactId.value?.let { id ->
+            if (!contactList.map { it.contact.id }.contains(id))
+                _selectedContactId.value = null
+        }
     }
 
     override fun eventOccurred(e: Event?) {
@@ -62,6 +68,10 @@ constructor(
         when (e) {
             is ConversationMessageReceivedEvent<*> -> {
                 LOG.info("Conversation message received, updating item")
+                updateItem(e.contactId) { it.updateFromMessageHeader(e.messageHeader) }
+            }
+            is ConversationMessageToBeSentEvent -> {
+                LOG.info("Conversation message added, updating item")
                 updateItem(e.contactId) { it.updateFromMessageHeader(e.messageHeader) }
             }
             // is AvatarUpdatedEvent -> {}

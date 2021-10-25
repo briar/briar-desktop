@@ -48,8 +48,8 @@ fun ContactList(
                 items(viewModel.contactList) { contactItem ->
                     ContactCard(
                         contactItem,
-                        { viewModel.selectContact(contactItem.contact) },
-                        viewModel.isSelected(contactItem.contact)
+                        { viewModel.selectContact(contactItem.contact.id) },
+                        viewModel.isSelected(contactItem.contact.id)
                     )
                 }
             }

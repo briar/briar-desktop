@@ -17,6 +17,7 @@ import org.briarproject.briar.api.conversation.ConversationManager
 import org.briarproject.briar.api.messaging.MessagingManager
 import org.briarproject.briar.desktop.contact.ContactListViewModel
 import org.briarproject.briar.desktop.contact.add.remote.AddContactViewModel
+import org.briarproject.briar.desktop.conversation.ConversationViewModel
 import org.briarproject.briar.desktop.introduction.IntroductionViewModel
 import org.briarproject.briar.desktop.login.Login
 import org.briarproject.briar.desktop.login.LoginViewModel
@@ -55,6 +56,7 @@ constructor(
     private val registrationViewModel: RegistrationViewModel,
     private val loginViewModel: LoginViewModel,
     private val contactListViewModel: ContactListViewModel,
+    private val conversationViewModel: ConversationViewModel,
     private val addContactViewModel: AddContactViewModel,
     private val introductionViewModel: IntroductionViewModel,
     private val accountManager: AccountManager,
@@ -120,6 +122,7 @@ constructor(
                             ) {
                                 MainScreen(
                                     contactListViewModel,
+                                    conversationViewModel,
                                     addContactViewModel,
                                     introductionViewModel,
                                     isDark,

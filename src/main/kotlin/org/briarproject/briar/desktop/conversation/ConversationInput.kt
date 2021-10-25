@@ -19,10 +19,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
@@ -36,19 +32,18 @@ import org.briarproject.briar.desktop.ui.HorizontalDivider
 fun PreviewConversationInput() {
     MaterialTheme(colors = DarkColors) {
         Surface {
-            ConversationInput()
+            ConversationInput("Lorem ipsum.", {}, {})
         }
     }
 }
 
 @Composable
-fun ConversationInput() {
-    var text by remember { mutableStateOf("") }
+fun ConversationInput(text: String, updateText: (String) -> Unit, onSend: () -> Unit) {
     Column {
         HorizontalDivider()
         TextField(
             value = text,
-            onValueChange = { text = it },
+            onValueChange = updateText,
             maxLines = 10,
             textStyle = TextStyle(fontSize = 16.sp, lineHeight = 16.sp),
             placeholder = { Text("Message") },
@@ -70,7 +65,7 @@ fun ConversationInput() {
             },
             trailingIcon = {
                 IconButton(
-                    onClick = { }, modifier = Modifier.padding(4.dp).size(32.dp),
+                    onClick = onSend, modifier = Modifier.padding(4.dp).size(32.dp),
                 ) {
                     Icon(
                         Icons.Filled.Send,

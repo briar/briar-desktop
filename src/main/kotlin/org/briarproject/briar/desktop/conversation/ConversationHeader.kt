@@ -21,26 +21,27 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.briarproject.bramble.api.contact.Contact
 import org.briarproject.briar.desktop.contact.ContactDropDown
+import org.briarproject.briar.desktop.contact.ContactItem
 import org.briarproject.briar.desktop.contact.ProfileCircle
 import org.briarproject.briar.desktop.theme.outline
+import org.briarproject.briar.desktop.theme.surfaceVariant
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
 import org.briarproject.briar.desktop.ui.HorizontalDivider
 
 @Composable
 fun ConversationHeader(
-    contact: Contact,
+    contactItem: ContactItem,
     onMakeIntroduction: () -> Unit,
 ) {
     val (isExpanded, setExpanded) = remember { mutableStateOf(false) }
-    // TODO hook up online indicator logic
-    val onlineColor = MaterialTheme.colors.secondary
+    val onlineColor =
+        if (contactItem.isConnected) MaterialTheme.colors.secondary else MaterialTheme.colors.surfaceVariant
     val outlineColor = MaterialTheme.colors.outline
 
     Box(modifier = Modifier.fillMaxWidth().height(HEADER_SIZE + 1.dp)) {
         Row(modifier = Modifier.align(Alignment.Center)) {
-            ProfileCircle(36.dp, contact.author.id.bytes)
+            ProfileCircle(36.dp, contactItem.contact.author.id.bytes)
             Canvas(
                 modifier = Modifier.align(Alignment.CenterVertically),
                 onDraw = {
@@ -52,7 +53,7 @@ fun ConversationHeader(
                 }
             )
             Text(
-                contact.author.name,
+                contactItem.contact.author.name,
                 modifier = Modifier.align(Alignment.CenterVertically).padding(start = 12.dp),
                 fontSize = 20.sp
             )

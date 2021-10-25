@@ -16,6 +16,7 @@ import org.briarproject.briar.desktop.ui.VerticalDivider
 @Composable
 fun PrivateMessageView(
     contactListViewModel: ContactListViewModel,
+    conversationViewModel: ConversationViewModel,
     addContactViewModel: AddContactViewModel,
     introductionViewModel: IntroductionViewModel,
 ) {
@@ -23,9 +24,10 @@ fun PrivateMessageView(
         ContactList(contactListViewModel, addContactViewModel)
         VerticalDivider()
         Column(modifier = Modifier.weight(1f).fillMaxHeight()) {
-            contactListViewModel.selectedContact.value?.also { selectedContact ->
+            contactListViewModel.selectedContactId.value?.also { contactId ->
                 Conversation(
-                    selectedContact,
+                    contactId,
+                    conversationViewModel,
                     introductionViewModel
                 )
             } ?: UiPlaceholder()
