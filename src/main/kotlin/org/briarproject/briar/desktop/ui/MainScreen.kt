@@ -2,14 +2,13 @@ package org.briarproject.briar.desktop.ui
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import org.briarproject.briar.desktop.contact.ContactListViewModel
 import org.briarproject.briar.desktop.contact.add.remote.AddContactViewModel
 import org.briarproject.briar.desktop.conversation.ConversationViewModel
 import org.briarproject.briar.desktop.conversation.PrivateMessageView
 import org.briarproject.briar.desktop.introduction.IntroductionViewModel
 import org.briarproject.briar.desktop.navigation.BriarSidebar
+import org.briarproject.briar.desktop.navigation.SidebarViewModel
 import org.briarproject.briar.desktop.settings.PlaceHolderSettingsView
 
 /*
@@ -23,16 +22,14 @@ fun MainScreen(
     conversationViewModel: ConversationViewModel,
     addContactViewModel: AddContactViewModel,
     introductionViewModel: IntroductionViewModel,
+    sidebarViewModel: SidebarViewModel,
     isDark: Boolean,
     setDark: (Boolean) -> Unit
 ) {
-    // current selected mode, changed using the sidebar buttons
-    val (uiMode, setUiMode) = remember { mutableStateOf(UiMode.CONTACTS) }
-    // Other global state that we need to track should go here also
     Row {
-        BriarSidebar(uiMode, setUiMode)
+        BriarSidebar(sidebarViewModel)
         VerticalDivider()
-        when (uiMode) {
+        when (sidebarViewModel.uiMode.value) {
             UiMode.CONTACTS -> PrivateMessageView(
                 contactListViewModel,
                 conversationViewModel,

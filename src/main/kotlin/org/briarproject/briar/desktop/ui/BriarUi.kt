@@ -1,7 +1,5 @@
 package org.briarproject.briar.desktop.ui
 
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -9,12 +7,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import org.briarproject.bramble.api.account.AccountManager
-import org.briarproject.bramble.api.contact.ContactManager
-import org.briarproject.bramble.api.identity.IdentityManager
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.bramble.api.lifecycle.LifecycleManager.LifecycleState.RUNNING
-import org.briarproject.briar.api.conversation.ConversationManager
-import org.briarproject.briar.api.messaging.MessagingManager
 import org.briarproject.briar.desktop.contact.ContactListViewModel
 import org.briarproject.briar.desktop.contact.add.remote.AddContactViewModel
 import org.briarproject.briar.desktop.conversation.ConversationViewModel
@@ -23,6 +17,7 @@ import org.briarproject.briar.desktop.login.Login
 import org.briarproject.briar.desktop.login.LoginViewModel
 import org.briarproject.briar.desktop.login.Registration
 import org.briarproject.briar.desktop.login.RegistrationViewModel
+import org.briarproject.briar.desktop.navigation.SidebarViewModel
 import org.briarproject.briar.desktop.theme.BriarTheme
 import java.awt.Dimension
 import java.util.logging.Logger
@@ -43,11 +38,6 @@ interface BriarUi {
     fun stop()
 }
 
-val CVM = compositionLocalOf<ConversationManager> { error("Undefined ConversationManager") }
-val CTM = compositionLocalOf<ContactManager> { error("Undefined ContactManager") }
-val MM = compositionLocalOf<MessagingManager> { error("Undefined MessagingManager") }
-val IM = compositionLocalOf<IdentityManager> { error("Undefined IdentityManager") }
-
 @Immutable
 @Singleton
 internal class BriarUiImpl
@@ -59,11 +49,8 @@ constructor(
     private val conversationViewModel: ConversationViewModel,
     private val addContactViewModel: AddContactViewModel,
     private val introductionViewModel: IntroductionViewModel,
+    private val sidebarViewModel: SidebarViewModel,
     private val accountManager: AccountManager,
-    private val contactManager: ContactManager,
-    private val conversationManager: ConversationManager,
-    private val identityManager: IdentityManager,
-    private val messagingManager: MessagingManager,
     private val lifecycleManager: LifecycleManager,
 ) : BriarUi {
 
@@ -114,21 +101,15 @@ constructor(
                                 screenState = Screen.MAIN
                             }
                         else ->
-                            CompositionLocalProvider(
-                                CVM provides conversationManager,
-                                CTM provides contactManager,
-                                MM provides messagingManager,
-                                IM provides identityManager,
-                            ) {
-                                MainScreen(
-                                    contactListViewModel,
-                                    conversationViewModel,
-                                    addContactViewModel,
-                                    introductionViewModel,
-                                    isDark,
-                                    setDark
-                                )
-                            }
+                            MainScreen(
+                                contactListViewModel,
+                                conversationViewModel,
+                                addContactViewModel,
+                                introductionViewModel,
+                                sidebarViewModel,
+                                isDark,
+                                setDark
+                            )
                     }
                 }
             }
