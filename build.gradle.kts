@@ -13,7 +13,7 @@ buildscript {
     // keep version here in sync when updating briar
     dependencies {
         classpath("com.android.tools.build:gradle:4.1.3")
-        classpath("ru.vyarus:gradle-animalsniffer-plugin:1.5.0")
+        classpath("ru.vyarus:gradle-animalsniffer-plugin:1.5.3")
         classpath(files("briar/libs/gradle-witness.jar"))
     }
 
