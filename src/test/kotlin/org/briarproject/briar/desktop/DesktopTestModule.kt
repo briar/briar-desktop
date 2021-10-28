@@ -7,6 +7,8 @@ import org.briarproject.bramble.account.AccountModule
 import org.briarproject.bramble.api.FeatureFlags
 import org.briarproject.bramble.api.db.DatabaseConfig
 import org.briarproject.bramble.api.plugin.PluginConfig
+import org.briarproject.bramble.api.plugin.TorConstants.DEFAULT_CONTROL_PORT
+import org.briarproject.bramble.api.plugin.TorConstants.DEFAULT_SOCKS_PORT
 import org.briarproject.bramble.api.plugin.TorDirectory
 import org.briarproject.bramble.api.plugin.TransportId
 import org.briarproject.bramble.api.plugin.duplex.DuplexPluginFactory
@@ -14,6 +16,8 @@ import org.briarproject.bramble.api.plugin.simplex.SimplexPluginFactory
 import org.briarproject.bramble.battery.DefaultBatteryManagerModule
 import org.briarproject.bramble.event.DefaultEventExecutorModule
 import org.briarproject.bramble.network.JavaNetworkModule
+import org.briarproject.bramble.plugin.TorPorts
+import org.briarproject.bramble.plugin.TorPortsImpl
 import org.briarproject.bramble.plugin.tor.CircumventionModule
 import org.briarproject.bramble.plugin.tor.UnixTorPluginFactory
 import org.briarproject.bramble.socks.SocksModule
@@ -50,7 +54,11 @@ import javax.inject.Singleton
         TestModule::class,
     ]
 )
-internal class DesktopTestModule(private val appDir: File) {
+internal class DesktopTestModule(
+    private val appDir: File,
+    private val socksPort: Int = DEFAULT_SOCKS_PORT,
+    private val controlPort: Int = DEFAULT_CONTROL_PORT
+) {
 
     @Provides
     @Singleton
@@ -62,6 +70,12 @@ internal class DesktopTestModule(private val appDir: File) {
         val dbDir = File(appDir, "db")
         val keyDir = File(appDir, "key")
         return DesktopDatabaseConfig(dbDir, keyDir)
+    }
+
+    @Provides
+    @Singleton
+    fun provideTorPorts(): TorPorts {
+        return TorPortsImpl(socksPort, controlPort)
     }
 
     @Provides
@@ -91,8 +105,8 @@ internal class DesktopTestModule(private val appDir: File) {
         override fun shouldEnableImageAttachments() = false
         override fun shouldEnableProfilePictures() = false
         override fun shouldEnableDisappearingMessages() = false
-        override fun shouldEnableConnectViaBluetooth() = false
         override fun shouldEnableTransferData() = false
+        override fun shouldEnableShareAppViaOfflineHotspot() = false
     }
 
     @Provides

@@ -5,6 +5,8 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.window.ApplicationScope
 import androidx.compose.ui.window.application
 import org.briarproject.bramble.BrambleCoreEagerSingletons
+import org.briarproject.bramble.api.plugin.TorConstants.DEFAULT_CONTROL_PORT
+import org.briarproject.bramble.api.plugin.TorConstants.DEFAULT_SOCKS_PORT
 import org.briarproject.briar.BriarCoreEagerSingletons
 import org.briarproject.briar.desktop.utils.FileUtils
 import java.io.IOException
@@ -28,19 +30,19 @@ internal class TestWithTwoTemporaryAccounts() {
         LogManager.getLogManager().getLogger("").level = INFO
 
         application {
-            app(this, "alice")
-            app(this, "bob")
+            app(this, "alice", DEFAULT_SOCKS_PORT, DEFAULT_CONTROL_PORT)
+            app(this, "bob", DEFAULT_SOCKS_PORT + 2, DEFAULT_CONTROL_PORT + 2)
         }
     }
 
     @Composable
-    private fun app(applicationScope: ApplicationScope, name: String) {
+    private fun app(applicationScope: ApplicationScope, name: String, socksPort: Int, controlPort: Int) {
         val dataDir = getDataDir()
         LOG.info("Using data directory '$dataDir'")
 
         val app =
             DaggerBriarDesktopTestApp.builder().desktopTestModule(
-                DesktopTestModule(dataDir.toFile())
+                DesktopTestModule(dataDir.toFile(), socksPort, controlPort)
             ).build()
 
         app.getShutdownManager().addShutdownHook {
