@@ -1,6 +1,7 @@
 package org.briarproject.briar.desktop
 
 import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.window.application
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.options.counted
 import com.github.ajalt.clikt.parameters.options.default
@@ -63,7 +64,9 @@ private class Main : CliktCommand(
         BrambleCoreEagerSingletons.Helper.injectEagerSingletons(app)
         BriarCoreEagerSingletons.Helper.injectEagerSingletons(app)
 
-        app.getBriarUi().start()
+        application {
+            app.getBriarUi().start(this)
+        }
     }
 
     private fun getDataDir(): Path {

@@ -1,6 +1,8 @@
 package org.briarproject.briar.desktop
 
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.window.ApplicationScope
 import androidx.compose.ui.window.application
 import org.briarproject.bramble.BrambleCoreEagerSingletons
 import org.briarproject.briar.BriarCoreEagerSingletons
@@ -13,16 +15,26 @@ import java.util.logging.LogManager
 import java.util.logging.Logger
 import kotlin.io.path.absolute
 
-internal class RunWithTemporaryAccount(val customization: BriarDesktopTestApp.() -> Unit) {
+fun main(args: Array<String>) = TestWithTwoTemporaryAccounts().run()
+
+internal class TestWithTwoTemporaryAccounts() {
 
     companion object {
-        private val LOG = Logger.getLogger(RunWithTemporaryAccount::class.java.name)
+        private val LOG = Logger.getLogger(TestWithTwoTemporaryAccounts::class.java.name)
     }
 
     @OptIn(ExperimentalComposeUiApi::class)
     fun run() {
         LogManager.getLogManager().getLogger("").level = INFO
 
+        application {
+            app(this, "alice")
+            app(this, "bob")
+        }
+    }
+
+    @Composable
+    private fun app(applicationScope: ApplicationScope, name: String) {
         val dataDir = getDataDir()
         LOG.info("Using data directory '$dataDir'")
 
@@ -45,21 +57,19 @@ internal class RunWithTemporaryAccount(val customization: BriarDesktopTestApp.()
         val accountManager = app.getAccountManager()
 
         val password = "verySecret123!"
-        accountManager.createAccount("alice", password)
+        accountManager.createAccount(name, password)
 
         val dbKey = accountManager.databaseKey ?: throw AssertionError()
         lifecycleManager.startServices(dbKey)
         lifecycleManager.waitForStartup()
 
-        customization(app)
+        app.getDeterministicTestDataCreator().createTestData(5, 20, 50)
 
         // Creating test data happens on a background thread. As we do not get notified about updates to the conact
         // list yet, we need to wait a moment in order for that to finish (hopefully).
         Thread.sleep(1000)
 
-        application {
-            app.getBriarUi().start(this)
-        }
+        app.getBriarUi().start(applicationScope)
     }
 
     private fun getDataDir(): Path {

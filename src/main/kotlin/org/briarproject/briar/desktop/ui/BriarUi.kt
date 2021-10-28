@@ -1,11 +1,12 @@
 package org.briarproject.briar.desktop.ui
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.window.ApplicationScope
 import androidx.compose.ui.window.Window
-import androidx.compose.ui.window.application
 import org.briarproject.bramble.api.account.AccountManager
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.bramble.api.lifecycle.LifecycleManager.LifecycleState.RUNNING
@@ -34,7 +35,8 @@ enum class Screen {
 
 interface BriarUi {
 
-    fun start()
+    @Composable
+    fun start(applicationScope: ApplicationScope)
 
     fun stop()
 }
@@ -67,51 +69,51 @@ constructor(
         }
     }
 
-    override fun start() {
-        application {
-            val (isDark, setDark) = remember { mutableStateOf(true) }
-            val title = i18n("main.title")
-            var screenState by remember {
-                mutableStateOf(
-                    if (accountManager.hasDatabaseKey()) {
-                        // this should only happen during testing when we launch the main UI directly
-                        // without a need to enter the password.
-                        contactListViewModel.loadContacts()
-                        Screen.MAIN
-                    } else if (accountManager.accountExists()) {
-                        Screen.LOGIN
-                    } else {
-                        Screen.REGISTRATION
-                    }
-                )
-            }
-            Window(
-                title = title,
-                onCloseRequest = { stop(); exitApplication() },
-            ) {
-                window.minimumSize = Dimension(800, 600)
-                BriarTheme(isDarkTheme = isDark) {
-                    when (screenState) {
-                        Screen.REGISTRATION ->
-                            Registration(registrationViewModel) {
-                                screenState = Screen.MAIN
-                            }
-                        Screen.LOGIN ->
-                            Login(loginViewModel) {
-                                contactListViewModel.loadContacts()
-                                screenState = Screen.MAIN
-                            }
-                        else ->
-                            MainScreen(
-                                contactListViewModel,
-                                conversationViewModel,
-                                addContactViewModel,
-                                introductionViewModel,
-                                sidebarViewModel,
-                                isDark,
-                                setDark
-                            )
-                    }
+    @Composable
+    override fun start(applicationScope: ApplicationScope) {
+        val (isDark, setDark) = remember { mutableStateOf(true) }
+        val title = i18n("main.title")
+        var screenState by remember {
+            mutableStateOf(
+                if (accountManager.hasDatabaseKey()) {
+                    // this should only happen during testing when we launch the main UI directly
+                    // without a need to enter the password.
+                    contactListViewModel.loadContacts()
+                    Screen.MAIN
+                } else if (accountManager.accountExists()) {
+                    Screen.LOGIN
+                } else {
+                    Screen.REGISTRATION
+                }
+            )
+        }
+        Window(
+            title = title,
+            onCloseRequest = { stop(); applicationScope.exitApplication() },
+        ) {
+            window.minimumSize = Dimension(800, 600)
+            BriarTheme(isDarkTheme = isDark) {
+                when (screenState) {
+                    Screen.REGISTRATION ->
+                        Registration(registrationViewModel) {
+                            contactListViewModel.loadContacts()
+                            screenState = Screen.MAIN
+                        }
+                    Screen.LOGIN ->
+                        Login(loginViewModel) {
+                            contactListViewModel.loadContacts()
+                            screenState = Screen.MAIN
+                        }
+                    else ->
+                        MainScreen(
+                            contactListViewModel,
+                            conversationViewModel,
+                            addContactViewModel,
+                            introductionViewModel,
+                            sidebarViewModel,
+                            isDark,
+                            setDark
+                        )
                 }
             }
         }
