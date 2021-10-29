@@ -4,14 +4,10 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.window.application
 import org.briarproject.bramble.BrambleCoreEagerSingletons
 import org.briarproject.briar.BriarCoreEagerSingletons
-import org.briarproject.briar.desktop.utils.FileUtils
-import java.io.IOException
-import java.nio.file.Files
-import java.nio.file.Path
+import org.briarproject.briar.desktop.TestUtils.getDataDir
 import java.util.logging.Level.INFO
 import java.util.logging.LogManager
 import java.util.logging.Logger
-import kotlin.io.path.absolute
 
 internal class RunWithTemporaryAccount(val customization: BriarDesktopTestApp.() -> Unit) {
 
@@ -60,16 +56,5 @@ internal class RunWithTemporaryAccount(val customization: BriarDesktopTestApp.()
         application {
             app.getBriarUi().start(this)
         }
-    }
-
-    private fun getDataDir(): Path {
-        val dataDir = Files.createTempDirectory("briar")
-        if (!Files.exists(dataDir)) {
-            throw IOException("Could not create directory: ${dataDir.absolute()}")
-        } else if (!Files.isDirectory(dataDir)) {
-            throw IOException("Data dir is not a directory: ${dataDir.absolute()}")
-        }
-        FileUtils.setRWX(dataDir)
-        return dataDir
     }
 }
