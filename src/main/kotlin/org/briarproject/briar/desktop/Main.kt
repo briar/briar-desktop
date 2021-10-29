@@ -7,7 +7,10 @@ import com.github.ajalt.clikt.parameters.options.counted
 import com.github.ajalt.clikt.parameters.options.default
 import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.option
+import com.github.ajalt.clikt.parameters.types.int
 import org.briarproject.bramble.BrambleCoreEagerSingletons
+import org.briarproject.bramble.api.plugin.TorConstants.DEFAULT_CONTROL_PORT
+import org.briarproject.bramble.api.plugin.TorConstants.DEFAULT_SOCKS_PORT
 import org.briarproject.briar.BriarCoreEagerSingletons
 import org.briarproject.briar.desktop.utils.FileUtils
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
@@ -43,6 +46,14 @@ private class Main : CliktCommand(
         metavar = "PATH",
         envvar = "BRIAR_DATA_DIR"
     ).default(DEFAULT_DATA_DIR)
+    private val socksPort by option(
+        "--socks-port",
+        help = "Tor Socks Port"
+    ).int().default(DEFAULT_SOCKS_PORT)
+    private val controlPort by option(
+        "--control-port",
+        help = "Tor Control Port"
+    ).int().default(DEFAULT_CONTROL_PORT)
 
     @OptIn(ExperimentalComposeUiApi::class)
     override fun run() {
@@ -57,7 +68,7 @@ private class Main : CliktCommand(
         val dataDir = getDataDir()
         val app =
             DaggerBriarDesktopApp.builder().desktopModule(
-                DesktopModule(dataDir)
+                DesktopModule(dataDir, socksPort, controlPort)
             ).build()
         // We need to load the eager singletons directly after making the
         // dependency graphs

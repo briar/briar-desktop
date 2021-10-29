@@ -50,7 +50,11 @@ import javax.inject.Singleton
         SocksModule::class
     ]
 )
-internal class DesktopModule(private val appDir: Path) {
+internal class DesktopModule(
+    private val appDir: Path,
+    private val socksPort: Int = DEFAULT_SOCKS_PORT,
+    private val controlPort: Int = DEFAULT_CONTROL_PORT
+) {
 
     @Provides
     @Singleton
@@ -67,7 +71,7 @@ internal class DesktopModule(private val appDir: Path) {
     @Provides
     @Singleton
     fun provideTorPorts(): TorPorts {
-        return TorPortsImpl(DEFAULT_SOCKS_PORT, DEFAULT_CONTROL_PORT)
+        return TorPortsImpl(socksPort, controlPort)
     }
 
     @Provides
