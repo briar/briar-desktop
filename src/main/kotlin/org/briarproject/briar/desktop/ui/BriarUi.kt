@@ -104,7 +104,6 @@ constructor(
                     when (screenState) {
                         Screen.REGISTRATION ->
                             Registration(registrationViewModel) {
-                                contactListViewModel.loadContacts()
                                 screenState = Screen.MAIN
                             }
                         Screen.LOGIN ->

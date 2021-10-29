@@ -25,7 +25,7 @@ fun PrivateMessageView(
         Column(modifier = Modifier.weight(1f).fillMaxHeight()) {
             contactListViewModel.selectedContact.value?.also { selectedContact ->
                 Conversation(
-                    selectedContact.contact,
+                    selectedContact,
                     introductionViewModel
                 )
             } ?: UiPlaceholder()

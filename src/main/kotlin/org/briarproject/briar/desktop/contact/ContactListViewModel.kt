@@ -1,10 +1,9 @@
 package org.briarproject.briar.desktop.contact
 
 import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import org.briarproject.bramble.api.connection.ConnectionRegistry
-import org.briarproject.bramble.api.contact.ContactId
+import org.briarproject.bramble.api.contact.Contact
 import org.briarproject.bramble.api.contact.ContactManager
 import org.briarproject.bramble.api.contact.event.ContactAliasChangedEvent
 import org.briarproject.bramble.api.event.Event
@@ -32,42 +31,30 @@ constructor(
         eventBus.addListener(this)
     }
 
-    private val _filteredContactList = mutableStateListOf<ContactItem>()
     private val _filterBy = mutableStateOf("")
-    private var _selectedContactIndex = -1
-    private val _selectedContact = mutableStateOf<ContactItem?>(null)
+    private val _selectedContact = mutableStateOf<Contact?>(null)
 
-    override val contactList: List<ContactItem> = _filteredContactList
     val filterBy: State<String> = _filterBy
-    val selectedContact: State<ContactItem?> = _selectedContact
+    val selectedContact: State<Contact?> = _selectedContact
 
-    override fun loadContacts() {
-        super.loadContacts()
-        updateFilteredList()
+    fun selectContact(contact: Contact) {
+        _selectedContact.value = contact
     }
 
-    fun selectContact(index: Int) {
-        _selectedContactIndex = index
-        _selectedContact.value = _filteredContactList[index]
-    }
+    fun isSelected(contact: Contact) = _selectedContact.value?.id == contact.id
 
-    fun isSelected(index: Int) = _selectedContactIndex == index
-
-    private fun updateFilteredList() {
-        _filteredContactList.apply {
-            clear()
-            addAll(
-                _contactList.filter {
-                    // todo: also filter on alias?
-                    it.contact.author.name.lowercase().contains(_filterBy.value)
-                }
-            )
-        }
-    }
+    override fun filterContact(contact: Contact) =
+        // todo: also filter on alias
+        contact.author.name.contains(_filterBy.value, ignoreCase = true)
 
     fun setFilterBy(filter: String) {
         _filterBy.value = filter
         updateFilteredList()
+    }
+
+    override fun updateFilteredList() {
+        super.updateFilteredList()
+        _selectedContact.value?.let { if (!filterContact(it)) _selectedContact.value = null }
     }
 
     override fun eventOccurred(e: Event?) {
@@ -82,15 +69,5 @@ constructor(
                 updateItem(e.contactId) { it.updateAlias(e.alias) }
             }
         }
-    }
-
-    override fun updateItem(contactId: ContactId, update: (ContactItem) -> ContactItem) {
-        super.updateItem(contactId, update)
-        updateFilteredList()
-    }
-
-    override fun removeItem(contactId: ContactId) {
-        super.removeItem(contactId)
-        updateFilteredList()
     }
 }

@@ -7,7 +7,6 @@ import org.briarproject.bramble.api.contact.Contact
 import org.briarproject.bramble.api.contact.ContactManager
 import org.briarproject.bramble.api.event.EventBus
 import org.briarproject.briar.api.conversation.ConversationManager
-import org.briarproject.briar.desktop.contact.ContactItem
 import org.briarproject.briar.desktop.contact.ContactsViewModel
 import java.util.logging.Logger
 import javax.inject.Inject
@@ -35,7 +34,6 @@ constructor(
     private val _secondScreen = mutableStateOf(false)
     private val _introductionMessage = mutableStateOf("")
 
-    override val contactList: List<ContactItem> = _contactList
     val firstContact: State<Contact?> = _firstContact
     val secondContact: State<Contact?> = _secondContact
     val secondScreen: State<Boolean> = _secondScreen
@@ -54,6 +52,7 @@ constructor(
 
     fun backToFirstScreen() {
         _secondScreen.value = false
+        _introductionMessage.value = ""
     }
 
     fun setIntroductionMessage(msg: String) {
@@ -61,6 +60,6 @@ constructor(
     }
 
     override fun filterContact(contact: Contact): Boolean {
-        return _firstContact.value!!.id != contact.id
+        return _firstContact.value?.id != contact.id
     }
 }

@@ -1,5 +1,6 @@
 package org.briarproject.briar.desktop.contact
 
+import androidx.compose.runtime.mutableStateListOf
 import org.briarproject.bramble.api.connection.ConnectionRegistry
 import org.briarproject.bramble.api.contact.Contact
 import org.briarproject.bramble.api.contact.ContactId
@@ -25,17 +26,18 @@ abstract class ContactsViewModel(
         private val LOG = Logger.getLogger(ContactsViewModel::class.java.name)
     }
 
-    protected val _contactList = mutableListOf<ContactItem>()
+    private val _fullContactList = mutableListOf<ContactItem>()
+    private val _filteredContactList = mutableStateListOf<ContactItem>()
 
-    abstract val contactList: List<ContactItem>
+    val contactList: List<ContactItem> = _filteredContactList
 
     protected open fun filterContact(contact: Contact) = true
 
     open fun loadContacts() {
-        _contactList.apply {
+        _fullContactList.apply {
             clear()
             addAll(
-                contactManager.contacts.filter(::filterContact).map { contact ->
+                contactManager.contacts.map { contact ->
                     ContactItem(
                         contact,
                         connectionRegistry.isConnected(contact.id),
@@ -43,6 +45,15 @@ abstract class ContactsViewModel(
                     )
                 }
             )
+        }
+        updateFilteredList()
+    }
+
+    // todo: when migrated to StateFlow, this could be done implicitly instead
+    protected open fun updateFilteredList() {
+        _filteredContactList.apply {
+            clear()
+            addAll(_fullContactList.filter { filterContact(it.contact) })
         }
     }
 
@@ -68,10 +79,12 @@ abstract class ContactsViewModel(
     }
 
     protected open fun updateItem(contactId: ContactId, update: (ContactItem) -> ContactItem) {
-        _contactList.replaceFirst({ it.contact.id == contactId }, update)
+        _fullContactList.replaceFirst({ it.contact.id == contactId }, update)
+        updateFilteredList()
     }
 
     protected open fun removeItem(contactId: ContactId) {
-        _contactList.removeFirst { it.contact.id == contactId }
+        _fullContactList.removeFirst { it.contact.id == contactId }
+        updateFilteredList()
     }
 }

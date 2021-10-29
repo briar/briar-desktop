@@ -6,7 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
@@ -45,8 +45,12 @@ fun ContactList(
         },
         content = {
             LazyColumn {
-                itemsIndexed(viewModel.contactList) { index, contactItem ->
-                    ContactCard(contactItem, { viewModel.selectContact(index) }, viewModel.isSelected(index))
+                items(viewModel.contactList) { contactItem ->
+                    ContactCard(
+                        contactItem,
+                        { viewModel.selectContact(contactItem.contact) },
+                        viewModel.isSelected(contactItem.contact)
+                    )
                 }
             }
         },
