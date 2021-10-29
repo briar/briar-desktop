@@ -21,6 +21,8 @@ internal class TestWithTwoTemporaryAccounts() {
         private val LOG = Logger.getLogger(TestWithTwoTemporaryAccounts::class.java.name)
     }
 
+    private val apps = mutableListOf<BriarDesktopTestApp>()
+
     @OptIn(ExperimentalComposeUiApi::class)
     fun run() {
         LogManager.getLogManager().getLogger("").level = INFO
@@ -40,6 +42,8 @@ internal class TestWithTwoTemporaryAccounts() {
             DaggerBriarDesktopTestApp.builder().desktopTestModule(
                 DesktopTestModule(dataDir.toFile(), socksPort, controlPort)
             ).build()
+
+        apps.add(app)
 
         app.getShutdownManager().addShutdownHook {
             LOG.info("deleting temporary account at $dataDir")
@@ -67,6 +71,11 @@ internal class TestWithTwoTemporaryAccounts() {
         // list yet, we need to wait a moment in order for that to finish (hopefully).
         Thread.sleep(1000)
 
-        app.getBriarUi().start(applicationScope)
+        app.getBriarUi().start {
+            apps.forEach {
+                it.getBriarUi().stop()
+            }
+            applicationScope.exitApplication()
+        }
     }
 }

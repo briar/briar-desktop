@@ -54,7 +54,10 @@ internal class RunWithTemporaryAccount(val customization: BriarDesktopTestApp.()
         Thread.sleep(1000)
 
         application {
-            app.getBriarUi().start(this)
+            app.getBriarUi().start {
+                app.getBriarUi().stop()
+                exitApplication()
+            }
         }
     }
 }

@@ -5,7 +5,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.window.ApplicationScope
 import androidx.compose.ui.window.Window
 import org.briarproject.bramble.api.account.AccountManager
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
@@ -36,7 +35,7 @@ enum class Screen {
 interface BriarUi {
 
     @Composable
-    fun start(applicationScope: ApplicationScope)
+    fun start(onClose: () -> Unit)
 
     fun stop()
 }
@@ -70,7 +69,7 @@ constructor(
     }
 
     @Composable
-    override fun start(applicationScope: ApplicationScope) {
+    override fun start(onClose: () -> Unit) {
         val (isDark, setDark) = remember { mutableStateOf(true) }
         val title = i18n("main.title")
         var screenState by remember {
@@ -89,7 +88,7 @@ constructor(
         }
         Window(
             title = title,
-            onCloseRequest = { stop(); applicationScope.exitApplication() },
+            onCloseRequest = onClose,
         ) {
             window.minimumSize = Dimension(800, 600)
             BriarTheme(isDarkTheme = isDark) {

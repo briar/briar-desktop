@@ -18,5 +18,4 @@ object TestUtils {
         FileUtils.setRWX(dataDir)
         return dataDir
     }
-
 }
