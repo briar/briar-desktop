@@ -35,6 +35,7 @@ import org.briarproject.briar.desktop.ui.BriarUi
 import org.briarproject.briar.desktop.ui.BriarUiImpl
 import org.briarproject.briar.test.TestModule
 import java.io.File
+import java.nio.file.Path
 import java.util.Collections.emptyList
 import javax.inject.Singleton
 
@@ -55,7 +56,7 @@ import javax.inject.Singleton
     ]
 )
 internal class DesktopTestModule(
-    private val appDir: File,
+    private val appDir: Path,
     private val socksPort: Int = DEFAULT_SOCKS_PORT,
     private val controlPort: Int = DEFAULT_CONTROL_PORT
 ) {
@@ -67,8 +68,8 @@ internal class DesktopTestModule(
     @Provides
     @Singleton
     internal fun provideDatabaseConfig(): DatabaseConfig {
-        val dbDir = File(appDir, "db")
-        val keyDir = File(appDir, "key")
+        val dbDir = appDir.resolve("db")
+        val keyDir = appDir.resolve("key")
         return DesktopDatabaseConfig(dbDir, keyDir)
     }
 
@@ -81,7 +82,7 @@ internal class DesktopTestModule(
     @Provides
     @TorDirectory
     internal fun provideTorDirectory(): File {
-        return File(appDir, "tor")
+        return appDir.resolve("tor").toFile()
     }
 
     @Provides

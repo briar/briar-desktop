@@ -65,7 +65,7 @@ internal class DesktopModule(
     internal fun provideDatabaseConfig(): DatabaseConfig {
         val dbDir = appDir.resolve("db")
         val keyDir = appDir.resolve("key")
-        return DesktopDatabaseConfig(dbDir.toFile(), keyDir.toFile())
+        return DesktopDatabaseConfig(dbDir, keyDir)
     }
 
     @Provides

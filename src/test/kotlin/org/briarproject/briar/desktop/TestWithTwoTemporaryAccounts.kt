@@ -40,7 +40,7 @@ internal class TestWithTwoTemporaryAccounts() {
 
         val app =
             DaggerBriarDesktopTestApp.builder().desktopTestModule(
-                DesktopTestModule(dataDir.toFile(), socksPort, controlPort)
+                DesktopTestModule(dataDir, socksPort, controlPort)
             ).build()
 
         apps.add(app)

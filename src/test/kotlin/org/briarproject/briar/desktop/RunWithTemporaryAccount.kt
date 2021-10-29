@@ -24,7 +24,7 @@ internal class RunWithTemporaryAccount(val customization: BriarDesktopTestApp.()
 
         val app =
             DaggerBriarDesktopTestApp.builder().desktopTestModule(
-                DesktopTestModule(dataDir.toFile())
+                DesktopTestModule(dataDir)
             ).build()
 
         app.getShutdownManager().addShutdownHook {
