@@ -53,7 +53,7 @@ abstract class ContactsViewModel(
     protected open fun updateFilteredList() {
         _filteredContactList.apply {
             clear()
-            addAll(_fullContactList.filter { filterContact(it.contact) })
+            addAll(_fullContactList.filter { filterContact(it.contact) }.sortedByDescending { it.timestamp })
         }
     }
 
