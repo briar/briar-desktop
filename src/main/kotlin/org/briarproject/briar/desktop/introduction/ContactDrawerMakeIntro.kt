@@ -46,7 +46,7 @@ fun ContactDrawerMakeIntro(
                         Icon(Icons.Filled.Close, "close make intro screen")
                     }
                     Text(
-                        text = "Introduce " + viewModel.firstContact.value!!.author.name + " to:",
+                        text = "Introduce ${viewModel.firstContact.value!!.author.name} to",
                         fontSize = 16.sp,
                         modifier = Modifier.align(Alignment.CenterVertically)
                     )
