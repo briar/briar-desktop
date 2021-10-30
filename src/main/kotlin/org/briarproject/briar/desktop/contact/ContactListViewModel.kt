@@ -11,8 +11,7 @@ import org.briarproject.bramble.api.contact.event.ContactAliasChangedEvent
 import org.briarproject.bramble.api.event.Event
 import org.briarproject.bramble.api.event.EventBus
 import org.briarproject.briar.api.conversation.ConversationManager
-import org.briarproject.briar.api.conversation.event.ConversationMessageReceivedEvent
-import org.briarproject.briar.desktop.conversation.ConversationMessageToBeSentEvent
+import org.briarproject.briar.api.conversation.event.ConversationMessageTrackedEvent
 import javax.inject.Inject
 
 class ContactListViewModel
@@ -67,13 +66,9 @@ constructor(
     override fun eventOccurred(e: Event?) {
         super.eventOccurred(e)
         when (e) {
-            is ConversationMessageReceivedEvent<*> -> {
-                LOG.info("Conversation message received, updating item")
-                updateItem(e.contactId) { it.updateFromMessageHeader(e.messageHeader) }
-            }
-            is ConversationMessageToBeSentEvent -> {
-                LOG.info("Conversation message added, updating item")
-                updateItem(e.contactId) { it.updateFromMessageHeader(e.messageHeader) }
+            is ConversationMessageTrackedEvent -> {
+                LOG.info { "Conversation message tracked, updating item" }
+                updateItem(e.contactId) { it.updateTimestampAndUnread(e.timestamp, e.read) }
             }
             // is AvatarUpdatedEvent -> {}
             is ContactAliasChangedEvent -> {

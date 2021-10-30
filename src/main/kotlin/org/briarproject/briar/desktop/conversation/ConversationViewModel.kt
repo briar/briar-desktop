@@ -101,7 +101,6 @@ constructor(
                 m.autoDeleteTimer
             )
             _messages.add(0, messageHeaderToItem(h))
-            eventBus.broadcast(ConversationMessageToBeSentEvent(h, _contactId.value!!))
         } catch (e: UnexpectedTimerException) {
             LOG.warn(e) {}
         } catch (e: DbException) {

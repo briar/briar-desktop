@@ -2,7 +2,6 @@ package org.briarproject.briar.desktop.contact
 
 import org.briarproject.bramble.api.contact.Contact
 import org.briarproject.briar.api.client.MessageTracker
-import org.briarproject.briar.api.conversation.ConversationMessageHeader
 import kotlin.math.max
 
 data class ContactItem(
@@ -21,13 +20,12 @@ data class ContactItem(
             timestamp = groupCount.latestMsgTime
         )
 
-    fun updateFromMessageHeader(h: ConversationMessageHeader): ContactItem {
-        return copy(
+    fun updateTimestampAndUnread(timestamp: Long, read: Boolean): ContactItem =
+        copy(
             isEmpty = false,
-            unread = if (h.isRead) unread else unread + 1,
-            timestamp = max(h.timestamp, timestamp)
+            unread = if (read) unread else unread + 1,
+            timestamp = max(timestamp, this.timestamp)
         )
-    }
 
     fun updateIsConnected(c: Boolean): ContactItem {
         return copy(isConnected = c)
