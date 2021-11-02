@@ -15,6 +15,7 @@ import org.briarproject.briar.BriarCoreEagerSingletons
 import org.briarproject.briar.desktop.utils.FileUtils
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nF
+import org.slf4j.bridge.SLF4JBridgeHandler
 import java.io.File.separator
 import java.io.IOException
 import java.lang.System.getProperty
@@ -62,6 +63,9 @@ private class Main : CliktCommand(
             1 -> INFO
             else -> ALL
         }
+
+        SLF4JBridgeHandler.removeHandlersForRootLogger()
+        SLF4JBridgeHandler.install()
 
         LogManager.getLogManager().getLogger("").level = level
 

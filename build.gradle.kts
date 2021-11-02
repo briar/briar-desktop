@@ -57,6 +57,9 @@ dependencies {
     implementation(project(path = ":briar-core", configuration = "default"))
     implementation(project(path = ":bramble-java", configuration = "default"))
 
+    implementation("org.slf4j:jul-to-slf4j:1.7.32")
+    implementation("ch.qos.logback:logback-classic:1.2.6")
+
     val daggerVersion = "2.24"
     kapt("com.google.dagger:dagger-compiler:$daggerVersion")
 
