@@ -8,7 +8,6 @@ import org.briarproject.bramble.api.contact.ContactManager
 import org.briarproject.bramble.api.event.EventBus
 import org.briarproject.briar.api.conversation.ConversationManager
 import org.briarproject.briar.desktop.contact.ContactsViewModel
-import java.util.logging.Logger
 import javax.inject.Inject
 
 class IntroductionViewModel
@@ -19,10 +18,6 @@ constructor(
     connectionRegistry: ConnectionRegistry,
     eventBus: EventBus,
 ) : ContactsViewModel(contactManager, conversationManager, connectionRegistry) {
-
-    companion object {
-        private val LOG = Logger.getLogger(IntroductionViewModel::class.java.name)
-    }
 
     init {
         // todo: where/when to remove listener again?

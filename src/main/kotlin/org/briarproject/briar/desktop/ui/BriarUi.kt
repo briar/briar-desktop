@@ -21,7 +21,6 @@ import org.briarproject.briar.desktop.navigation.SidebarViewModel
 import org.briarproject.briar.desktop.theme.BriarTheme
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import java.awt.Dimension
-import java.util.logging.Logger
 import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -55,10 +54,6 @@ constructor(
     private val accountManager: AccountManager,
     private val lifecycleManager: LifecycleManager,
 ) : BriarUi {
-
-    companion object {
-        private val LOG = Logger.getLogger(BriarUiImpl::class.java.name)
-    }
 
     override fun stop() {
         // TODO: check how briar is doing this

@@ -1,5 +1,6 @@
 package org.briarproject.briar.desktop.testdata
 
+import mu.KotlinLogging
 import org.briarproject.bramble.api.FormatException
 import org.briarproject.bramble.api.contact.Contact
 import org.briarproject.bramble.api.contact.ContactId
@@ -24,7 +25,6 @@ import org.briarproject.bramble.api.sync.GroupFactory
 import org.briarproject.bramble.api.sync.GroupId
 import org.briarproject.bramble.api.sync.Message
 import org.briarproject.bramble.api.system.Clock
-import org.briarproject.bramble.util.LogUtils
 import org.briarproject.briar.api.autodelete.AutoDeleteConstants
 import org.briarproject.briar.api.avatar.AvatarManager
 import org.briarproject.briar.api.avatar.AvatarMessageEncoder
@@ -37,8 +37,6 @@ import java.time.ZoneOffset
 import java.util.Random
 import java.util.UUID
 import java.util.concurrent.Executor
-import java.util.logging.Level
-import java.util.logging.Logger
 import javax.inject.Inject
 import kotlin.math.min
 
@@ -58,7 +56,7 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
 ) : DeterministicTestDataCreator {
 
     companion object {
-        private val LOG = Logger.getLogger(DeterministicTestDataCreatorImpl::class.java.name)
+        private val LOG = KotlinLogging.logger {}
     }
 
     private val random = Random()
@@ -74,7 +72,7 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
             try {
                 createTestDataOnIoExecutor(numContacts, numPrivateMsgs, avatarPercent)
             } catch (e: DbException) {
-                LogUtils.logException(LOG, Level.WARNING, e)
+                LOG.warn(e) { }
             }
         }
     }
@@ -129,9 +127,7 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
             db.getContact(txn, contactId)
         }
         if (random.nextInt(100) + 1 <= avatarPercent) addAvatar(contact)
-        if (LOG.isLoggable(Level.INFO)) {
-            LOG.info("Added contact ${remote.name} with transport properties: $props")
-        }
+        LOG.info { "Added contact ${remote.name} with transport properties: $props" }
         localAuthors[contact] = remote
         return contact
     }
@@ -242,7 +238,7 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
         val `is`: InputStream = try {
             testAvatarCreator.avatarInputStream
         } catch (e: IOException) {
-            LogUtils.logException(LOG, Level.WARNING, e)
+            LOG.warn(e) {}
             return
         } ?: return
         val m: Message = try {
@@ -282,9 +278,7 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
                 createPrivateMessage(contact.id, group.id, person.messages[k])
             }
         }
-        if (LOG.isLoggable(Level.INFO)) {
-            LOG.info("Created $numPrivateMsgs private messages per contact.")
-        }
+        LOG.info { "Created $numPrivateMsgs private messages per contact." }
     }
 
     @Throws(DbException::class)

@@ -3,6 +3,7 @@ package org.briarproject.briar.desktop.conversation
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import mu.KotlinLogging
 import org.briarproject.bramble.api.FormatException
 import org.briarproject.bramble.api.connection.ConnectionRegistry
 import org.briarproject.bramble.api.contact.ContactId
@@ -29,10 +30,9 @@ import org.briarproject.briar.api.messaging.PrivateMessage
 import org.briarproject.briar.api.messaging.PrivateMessageFactory
 import org.briarproject.briar.api.messaging.PrivateMessageHeader
 import org.briarproject.briar.desktop.contact.ContactItem
+import org.briarproject.briar.desktop.utils.KLoggerUtils.logDuration
 import org.briarproject.briar.desktop.utils.replaceIf
 import java.util.Date
-import java.util.logging.Level
-import java.util.logging.Logger
 import javax.inject.Inject
 
 class ConversationViewModel
@@ -47,7 +47,7 @@ constructor(
 ) : EventListener {
 
     companion object {
-        private val LOG = Logger.getLogger(ConversationViewModel::class.java.name)
+        private val LOG = KotlinLogging.logger {}
     }
 
     init {
@@ -91,7 +91,7 @@ constructor(
             val start = LogUtils.now()
             val m = createMessage(text)
             messagingManager.addLocalMessage(m)
-            LogUtils.logDuration(LOG, "Storing message", start)
+            LOG.logDuration("Storing message", start)
 
             val message = m.message
             val h = PrivateMessageHeader(
@@ -103,9 +103,9 @@ constructor(
             _messages.add(0, messageHeaderToItem(h))
             eventBus.broadcast(ConversationMessageToBeSentEvent(h, _contactId.value!!))
         } catch (e: UnexpectedTimerException) {
-            LogUtils.logException(LOG, Level.WARNING, e)
+            LOG.warn(e) {}
         } catch (e: DbException) {
-            LogUtils.logException(LOG, Level.WARNING, e)
+            LOG.warn(e) {}
         }
     }
 
@@ -128,7 +128,7 @@ constructor(
         try {
             val start = LogUtils.now()
             val headers = conversationManager.getMessageHeaders(_contactId.value!!)
-            LogUtils.logDuration(LOG, "Loading message headers", start)
+            LOG.logDuration("Loading message headers", start)
             // Sort headers by timestamp in *descending* order
             val sorted = headers.sortedByDescending { it.timestamp }
             _messages.apply {
@@ -138,12 +138,12 @@ constructor(
                     // todo: use ConversationVisitor to also display Request and Notice Messages
                     sorted.filterIsInstance<PrivateMessageHeader>().map(::messageHeaderToItem)
                 )
-                LogUtils.logDuration(LOG, "Loading messages", start)
+                LOG.logDuration("Loading messages", start)
             }
         } catch (e: NoSuchContactException) {
-            LogUtils.logException(LOG, Level.WARNING, e)
+            LOG.warn(e) {}
         } catch (e: DbException) {
-            LogUtils.logException(LOG, Level.WARNING, e)
+            LOG.warn(e) {}
         }
     }
 
@@ -153,7 +153,7 @@ constructor(
         if (h.hasText()) {
             item.text = loadMessageText(h.id)
         } else {
-            LOG.warning { "private message without text" }
+            LOG.warn { "private message without text" }
         }
         return item
     }
@@ -162,7 +162,7 @@ constructor(
         try {
             return messagingManager.getMessageText(m)
         } catch (e: DbException) {
-            LogUtils.logException(LOG, Level.WARNING, e)
+            LOG.warn(e) {}
         }
         return null
     }

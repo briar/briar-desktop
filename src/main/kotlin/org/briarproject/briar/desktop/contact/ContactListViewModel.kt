@@ -2,6 +2,7 @@ package org.briarproject.briar.desktop.contact
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import mu.KotlinLogging
 import org.briarproject.bramble.api.connection.ConnectionRegistry
 import org.briarproject.bramble.api.contact.Contact
 import org.briarproject.bramble.api.contact.ContactId
@@ -12,7 +13,6 @@ import org.briarproject.bramble.api.event.EventBus
 import org.briarproject.briar.api.conversation.ConversationManager
 import org.briarproject.briar.api.conversation.event.ConversationMessageReceivedEvent
 import org.briarproject.briar.desktop.conversation.ConversationMessageToBeSentEvent
-import java.util.logging.Logger
 import javax.inject.Inject
 
 class ContactListViewModel
@@ -25,7 +25,7 @@ constructor(
 ) : ContactsViewModel(contactManager, conversationManager, connectionRegistry) {
 
     companion object {
-        private val LOG = Logger.getLogger(ContactListViewModel::class.java.name)
+        private val LOG = KotlinLogging.logger {}
     }
 
     init {

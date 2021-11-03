@@ -57,6 +57,7 @@ dependencies {
     implementation(project(path = ":briar-core", configuration = "default"))
     implementation(project(path = ":bramble-java", configuration = "default"))
 
+    implementation("io.github.microutils:kotlin-logging-jvm:2.0.10")
     implementation("org.slf4j:jul-to-slf4j:1.7.32")
     implementation("ch.qos.logback:logback-classic:1.2.6")
 

@@ -10,7 +10,6 @@ import org.briarproject.bramble.api.db.PendingContactExistsException
 import org.briarproject.bramble.api.identity.AuthorConstants
 import org.briarproject.bramble.util.StringUtils
 import java.security.GeneralSecurityException
-import java.util.logging.Logger
 import javax.inject.Inject
 
 class AddContactViewModel
@@ -18,10 +17,6 @@ class AddContactViewModel
 constructor(
     private val contactManager: ContactManager,
 ) {
-
-    companion object {
-        private val LOG = Logger.getLogger(AddContactViewModel::class.java.name)
-    }
 
     private val _alias = mutableStateOf("")
     private val _remoteHandshakeLink = mutableStateOf("")

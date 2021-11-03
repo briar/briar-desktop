@@ -2,17 +2,17 @@ package org.briarproject.briar.desktop
 
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.window.application
+import mu.KotlinLogging
 import org.briarproject.bramble.BrambleCoreEagerSingletons
 import org.briarproject.briar.BriarCoreEagerSingletons
 import org.briarproject.briar.desktop.TestUtils.getDataDir
 import java.util.logging.Level.INFO
 import java.util.logging.LogManager
-import java.util.logging.Logger
 
 internal class RunWithTemporaryAccount(val customization: BriarDesktopTestApp.() -> Unit) {
 
     companion object {
-        private val LOG = Logger.getLogger(RunWithTemporaryAccount::class.java.name)
+        private val LOG = KotlinLogging.logger {}
     }
 
     @OptIn(ExperimentalComposeUiApi::class)
@@ -20,7 +20,7 @@ internal class RunWithTemporaryAccount(val customization: BriarDesktopTestApp.()
         LogManager.getLogManager().getLogger("").level = INFO
 
         val dataDir = getDataDir()
-        LOG.info("Using data directory '$dataDir'")
+        LOG.info { "Using data directory '$dataDir'" }
 
         val app =
             DaggerBriarDesktopTestApp.builder().desktopTestModule(
@@ -28,7 +28,7 @@ internal class RunWithTemporaryAccount(val customization: BriarDesktopTestApp.()
             ).build()
 
         app.getShutdownManager().addShutdownHook {
-            LOG.info("deleting temporary account at $dataDir")
+            LOG.info { "deleting temporary account at $dataDir" }
             org.apache.commons.io.FileUtils.deleteDirectory(dataDir.toFile())
         }
 

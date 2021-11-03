@@ -1,6 +1,7 @@
 package org.briarproject.briar.desktop.contact
 
 import androidx.compose.runtime.mutableStateListOf
+import mu.KotlinLogging
 import org.briarproject.bramble.api.connection.ConnectionRegistry
 import org.briarproject.bramble.api.contact.Contact
 import org.briarproject.bramble.api.contact.ContactId
@@ -14,7 +15,6 @@ import org.briarproject.bramble.api.plugin.event.ContactDisconnectedEvent
 import org.briarproject.briar.api.conversation.ConversationManager
 import org.briarproject.briar.desktop.utils.removeFirst
 import org.briarproject.briar.desktop.utils.replaceFirst
-import java.util.logging.Logger
 
 abstract class ContactsViewModel(
     protected val contactManager: ContactManager,
@@ -23,7 +23,7 @@ abstract class ContactsViewModel(
 ) : EventListener {
 
     companion object {
-        private val LOG = Logger.getLogger(ContactsViewModel::class.java.name)
+        private val LOG = KotlinLogging.logger {}
     }
 
     private val _fullContactList = mutableListOf<ContactItem>()
