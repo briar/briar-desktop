@@ -44,7 +44,9 @@ fun TextBubble(m: ConversationMessageItem) {
                         if (!m.isIncoming) {
                             val modifier = Modifier.size(12.dp).align(Alignment.CenterVertically)
                             val icon =
-                                if (m.isSeen) Icons.Filled.DoneAll else if (m.isSent) Icons.Filled.Done else Icons.Filled.Schedule
+                                if (m.isSeen) Icons.Filled.DoneAll // acknowledged
+                                else if (m.isSent) Icons.Filled.Done // sent
+                                else Icons.Filled.Schedule // waiting
                             Icon(icon, "sent", modifier)
                         }
                     }

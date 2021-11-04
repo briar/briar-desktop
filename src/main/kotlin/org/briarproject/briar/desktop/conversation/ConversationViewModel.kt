@@ -85,6 +85,9 @@ constructor(
             val text = _newMessage.value
             _newMessage.value = ""
 
+            // don't send empty or blank messages
+            if (text.isBlank()) return
+
             val start = LogUtils.now()
             val m = createMessage(text)
             messagingManager.addLocalMessage(m)
@@ -125,18 +128,20 @@ constructor(
         try {
             val start = LogUtils.now()
             val headers = conversationManager.getMessageHeaders(_contactId.value!!)
-            LogUtils.logDuration(LOG, "Loading messages", start)
+            LogUtils.logDuration(LOG, "Loading message headers", start)
             // Sort headers by timestamp in *descending* order
             val sorted = headers.sortedByDescending { it.timestamp }
             _messages.apply {
                 clear()
+                val start = LogUtils.now()
                 addAll(
                     // todo: use ConversationVisitor to also display Request and Notice Messages
                     sorted.filterIsInstance<PrivateMessageHeader>().map(::messageHeaderToItem)
                 )
+                LogUtils.logDuration(LOG, "Loading messages", start)
             }
         } catch (e: NoSuchContactException) {
-            // finishOnUiThread()
+            LogUtils.logException(LOG, Level.WARNING, e)
         } catch (e: DbException) {
             LogUtils.logException(LOG, Level.WARNING, e)
         }
@@ -147,17 +152,15 @@ constructor(
         val item = ConversationMessageItem(h)
         if (h.hasText()) {
             item.text = loadMessageText(h.id)
+        } else {
+            LOG.warning { "private message without text" }
         }
         return item
     }
 
     private fun loadMessageText(m: MessageId): String? {
         try {
-            val start = LogUtils.now()
-            val text = messagingManager.getMessageText(m)
-            LogUtils.logDuration(LOG, "Loading text", start)
-
-            return text
+            return messagingManager.getMessageText(m)
         } catch (e: DbException) {
             LogUtils.logException(LOG, Level.WARNING, e)
         }

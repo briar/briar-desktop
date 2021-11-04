@@ -57,9 +57,10 @@ constructor(
     override fun updateFilteredList() {
         super.updateFilteredList()
 
-        _selectedContactId.value?.let { id ->
-            if (!contactList.map { it.contact.id }.contains(id))
-                _selectedContactId.value = null
+        // reset selected contact to null if not available after filtering
+        val id = _selectedContactId.value
+        if (id != null && !contactList.map { it.contact.id }.contains(id)) {
+            _selectedContactId.value = null
         }
     }
 

@@ -24,13 +24,12 @@ fun PrivateMessageView(
         ContactList(contactListViewModel, addContactViewModel)
         VerticalDivider()
         Column(modifier = Modifier.weight(1f).fillMaxHeight()) {
-            contactListViewModel.selectedContactId.value?.also { contactId ->
-                Conversation(
-                    contactId,
-                    conversationViewModel,
-                    introductionViewModel
-                )
-            } ?: UiPlaceholder()
+            val id = contactListViewModel.selectedContactId.value
+            if (id != null) {
+                Conversation(id, conversationViewModel, introductionViewModel)
+            } else {
+                UiPlaceholder()
+            }
         }
     }
 }
