@@ -49,10 +49,6 @@ internal class RunWithTemporaryAccount(val customization: BriarDesktopTestApp.()
 
         customization(app)
 
-        // Creating test data happens on a background thread. As we do not get notified about updates to the conact
-        // list yet, we need to wait a moment in order for that to finish (hopefully).
-        Thread.sleep(1000)
-
         application {
             app.getBriarUi().start {
                 app.getBriarUi().stop()

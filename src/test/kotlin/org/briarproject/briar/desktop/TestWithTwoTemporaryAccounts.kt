@@ -33,9 +33,6 @@ internal class TestWithTwoTemporaryAccounts() {
         apps.add(app2)
         app1.getDeterministicTestDataCreator().createTestData(5, 20, 50)
         app2.getDeterministicTestDataCreator().createTestData(5, 20, 50)
-        // Creating test data happens on a background thread. As we do not get notified about updates to the conact
-        // list yet, we need to wait a moment in order for that to finish (hopefully).
-        Thread.sleep(1000)
 
         application {
             start(app1, this)
