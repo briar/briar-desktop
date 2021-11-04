@@ -27,14 +27,23 @@ internal class TestWithTwoTemporaryAccounts() {
     fun run() {
         LogManager.getLogManager().getLogger("").level = INFO
 
+        val app1 = app("alice", DEFAULT_SOCKS_PORT, DEFAULT_CONTROL_PORT)
+        val app2 = app("bob", DEFAULT_SOCKS_PORT + 2, DEFAULT_CONTROL_PORT + 2)
+        apps.add(app1)
+        apps.add(app2)
+        app1.getDeterministicTestDataCreator().createTestData(5, 20, 50)
+        app2.getDeterministicTestDataCreator().createTestData(5, 20, 50)
+        // Creating test data happens on a background thread. As we do not get notified about updates to the conact
+        // list yet, we need to wait a moment in order for that to finish (hopefully).
+        Thread.sleep(1000)
+
         application {
-            app(this, "alice", DEFAULT_SOCKS_PORT, DEFAULT_CONTROL_PORT)
-            app(this, "bob", DEFAULT_SOCKS_PORT + 2, DEFAULT_CONTROL_PORT + 2)
+            start(app1, this)
+            start(app2, this)
         }
     }
 
-    @Composable
-    private fun app(applicationScope: ApplicationScope, name: String, socksPort: Int, controlPort: Int) {
+    private fun app(name: String, socksPort: Int, controlPort: Int): BriarDesktopTestApp {
         val dataDir = getDataDir()
         LOG.info("Using data directory '$dataDir'")
 
@@ -42,8 +51,6 @@ internal class TestWithTwoTemporaryAccounts() {
             DaggerBriarDesktopTestApp.builder().desktopTestModule(
                 DesktopTestModule(dataDir, socksPort, controlPort)
             ).build()
-
-        apps.add(app)
 
         app.getShutdownManager().addShutdownHook {
             LOG.info("deleting temporary account at $dataDir")
@@ -65,12 +72,11 @@ internal class TestWithTwoTemporaryAccounts() {
         lifecycleManager.startServices(dbKey)
         lifecycleManager.waitForStartup()
 
-        app.getDeterministicTestDataCreator().createTestData(5, 20, 50)
+        return app
+    }
 
-        // Creating test data happens on a background thread. As we do not get notified about updates to the conact
-        // list yet, we need to wait a moment in order for that to finish (hopefully).
-        Thread.sleep(1000)
-
+    @Composable
+    fun start(app: BriarDesktopTestApp, applicationScope: ApplicationScope) {
         app.getBriarUi().start {
             apps.forEach {
                 it.getBriarUi().stop()
