@@ -1,5 +1,5 @@
 package org.briarproject.briar.desktop
 
-fun main(args: Array<String>) = RunWithTemporaryAccount {
+fun main() = RunWithTemporaryAccount {
     getDeterministicTestDataCreator().createTestData(5, 20, 50)
 }.run()
