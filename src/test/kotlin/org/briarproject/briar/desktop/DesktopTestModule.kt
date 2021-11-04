@@ -9,15 +9,15 @@ import org.briarproject.bramble.api.db.DatabaseConfig
 import org.briarproject.bramble.api.plugin.PluginConfig
 import org.briarproject.bramble.api.plugin.TorConstants.DEFAULT_CONTROL_PORT
 import org.briarproject.bramble.api.plugin.TorConstants.DEFAULT_SOCKS_PORT
+import org.briarproject.bramble.api.plugin.TorControlPort
 import org.briarproject.bramble.api.plugin.TorDirectory
+import org.briarproject.bramble.api.plugin.TorSocksPort
 import org.briarproject.bramble.api.plugin.TransportId
 import org.briarproject.bramble.api.plugin.duplex.DuplexPluginFactory
 import org.briarproject.bramble.api.plugin.simplex.SimplexPluginFactory
 import org.briarproject.bramble.battery.DefaultBatteryManagerModule
 import org.briarproject.bramble.event.DefaultEventExecutorModule
 import org.briarproject.bramble.network.JavaNetworkModule
-import org.briarproject.bramble.plugin.TorPorts
-import org.briarproject.bramble.plugin.TorPortsImpl
 import org.briarproject.bramble.plugin.tor.CircumventionModule
 import org.briarproject.bramble.plugin.tor.UnixTorPluginFactory
 import org.briarproject.bramble.socks.SocksModule
@@ -74,16 +74,20 @@ internal class DesktopTestModule(
     }
 
     @Provides
-    @Singleton
-    fun provideTorPorts(): TorPorts {
-        return TorPortsImpl(socksPort, controlPort)
-    }
-
-    @Provides
     @TorDirectory
     internal fun provideTorDirectory(): File {
         return appDir.resolve("tor").toFile()
     }
+
+    @Provides
+    @Singleton
+    @TorSocksPort
+    internal fun provideTorSocksPort() = socksPort
+
+    @Provides
+    @Singleton
+    @TorControlPort
+    internal fun provideTorControlPort() = controlPort
 
     @Provides
     internal fun providePluginConfig(tor: UnixTorPluginFactory): PluginConfig {
@@ -106,8 +110,6 @@ internal class DesktopTestModule(
         override fun shouldEnableImageAttachments() = false
         override fun shouldEnableProfilePictures() = false
         override fun shouldEnableDisappearingMessages() = false
-        override fun shouldEnableTransferData() = false
-        override fun shouldEnableShareAppViaOfflineHotspot() = false
     }
 
     @Provides
