@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.briarproject.briar.desktop.theme.awayMsgBubble
 import org.briarproject.briar.desktop.theme.localMsgBubble
+import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.TimeUtils
 
 @Composable
@@ -47,7 +48,7 @@ fun TextBubble(m: ConversationMessageItem) {
                                 if (m.isSeen) Icons.Filled.DoneAll // acknowledged
                                 else if (m.isSent) Icons.Filled.Done // sent
                                 else Icons.Filled.Schedule // waiting
-                            Icon(icon, "sent", modifier)
+                            Icon(icon, i18n("access.message.sent"), modifier)
                         }
                     }
                 }

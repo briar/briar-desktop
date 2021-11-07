@@ -33,6 +33,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
+import java.util.Locale
 
 // TODO: Error handling and password strength
 @OptIn(ExperimentalComposeUiApi::class)
@@ -61,7 +63,7 @@ fun Registration(
             OutlinedTextField(
                 value = viewModel.username.value,
                 onValueChange = { viewModel.setUsername(it) },
-                label = { Text("Username") },
+                label = { Text(i18n("registration.username")) },
                 singleLine = true,
                 textStyle = TextStyle(color = Color.White),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
@@ -78,7 +80,7 @@ fun Registration(
             OutlinedTextField(
                 value = viewModel.password.value,
                 onValueChange = { viewModel.setPassword(it) },
-                label = { Text("Password") },
+                label = { Text(i18n("password")) },
                 singleLine = true,
                 textStyle = TextStyle(color = Color.White),
                 visualTransformation = PasswordVisualTransformation(),
@@ -93,7 +95,8 @@ fun Registration(
             )
             Spacer(Modifier.height(16.dp))
             Button(onClick = { signUp() }) {
-                Text("Register", color = Color.Black)
+                val text = i18n("registration.register")
+                Text(text.uppercase(Locale.getDefault()), color = Color.Black)
             }
 
             DisposableEffect(Unit) {

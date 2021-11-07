@@ -9,6 +9,8 @@ import com.github.ajalt.clikt.parameters.options.option
 import org.briarproject.bramble.BrambleCoreEagerSingletons
 import org.briarproject.briar.BriarCoreEagerSingletons
 import org.briarproject.briar.desktop.utils.FileUtils
+import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
+import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nF
 import java.io.File.separator
 import java.io.IOException
 import java.lang.System.getProperty
@@ -24,19 +26,19 @@ private val DEFAULT_DATA_DIR = getProperty("user.home") + separator + ".briar" +
 
 private class Main : CliktCommand(
     name = "briar-desktop",
-    help = "Briar Desktop Client"
+    help = i18n("main.help.title")
 ) {
-    private val debug by option("--debug", "-d", help = "Enable printing of debug messages").flag(
+    private val debug by option("--debug", "-d", help = i18n("main.help.debug")).flag(
         default = false
     )
     private val verbosity by option(
         "--verbose",
         "-v",
-        help = "Print verbose log messages"
+        help = i18n("main.help.verbose")
     ).counted()
     private val dataDir by option(
         "--data-dir",
-        help = "The directory where Briar will store its files. Default: $DEFAULT_DATA_DIR",
+        help = i18nF("main.help.data", DEFAULT_DATA_DIR),
         metavar = "PATH",
         envvar = "BRIAR_DATA_DIR"
     ).default(DEFAULT_DATA_DIR)

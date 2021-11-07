@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.briarproject.briar.desktop.theme.DarkColors
 import org.briarproject.briar.desktop.ui.HorizontalDivider
+import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 
 @Preview
 @Composable
@@ -46,7 +47,7 @@ fun ConversationInput(text: String, updateText: (String) -> Unit, onSend: () -> 
             onValueChange = updateText,
             maxLines = 10,
             textStyle = TextStyle(fontSize = 16.sp, lineHeight = 16.sp),
-            placeholder = { Text("Message") },
+            placeholder = { Text(i18n("conversation.message.new")) },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(0.dp),
             colors = TextFieldDefaults.textFieldColors(
@@ -60,7 +61,7 @@ fun ConversationInput(text: String, updateText: (String) -> Unit, onSend: () -> 
                     Modifier.padding(4.dp).size(32.dp)
                         .background(MaterialTheme.colors.primary, CircleShape),
                 ) {
-                    Icon(Icons.Filled.Add, "add attachment", Modifier.size(24.dp), Color.White)
+                    Icon(Icons.Filled.Add, i18n("access.attachment"), Modifier.size(24.dp), Color.White)
                 }
             },
             trailingIcon = {
@@ -69,7 +70,7 @@ fun ConversationInput(text: String, updateText: (String) -> Unit, onSend: () -> 
                 ) {
                     Icon(
                         Icons.Filled.Send,
-                        "send message",
+                        i18n("access.message.send"),
                         tint = MaterialTheme.colors.secondary,
                         modifier = Modifier.size(24.dp)
                     )

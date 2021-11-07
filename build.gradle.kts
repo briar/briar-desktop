@@ -52,6 +52,7 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-databind:2.10.0")
     implementation("com.github.ajalt:clikt:2.2.0")
     implementation("org.jetbrains.compose.material:material-icons-extended:0.4.0")
+    implementation("com.ibm.icu:icu4j:70.1")
 
     implementation(project(path = ":briar-core", configuration = "default"))
     implementation(project(path = ":bramble-java", configuration = "default"))

@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 
 @Composable
 fun SearchTextField(searchValue: String, onValueChange: (String) -> Unit, onContactAdd: () -> Unit) {
@@ -28,11 +29,11 @@ fun SearchTextField(searchValue: String, onValueChange: (String) -> Unit, onCont
         onValueChange = onValueChange,
         singleLine = true,
         textStyle = TextStyle(fontSize = 16.sp, color = MaterialTheme.colors.onSurface),
-        placeholder = { Text("Contacts") },
+        placeholder = { Text(i18n("contacts.search.title")) },
         shape = RoundedCornerShape(0.dp),
         leadingIcon = {
             val padding = Modifier.padding(top = 8.dp, bottom = 8.dp, start = 12.dp)
-            Icon(Icons.Filled.Search, "search contacts", padding)
+            Icon(Icons.Filled.Search, i18n("access.contacts.search"), padding)
         },
         trailingIcon = {
             IconButton(
@@ -40,7 +41,7 @@ fun SearchTextField(searchValue: String, onValueChange: (String) -> Unit, onCont
                 modifier = Modifier.padding(end = 10.dp).size(32.dp)
                     .background(MaterialTheme.colors.primary, CircleShape)
             ) {
-                Icon(Icons.Filled.PersonAdd, "add contact", tint = Color.White, modifier = Modifier.size(20.dp))
+                Icon(Icons.Filled.PersonAdd, i18n("access.contacts.add"), tint = Color.White, modifier = Modifier.size(20.dp))
             }
         },
         modifier = Modifier.fillMaxSize()

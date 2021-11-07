@@ -19,6 +19,7 @@ import org.briarproject.briar.desktop.login.Registration
 import org.briarproject.briar.desktop.login.RegistrationViewModel
 import org.briarproject.briar.desktop.navigation.SidebarViewModel
 import org.briarproject.briar.desktop.theme.BriarTheme
+import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import java.awt.Dimension
 import java.util.logging.Logger
 import javax.annotation.concurrent.Immutable
@@ -69,7 +70,7 @@ constructor(
     override fun start() {
         application {
             val (isDark, setDark) = remember { mutableStateOf(true) }
-            val title = "Briar Desktop"
+            val title = i18n("main.title")
             var screenState by remember {
                 mutableStateOf(
                     if (accountManager.hasDatabaseKey()) {

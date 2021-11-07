@@ -34,6 +34,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 
 // TODO: Error handling
 @OptIn(ExperimentalComposeUiApi::class)
@@ -61,7 +62,7 @@ fun Login(
             OutlinedTextField(
                 value = viewModel.password.value,
                 onValueChange = viewModel::setPassword,
-                label = { Text("Password") },
+                label = { Text(i18n("password")) },
                 singleLine = true,
                 visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
@@ -77,7 +78,7 @@ fun Login(
             )
             Spacer(Modifier.height(16.dp))
             Button(onClick = { signIn() }) {
-                Text("Login")
+                Text(i18n("login.login"))
             }
 
             DisposableEffect(Unit) {
@@ -90,4 +91,4 @@ fun Login(
 
 @Composable
 fun BriarLogo(modifier: Modifier = Modifier.fillMaxWidth().clip(shape = RoundedCornerShape(400.dp))) =
-    Image(painterResource("images/logo_circle.svg"), "Briar logo", modifier)
+    Image(painterResource("images/logo_circle.svg"), i18n("access.logo"), modifier)

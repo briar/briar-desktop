@@ -24,6 +24,7 @@ import org.briarproject.briar.desktop.theme.selectedCard
 import org.briarproject.briar.desktop.theme.surfaceVariant
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
 import org.briarproject.briar.desktop.ui.HorizontalDivider
+import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.TimeUtils.getFormattedTimestamp
 
 @Composable
@@ -68,7 +69,7 @@ fun ContactCard(
                         modifier = Modifier.align(Alignment.Start).padding(bottom = 2.dp)
                     )
                     Text(
-                        if (contactItem.isEmpty) "No messages." else getFormattedTimestamp(contactItem.timestamp),
+                        if (contactItem.isEmpty) i18n("contacts.card.nothing") else getFormattedTimestamp(contactItem.timestamp),
                         fontSize = 10.sp,
                         modifier = Modifier.align(Alignment.Start)
                     )

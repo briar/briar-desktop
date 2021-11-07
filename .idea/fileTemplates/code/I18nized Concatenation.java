@@ -1,0 +1,1 @@
+i18nF("${PROPERTY_KEY}", ${PARAMETERS})

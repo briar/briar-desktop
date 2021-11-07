@@ -29,6 +29,9 @@ import org.briarproject.briar.desktop.contact.ContactCard
 import org.briarproject.briar.desktop.contact.ProfileCircle
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
 import org.briarproject.briar.desktop.ui.HorizontalDivider
+import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
+import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nF
+import java.util.Locale
 
 @Composable
 fun ContactDrawerMakeIntro(
@@ -43,10 +46,10 @@ fun ContactDrawerMakeIntro(
                         onClick = { setInfoDrawer(false) },
                         Modifier.padding(horizontal = 11.dp).size(32.dp).align(Alignment.CenterVertically)
                     ) {
-                        Icon(Icons.Filled.Close, "close make intro screen")
+                        Icon(Icons.Filled.Close, i18n("access.introduction.close"))
                     }
                     Text(
-                        text = "Introduce ${viewModel.firstContact.value!!.author.name} to",
+                        text = i18nF("introduction.title_first", viewModel.firstContact.value!!.author.name),
                         fontSize = 16.sp,
                         modifier = Modifier.align(Alignment.CenterVertically)
                     )
@@ -70,10 +73,10 @@ fun ContactDrawerMakeIntro(
                     onClick = viewModel::backToFirstScreen,
                     Modifier.padding(horizontal = 11.dp).size(32.dp).align(Alignment.CenterVertically)
                 ) {
-                    Icon(Icons.Filled.ArrowBack, "go back to make intro contact screen", tint = Color.White)
+                    Icon(Icons.Filled.ArrowBack, i18n("access.introduction.back.contact"), tint = Color.White)
                 }
                 Text(
-                    text = "Introduce Contacts",
+                    text = i18n("introduction.title_second"),
                     fontSize = 16.sp,
                     modifier = Modifier.align(Alignment.CenterVertically)
                 )
@@ -83,7 +86,7 @@ fun ContactDrawerMakeIntro(
                     ProfileCircle(36.dp, viewModel.firstContact.value!!.author.id.bytes)
                     Text(viewModel.firstContact.value!!.author.name, Modifier.padding(top = 4.dp), Color.White, 16.sp)
                 }
-                Icon(Icons.Filled.SwapHoriz, "swap", modifier = Modifier.size(48.dp))
+                Icon(Icons.Filled.SwapHoriz, i18n("access.swap"), modifier = Modifier.size(48.dp))
                 Column(Modifier.align(Alignment.CenterVertically)) {
                     ProfileCircle(36.dp, viewModel.secondContact.value!!.author.id.bytes)
                     Text(viewModel.secondContact.value!!.author.name, Modifier.padding(top = 4.dp), Color.White, 16.sp)
@@ -93,7 +96,7 @@ fun ContactDrawerMakeIntro(
                 TextField(
                     viewModel.introductionMessage.value,
                     viewModel::setIntroductionMessage,
-                    placeholder = { Text(text = "Add a message (optional)") },
+                    placeholder = { Text(text = i18n("introduction.message")) },
                 )
             }
             Row(Modifier.padding(8.dp)) {
@@ -101,7 +104,8 @@ fun ContactDrawerMakeIntro(
                     onClick = { setInfoDrawer(false) },
                     Modifier.fillMaxWidth()
                 ) {
-                    Text("MAKE INTRODUCTION")
+                    val text = i18n("introduction.introduce")
+                    Text(text.uppercase(Locale.getDefault()))
                 }
             }
         }

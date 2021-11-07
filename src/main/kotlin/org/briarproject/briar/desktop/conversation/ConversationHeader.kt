@@ -28,6 +28,7 @@ import org.briarproject.briar.desktop.theme.outline
 import org.briarproject.briar.desktop.theme.surfaceVariant
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
 import org.briarproject.briar.desktop.ui.HorizontalDivider
+import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 
 @Composable
 fun ConversationHeader(
@@ -62,7 +63,7 @@ fun ConversationHeader(
             onClick = { setExpanded(!isExpanded) },
             modifier = Modifier.align(Alignment.CenterEnd).padding(end = 16.dp)
         ) {
-            Icon(Icons.Filled.MoreVert, "contact info", modifier = Modifier.size(24.dp))
+            Icon(Icons.Filled.MoreVert, i18n("access.contact.menu"), modifier = Modifier.size(24.dp))
             ContactDropDown(isExpanded, setExpanded, onMakeIntroduction)
         }
         HorizontalDivider(modifier = Modifier.align(Alignment.BottomCenter))
