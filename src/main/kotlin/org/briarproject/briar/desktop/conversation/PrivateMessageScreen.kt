@@ -8,25 +8,27 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import org.briarproject.briar.desktop.contact.ContactList
 import org.briarproject.briar.desktop.contact.ContactListViewModel
-import org.briarproject.briar.desktop.contact.add.remote.AddContactViewModel
-import org.briarproject.briar.desktop.introduction.IntroductionViewModel
 import org.briarproject.briar.desktop.ui.UiPlaceholder
 import org.briarproject.briar.desktop.ui.VerticalDivider
+import org.briarproject.briar.desktop.viewmodel.viewModel
 
 @Composable
-fun PrivateMessageView(
-    contactListViewModel: ContactListViewModel,
-    conversationViewModel: ConversationViewModel,
-    addContactViewModel: AddContactViewModel,
-    introductionViewModel: IntroductionViewModel,
+fun PrivateMessageScreen(
+    viewModel: ContactListViewModel = viewModel(),
 ) {
     Row(modifier = Modifier.fillMaxWidth()) {
-        ContactList(contactListViewModel, addContactViewModel)
+        ContactList(
+            viewModel.contactList,
+            viewModel::isSelected,
+            viewModel::selectContact,
+            viewModel.filterBy.value,
+            viewModel::setFilterBy
+        )
         VerticalDivider()
         Column(modifier = Modifier.weight(1f).fillMaxHeight()) {
-            val id = contactListViewModel.selectedContactId.value
+            val id = viewModel.selectedContactId.value
             if (id != null) {
-                Conversation(id, conversationViewModel, introductionViewModel)
+                ConversationScreen(id)
             } else {
                 UiPlaceholder()
             }

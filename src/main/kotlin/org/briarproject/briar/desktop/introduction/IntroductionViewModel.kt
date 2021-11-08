@@ -17,12 +17,7 @@ constructor(
     conversationManager: ConversationManager,
     connectionRegistry: ConnectionRegistry,
     eventBus: EventBus,
-) : ContactsViewModel(contactManager, conversationManager, connectionRegistry) {
-
-    init {
-        // todo: where/when to remove listener again?
-        eventBus.addListener(this)
-    }
+) : ContactsViewModel(contactManager, conversationManager, connectionRegistry, eventBus) {
 
     private val _firstContact = mutableStateOf<Contact?>(null)
     private val _secondContact = mutableStateOf<Contact?>(null)

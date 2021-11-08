@@ -19,11 +19,11 @@ import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.WifiTethering
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import org.briarproject.bramble.api.identity.LocalAuthor
 import org.briarproject.briar.desktop.contact.ProfileCircle
 import org.briarproject.briar.desktop.theme.sidebarSurface
 import org.briarproject.briar.desktop.ui.UiMode
@@ -32,10 +32,17 @@ val SIDEBAR_WIDTH = 56.dp
 
 @Composable
 fun BriarSidebar(
-    viewModel: SidebarViewModel,
+    account: LocalAuthor?,
+    uiMode: UiMode,
+    setUiMode: (UiMode) -> Unit,
 ) {
-    LaunchedEffect(true) {
-        viewModel.loadAccountInfo()
+    val displayButton = @Composable { selectedMode: UiMode, mode: UiMode, icon: ImageVector ->
+        BriarSidebarButton(
+            selectedMode == mode,
+            { setUiMode(mode) },
+            icon,
+            mode.toString()
+        )
     }
 
     Surface(modifier = Modifier.width(SIDEBAR_WIDTH).fillMaxHeight(), color = MaterialTheme.colors.sidebarSurface) {
@@ -45,39 +52,29 @@ fun BriarSidebar(
                 modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 5.dp, bottom = 4.dp),
                 onClick = {}
             ) {
-                viewModel.account.value?.let { ProfileCircle(size = 45.dp, it.id.bytes) }
+                account?.let { ProfileCircle(size = 45.dp, it.id.bytes) }
             }
 
             for (
-                (uiMode, icon) in listOf(
+                (mode, icon) in listOf(
                     Pair(UiMode.CONTACTS, Icons.Filled.Contacts),
                     Pair(UiMode.GROUPS, Icons.Filled.Group),
                     Pair(UiMode.FORUMS, Icons.Filled.Forum),
                     Pair(UiMode.BLOGS, Icons.Filled.ChromeReaderMode),
                 )
             ) {
-                BriarSidebarButton(
-                    viewModel.uiMode.value == uiMode,
-                    { viewModel.setUiMode(uiMode) },
-                    icon,
-                    uiMode.toString()
-                )
+                displayButton(uiMode, mode, icon)
             }
         }
         Column(verticalArrangement = Arrangement.Bottom) {
             for (
-                (uiMode, icon) in listOf(
+                (mode, icon) in listOf(
                     Pair(UiMode.TRANSPORTS, Icons.Filled.WifiTethering),
                     Pair(UiMode.SETTINGS, Icons.Filled.Settings),
                     Pair(UiMode.SIGNOUT, Icons.Filled.Logout),
                 )
             ) {
-                BriarSidebarButton(
-                    viewModel.uiMode.value == uiMode,
-                    { viewModel.setUiMode(uiMode) },
-                    icon,
-                    uiMode.toString()
-                )
+                displayButton(uiMode, mode, icon)
             }
         }
     }

@@ -31,23 +31,22 @@ import androidx.compose.ui.unit.dp
 import org.briarproject.bramble.api.contact.ContactId
 import org.briarproject.briar.desktop.contact.ContactInfoDrawer
 import org.briarproject.briar.desktop.contact.ContactInfoDrawerState
-import org.briarproject.briar.desktop.introduction.IntroductionViewModel
 import org.briarproject.briar.desktop.navigation.SIDEBAR_WIDTH
 import org.briarproject.briar.desktop.theme.surfaceVariant
 import org.briarproject.briar.desktop.ui.Constants.CONTACTLIST_WIDTH
 import org.briarproject.briar.desktop.ui.Loader
+import org.briarproject.briar.desktop.viewmodel.viewModel
 
 @Composable
-fun Conversation(
+fun ConversationScreen(
     contactId: ContactId,
-    conversationViewModel: ConversationViewModel,
-    introductionViewModel: IntroductionViewModel,
+    viewModel: ConversationViewModel = viewModel(),
 ) {
     LaunchedEffect(contactId) {
-        conversationViewModel.setContactId(contactId)
+        viewModel.setContactId(contactId)
     }
 
-    val contactItem = conversationViewModel.contactItem.value
+    val contactItem = viewModel.contactItem.value
 
     if (contactItem == null) {
         Loader()
@@ -63,10 +62,6 @@ fun Conversation(
                 ConversationHeader(
                     contactItem,
                     onMakeIntroduction = {
-                        introductionViewModel.apply {
-                            setFirstContact(contactItem.contact)
-                            loadContacts()
-                        }
                         setInfoDrawer(true)
                     }
                 )
@@ -79,7 +74,7 @@ fun Conversation(
                     contentPadding = PaddingValues(8.dp),
                     modifier = Modifier.padding(padding).fillMaxHeight()
                 ) {
-                    items(conversationViewModel.messages) { m ->
+                    items(viewModel.messages) { m ->
                         if (m is ConversationMessageItem)
                             TextBubble(m)
                     }
@@ -87,9 +82,9 @@ fun Conversation(
             },
             bottomBar = {
                 ConversationInput(
-                    conversationViewModel.newMessage.value,
-                    conversationViewModel::setNewMessage,
-                    conversationViewModel::sendMessage
+                    viewModel.newMessage.value,
+                    viewModel::setNewMessage,
+                    viewModel::sendMessage
                 )
             },
         )
@@ -113,7 +108,7 @@ fun Conversation(
                         RoundedCornerShape(topStart = 10.dp, bottomStart = 10.dp)
                     )
             ) {
-                ContactInfoDrawer(introductionViewModel, setInfoDrawer, contactDrawerState)
+                ContactInfoDrawer(contactItem.contact, setInfoDrawer, contactDrawerState)
             }
         }
     }

@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import org.briarproject.bramble.api.account.AccountManager
 import org.briarproject.bramble.api.crypto.DecryptionException
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
+import org.briarproject.briar.desktop.viewmodel.ViewModel
 import javax.inject.Inject
 
 class LoginViewModel
@@ -12,7 +13,7 @@ class LoginViewModel
 constructor(
     private val accountManager: AccountManager,
     private val lifecycleManager: LifecycleManager,
-) {
+) : ViewModel {
 
     private val _password = mutableStateOf("")
 

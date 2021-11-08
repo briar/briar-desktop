@@ -15,19 +15,18 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.briarproject.briar.desktop.viewmodel.viewModel
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun AddContactDialog(viewModel: AddContactViewModel, onClose: () -> Unit) {
-    LaunchedEffect("fetchHandshake") {
-        // todo: should instead be done automatically as soon as DB is loaded -> in view model
-        viewModel.fetchHandshakeLink()
-    }
+fun AddContactDialog(
+    onClose: () -> Unit,
+    viewModel: AddContactViewModel = viewModel(),
+) {
     AlertDialog(
         onDismissRequest = onClose,
         text = {

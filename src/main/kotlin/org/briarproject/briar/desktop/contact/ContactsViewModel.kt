@@ -9,18 +9,20 @@ import org.briarproject.bramble.api.contact.ContactManager
 import org.briarproject.bramble.api.contact.event.ContactAddedEvent
 import org.briarproject.bramble.api.contact.event.ContactRemovedEvent
 import org.briarproject.bramble.api.event.Event
-import org.briarproject.bramble.api.event.EventListener
+import org.briarproject.bramble.api.event.EventBus
 import org.briarproject.bramble.api.plugin.event.ContactConnectedEvent
 import org.briarproject.bramble.api.plugin.event.ContactDisconnectedEvent
 import org.briarproject.briar.api.conversation.ConversationManager
 import org.briarproject.briar.desktop.utils.removeFirst
 import org.briarproject.briar.desktop.utils.replaceFirst
+import org.briarproject.briar.desktop.viewmodel.BriarEventListenerViewModel
 
 abstract class ContactsViewModel(
     protected val contactManager: ContactManager,
     private val conversationManager: ConversationManager,
-    private val connectionRegistry: ConnectionRegistry
-) : EventListener {
+    private val connectionRegistry: ConnectionRegistry,
+    eventBus: EventBus,
+) : BriarEventListenerViewModel(eventBus) {
 
     companion object {
         private val LOG = KotlinLogging.logger {}

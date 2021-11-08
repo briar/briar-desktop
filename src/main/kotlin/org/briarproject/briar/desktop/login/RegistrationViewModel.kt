@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import org.briarproject.bramble.api.account.AccountManager
 import org.briarproject.bramble.api.crypto.PasswordStrengthEstimator
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
+import org.briarproject.briar.desktop.viewmodel.ViewModel
 import javax.inject.Inject
 
 class RegistrationViewModel
@@ -13,7 +14,7 @@ constructor(
     private val accountManager: AccountManager,
     private val lifecycleManager: LifecycleManager,
     private val passwordStrengthEstimator: PasswordStrengthEstimator,
-) {
+) : ViewModel {
 
     private var isSafeEnough = mutableStateOf(false)
     private val _username = mutableStateOf("")

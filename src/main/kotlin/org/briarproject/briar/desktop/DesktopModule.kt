@@ -29,6 +29,7 @@ import org.briarproject.bramble.util.OsUtils.isLinux
 import org.briarproject.bramble.util.OsUtils.isMac
 import org.briarproject.briar.desktop.ui.BriarUi
 import org.briarproject.briar.desktop.ui.BriarUiImpl
+import org.briarproject.briar.desktop.viewmodel.ViewModelModule
 import java.io.File
 import java.nio.file.Path
 import java.util.Collections.emptyList
@@ -46,7 +47,8 @@ import javax.inject.Singleton
         DesktopSecureRandomModule::class,
         JavaNetworkModule::class,
         JavaSystemModule::class,
-        SocksModule::class
+        SocksModule::class,
+        ViewModelModule::class,
     ]
 )
 internal class DesktopModule(

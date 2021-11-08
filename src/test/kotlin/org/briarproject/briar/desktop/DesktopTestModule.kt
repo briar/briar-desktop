@@ -32,6 +32,7 @@ import org.briarproject.briar.desktop.testdata.DeterministicTestDataCreator
 import org.briarproject.briar.desktop.testdata.DeterministicTestDataCreatorImpl
 import org.briarproject.briar.desktop.ui.BriarUi
 import org.briarproject.briar.desktop.ui.BriarUiImpl
+import org.briarproject.briar.desktop.viewmodel.ViewModelModule
 import org.briarproject.briar.test.TestModule
 import java.io.File
 import java.nio.file.Path
@@ -52,6 +53,7 @@ import javax.inject.Singleton
         JavaSystemModule::class,
         SocksModule::class,
         TestModule::class,
+        ViewModelModule::class
     ]
 )
 internal class DesktopTestModule(

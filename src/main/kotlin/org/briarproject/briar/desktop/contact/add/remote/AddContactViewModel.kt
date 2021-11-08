@@ -9,6 +9,7 @@ import org.briarproject.bramble.api.db.ContactExistsException
 import org.briarproject.bramble.api.db.PendingContactExistsException
 import org.briarproject.bramble.api.identity.AuthorConstants
 import org.briarproject.bramble.util.StringUtils
+import org.briarproject.briar.desktop.viewmodel.ViewModel
 import java.security.GeneralSecurityException
 import javax.inject.Inject
 
@@ -16,7 +17,11 @@ class AddContactViewModel
 @Inject
 constructor(
     private val contactManager: ContactManager,
-) {
+) : ViewModel {
+
+    override fun onInit() {
+        fetchHandshakeLink()
+    }
 
     private val _alias = mutableStateOf("")
     private val _remoteHandshakeLink = mutableStateOf("")

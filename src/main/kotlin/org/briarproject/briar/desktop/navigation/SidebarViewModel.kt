@@ -5,13 +5,18 @@ import androidx.compose.runtime.mutableStateOf
 import org.briarproject.bramble.api.identity.IdentityManager
 import org.briarproject.bramble.api.identity.LocalAuthor
 import org.briarproject.briar.desktop.ui.UiMode
+import org.briarproject.briar.desktop.viewmodel.ViewModel
 import javax.inject.Inject
 
 class SidebarViewModel
 @Inject
 constructor(
     private val identityManager: IdentityManager,
-) {
+) : ViewModel {
+
+    override fun onInit() {
+        loadAccountInfo()
+    }
 
     private var _uiMode = mutableStateOf(UiMode.CONTACTS)
     private var _account = mutableStateOf<LocalAuthor?>(null)

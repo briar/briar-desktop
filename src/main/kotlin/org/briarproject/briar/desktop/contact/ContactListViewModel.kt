@@ -22,15 +22,21 @@ constructor(
     conversationManager: ConversationManager,
     connectionRegistry: ConnectionRegistry,
     eventBus: EventBus,
-) : ContactsViewModel(contactManager, conversationManager, connectionRegistry) {
+) : ContactsViewModel(contactManager, conversationManager, connectionRegistry, eventBus) {
 
     companion object {
         private val LOG = KotlinLogging.logger {}
     }
 
-    init {
-        // todo: where/when to remove listener again?
-        eventBus.addListener(this)
+    override fun onInit() {
+        super.onInit()
+        loadContacts()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        // todo: also reset filterBy?
+        _selectedContactId.value = null
     }
 
     private val _filterBy = mutableStateOf("")

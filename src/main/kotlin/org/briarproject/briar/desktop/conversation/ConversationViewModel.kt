@@ -13,7 +13,6 @@ import org.briarproject.bramble.api.db.DbException
 import org.briarproject.bramble.api.db.NoSuchContactException
 import org.briarproject.bramble.api.event.Event
 import org.briarproject.bramble.api.event.EventBus
-import org.briarproject.bramble.api.event.EventListener
 import org.briarproject.bramble.api.plugin.event.ContactConnectedEvent
 import org.briarproject.bramble.api.plugin.event.ContactDisconnectedEvent
 import org.briarproject.bramble.api.sync.MessageId
@@ -32,6 +31,7 @@ import org.briarproject.briar.api.messaging.PrivateMessageHeader
 import org.briarproject.briar.desktop.contact.ContactItem
 import org.briarproject.briar.desktop.utils.KLoggerUtils.logDuration
 import org.briarproject.briar.desktop.utils.replaceIf
+import org.briarproject.briar.desktop.viewmodel.BriarEventListenerViewModel
 import java.util.Date
 import javax.inject.Inject
 
@@ -42,17 +42,12 @@ constructor(
     private val contactManager: ContactManager,
     private val conversationManager: ConversationManager,
     private val messagingManager: MessagingManager,
-    private val eventBus: EventBus,
     private val privateMessageFactory: PrivateMessageFactory,
-) : EventListener {
+    private val eventBus: EventBus,
+) : BriarEventListenerViewModel(eventBus) {
 
     companion object {
         private val LOG = KotlinLogging.logger {}
-    }
-
-    init {
-        // todo: where/when to remove listener again?
-        eventBus.addListener(this)
     }
 
     private val _contactId = mutableStateOf<ContactId?>(null)

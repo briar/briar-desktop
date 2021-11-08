@@ -1,26 +1,22 @@
 package org.briarproject.briar.desktop.ui
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.window.Window
 import org.briarproject.bramble.api.account.AccountManager
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.bramble.api.lifecycle.LifecycleManager.LifecycleState.RUNNING
-import org.briarproject.briar.desktop.contact.ContactListViewModel
-import org.briarproject.briar.desktop.contact.add.remote.AddContactViewModel
-import org.briarproject.briar.desktop.conversation.ConversationViewModel
-import org.briarproject.briar.desktop.introduction.IntroductionViewModel
-import org.briarproject.briar.desktop.login.Login
-import org.briarproject.briar.desktop.login.LoginViewModel
-import org.briarproject.briar.desktop.login.Registration
-import org.briarproject.briar.desktop.login.RegistrationViewModel
-import org.briarproject.briar.desktop.navigation.SidebarViewModel
+import org.briarproject.briar.desktop.login.LoginScreen
+import org.briarproject.briar.desktop.login.RegistrationScreen
 import org.briarproject.briar.desktop.theme.BriarTheme
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
+import org.briarproject.briar.desktop.viewmodel.ViewModelProvider
 import java.awt.Dimension
 import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
@@ -40,20 +36,16 @@ interface BriarUi {
     fun stop()
 }
 
+val LocalViewModelProvider = staticCompositionLocalOf<ViewModelProvider?> { null }
+
 @Immutable
 @Singleton
 internal class BriarUiImpl
 @Inject
 constructor(
-    private val registrationViewModel: RegistrationViewModel,
-    private val loginViewModel: LoginViewModel,
-    private val contactListViewModel: ContactListViewModel,
-    private val conversationViewModel: ConversationViewModel,
-    private val addContactViewModel: AddContactViewModel,
-    private val introductionViewModel: IntroductionViewModel,
-    private val sidebarViewModel: SidebarViewModel,
     private val accountManager: AccountManager,
     private val lifecycleManager: LifecycleManager,
+    private val viewModelProvider: ViewModelProvider,
 ) : BriarUi {
 
     override fun stop() {
@@ -73,7 +65,6 @@ constructor(
                 if (accountManager.hasDatabaseKey()) {
                     // this should only happen during testing when we launch the main UI directly
                     // without a need to enter the password.
-                    contactListViewModel.loadContacts()
                     Screen.MAIN
                 } else if (accountManager.accountExists()) {
                     Screen.LOGIN
@@ -88,28 +79,24 @@ constructor(
             icon = painterResource("images/logo_circle.svg")
         ) {
             window.minimumSize = Dimension(800, 600)
-            BriarTheme(isDarkTheme = isDark) {
-                when (screenState) {
-                    Screen.REGISTRATION ->
-                        Registration(registrationViewModel) {
-                            contactListViewModel.loadContacts()
-                            screenState = Screen.MAIN
-                        }
-                    Screen.LOGIN ->
-                        Login(loginViewModel) {
-                            contactListViewModel.loadContacts()
-                            screenState = Screen.MAIN
-                        }
-                    else ->
-                        MainScreen(
-                            contactListViewModel,
-                            conversationViewModel,
-                            addContactViewModel,
-                            introductionViewModel,
-                            sidebarViewModel,
-                            isDark,
-                            setDark
-                        )
+            CompositionLocalProvider(LocalViewModelProvider provides viewModelProvider) {
+                BriarTheme(isDarkTheme = isDark) {
+                    when (screenState) {
+                        Screen.REGISTRATION ->
+                            RegistrationScreen(
+                                onSignedUp = {
+                                    screenState = Screen.MAIN
+                                }
+                            )
+                        Screen.LOGIN ->
+                            LoginScreen(
+                                onSignedIn = {
+                                    screenState = Screen.MAIN
+                                }
+                            )
+                        else ->
+                            MainScreen(isDark, setDark)
+                    }
                 }
             }
         }

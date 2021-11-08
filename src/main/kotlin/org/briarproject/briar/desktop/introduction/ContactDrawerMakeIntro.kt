@@ -20,24 +20,31 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.SwapHoriz
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.briarproject.bramble.api.contact.Contact
 import org.briarproject.briar.desktop.contact.ContactCard
 import org.briarproject.briar.desktop.contact.ProfileCircle
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
 import org.briarproject.briar.desktop.ui.HorizontalDivider
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nF
+import org.briarproject.briar.desktop.viewmodel.viewModel
 import java.util.Locale
 
 @Composable
 fun ContactDrawerMakeIntro(
-    viewModel: IntroductionViewModel,
-    setInfoDrawer: (Boolean) -> Unit
+    contact: Contact,
+    setInfoDrawer: (Boolean) -> Unit,
+    viewModel: IntroductionViewModel = viewModel(),
 ) {
+    LaunchedEffect(contact) {
+        viewModel.setFirstContact(contact)
+    }
     if (!viewModel.secondScreen.value) {
         Surface {
             Column {
@@ -49,7 +56,7 @@ fun ContactDrawerMakeIntro(
                         Icon(Icons.Filled.Close, i18n("access.introduction.close"))
                     }
                     Text(
-                        text = i18nF("introduction.title_first", viewModel.firstContact.value!!.author.name),
+                        text = i18nF("introduction.title_first", contact.author.name),
                         fontSize = 16.sp,
                         modifier = Modifier.align(Alignment.CenterVertically)
                     )

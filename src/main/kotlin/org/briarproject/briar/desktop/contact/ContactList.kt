@@ -16,19 +16,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import org.briarproject.bramble.api.contact.ContactId
 import org.briarproject.briar.desktop.contact.add.remote.AddContactDialog
-import org.briarproject.briar.desktop.contact.add.remote.AddContactViewModel
 import org.briarproject.briar.desktop.theme.surfaceVariant
 import org.briarproject.briar.desktop.ui.Constants.CONTACTLIST_WIDTH
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
 
 @Composable
 fun ContactList(
-    viewModel: ContactListViewModel,
-    addContactViewModel: AddContactViewModel,
+    contactList: List<ContactItem>,
+    isSelected: (ContactId) -> Boolean,
+    selectContact: (ContactId) -> Unit,
+    filterBy: String,
+    setFilterBy: (String) -> Unit,
 ) {
     var isContactDialogVisible by remember { mutableStateOf(false) }
-    if (isContactDialogVisible) AddContactDialog(addContactViewModel) { isContactDialogVisible = false }
+    if (isContactDialogVisible) AddContactDialog(onClose = { isContactDialogVisible = false })
     Scaffold(
         modifier = Modifier.fillMaxHeight().width(CONTACTLIST_WIDTH),
         backgroundColor = MaterialTheme.colors.surfaceVariant,
@@ -37,19 +40,19 @@ fun ContactList(
                 modifier = Modifier.fillMaxWidth().height(HEADER_SIZE + 1.dp),
             ) {
                 SearchTextField(
-                    viewModel.filterBy.value,
-                    onValueChange = viewModel::setFilterBy,
+                    filterBy,
+                    onValueChange = setFilterBy,
                     onContactAdd = { isContactDialogVisible = true }
                 )
             }
         },
         content = {
             LazyColumn {
-                items(viewModel.contactList) { contactItem ->
+                items(contactList) { contactItem ->
                     ContactCard(
                         contactItem,
-                        { viewModel.selectContact(contactItem.contact.id) },
-                        viewModel.isSelected(contactItem.contact.id)
+                        { selectContact(contactItem.contact.id) },
+                        isSelected(contactItem.contact.id)
                     )
                 }
             }
