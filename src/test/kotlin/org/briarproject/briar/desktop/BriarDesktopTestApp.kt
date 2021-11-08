@@ -5,6 +5,7 @@ import org.briarproject.bramble.BrambleCoreEagerSingletons
 import org.briarproject.bramble.BrambleCoreModule
 import org.briarproject.bramble.api.account.AccountManager
 import org.briarproject.bramble.api.contact.ContactManager
+import org.briarproject.bramble.api.identity.IdentityManager
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.bramble.api.lifecycle.ShutdownManager
 import org.briarproject.briar.BriarCoreEagerSingletons
@@ -26,6 +27,8 @@ import javax.inject.Singleton
 internal interface BriarDesktopTestApp : BrambleCoreEagerSingletons, BriarCoreEagerSingletons {
 
     fun getBriarUi(): BriarUi
+
+    fun getIdentityManager(): IdentityManager
 
     fun getContactManager(): ContactManager
 
