@@ -30,6 +30,10 @@ import org.briarproject.briar.api.avatar.AvatarManager
 import org.briarproject.briar.api.avatar.AvatarMessageEncoder
 import org.briarproject.briar.api.messaging.MessagingManager
 import org.briarproject.briar.api.messaging.PrivateMessageFactory
+import org.briarproject.briar.api.privategroup.GroupMessageFactory
+import org.briarproject.briar.api.privategroup.PrivateGroup
+import org.briarproject.briar.api.privategroup.PrivateGroupFactory
+import org.briarproject.briar.api.privategroup.PrivateGroupManager
 import org.briarproject.briar.api.test.TestAvatarCreator
 import java.io.IOException
 import java.io.InputStream
@@ -44,10 +48,13 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
     private val authorFactory: AuthorFactory,
     private val clock: Clock,
     private val groupFactory: GroupFactory,
+    private val groupMessageFactory: GroupMessageFactory,
     private val privateMessageFactory: PrivateMessageFactory,
     private val db: DatabaseComponent,
     private val identityManager: IdentityManager,
     private val contactManager: ContactManager,
+    private val privateGroupManager: PrivateGroupManager,
+    private val privateGroupFactory: PrivateGroupFactory,
     private val transportPropertyManager: TransportPropertyManager,
     private val messagingManager: MessagingManager,
     private val testAvatarCreator: TestAvatarCreator,
@@ -64,13 +71,16 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
     override fun createTestData(
         numContacts: Int,
         numPrivateMsgs: Int,
-        avatarPercent: Int
+        avatarPercent: Int,
+        numPrivateGroups: Int,
+        numPrivateGroupPosts: Int,
     ) {
         require(numContacts != 0)
+        require(numPrivateGroups != 0)
         require(!(avatarPercent < 0 || avatarPercent > 100))
         ioExecutor.execute {
             try {
-                createTestDataOnIoExecutor(numContacts, numPrivateMsgs, avatarPercent)
+                createTestDataOnIoExecutor(numContacts, numPrivateMsgs, avatarPercent, numPrivateGroups, numPrivateGroupPosts)
             } catch (e: DbException) {
                 LOG.warn(e) { }
             }
@@ -82,10 +92,17 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
     private fun createTestDataOnIoExecutor(
         numContacts: Int,
         numPrivateMsgs: Int,
-        avatarPercent: Int
+        avatarPercent: Int,
+        numPrivateGroups: Int,
+        numPrivateGroupPosts: Int
     ) {
         val contacts = createContacts(numContacts, avatarPercent)
         createPrivateMessages(contacts, numPrivateMsgs)
+
+        val privateGroups = createPrivateGroups(contacts, numPrivateGroups)
+        for (privateGroup in privateGroups) {
+            createRandomPrivateGroupMessages(privateGroup, contacts, numPrivateGroupPosts)
+        }
     }
 
     @Throws(DbException::class)
@@ -319,5 +336,38 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
         } catch (e: FormatException) {
             throw AssertionError(e)
         }
+    }
+
+    @Throws(DbException::class)
+    private fun createPrivateGroups(contacts: List<Contact>, numPrivateGroups: Int): List<PrivateGroup> {
+        val privateGroups: MutableList<PrivateGroup> = ArrayList(numPrivateGroups)
+        for (i in 0 until min(numPrivateGroups, GROUP_NAMES.size)) {
+            // create private group
+            val name = GROUP_NAMES[i]
+            var creator = identityManager.localAuthor
+            val privateGroup = privateGroupFactory.createPrivateGroup(name, creator)
+            val joinMsg = groupMessageFactory.createJoinMessage(
+                privateGroup.id,
+                clock.currentTimeMillis() - i * 60 * 1000, creator
+            )
+            privateGroupManager.addPrivateGroup(privateGroup, joinMsg, true)
+
+            // share with all contacts
+            for (contact in contacts) {
+                shareGroup(contact.id, privateGroup.id)
+            }
+            privateGroups.add(privateGroup)
+        }
+        LOG.info { "Created ${min(numPrivateGroups, GROUP_NAMES.size)} private groups." }
+        return privateGroups
+    }
+
+    @Throws(DbException::class)
+    private fun createRandomPrivateGroupMessages(
+        privateGroup: PrivateGroup,
+        contacts: List<Contact>,
+        numPrivateGroupMessages: Int
+    ) {
+        // TODO
     }
 }
