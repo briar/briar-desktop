@@ -48,11 +48,11 @@ private class Main : CliktCommand(
     ).default(DEFAULT_DATA_DIR)
     private val socksPort by option(
         "--socks-port",
-        help = "Tor Socks Port"
+        help = i18n("main.help.tor.port.socks")
     ).int().default(DEFAULT_SOCKS_PORT)
     private val controlPort by option(
         "--control-port",
-        help = "Tor Control Port"
+        help = i18n("main.help.tor.port.control")
     ).int().default(DEFAULT_CONTROL_PORT)
 
     @OptIn(ExperimentalComposeUiApi::class)
