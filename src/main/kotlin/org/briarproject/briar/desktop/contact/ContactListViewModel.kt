@@ -33,12 +33,6 @@ constructor(
         loadContacts()
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        // todo: also reset filterBy?
-        _selectedContactId.value = null
-    }
-
     private val _filterBy = mutableStateOf("")
     private val _selectedContactId = mutableStateOf<ContactId?>(null)
 

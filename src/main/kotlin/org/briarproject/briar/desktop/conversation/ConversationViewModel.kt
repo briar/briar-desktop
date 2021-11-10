@@ -62,6 +62,9 @@ constructor(
     val newMessage: State<String> = _newMessage
 
     fun setContactId(id: ContactId) {
+        if (_contactId.value == id)
+            return
+
         _contactId.value = id
         _contactItem.value = ContactItem(
             contactManager.getContact(id),
@@ -69,6 +72,7 @@ constructor(
             conversationManager.getGroupCount(id),
         )
         loadMessages()
+        setNewMessage("")
     }
 
     fun setNewMessage(msg: String) {
