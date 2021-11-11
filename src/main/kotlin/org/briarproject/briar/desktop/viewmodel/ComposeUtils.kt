@@ -1,3 +1,8 @@
+/*
+Code inspired by and adapted to our needs from
+https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:lifecycle/lifecycle-viewmodel-compose/src/main/java/androidx/lifecycle/viewmodel/compose/ViewModel.kt;drc=0c44ec9ae8a43abafd966cd130196e9334fad359
+licensed under the Apache License, Version 2.0
+ */
 package org.briarproject.briar.desktop.viewmodel
 
 import androidx.compose.runtime.Composable
