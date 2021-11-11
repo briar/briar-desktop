@@ -1,6 +1,5 @@
 package org.briarproject.briar.desktop
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import dagger.Module
 import dagger.Provides
 import org.briarproject.bramble.account.AccountModule
@@ -95,10 +94,6 @@ internal class DesktopModule(
             override fun getTransportPreferences(): Map<TransportId, List<TransportId>> = emptyMap()
         }
     }
-
-    @Provides
-    @Singleton
-    internal fun provideObjectMapper() = ObjectMapper()
 
     @Provides
     internal fun provideFeatureFlags() = object : FeatureFlags {

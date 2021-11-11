@@ -1,5 +1,6 @@
 import org.jetbrains.compose.compose
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import org.jetbrains.compose.jetbrainsCompose
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 buildscript {
@@ -26,9 +27,9 @@ buildscript {
 }
 
 plugins {
-    kotlin("jvm") version "1.5.21"
-    kotlin("kapt") version "1.5.21"
-    id("org.jetbrains.compose") version "1.0.0-alpha3"
+    kotlin("jvm") version "1.5.31"
+    kotlin("kapt") version "1.5.31"
+    id("org.jetbrains.compose") version "1.0.0-beta5"
     id("java")
     id("idea")
     id("org.jlleitschuh.gradle.ktlint") version "10.1.0"
@@ -40,7 +41,7 @@ version = "0.1"
 allprojects {
     repositories {
         mavenCentral()
-        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+        jetbrainsCompose()
         google()
         jcenter()
     }
@@ -48,10 +49,9 @@ allprojects {
 
 dependencies {
     implementation(compose.desktop.currentOs)
+    implementation(compose.materialIconsExtended)
 
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.10.0")
-    implementation("com.github.ajalt:clikt:2.2.0")
-    implementation("org.jetbrains.compose.material:material-icons-extended:0.4.0")
+    implementation("com.github.ajalt.clikt:clikt:3.3.0")
     implementation("com.ibm.icu:icu4j:70.1")
 
     implementation(project(path = ":briar-core", configuration = "default"))
