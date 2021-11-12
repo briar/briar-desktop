@@ -11,6 +11,8 @@ import org.briarproject.briar.desktop.introduction.IntroductionViewModel
 import org.briarproject.briar.desktop.login.LoginViewModel
 import org.briarproject.briar.desktop.login.RegistrationViewModel
 import org.briarproject.briar.desktop.navigation.SidebarViewModel
+import org.briarproject.briar.desktop.privategroups.PrivateGroupListViewModel
+import org.briarproject.briar.desktop.privategroups.ThreadedConversationViewModel
 import kotlin.reflect.KClass
 
 @Module
@@ -52,4 +54,14 @@ abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(IntroductionViewModel::class)
     abstract fun bindIntroductionViewModel(introductionViewModel: IntroductionViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(PrivateGroupListViewModel::class)
+    abstract fun bindPrivateGroupListViewModel(privateGroupListViewModel: PrivateGroupListViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(ThreadedConversationViewModel::class)
+    abstract fun bindThreadedConversationViewModel(threadedConversationViewModel: ThreadedConversationViewModel): ViewModel
 }
