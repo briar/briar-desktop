@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import org.briarproject.briar.desktop.conversation.PrivateMessageScreen
 import org.briarproject.briar.desktop.navigation.BriarSidebar
 import org.briarproject.briar.desktop.navigation.SidebarViewModel
+import org.briarproject.briar.desktop.privategroups.PrivateGroupScreen
 import org.briarproject.briar.desktop.settings.PlaceHolderSettingsView
 import org.briarproject.briar.desktop.viewmodel.viewModel
 
@@ -28,6 +29,7 @@ fun MainScreen(
         VerticalDivider()
         when (viewModel.uiMode.value) {
             UiMode.CONTACTS -> PrivateMessageScreen()
+            UiMode.GROUPS -> PrivateGroupScreen()
             UiMode.SETTINGS -> PlaceHolderSettingsView(isDark, setDark)
             else -> UiPlaceholder()
         }
