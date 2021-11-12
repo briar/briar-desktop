@@ -6,8 +6,8 @@ import mu.KotlinLogging
 import org.briarproject.bramble.BrambleCoreEagerSingletons
 import org.briarproject.briar.BriarCoreEagerSingletons
 import org.briarproject.briar.desktop.TestUtils.getDataDir
-import java.util.logging.Level.INFO
-import java.util.logging.LogManager
+import org.briarproject.briar.desktop.utils.LogUtils
+import java.util.logging.Level.ALL
 
 internal class RunWithTemporaryAccount(val customization: BriarDesktopTestApp.() -> Unit) {
 
@@ -17,7 +17,7 @@ internal class RunWithTemporaryAccount(val customization: BriarDesktopTestApp.()
 
     @OptIn(ExperimentalComposeUiApi::class)
     fun run() {
-        LogManager.getLogManager().getLogger("").level = INFO
+        LogUtils.setupLogging(ALL)
 
         val dataDir = getDataDir()
         LOG.info { "Using data directory '$dataDir'" }

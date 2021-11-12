@@ -15,7 +15,7 @@ import org.briarproject.briar.BriarCoreEagerSingletons
 import org.briarproject.briar.desktop.utils.FileUtils
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nF
-import org.slf4j.bridge.SLF4JBridgeHandler
+import org.briarproject.briar.desktop.utils.LogUtils
 import java.io.File.separator
 import java.io.IOException
 import java.lang.System.getProperty
@@ -25,7 +25,6 @@ import java.nio.file.Paths
 import java.util.logging.Level.ALL
 import java.util.logging.Level.INFO
 import java.util.logging.Level.WARNING
-import java.util.logging.LogManager
 
 private val DEFAULT_DATA_DIR = getProperty("user.home") + separator + ".briar" + separator + "desktop"
 
@@ -64,10 +63,7 @@ private class Main : CliktCommand(
             else -> ALL
         }
 
-        SLF4JBridgeHandler.removeHandlersForRootLogger()
-        SLF4JBridgeHandler.install()
-
-        LogManager.getLogManager().getLogger("").level = level
+        LogUtils.setupLogging(level)
 
         val dataDir = getDataDir()
         val app =

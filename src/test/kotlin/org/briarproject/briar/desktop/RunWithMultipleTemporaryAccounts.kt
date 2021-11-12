@@ -9,8 +9,8 @@ import org.briarproject.bramble.api.plugin.TorConstants.DEFAULT_CONTROL_PORT
 import org.briarproject.bramble.api.plugin.TorConstants.DEFAULT_SOCKS_PORT
 import org.briarproject.briar.BriarCoreEagerSingletons
 import org.briarproject.briar.desktop.TestUtils.getDataDir
-import java.util.logging.Level.INFO
-import java.util.logging.LogManager
+import org.briarproject.briar.desktop.utils.LogUtils
+import java.util.logging.Level.ALL
 import java.util.logging.Logger
 
 internal class RunWithMultipleTemporaryAccounts(
@@ -26,7 +26,7 @@ internal class RunWithMultipleTemporaryAccounts(
 
     @OptIn(ExperimentalComposeUiApi::class)
     fun run() {
-        LogManager.getLogManager().getLogger("").level = INFO
+        LogUtils.setupLogging(ALL)
 
         for (i in names.indices) {
             val name = names[i]
