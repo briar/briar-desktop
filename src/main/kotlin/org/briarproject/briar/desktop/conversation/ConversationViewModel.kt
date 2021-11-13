@@ -83,10 +83,11 @@ constructor(
     fun sendMessage() {
         try {
             val text = _newMessage.value
-            _newMessage.value = ""
 
             // don't send empty or blank messages
             if (text.isBlank()) return
+
+            _newMessage.value = ""
 
             val start = LogUtils.now()
             val m = createMessage(text)
