@@ -42,7 +42,7 @@ fun ConversationHeader(
 
     Box(modifier = Modifier.fillMaxWidth().height(HEADER_SIZE + 1.dp)) {
         Row(modifier = Modifier.align(Alignment.Center)) {
-            ProfileCircle(36.dp, contactItem.contact.author.id.bytes)
+            ProfileCircle(36.dp, contactItem.authorId.bytes)
             Canvas(
                 modifier = Modifier.align(Alignment.CenterVertically),
                 onDraw = {
@@ -54,7 +54,7 @@ fun ConversationHeader(
                 }
             )
             Text(
-                contactItem.contact.author.name,
+                contactItem.displayName,
                 modifier = Modifier.align(Alignment.CenterVertically).padding(start = 12.dp),
                 fontSize = 20.sp
             )

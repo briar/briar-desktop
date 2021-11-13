@@ -108,7 +108,7 @@ fun ConversationScreen(
                         RoundedCornerShape(topStart = 10.dp, bottomStart = 10.dp)
                     )
             ) {
-                ContactInfoDrawer(contactItem.contact, setInfoDrawer, contactDrawerState)
+                ContactInfoDrawer(contactItem, setInfoDrawer, contactDrawerState)
             }
         }
     }

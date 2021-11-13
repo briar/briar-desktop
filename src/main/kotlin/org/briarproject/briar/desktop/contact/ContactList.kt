@@ -51,8 +51,8 @@ fun ContactList(
                 items(contactList) { contactItem ->
                     ContactCard(
                         contactItem,
-                        { selectContact(contactItem.contact.id) },
-                        isSelected(contactItem.contact.id)
+                        { selectContact(contactItem.contactId) },
+                        isSelected(contactItem.contactId)
                     )
                 }
             }

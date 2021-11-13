@@ -1,20 +1,31 @@
 package org.briarproject.briar.desktop.contact
 
 import org.briarproject.bramble.api.contact.Contact
+import org.briarproject.bramble.api.contact.ContactId
+import org.briarproject.bramble.api.identity.AuthorId
 import org.briarproject.briar.api.client.MessageTracker
 import kotlin.math.max
 
 data class ContactItem(
-    val contact: Contact,
+    val contactId: ContactId,
+    val authorId: AuthorId,
+    val name: String,
+    val alias: String?,
     val isConnected: Boolean,
     val isEmpty: Boolean,
     val unread: Int,
     val timestamp: Long
 ) {
 
+    val displayName = if (alias == null) name else "$alias ($name)"
+
     constructor(contact: Contact, isConnected: Boolean, groupCount: MessageTracker.GroupCount) :
         this(
-            contact, isConnected,
+            contactId = contact.id,
+            authorId = contact.author.id,
+            name = contact.author.name,
+            alias = contact.alias,
+            isConnected = isConnected,
             isEmpty = groupCount.msgCount == 0,
             unread = groupCount.unreadCount,
             timestamp = groupCount.latestMsgTime
@@ -32,10 +43,6 @@ data class ContactItem(
     }
 
     fun updateAlias(a: String?): ContactItem {
-        return copy(contact = contact.updateAlias(a))
-    }
-
-    private fun Contact.updateAlias(a: String?): Contact {
-        return Contact(id, author, localAuthorId, a, handshakePublicKey, isVerified)
+        return copy(alias = a)
     }
 }

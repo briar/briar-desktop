@@ -4,7 +4,6 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import mu.KotlinLogging
 import org.briarproject.bramble.api.connection.ConnectionRegistry
-import org.briarproject.bramble.api.contact.Contact
 import org.briarproject.bramble.api.contact.ContactId
 import org.briarproject.bramble.api.contact.ContactManager
 import org.briarproject.bramble.api.contact.event.ContactAliasChangedEvent
@@ -44,9 +43,8 @@ constructor(
 
     fun isSelected(contactId: ContactId) = _selectedContactId.value == contactId
 
-    override fun filterContact(contact: Contact) =
-        // todo: also filter on alias
-        contact.author.name.contains(_filterBy.value, ignoreCase = true)
+    override fun filterContactItem(contactItem: ContactItem) =
+        contactItem.displayName.contains(_filterBy.value, ignoreCase = true)
 
     fun setFilterBy(filter: String) {
         _filterBy.value = filter
@@ -58,7 +56,7 @@ constructor(
 
         // reset selected contact to null if not available after filtering
         val id = _selectedContactId.value
-        if (id != null && !contactList.map { it.contact.id }.contains(id)) {
+        if (id != null && !contactList.map { it.contactId }.contains(id)) {
             _selectedContactId.value = null
         }
     }

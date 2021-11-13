@@ -26,8 +26,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.briarproject.bramble.api.contact.Contact
 import org.briarproject.briar.desktop.contact.ContactCard
+import org.briarproject.briar.desktop.contact.ContactItem
 import org.briarproject.briar.desktop.contact.ProfileCircle
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
 import org.briarproject.briar.desktop.ui.HorizontalDivider
@@ -38,12 +38,12 @@ import java.util.Locale
 
 @Composable
 fun ContactDrawerMakeIntro(
-    contact: Contact,
+    contactItem: ContactItem,
     setInfoDrawer: (Boolean) -> Unit,
     viewModel: IntroductionViewModel = viewModel(),
 ) {
-    LaunchedEffect(contact) {
-        viewModel.setFirstContact(contact)
+    LaunchedEffect(contactItem) {
+        viewModel.setFirstContact(contactItem)
     }
     if (!viewModel.secondScreen.value) {
         Surface {
@@ -56,7 +56,7 @@ fun ContactDrawerMakeIntro(
                         Icon(Icons.Filled.Close, i18n("access.introduction.close"))
                     }
                     Text(
-                        text = i18nF("introduction.title_first", contact.author.name),
+                        text = i18nF("introduction.title_first", contactItem.displayName),
                         fontSize = 16.sp,
                         modifier = Modifier.align(Alignment.CenterVertically)
                     )
@@ -66,7 +66,7 @@ fun ContactDrawerMakeIntro(
                     items(viewModel.contactList) { contactItem ->
                         ContactCard(
                             contactItem,
-                            { viewModel.setSecondContact(contactItem.contact) },
+                            { viewModel.setSecondContact(contactItem) },
                             false
                         )
                     }
@@ -90,13 +90,13 @@ fun ContactDrawerMakeIntro(
             }
             Row(Modifier.fillMaxWidth().padding(12.dp), horizontalArrangement = Arrangement.SpaceAround) {
                 Column(Modifier.align(Alignment.CenterVertically)) {
-                    ProfileCircle(36.dp, viewModel.firstContact.value!!.author.id.bytes)
-                    Text(viewModel.firstContact.value!!.author.name, Modifier.padding(top = 4.dp), Color.White, 16.sp)
+                    ProfileCircle(36.dp, viewModel.firstContact.value!!.authorId.bytes)
+                    Text(viewModel.firstContact.value!!.displayName, Modifier.padding(top = 4.dp), Color.White, 16.sp)
                 }
                 Icon(Icons.Filled.SwapHoriz, i18n("access.swap"), modifier = Modifier.size(48.dp))
                 Column(Modifier.align(Alignment.CenterVertically)) {
-                    ProfileCircle(36.dp, viewModel.secondContact.value!!.author.id.bytes)
-                    Text(viewModel.secondContact.value!!.author.name, Modifier.padding(top = 4.dp), Color.White, 16.sp)
+                    ProfileCircle(36.dp, viewModel.secondContact.value!!.authorId.bytes)
+                    Text(viewModel.secondContact.value!!.displayName, Modifier.padding(top = 4.dp), Color.White, 16.sp)
                 }
             }
             Row(Modifier.padding(8.dp)) {

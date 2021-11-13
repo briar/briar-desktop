@@ -48,7 +48,7 @@ fun ContactCard(
         Row(horizontalArrangement = Arrangement.SpaceBetween) {
             Row(modifier = Modifier.align(Alignment.CenterVertically).padding(horizontal = 16.dp)) {
                 // TODO Pull profile pictures
-                ProfileCircle(36.dp, contactItem.contact.author.id.bytes)
+                ProfileCircle(36.dp, contactItem.authorId.bytes)
                 // Draw notification badges
                 if (contactItem.unread > 0) {
                     Canvas(
@@ -64,7 +64,7 @@ fun ContactCard(
                 }
                 Column(modifier = Modifier.align(Alignment.CenterVertically).padding(start = 12.dp)) {
                     Text(
-                        contactItem.contact.author.name,
+                        contactItem.displayName,
                         fontSize = 14.sp,
                         modifier = Modifier.align(Alignment.Start).padding(bottom = 2.dp)
                     )

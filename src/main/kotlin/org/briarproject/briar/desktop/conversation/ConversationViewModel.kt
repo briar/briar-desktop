@@ -110,7 +110,7 @@ constructor(
 
     @Throws(DbException::class)
     private fun createMessage(text: String): PrivateMessage {
-        val groupId = messagingManager.getContactGroup(_contactItem.value!!.contact).id
+        val groupId = messagingManager.getConversationId(_contactItem.value!!.contactId)
         // todo: this API call needs a database transaction context
         // val timestamp = conversationManager.getTimestampForOutgoingMessage(_contactId.value!!)
         val timestamp = Date().time

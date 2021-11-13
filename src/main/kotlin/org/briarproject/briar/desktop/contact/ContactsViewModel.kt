@@ -3,7 +3,6 @@ package org.briarproject.briar.desktop.contact
 import androidx.compose.runtime.mutableStateListOf
 import mu.KotlinLogging
 import org.briarproject.bramble.api.connection.ConnectionRegistry
-import org.briarproject.bramble.api.contact.Contact
 import org.briarproject.bramble.api.contact.ContactId
 import org.briarproject.bramble.api.contact.ContactManager
 import org.briarproject.bramble.api.contact.event.ContactAddedEvent
@@ -33,7 +32,7 @@ abstract class ContactsViewModel(
 
     val contactList: List<ContactItem> = _filteredContactList
 
-    protected open fun filterContact(contact: Contact) = true
+    protected open fun filterContactItem(contactItem: ContactItem) = true
 
     open fun loadContacts() {
         _fullContactList.apply {
@@ -55,7 +54,7 @@ abstract class ContactsViewModel(
     protected open fun updateFilteredList() {
         _filteredContactList.apply {
             clear()
-            addAll(_fullContactList.filter { filterContact(it.contact) }.sortedByDescending { it.timestamp })
+            addAll(_fullContactList.filter(::filterContactItem).sortedByDescending { it.timestamp })
         }
     }
 
@@ -81,12 +80,12 @@ abstract class ContactsViewModel(
     }
 
     protected open fun updateItem(contactId: ContactId, update: (ContactItem) -> ContactItem) {
-        _fullContactList.replaceFirst({ it.contact.id == contactId }, update)
+        _fullContactList.replaceFirst({ it.contactId == contactId }, update)
         updateFilteredList()
     }
 
     protected open fun removeItem(contactId: ContactId) {
-        _fullContactList.removeFirst { it.contact.id == contactId }
+        _fullContactList.removeFirst { it.contactId == contactId }
         updateFilteredList()
     }
 }
