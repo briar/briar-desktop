@@ -16,11 +16,9 @@ constructor(
 
     private val viewModels = HashMap<String, ViewModel>()
 
-    fun <VM : ViewModel> get(modelClass: KClass<VM>): VM =
-        get(modelClass.qualifiedName!!, modelClass)
-
-    fun <VM : ViewModel> get(key: String, modelClass: KClass<VM>): VM {
-        val viewModel = viewModels[key]
+    fun <VM : ViewModel> get(modelClass: KClass<VM>, key: String? = null): VM {
+        val viewModelKey = "${modelClass.qualifiedName}:$key"
+        val viewModel = viewModels[viewModelKey]
 
         if (modelClass.isInstance(viewModel)) {
             return viewModel as VM
@@ -28,7 +26,7 @@ constructor(
 
         try {
             val viewModel = viewModelFactory.create(modelClass)
-            viewModels[key] = viewModel
+            viewModels[viewModelKey] = viewModel
             return viewModel
         } catch (e: InstantiationException) {
             throw RuntimeException("Cannot create an instance of $modelClass", e)

@@ -52,11 +52,7 @@ fun <VM : ViewModel> viewModel(
         "No ViewModelProvider was provided via LocalViewModelProvider"
     }
 ): VM {
-    val viewModel = if (key == null) {
-        viewModelProvider.get(modelClass)
-    } else {
-        viewModelProvider.get(key, modelClass)
-    }
+    val viewModel = viewModelProvider.get(modelClass, key)
 
     DisposableEffect(key) {
         viewModel.onInit()
