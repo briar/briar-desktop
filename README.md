@@ -7,12 +7,6 @@ A desktop program for [Briar](https://briar.app), bringing secure messaging to y
 
 **Note that Briar Desktop is still in a very early prototype stage and not yet functional.**
 
-For regular updates, check out the Briar tag on
-[Nico Alt's blog](https://nico.dorfbrunnen.eu/tags/briar/)
-([RSS feed](https://nico.dorfbrunnen.eu/tags/briar/index.xml))
-and watch the
-[milestones of this repo](https://code.briarproject.org/briar/briar-desktop/-/milestones).
-
 ## Installation
 
 We plan to distribute Briar for Debian (and related distributions) as _.deb_ and
@@ -23,14 +17,17 @@ once Briar is available for Debian and on Flathub.org.
 
 ### Self-contained Java .jar
 
-The simplest way is to download the nightly briar-desktop.jar and execute it from the command-line.
+The simplest way is to
+[download the nightly briar-desktop.jar](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop.jar?job=build_jar)
+and execute it from the command-line with
+`java -jar briar-desktop.jar`.
+Note that you need at least version 11 of the Java Runtime Environment.
 
-**Note that this installation method isn't yet available.**
+### Self-contained Debian package
 
-```
-wget https://media.dorfbrunnen.eu/briar/desktop/briar-desktop.jar
-java -jar briar-desktop.jar
-```
+For Debian based Linux distributions, a
+[self-contained .deb package](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop.deb?job=build_deb)
+is available that ships its own JRE.
 
 ## Developers
 
