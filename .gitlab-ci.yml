@@ -2,37 +2,62 @@ image: briar/ci-image-android:latest
 
 stages:
   - test
-
-workflow:
-  # when to create a CI pipeline
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-    - if: '$CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS'
-      when: never # avoids duplicate jobs for branch and MR
-    - if: '$CI_COMMIT_BRANCH'
-    - if: '$CI_COMMIT_TAG'
+  - build
 
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
 
-test:
+before_script:
+  - set -e
+  - export GRADLE_USER_HOME=$PWD/.gradle
+
+after_script:
+  # these file change every time and should not be cached
+  - rm -f $GRADLE_USER_HOME/caches/modules-2/modules-2.lock
+  - rm -fr $GRADLE_USER_HOME/caches/*/plugin-resolution/
+
+cache:
+  key: "$CI_COMMIT_REF_SLUG"
+  paths:
+    - .gradle/wrapper
+    - .gradle/caches
+
+ktlint:
   stage: test
-  before_script:
-    - set -e
-    - export GRADLE_USER_HOME=$PWD/.gradle
   script:
     - git submodule update
     - ./gradlew --no-daemon :check
-  after_script:
-    # these file change every time and should not be cached
-    - rm -f $GRADLE_USER_HOME/caches/modules-2/modules-2.lock
-    - rm -fr $GRADLE_USER_HOME/caches/*/plugin-resolution/
-  cache:
-    key: "$CI_COMMIT_REF_SLUG"
-    paths:
-      - .gradle/wrapper
-      - .gradle/caches
   rules:
+    - if: '$CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS'
+      when: never # avoids duplicate jobs for branch and MR
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       when: always
     - when: always
+
+build_jar:
+  stage: build
+  script:
+    - ./gradlew --no-daemon packageUberJarForCurrentOS
+    - mv build/compose/jars/Briar-*.jar ./briar-desktop.jar
+  artifacts:
+    paths:
+      - briar-desktop.jar
+    expire_in: 2 days
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+
+build_deb:
+  stage: build
+  script:
+    - wget -q https://download.java.net/java/GA/jdk15.0.2/0d1cfde4252546c6931946de8db48ee2/7/GPL/openjdk-15.0.2_linux-x64_bin.tar.gz
+    - tar -xf openjdk-15.0.2_linux-x64_bin.tar.gz
+    - export JAVA_HOME=`pwd`/jdk-15.0.2
+    - apt-get -qq update && apt-get install -y -qq binutils fakeroot
+    - ./gradlew --no-daemon packageDeb
+    - mv build/compose/binaries/main/deb/*.deb ./briar-desktop.deb
+  artifacts:
+    paths:
+      - briar-desktop.deb
+    expire_in: 2 days
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
