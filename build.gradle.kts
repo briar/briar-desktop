@@ -99,6 +99,8 @@ compose.desktop {
             packageVersion = "0.0.1"
             description = "Secure messaging, anywhere"
             vendor = "The Briar Project"
+            modules("java.sql")
+            modules("java.naming")
             linux {
                 packageName = "briar-desktop"
                 iconFile.set(project.file("src/main/resources/images/logo_circle.png"))
