@@ -5,6 +5,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.window.Window
 import org.briarproject.bramble.api.account.AccountManager
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
@@ -84,6 +85,7 @@ constructor(
         Window(
             title = title,
             onCloseRequest = onClose,
+            icon = painterResource("images/logo_circle.svg")
         ) {
             window.minimumSize = Dimension(800, 600)
             BriarTheme(isDarkTheme = isDark) {
