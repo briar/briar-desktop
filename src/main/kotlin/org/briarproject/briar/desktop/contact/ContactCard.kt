@@ -2,14 +2,20 @@ package org.briarproject.briar.desktop.contact
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
@@ -18,7 +24,8 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.drawscope.withTransform
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.briarproject.bramble.api.contact.ContactId
@@ -63,7 +70,6 @@ fun ContactCard(
 ) {
     val bgColor = if (selected) MaterialTheme.colors.selectedCard else MaterialTheme.colors.surfaceVariant
     val outlineColor = MaterialTheme.colors.outline
-    val briarPrimary = MaterialTheme.colors.primary
     val briarSecondary = MaterialTheme.colors.secondary
     val briarSurfaceVar = MaterialTheme.colors.surfaceVariant
 
@@ -75,20 +81,30 @@ fun ContactCard(
     ) {
         Row(horizontalArrangement = Arrangement.SpaceBetween) {
             Row(modifier = Modifier.align(Alignment.CenterVertically).padding(horizontal = 16.dp)) {
-                // TODO Pull profile pictures
-                ProfileCircle(36.dp, contactItem.authorId.bytes)
-                // Draw notification badges
-                if (contactItem.unread > 0) {
-                    Canvas(
-                        modifier = Modifier.align(Alignment.CenterVertically),
-                        onDraw = {
-                            val size = 10.dp.toPx()
-                            withTransform({ translate(left = -6f, top = -12f) }) {
-                                drawCircle(color = outlineColor, radius = (size + 2.dp.toPx()) / 2f)
-                                drawCircle(color = briarPrimary, radius = size / 2f)
-                            }
+                Box(modifier = Modifier.align(Alignment.CenterVertically)) {
+                    // TODO Pull profile pictures
+                    ProfileCircle(36.dp, contactItem.authorId.bytes)
+                    // Draw new message counter
+                    if (contactItem.unread > 0) {
+                        Box(
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .offset(6.dp, (-6).dp)
+                                .height(20.dp)
+                                .widthIn(min = 20.dp, max = Dp.Infinity)
+                                .border(2.dp, outlineColor, CircleShape)
+                                .background(briarSecondary, CircleShape)
+                                .padding(horizontal = 6.dp)
+                        ) {
+                            Text(
+                                modifier = Modifier.align(Alignment.Center),
+                                fontSize = 8.sp,
+                                textAlign = TextAlign.Center,
+                                text = contactItem.unread.toString(),
+                                maxLines = 1
+                            )
                         }
-                    )
+                    }
                 }
                 Column(modifier = Modifier.align(Alignment.CenterVertically).padding(start = 12.dp)) {
                     Text(
