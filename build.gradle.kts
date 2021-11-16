@@ -106,6 +106,7 @@ compose.desktop {
                 iconFile.set(project.file("src/main/resources/images/logo_circle.png"))
                 debMaintainer = "contact@briarproject.org"
                 appCategory = "comm"
+                menuGroup = "Network;Chat;InstantMessaging;"
             }
             windows {
                 iconFile.set(project.file("src/main/resources/images/logo_circle.ico"))
