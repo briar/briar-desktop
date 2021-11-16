@@ -11,6 +11,7 @@ import org.briarproject.bramble.api.event.Event
 import org.briarproject.bramble.api.event.EventBus
 import org.briarproject.briar.api.conversation.ConversationManager
 import org.briarproject.briar.api.conversation.event.ConversationMessageTrackedEvent
+import org.briarproject.briar.desktop.conversation.ConversationMessagesReadEvent
 import javax.inject.Inject
 
 class ContactListViewModel
@@ -71,6 +72,10 @@ constructor(
             // is AvatarUpdatedEvent -> {}
             is ContactAliasChangedEvent -> {
                 updateItem(e.contactId) { it.updateAlias(e.alias) }
+            }
+            is ConversationMessagesReadEvent -> {
+                LOG.info("${e.count} conversation messages read, updating item")
+                updateItem(e.contactId) { it.updateFromMessagesRead(e.count) }
             }
         }
     }

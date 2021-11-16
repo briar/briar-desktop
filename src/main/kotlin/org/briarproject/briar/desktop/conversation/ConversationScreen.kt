@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
@@ -55,6 +56,8 @@ fun ConversationScreen(
 
     val (infoDrawer, setInfoDrawer) = remember { mutableStateOf(false) }
     val (contactDrawerState, setDrawerState) = remember { mutableStateOf(ContactInfoDrawerState.MakeIntro) }
+    val scrollState = rememberLazyListState()
+
     BoxWithConstraints(Modifier.fillMaxSize()) {
         val animatedInfoDrawerOffsetX by animateDpAsState(if (infoDrawer) (-275).dp else 0.dp)
         Scaffold(
@@ -69,6 +72,7 @@ fun ConversationScreen(
             content = { padding ->
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
+                    state = scrollState,
                     // reverseLayout to display most recent message (index 0) at the bottom
                     reverseLayout = true,
                     contentPadding = PaddingValues(8.dp),
@@ -88,6 +92,14 @@ fun ConversationScreen(
                 )
             },
         )
+
+        if (viewModel.hasUnreadMessages.value) {
+            LaunchedEffect(scrollState.firstVisibleItemIndex) {
+                // mark all messages older than the first visible item as read
+                viewModel.markMessagesRead(scrollState.firstVisibleItemIndex)
+            }
+        }
+
         if (infoDrawer) {
             // TODO Find non-hacky way of setting scrim on entire app
             Box(

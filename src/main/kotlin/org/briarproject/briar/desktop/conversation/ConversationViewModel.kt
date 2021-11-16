@@ -1,6 +1,7 @@
 package org.briarproject.briar.desktop.conversation
 
 import androidx.compose.runtime.State
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import mu.KotlinLogging
@@ -31,6 +32,7 @@ import org.briarproject.briar.api.messaging.PrivateMessageHeader
 import org.briarproject.briar.desktop.contact.ContactItem
 import org.briarproject.briar.desktop.utils.KLoggerUtils.logDuration
 import org.briarproject.briar.desktop.utils.replaceIf
+import org.briarproject.briar.desktop.utils.replaceIfIndexed
 import org.briarproject.briar.desktop.viewmodel.BriarEventListenerViewModel
 import java.util.Date
 import javax.inject.Inject
@@ -106,6 +108,18 @@ constructor(
         } catch (e: DbException) {
             LOG.warn(e) {}
         }
+    }
+
+    val hasUnreadMessages = derivedStateOf { _messages.any { !it.isRead } }
+
+    fun markMessagesRead(untilIndex: Int) {
+        var count = 0
+        _messages.replaceIfIndexed({ idx, it -> idx >= untilIndex && !it.isRead }) { _, it ->
+            conversationManager.setReadFlag(it.groupId, it.id, true)
+            count++
+            it.markRead()
+        }
+        eventBus.broadcast(ConversationMessagesReadEvent(count, contactItem.value!!.contactId))
     }
 
     @Throws(DbException::class)

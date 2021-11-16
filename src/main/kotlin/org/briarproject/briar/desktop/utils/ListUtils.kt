@@ -10,6 +10,18 @@ fun <T> MutableList<T>.replaceIf(predicate: (T) -> Boolean, transformation: (T) 
     }
 }
 
+fun <T> MutableList<T>.replaceIfIndexed(predicate: (Int, T) -> Boolean, transformation: (Int, T) -> T) {
+    val li = listIterator()
+    var index = 0
+    while (li.hasNext()) {
+        val n = li.next()
+        if (predicate(index, n)) {
+            li.set(transformation(index, n))
+        }
+        index++
+    }
+}
+
 fun <T> MutableList<T>.replaceFirst(predicate: (T) -> Boolean, transformation: (T) -> T) {
     val li = listIterator()
     while (li.hasNext()) {

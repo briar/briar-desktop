@@ -45,4 +45,7 @@ data class ContactItem(
     fun updateAlias(a: String?): ContactItem {
         return copy(alias = a)
     }
+
+    fun updateFromMessagesRead(c: Int): ContactItem =
+        copy(unread = unread - c)
 }
