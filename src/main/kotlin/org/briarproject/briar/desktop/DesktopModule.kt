@@ -32,6 +32,7 @@ import org.briarproject.bramble.util.OsUtils.isLinux
 import org.briarproject.bramble.util.OsUtils.isMac
 import org.briarproject.briar.desktop.ui.BriarUi
 import org.briarproject.briar.desktop.ui.BriarUiImpl
+import org.briarproject.briar.desktop.viewmodel.UiExecutor
 import org.briarproject.briar.desktop.viewmodel.ViewModelModule
 import java.io.File
 import java.nio.file.Path
@@ -75,9 +76,12 @@ internal class DesktopModule(
     @Provides
     @Singleton
     @EventExecutor
-    fun provideEventExecutor(): Executor {
-        return Dispatchers.Swing.asExecutor()
-    }
+    fun provideEventExecutor(): Executor = provideUiExecutor()
+
+    @Provides
+    @Singleton
+    @UiExecutor
+    fun provideUiExecutor(): Executor = Dispatchers.Swing.asExecutor()
 
     @Provides
     @TorDirectory

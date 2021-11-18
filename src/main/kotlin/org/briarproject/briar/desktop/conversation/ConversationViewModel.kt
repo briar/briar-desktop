@@ -10,10 +10,13 @@ import org.briarproject.bramble.api.connection.ConnectionRegistry
 import org.briarproject.bramble.api.contact.ContactId
 import org.briarproject.bramble.api.contact.ContactManager
 import org.briarproject.bramble.api.contact.event.ContactRemovedEvent
+import org.briarproject.bramble.api.db.DatabaseExecutor
 import org.briarproject.bramble.api.db.DbException
 import org.briarproject.bramble.api.db.NoSuchContactException
+import org.briarproject.bramble.api.db.TransactionManager
 import org.briarproject.bramble.api.event.Event
 import org.briarproject.bramble.api.event.EventBus
+import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.bramble.api.plugin.event.ContactConnectedEvent
 import org.briarproject.bramble.api.plugin.event.ContactDisconnectedEvent
 import org.briarproject.bramble.api.sync.MessageId
@@ -33,8 +36,10 @@ import org.briarproject.briar.desktop.contact.ContactItem
 import org.briarproject.briar.desktop.utils.KLoggerUtils.logDuration
 import org.briarproject.briar.desktop.utils.replaceIf
 import org.briarproject.briar.desktop.utils.replaceIfIndexed
-import org.briarproject.briar.desktop.viewmodel.BriarEventListenerViewModel
+import org.briarproject.briar.desktop.viewmodel.EventListenerDbViewModel
+import org.briarproject.briar.desktop.viewmodel.UiExecutor
 import java.util.Date
+import java.util.concurrent.Executor
 import javax.inject.Inject
 
 class ConversationViewModel
@@ -45,8 +50,12 @@ constructor(
     private val conversationManager: ConversationManager,
     private val messagingManager: MessagingManager,
     private val privateMessageFactory: PrivateMessageFactory,
+    @UiExecutor uiExecutor: Executor,
+    @DatabaseExecutor dbExecutor: Executor,
+    lifecycleManager: LifecycleManager,
+    db: TransactionManager,
     private val eventBus: EventBus,
-) : BriarEventListenerViewModel(eventBus) {
+) : EventListenerDbViewModel(uiExecutor, dbExecutor, lifecycleManager, db, eventBus) {
 
     companion object {
         private val LOG = KotlinLogging.logger {}

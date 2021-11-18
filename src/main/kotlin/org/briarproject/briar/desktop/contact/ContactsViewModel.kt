@@ -7,21 +7,30 @@ import org.briarproject.bramble.api.contact.ContactId
 import org.briarproject.bramble.api.contact.ContactManager
 import org.briarproject.bramble.api.contact.event.ContactAddedEvent
 import org.briarproject.bramble.api.contact.event.ContactRemovedEvent
+import org.briarproject.bramble.api.db.DatabaseExecutor
+import org.briarproject.bramble.api.db.TransactionManager
 import org.briarproject.bramble.api.event.Event
 import org.briarproject.bramble.api.event.EventBus
+import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.bramble.api.plugin.event.ContactConnectedEvent
 import org.briarproject.bramble.api.plugin.event.ContactDisconnectedEvent
 import org.briarproject.briar.api.conversation.ConversationManager
 import org.briarproject.briar.desktop.utils.removeFirst
 import org.briarproject.briar.desktop.utils.replaceFirst
-import org.briarproject.briar.desktop.viewmodel.BriarEventListenerViewModel
+import org.briarproject.briar.desktop.viewmodel.EventListenerDbViewModel
+import org.briarproject.briar.desktop.viewmodel.UiExecutor
+import java.util.concurrent.Executor
 
 abstract class ContactsViewModel(
     protected val contactManager: ContactManager,
     private val conversationManager: ConversationManager,
     private val connectionRegistry: ConnectionRegistry,
+    @UiExecutor uiExecutor: Executor,
+    @DatabaseExecutor dbExecutor: Executor,
+    lifecycleManager: LifecycleManager,
+    db: TransactionManager,
     eventBus: EventBus,
-) : BriarEventListenerViewModel(eventBus) {
+) : EventListenerDbViewModel(uiExecutor, dbExecutor, lifecycleManager, db, eventBus) {
 
     companion object {
         private val LOG = KotlinLogging.logger {}
