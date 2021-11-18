@@ -99,6 +99,9 @@ compose.desktop {
             packageVersion = "0.0.1"
             description = "Secure messaging, anywhere"
             vendor = "The Briar Project"
+            // As described at https://github.com/JetBrains/compose-jb/tree/master/tutorials/Native_distributions_and_local_execution#configuring-included-jdk-modules
+            // the Gradle plugin does not automatically determine necessary JDK modules to ship
+            // so that we need to define required modules here:
             modules("java.sql")
             modules("java.naming")
             linux {
