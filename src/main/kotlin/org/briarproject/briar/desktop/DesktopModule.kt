@@ -2,9 +2,13 @@ package org.briarproject.briar.desktop
 
 import dagger.Module
 import dagger.Provides
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.asExecutor
+import kotlinx.coroutines.swing.Swing
 import org.briarproject.bramble.account.AccountModule
 import org.briarproject.bramble.api.FeatureFlags
 import org.briarproject.bramble.api.db.DatabaseConfig
+import org.briarproject.bramble.api.event.EventExecutor
 import org.briarproject.bramble.api.plugin.PluginConfig
 import org.briarproject.bramble.api.plugin.TorConstants.DEFAULT_CONTROL_PORT
 import org.briarproject.bramble.api.plugin.TorConstants.DEFAULT_SOCKS_PORT
@@ -15,7 +19,6 @@ import org.briarproject.bramble.api.plugin.TransportId
 import org.briarproject.bramble.api.plugin.duplex.DuplexPluginFactory
 import org.briarproject.bramble.api.plugin.simplex.SimplexPluginFactory
 import org.briarproject.bramble.battery.DefaultBatteryManagerModule
-import org.briarproject.bramble.event.DefaultEventExecutorModule
 import org.briarproject.bramble.network.JavaNetworkModule
 import org.briarproject.bramble.plugin.tor.CircumventionModule
 import org.briarproject.bramble.plugin.tor.UnixTorPluginFactory
@@ -33,6 +36,7 @@ import org.briarproject.briar.desktop.viewmodel.ViewModelModule
 import java.io.File
 import java.nio.file.Path
 import java.util.Collections.emptyList
+import java.util.concurrent.Executor
 import javax.inject.Singleton
 
 @Module(
@@ -41,7 +45,6 @@ import javax.inject.Singleton
         CircumventionModule::class,
         ClockModule::class,
         DefaultBatteryManagerModule::class,
-        DefaultEventExecutorModule::class,
         DefaultTaskSchedulerModule::class,
         DefaultWakefulIoExecutorModule::class,
         DesktopSecureRandomModule::class,
@@ -67,6 +70,13 @@ internal class DesktopModule(
         val dbDir = appDir.resolve("db")
         val keyDir = appDir.resolve("key")
         return DesktopDatabaseConfig(dbDir, keyDir)
+    }
+
+    @Provides
+    @Singleton
+    @EventExecutor
+    fun provideEventExecutor(): Executor {
+        return Dispatchers.Swing.asExecutor()
     }
 
     @Provides
