@@ -6,16 +6,13 @@ import org.briarproject.bramble.api.db.DbCallable
 import org.briarproject.bramble.api.db.DbException
 import org.briarproject.bramble.api.db.DbRunnable
 import org.briarproject.bramble.api.db.TransactionManager
-import org.briarproject.bramble.api.event.EventListener
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
-import java.util.concurrent.Executor
 
 abstract class DbViewModel(
-    @UiExecutor private val uiExecutor: Executor,
-    @DatabaseExecutor private val dbExecutor: Executor,
+    private val briarExecutors: BriarExecutors,
     private val lifecycleManager: LifecycleManager,
     private val db: TransactionManager
-) : ViewModel, EventListener {
+) : ViewModel {
 
     companion object {
         private val LOG = KotlinLogging.logger {}
@@ -29,7 +26,7 @@ abstract class DbViewModel(
      * For convenience, consider using [runOnDbThreadWithTransaction] instead.
      */
     protected fun runOnDbThread(task: Runnable) {
-        dbExecutor.execute {
+        briarExecutors.onDbThread {
             try {
                 lifecycleManager.waitForDatabase()
                 task.run()
@@ -51,7 +48,7 @@ abstract class DbViewModel(
         task: DbRunnable<Exception>,
         @UiExecutor onError: (Exception) -> Unit
     ) {
-        dbExecutor.execute {
+        briarExecutors.onDbThread {
             try {
                 lifecycleManager.waitForDatabase()
                 db.transaction(readOnly, task)
@@ -59,7 +56,7 @@ abstract class DbViewModel(
                 LOG.warn("Interrupted while waiting for database")
                 Thread.currentThread().interrupt()
             } catch (e: Exception) {
-                uiExecutor.execute { onError(e) }
+                briarExecutors.onUiThread { onError(e) }
             }
         }
     }
@@ -76,7 +73,7 @@ abstract class DbViewModel(
         @UiExecutor onResult: (T) -> Unit,
         @UiExecutor onError: (Exception) -> Unit
     ) {
-        dbExecutor.execute {
+        briarExecutors.onDbThread {
             try {
                 lifecycleManager.waitForDatabase()
                 db.transaction<Exception>(true) { txn ->
@@ -87,7 +84,7 @@ abstract class DbViewModel(
                 LOG.warn("Interrupted while waiting for database")
                 Thread.currentThread().interrupt()
             } catch (e: Exception) {
-                uiExecutor.execute { onError(e) }
+                briarExecutors.onUiThread { onError(e) }
             }
         }
     }
