@@ -48,7 +48,7 @@ fun ThreadedConversationHeader(
             modifier = Modifier.align(Alignment.CenterEnd).padding(end = 16.dp)
         ) {
             Icon(Icons.Filled.MoreVert, i18n("access.contact.menu"), modifier = Modifier.size(24.dp))
-            ContactDropDown(isExpanded, setExpanded, onMakeIntroduction)
+            PrivateGroupDropDown(isExpanded, setExpanded, onMakeIntroduction)
         }
         HorizontalDivider(modifier = Modifier.align(Alignment.BottomCenter))
     }

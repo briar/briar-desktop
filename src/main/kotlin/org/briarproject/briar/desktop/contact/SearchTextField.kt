@@ -17,13 +17,14 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 
 @Composable
-fun SearchTextField(searchValue: String, onValueChange: (String) -> Unit, onContactAdd: () -> Unit) {
+fun SearchTextField(searchValue: String, onValueChange: (String) -> Unit, onContactAdd: () -> Unit, icon: ImageVector) {
     TextField(
         value = searchValue,
         onValueChange = onValueChange,
@@ -41,7 +42,7 @@ fun SearchTextField(searchValue: String, onValueChange: (String) -> Unit, onCont
                 modifier = Modifier.padding(end = 10.dp).size(32.dp)
                     .background(MaterialTheme.colors.primary, CircleShape)
             ) {
-                Icon(Icons.Filled.PersonAdd, i18n("access.contacts.add"), tint = Color.White, modifier = Modifier.size(20.dp))
+                Icon(icon, i18n("access.contacts.add"), tint = Color.White, modifier = Modifier.size(20.dp))
             }
         },
         modifier = Modifier.fillMaxSize()

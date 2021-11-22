@@ -9,6 +9,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.GroupAdd
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,7 +45,8 @@ fun PrivateGroupList(
                 SearchTextField(
                     filterBy,
                     onValueChange = setFilterBy,
-                    onContactAdd = { isCreatePrivateGroupDialogVisible = true }
+                    onContactAdd = { isCreatePrivateGroupDialogVisible = true },
+                    icon = Icons.Filled.GroupAdd,
                 )
             }
         },

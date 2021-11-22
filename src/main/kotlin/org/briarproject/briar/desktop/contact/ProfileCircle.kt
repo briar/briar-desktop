@@ -15,13 +15,13 @@ import org.briarproject.briar.desktop.theme.outline
 
 @Preview
 @Composable
-fun PreviewProfileCircle() {
+fun PreviewProfileCircle(size: Dp = 90.dp) {
     val bytes = byteArrayOf(
         -110, 58, 34, -54, 79, 0, -92, -65, 2, 10, -7, 53, -121,
         -31, 39, 48, 86, -54, -4, 7, 108, -106, 89, 11, 65, -118,
         13, -51, -96, 38, -91
     )
-    ProfileCircle(90.dp, bytes)
+    ProfileCircle(size, bytes)
 }
 
 /**
