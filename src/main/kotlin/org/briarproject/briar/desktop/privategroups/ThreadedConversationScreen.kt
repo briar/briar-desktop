@@ -2,7 +2,6 @@ package org.briarproject.briar.desktop.privategroups
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -12,7 +11,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -22,17 +20,10 @@ import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyItemScope
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Card
-import androidx.compose.material.Divider
-import androidx.compose.material.ListItem
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -43,23 +34,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.bouncycastle.math.raw.Mod
 import org.briarproject.bramble.api.sync.GroupId
-import org.briarproject.briar.desktop.contact.ContactInfoDrawer
-import org.briarproject.briar.desktop.contact.ContactInfoDrawerState
 import org.briarproject.briar.desktop.contact.PreviewProfileCircle
 import org.briarproject.briar.desktop.conversation.ConversationInput
 import org.briarproject.briar.desktop.navigation.SIDEBAR_WIDTH
 import org.briarproject.briar.desktop.theme.divider
-import org.briarproject.briar.desktop.theme.sidebarSurface
 import org.briarproject.briar.desktop.theme.surfaceVariant
 import org.briarproject.briar.desktop.ui.Constants.CONTACTLIST_WIDTH
-import org.briarproject.briar.desktop.ui.HorizontalDivider
 import org.briarproject.briar.desktop.ui.Loader
-import org.briarproject.briar.desktop.ui.VerticalDivider
 import org.briarproject.briar.desktop.viewmodel.viewModel
 
 @Composable
@@ -177,10 +161,12 @@ fun ThreadedConversationScreen(
 @Composable
 fun ExperimentalThreadedForumPost(content: @Composable (ColumnScope.() -> Unit)) {
     val divider = MaterialTheme.colors.divider
-    Column(Modifier.padding(start = 8.dp, end = 8.dp, top = 8.dp).wrapContentHeight().drawBehind {
-        val height = size.height
-        drawLine(divider, Offset(9f,22f), Offset(9f,height))
-    }) {
+    Column(
+        Modifier.padding(start = 8.dp, end = 8.dp, top = 8.dp).wrapContentHeight().drawBehind {
+            val height = size.height
+            drawLine(divider, Offset(9f, 22f), Offset(9f, height))
+        }
+    ) {
         Column() {
             Row(Modifier.clickable { println(" lsdfla;skdjf") }) {
                 PreviewProfileCircle(18.dp)
@@ -191,7 +177,6 @@ fun ExperimentalThreadedForumPost(content: @Composable (ColumnScope.() -> Unit))
             Row(Modifier.padding(start = 8.dp).wrapContentHeight()) {
                 Text("Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in vel illum qui dolorem eum fugiat quo voluptas nulla pariatur. ", modifier = Modifier.padding(start = 16.dp))
             }
-
         }
         Column(Modifier.padding(start = 8.dp, top = 8.dp)) {
             content()
