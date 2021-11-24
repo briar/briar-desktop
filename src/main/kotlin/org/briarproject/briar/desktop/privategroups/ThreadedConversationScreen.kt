@@ -1,6 +1,10 @@
 package org.briarproject.briar.desktop.privategroups
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -25,6 +29,7 @@ import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -46,10 +51,12 @@ import org.briarproject.briar.desktop.ui.Constants.CONTACTLIST_WIDTH
 import org.briarproject.briar.desktop.ui.Loader
 import org.briarproject.briar.desktop.viewmodel.viewModel
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun ThreadedConversationScreen(
     groupId: GroupId,
     viewModel: ThreadedConversationViewModel = viewModel(),
+    singleThreadViewModel: SingleThreadViewModel = viewModel(),
 ) {
     LaunchedEffect(groupId) {
         viewModel.setGroupId(groupId)
@@ -75,21 +82,6 @@ fun ThreadedConversationScreen(
                     }
                 )
             },
-//            content = { padding ->
-//                LazyColumn(
-//                    verticalArrangement = Arrangement.spacedBy(8.dp),
-//                    // reverseLayout to display most recent message (index 0) at the bottom
-//                    reverseLayout = true,
-//                    contentPadding = PaddingValues(8.dp),
-//                    modifier = Modifier.padding(padding).fillMaxHeight()
-//                ) {
-//                    item {
-//                        ExperimentalThreadedForumPost()
-//                        ExperimentalThreadedForumPost()
-//                        ExperimentalThreadedForumPost()
-//                    }
-//                }
-//            },
             content = { padding ->
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -99,31 +91,38 @@ fun ThreadedConversationScreen(
                 ) {
                     item {
                         Card {
-                            ExperimentalThreadedForumPost() {
-                                ExperimentalThreadedForumPost {}
+                            ExperimentalThreadedForumPost(singleThreadViewModel) {
+                                ExperimentalThreadedForumPost(singleThreadViewModel) {}
                             }
                         }
                     }
                     item {
                         Card {
-                            ExperimentalThreadedForumPost() {
-                                ExperimentalThreadedForumPost {}
+                            ExperimentalThreadedForumPost(singleThreadViewModel) {
+                                ExperimentalThreadedForumPost(singleThreadViewModel) {
+                                    ExperimentalThreadedForumPost(singleThreadViewModel) {
+                                        ExperimentalThreadedForumPost(singleThreadViewModel) {
+                                            ExperimentalThreadedForumPost(singleThreadViewModel) {
+
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
                     item {
                         Card {
-                            ExperimentalThreadedForumPost() {}
+                            ExperimentalThreadedForumPost(singleThreadViewModel) {}
                         }
                     }
                     item {
                         Card {
-                            ExperimentalThreadedForumPost() {}
+                            ExperimentalThreadedForumPost(singleThreadViewModel) {}
                         }
                     }
                 }
             },
-
             bottomBar = {
                 ConversationInput(
                     viewModel.newMessage.value,
@@ -132,6 +131,9 @@ fun ThreadedConversationScreen(
                 )
             },
         )
+        AnimatedVisibility(singleThreadViewModel.isOpen.value, enter = fadeIn(), exit = fadeOut()) {
+            SingleThreadScreen(groupId, viewModel, singleThreadViewModel)
+        }
         if (infoDrawer) {
             // TODO Find non-hacky way of setting scrim on entire app
             Box(
@@ -159,7 +161,7 @@ fun ThreadedConversationScreen(
 }
 
 @Composable
-fun ExperimentalThreadedForumPost(content: @Composable (ColumnScope.() -> Unit)) {
+fun ExperimentalThreadedForumPost(singleThreadViewModel: SingleThreadViewModel, content: @Composable (ColumnScope.() -> Unit),) {
     val divider = MaterialTheme.colors.divider
     Column(
         Modifier.padding(start = 8.dp, end = 8.dp, top = 8.dp).wrapContentHeight().drawBehind {
@@ -167,7 +169,7 @@ fun ExperimentalThreadedForumPost(content: @Composable (ColumnScope.() -> Unit))
             drawLine(divider, Offset(13f, 22f), Offset(13f, height))
         }
     ) {
-        Column(Modifier.clickable { println(" lsdfla;skdjf") }.padding(4.dp)) {
+        Column(Modifier.clickable { singleThreadViewModel.setViewState(true) }.padding(4.dp)) {
             Row {
                 PreviewProfileCircle(18.dp)
                 Text("John Stevens", modifier = Modifier.padding(horizontal = 8.dp), fontSize = 14.sp)
@@ -177,8 +179,11 @@ fun ExperimentalThreadedForumPost(content: @Composable (ColumnScope.() -> Unit))
             Row(Modifier.padding(start = 8.dp).wrapContentHeight()) {
                 Text("Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in vel illum qui dolorem eum fugiat quo voluptas nulla pariatur. ", modifier = Modifier.padding(start = 16.dp))
             }
+            TextButton(onClick = {}, modifier = Modifier.padding(start = 12.dp)) {
+                Text("Reply")
+            }
         }
-        Column(Modifier.padding(start = 8.dp, top = 8.dp)) {
+        Column(Modifier.padding(start = 8.dp)) {
             content()
         }
     }
