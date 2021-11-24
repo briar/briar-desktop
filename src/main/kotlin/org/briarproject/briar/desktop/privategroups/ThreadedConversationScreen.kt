@@ -164,11 +164,11 @@ fun ExperimentalThreadedForumPost(content: @Composable (ColumnScope.() -> Unit))
     Column(
         Modifier.padding(start = 8.dp, end = 8.dp, top = 8.dp).wrapContentHeight().drawBehind {
             val height = size.height
-            drawLine(divider, Offset(9f, 22f), Offset(9f, height))
+            drawLine(divider, Offset(13f, 22f), Offset(13f, height))
         }
     ) {
-        Column() {
-            Row(Modifier.clickable { println(" lsdfla;skdjf") }) {
+        Column(Modifier.clickable { println(" lsdfla;skdjf") }.padding(4.dp)) {
+            Row {
                 PreviewProfileCircle(18.dp)
                 Text("John Stevens", modifier = Modifier.padding(horizontal = 8.dp), fontSize = 14.sp)
                 Text("###", modifier = Modifier.padding(end = 8.dp), color = MaterialTheme.colors.secondary)
