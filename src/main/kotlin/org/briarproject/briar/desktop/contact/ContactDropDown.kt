@@ -42,14 +42,30 @@ fun ContactDropDown(
         }
         DropdownMenuItem(onClick = { connectionMode = true; isExpanded(false) }) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text(i18n("contacts.dropdown.connections"), fontSize = 14.sp, modifier = Modifier.align(Alignment.CenterVertically))
-                Icon(Icons.Filled.ArrowRight, i18n("access.contacts.dropdown.connections.expand"), modifier = Modifier.align(Alignment.CenterVertically))
+                Text(
+                    i18n("contacts.dropdown.connections"),
+                    fontSize = 14.sp,
+                    modifier = Modifier.align(Alignment.CenterVertically)
+                )
+                Icon(
+                    Icons.Filled.ArrowRight,
+                    i18n("access.contacts.dropdown.connections.expand"),
+                    modifier = Modifier.align(Alignment.CenterVertically)
+                )
             }
         }
         DropdownMenuItem(onClick = { contactMode = true; isExpanded(false) }) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text(i18n("contacts.dropdown.contact"), fontSize = 14.sp, modifier = Modifier.align(Alignment.CenterVertically))
-                Icon(Icons.Filled.ArrowRight, i18n("access.contacts.dropdown.contacts.expand"), modifier = Modifier.align(Alignment.CenterVertically))
+                Text(
+                    i18n("contacts.dropdown.contact"),
+                    fontSize = 14.sp,
+                    modifier = Modifier.align(Alignment.CenterVertically)
+                )
+                Icon(
+                    Icons.Filled.ArrowRight,
+                    i18n("access.contacts.dropdown.contacts.expand"),
+                    modifier = Modifier.align(Alignment.CenterVertically)
+                )
             }
         }
     }

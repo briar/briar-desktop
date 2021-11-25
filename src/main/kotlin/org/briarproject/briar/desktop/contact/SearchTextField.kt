@@ -41,7 +41,12 @@ fun SearchTextField(searchValue: String, onValueChange: (String) -> Unit, onCont
                 modifier = Modifier.padding(end = 10.dp).size(32.dp)
                     .background(MaterialTheme.colors.primary, CircleShape)
             ) {
-                Icon(Icons.Filled.PersonAdd, i18n("access.contacts.add"), tint = Color.White, modifier = Modifier.size(20.dp))
+                Icon(
+                    Icons.Filled.PersonAdd,
+                    i18n("access.contacts.add"),
+                    tint = Color.White,
+                    modifier = Modifier.size(20.dp)
+                )
             }
         },
         modifier = Modifier.fillMaxSize()

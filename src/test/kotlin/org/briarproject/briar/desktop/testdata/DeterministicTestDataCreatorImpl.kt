@@ -80,7 +80,13 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
         require(!(avatarPercent < 0 || avatarPercent > 100))
         ioExecutor.execute {
             try {
-                createTestDataOnIoExecutor(numContacts, numPrivateMsgs, avatarPercent, numPrivateGroups, numPrivateGroupPosts)
+                createTestDataOnIoExecutor(
+                    numContacts,
+                    numPrivateMsgs,
+                    avatarPercent,
+                    numPrivateGroups,
+                    numPrivateGroupPosts
+                )
             } catch (e: DbException) {
                 LOG.warn(e) { }
             }
