@@ -1,9 +1,5 @@
 package org.briarproject.briar.desktop.testdata
 
-import org.briarproject.bramble.api.contact.Contact
-import org.briarproject.bramble.api.db.DbException
-import org.briarproject.bramble.api.lifecycle.IoExecutor
-
 interface DeterministicTestDataCreator {
     /**
      * Create fake test data on the IoExecutor
@@ -22,8 +18,4 @@ interface DeterministicTestDataCreator {
         numPrivateGroups: Int,
         numPrivateGroupPosts: Int,
     )
-
-    @IoExecutor
-    @Throws(DbException::class)
-    fun addContact(name: String, alias: String?, avatar: Boolean): Contact
 }
