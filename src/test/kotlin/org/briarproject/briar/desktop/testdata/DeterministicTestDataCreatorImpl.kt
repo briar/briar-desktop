@@ -2,6 +2,7 @@ package org.briarproject.briar.desktop.testdata
 
 import mu.KotlinLogging
 import org.briarproject.bramble.api.FormatException
+import org.briarproject.bramble.api.client.ClientHelper
 import org.briarproject.bramble.api.contact.Contact
 import org.briarproject.bramble.api.contact.ContactId
 import org.briarproject.bramble.api.contact.ContactManager
@@ -9,6 +10,7 @@ import org.briarproject.bramble.api.crypto.SecretKey
 import org.briarproject.bramble.api.db.DatabaseComponent
 import org.briarproject.bramble.api.db.DbException
 import org.briarproject.bramble.api.db.Transaction
+import org.briarproject.bramble.api.event.EventBus
 import org.briarproject.bramble.api.identity.AuthorFactory
 import org.briarproject.bramble.api.identity.AuthorId
 import org.briarproject.bramble.api.identity.IdentityManager
@@ -28,6 +30,7 @@ import org.briarproject.bramble.api.system.Clock
 import org.briarproject.briar.api.autodelete.AutoDeleteConstants
 import org.briarproject.briar.api.avatar.AvatarManager
 import org.briarproject.briar.api.avatar.AvatarMessageEncoder
+import org.briarproject.briar.api.conversation.ConversationManager
 import org.briarproject.briar.api.messaging.MessagingManager
 import org.briarproject.briar.api.messaging.PrivateMessageFactory
 import org.briarproject.briar.api.privategroup.GroupMessageFactory
@@ -35,8 +38,10 @@ import org.briarproject.briar.api.privategroup.PrivateGroup
 import org.briarproject.briar.api.privategroup.PrivateGroupFactory
 import org.briarproject.briar.api.privategroup.PrivateGroupManager
 import org.briarproject.briar.api.test.TestAvatarCreator
+import org.briarproject.briar.desktop.GroupCountHelper
 import java.io.IOException
 import java.io.InputStream
+import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.util.Random
 import java.util.UUID
@@ -56,9 +61,12 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
     private val privateGroupManager: PrivateGroupManager,
     private val privateGroupFactory: PrivateGroupFactory,
     private val transportPropertyManager: TransportPropertyManager,
+    private val conversationManager: ConversationManager,
     private val messagingManager: MessagingManager,
     private val testAvatarCreator: TestAvatarCreator,
     private val avatarMessageEncoder: AvatarMessageEncoder,
+    private val clientHelper: ClientHelper,
+    private val eventBus: EventBus,
     @field:IoExecutor @param:IoExecutor private val ioExecutor: Executor
 ) : DeterministicTestDataCreator {
 
@@ -119,7 +127,9 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
         for (i in 0 until min(numContacts, conversations.persons.size)) {
             val person = conversations.persons[i]
             val remote = authorFactory.createLocalAuthor(person.name)
-            val contact = addContact(localAuthor.id, remote, null, avatarPercent)
+
+            val date = person.messages.map { it.date }.sorted().last()
+            val contact = addContact(localAuthor.id, remote, null, avatarPercent, date)
             contacts.add(contact)
         }
         return contacts
@@ -130,7 +140,8 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
         localAuthorId: AuthorId,
         remote: LocalAuthor,
         alias: String?,
-        avatarPercent: Int
+        avatarPercent: Int,
+        date: LocalDateTime,
     ): Contact {
         // prepare to add contact
         val secretKey = secretKey
@@ -147,20 +158,15 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
                 contactManager.setContactAlias(txn, contactId, alias)
             }
             transportPropertyManager.addRemoteProperties(txn, contactId, props)
-            db.getContact(txn, contactId)
+            val contact = db.getContact(txn, contactId)
+            val timestamp = date.toEpochSecond(ZoneOffset.UTC) * 1000
+            GroupCountHelper.resetGroupTimestamp(txn, contactId, messagingManager, clientHelper, timestamp)
+            contact
         }
         if (random.nextInt(100) + 1 <= avatarPercent) addAvatar(contact)
         LOG.info { "Added contact ${remote.name} with transport properties: $props" }
         localAuthors[contact] = remote
         return contact
-    }
-
-    @Throws(DbException::class)
-    override fun addContact(name: String, alias: String?, avatar: Boolean): Contact {
-        val localAuthor = identityManager.localAuthor
-        val remote = authorFactory.createLocalAuthor(name)
-        val avatarPercent = if (avatar) 100 else 0
-        return addContact(localAuthor.id, remote, alias, avatarPercent)
     }
 
     private val secretKey: SecretKey
