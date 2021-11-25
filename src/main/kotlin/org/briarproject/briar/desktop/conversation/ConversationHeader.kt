@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.sp
 import org.briarproject.briar.desktop.contact.ContactDropDown
 import org.briarproject.briar.desktop.contact.ContactItem
 import org.briarproject.briar.desktop.contact.ProfileCircle
+import org.briarproject.briar.desktop.contact.RealContactItem
 import org.briarproject.briar.desktop.theme.outline
 import org.briarproject.briar.desktop.theme.surfaceVariant
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
@@ -42,7 +43,8 @@ fun ConversationHeader(
 
     Box(modifier = Modifier.fillMaxWidth().height(HEADER_SIZE + 1.dp)) {
         Row(modifier = Modifier.align(Alignment.Center)) {
-            ProfileCircle(36.dp, contactItem.authorId.bytes)
+            if (contactItem is RealContactItem)
+                ProfileCircle(36.dp, contactItem.authorId.bytes)
             Canvas(
                 modifier = Modifier.align(Alignment.CenterVertically),
                 onDraw = {

@@ -32,7 +32,7 @@ import org.briarproject.briar.api.messaging.MessagingManager
 import org.briarproject.briar.api.messaging.PrivateMessage
 import org.briarproject.briar.api.messaging.PrivateMessageFactory
 import org.briarproject.briar.api.messaging.PrivateMessageHeader
-import org.briarproject.briar.desktop.contact.ContactItem
+import org.briarproject.briar.desktop.contact.RealContactItem
 import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.utils.KLoggerUtils.logDuration
 import org.briarproject.briar.desktop.utils.clearAndAddAll
@@ -62,7 +62,7 @@ constructor(
     }
 
     private val _contactId = mutableStateOf<ContactId?>(null)
-    private val _contactItem = mutableStateOf<ContactItem?>(null)
+    private val _contactItem = mutableStateOf<RealContactItem?>(null)
     private val _messages = mutableStateListOf<ConversationItem>()
 
     private val _newMessage = mutableStateOf("")
@@ -163,7 +163,7 @@ constructor(
     private fun loadContact(id: ContactId) = runOnDbThreadWithTransaction(true) { txn ->
         try {
             val start = LogUtils.now()
-            val contactItem = ContactItem(
+            val contactItem = RealContactItem(
                 contactManager.getContact(txn, id),
                 connectionRegistry.isConnected(id),
                 conversationManager.getGroupCount(txn, id),

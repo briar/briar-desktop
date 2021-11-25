@@ -9,6 +9,7 @@ import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.briar.api.conversation.ConversationManager
 import org.briarproject.briar.desktop.contact.ContactItem
 import org.briarproject.briar.desktop.contact.ContactsViewModel
+import org.briarproject.briar.desktop.contact.RealContactItem
 import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.viewmodel.asState
 import javax.inject.Inject
@@ -27,8 +28,8 @@ constructor(
     contactManager, conversationManager, connectionRegistry, briarExecutors, lifecycleManager, db, eventBus
 ) {
 
-    private val _firstContact = mutableStateOf<ContactItem?>(null)
-    private val _secondContact = mutableStateOf<ContactItem?>(null)
+    private val _firstContact = mutableStateOf<RealContactItem?>(null)
+    private val _secondContact = mutableStateOf<RealContactItem?>(null)
     private val _secondScreen = mutableStateOf(false)
     private val _introductionMessage = mutableStateOf("")
 
@@ -37,13 +38,13 @@ constructor(
     val secondScreen = _secondScreen.asState()
     val introductionMessage = _introductionMessage.asState()
 
-    fun setFirstContact(contactItem: ContactItem) {
+    fun setFirstContact(contactItem: RealContactItem) {
         _firstContact.value = contactItem
         loadContacts()
         backToFirstScreen()
     }
 
-    fun setSecondContact(contactItem: ContactItem) {
+    fun setSecondContact(contactItem: RealContactItem) {
         _secondContact.value = contactItem
         _secondScreen.value = true
     }
@@ -58,6 +59,8 @@ constructor(
     }
 
     override fun filterContactItem(contactItem: ContactItem): Boolean {
-        return _firstContact.value?.contactId != contactItem.contactId
+        return if (contactItem is RealContactItem) {
+            _firstContact.value?.contactId != contactItem.contactId
+        } else false
     }
 }

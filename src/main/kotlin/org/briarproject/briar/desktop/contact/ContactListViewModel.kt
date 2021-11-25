@@ -3,7 +3,6 @@ package org.briarproject.briar.desktop.contact
 import androidx.compose.runtime.mutableStateOf
 import mu.KotlinLogging
 import org.briarproject.bramble.api.connection.ConnectionRegistry
-import org.briarproject.bramble.api.contact.ContactId
 import org.briarproject.bramble.api.contact.ContactManager
 import org.briarproject.bramble.api.contact.event.ContactAliasChangedEvent
 import org.briarproject.bramble.api.db.TransactionManager
@@ -41,16 +40,16 @@ constructor(
     }
 
     private val _filterBy = mutableStateOf("")
-    private val _selectedContactId = mutableStateOf<ContactId?>(null)
+    private val _selectedContactId = mutableStateOf<Any?>(null)
 
     val filterBy = _filterBy.asState()
     val selectedContactId = _selectedContactId.asState()
 
-    fun selectContact(contactId: ContactId) {
+    fun selectContact(contactId: Any) {
         _selectedContactId.value = contactId
     }
 
-    fun isSelected(contactId: ContactId) = _selectedContactId.value == contactId
+    fun isSelected(contactId: Any) = _selectedContactId.value == contactId
 
     override fun filterContactItem(contactItem: ContactItem) =
         contactItem.displayName.contains(_filterBy.value, ignoreCase = true)
@@ -75,15 +74,26 @@ constructor(
         when (e) {
             is ConversationMessageTrackedEvent -> {
                 LOG.info { "Conversation message tracked, updating item" }
-                updateItem(e.contactId) { it.updateTimestampAndUnread(e.timestamp, e.read) }
+                updateItem(e.contactId) {
+                    if (it is RealContactItem)
+                        it.updateTimestampAndUnread(e.timestamp, e.read)
+                    else it
+                }
             }
             // is AvatarUpdatedEvent -> {}
             is ContactAliasChangedEvent -> {
-                updateItem(e.contactId) { it.updateAlias(e.alias) }
+                updateItem(e.contactId) {
+                    if (it is RealContactItem)
+                        it.updateAlias(e.alias) else it
+                }
             }
             is ConversationMessagesReadEvent -> {
                 LOG.info("${e.count} conversation messages read, updating item")
-                updateItem(e.contactId) { it.updateFromMessagesRead(e.count) }
+                updateItem(e.contactId) {
+                    if (it is RealContactItem) {
+                        it.updateFromMessagesRead(e.count)
+                    } else it
+                }
             }
         }
     }

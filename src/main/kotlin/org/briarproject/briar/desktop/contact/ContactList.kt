@@ -16,7 +16,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import org.briarproject.bramble.api.contact.ContactId
 import org.briarproject.briar.desktop.contact.add.remote.AddContactDialog
 import org.briarproject.briar.desktop.theme.surfaceVariant
 import org.briarproject.briar.desktop.ui.Constants.CONTACTLIST_WIDTH
@@ -25,8 +24,8 @@ import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
 @Composable
 fun ContactList(
     contactList: List<ContactItem>,
-    isSelected: (ContactId) -> Boolean,
-    selectContact: (ContactId) -> Unit,
+    isSelected: (Any) -> Boolean,
+    selectContact: (Any) -> Unit,
     filterBy: String,
     setFilterBy: (String) -> Unit,
 ) {
