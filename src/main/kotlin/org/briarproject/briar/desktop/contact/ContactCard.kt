@@ -6,8 +6,10 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -48,7 +50,7 @@ fun main() = preview(
     "selected" to false,
 ) {
     ContactCard(
-        ContactItem(
+        RealContactItem(
             contactId = ContactId(0),
             authorId = AuthorId(getRandomId()),
             name = getStringParameter("name"),
@@ -81,42 +83,18 @@ fun ContactCard(
     ) {
         Row(horizontalArrangement = Arrangement.SpaceBetween) {
             Row(modifier = Modifier.align(Alignment.CenterVertically).padding(horizontal = 16.dp)) {
-                Box(modifier = Modifier.align(Alignment.CenterVertically)) {
-                    // TODO Pull profile pictures
-                    ProfileCircle(36.dp, contactItem.authorId.bytes)
-                    // Draw new message counter
-                    if (contactItem.unread > 0) {
-                        Box(
-                            modifier = Modifier
-                                .align(Alignment.TopEnd)
-                                .offset(6.dp, (-6).dp)
-                                .height(20.dp)
-                                .widthIn(min = 20.dp, max = Dp.Infinity)
-                                .border(2.dp, outlineColor, CircleShape)
-                                .background(briarSecondary, CircleShape)
-                                .padding(horizontal = 6.dp)
-                        ) {
-                            Text(
-                                modifier = Modifier.align(Alignment.Center),
-                                fontSize = 8.sp,
-                                textAlign = TextAlign.Center,
-                                text = contactItem.unread.toString(),
-                                maxLines = 1
-                            )
-                        }
+                if (contactItem is RealContactItem) {
+                    Box(modifier = Modifier.align(Alignment.CenterVertically)) {
+                        // TODO Pull profile pictures
+                        ProfileCircle(36.dp, contactItem.authorId.bytes)
+                        MessageCounter(contactItem)
                     }
-                }
-                Column(modifier = Modifier.align(Alignment.CenterVertically).padding(start = 12.dp)) {
-                    Text(
-                        contactItem.displayName,
-                        fontSize = 14.sp,
-                        modifier = Modifier.align(Alignment.Start).padding(bottom = 2.dp)
-                    )
-                    Text(
-                        if (contactItem.isEmpty) i18n("contacts.card.nothing") else getFormattedTimestamp(contactItem.timestamp),
-                        fontSize = 10.sp,
-                        modifier = Modifier.align(Alignment.Start)
-                    )
+                    RealContactInfo(contactItem)
+                } else if (contactItem is PendingContactItem) {
+                    Box(modifier = Modifier.align(Alignment.CenterVertically)) {
+                        ProfileCircle(36.dp)
+                    }
+                    PendingContactInfo(contactItem)
                 }
             }
             Canvas(
@@ -133,4 +111,66 @@ fun ContactCard(
         }
     }
     HorizontalDivider()
+}
+
+@Composable
+fun BoxScope.MessageCounter(contactItem: ContactItem) {
+    val outlineColor = MaterialTheme.colors.outline
+    val briarSecondary = MaterialTheme.colors.secondary
+    if (contactItem.unread > 0) {
+        Box(
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .offset(6.dp, (-6).dp)
+                .height(20.dp)
+                .widthIn(min = 20.dp, max = Dp.Infinity)
+                .border(2.dp, outlineColor, CircleShape)
+                .background(briarSecondary, CircleShape)
+                .padding(horizontal = 6.dp)
+        ) {
+            Text(
+                modifier = Modifier.align(Alignment.Center),
+                fontSize = 8.sp,
+                textAlign = TextAlign.Center,
+                text = contactItem.unread.toString(),
+                maxLines = 1
+            )
+        }
+    }
+}
+
+@Composable
+fun RowScope.RealContactInfo(contactItem: RealContactItem) {
+    Column(modifier = Modifier.align(Alignment.CenterVertically).padding(start = 12.dp)) {
+        Text(
+            contactItem.displayName,
+            fontSize = 14.sp,
+            modifier = Modifier.align(Alignment.Start).padding(bottom = 2.dp)
+        )
+        Text(
+            if (contactItem.isEmpty) i18n("contacts.card.nothing") else getFormattedTimestamp(
+                contactItem.timestamp
+            ),
+            fontSize = 10.sp,
+            modifier = Modifier.align(Alignment.Start)
+        )
+    }
+}
+
+@Composable
+fun RowScope.PendingContactInfo(contactItem: PendingContactItem) {
+    Column(modifier = Modifier.align(Alignment.CenterVertically).padding(start = 12.dp)) {
+        Text(
+            contactItem.displayName,
+            fontSize = 14.sp,
+            modifier = Modifier.align(Alignment.Start).padding(bottom = 2.dp)
+        )
+        Text(
+            if (contactItem.isEmpty) i18n("contacts.card.pending") else getFormattedTimestamp(
+                contactItem.timestamp
+            ),
+            fontSize = 10.sp,
+            modifier = Modifier.align(Alignment.Start)
+        )
+    }
 }

@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import org.briarproject.bramble.api.contact.ContactId
 import org.briarproject.briar.desktop.contact.ContactList
 import org.briarproject.briar.desktop.contact.ContactListViewModel
 import org.briarproject.briar.desktop.ui.UiPlaceholder
@@ -27,7 +28,7 @@ fun PrivateMessageScreen(
         VerticalDivider()
         Column(modifier = Modifier.weight(1f).fillMaxHeight()) {
             val id = viewModel.selectedContactId.value
-            if (id != null) {
+            if (id != null && id is ContactId) {
                 ConversationScreen(id)
             } else {
                 UiPlaceholder()

@@ -35,3 +35,13 @@ fun ProfileCircle(size: Dp, input: ByteArray) {
         Identicon(input, this.size.width, this.size.height).draw(this)
     }
 }
+
+/**
+ * Used for pending contacts.
+ */
+@Composable
+fun ProfileCircle(size: Dp) {
+    Canvas(Modifier.size(size).clip(CircleShape).border(2.dp, MaterialTheme.colors.outline, CircleShape)) {
+        // TODO what to display here?
+    }
+}

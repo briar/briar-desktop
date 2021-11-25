@@ -27,8 +27,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.briarproject.briar.desktop.contact.ContactCard
-import org.briarproject.briar.desktop.contact.ContactItem
 import org.briarproject.briar.desktop.contact.ProfileCircle
+import org.briarproject.briar.desktop.contact.RealContactItem
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
 import org.briarproject.briar.desktop.ui.HorizontalDivider
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
@@ -38,7 +38,7 @@ import java.util.Locale
 
 @Composable
 fun ContactDrawerMakeIntro(
-    contactItem: ContactItem,
+    contactItem: RealContactItem,
     setInfoDrawer: (Boolean) -> Unit,
     viewModel: IntroductionViewModel = viewModel(),
 ) {
@@ -64,11 +64,12 @@ fun ContactDrawerMakeIntro(
                 HorizontalDivider()
                 LazyColumn {
                     items(viewModel.contactList) { contactItem ->
-                        ContactCard(
-                            contactItem,
-                            { viewModel.setSecondContact(contactItem) },
-                            false
-                        )
+                        if (contactItem is RealContactItem)
+                            ContactCard(
+                                contactItem,
+                                { viewModel.setSecondContact(contactItem) },
+                                false
+                            )
                     }
                 }
             }

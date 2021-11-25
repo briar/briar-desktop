@@ -41,17 +41,28 @@ abstract class ContactsViewModel(
 
     protected open fun filterContactItem(contactItem: ContactItem) = true
 
-    open fun loadContacts() = runOnDbThreadWithTransaction(true) { txn ->
-        val contactList = contactManager.getContacts(txn).map { contact ->
-            ContactItem(
-                contact,
-                connectionRegistry.isConnected(contact.id),
-                conversationManager.getGroupCount(txn, contact.id),
+    open fun loadContacts() {
+        val contactList = mutableListOf<ContactItem>()
+        // TODO: move this inside transaction once briar has transactional method for this
+        contactList.addAll(
+            contactManager.pendingContacts.map { contact ->
+                PendingContactItem(contact.first)
+            }
+        )
+        runOnDbThreadWithTransaction(true) { txn ->
+            contactList.addAll(
+                contactManager.getContacts(txn).map { contact ->
+                    RealContactItem(
+                        contact,
+                        connectionRegistry.isConnected(contact.id),
+                        conversationManager.getGroupCount(txn, contact.id),
+                    )
+                }
             )
-        }
-        txn.attach {
-            _fullContactList.clearAndAddAll(contactList)
-            updateFilteredList()
+            txn.attach {
+                _fullContactList.clearAndAddAll(contactList)
+                updateFilteredList()
+            }
         }
     }
 
@@ -70,11 +81,19 @@ abstract class ContactsViewModel(
             }
             is ContactConnectedEvent -> {
                 LOG.info("Contact connected, update state")
-                updateItem(e.contactId) { it.updateIsConnected(true) }
+                updateItem(e.contactId) {
+                    if (it is RealContactItem)
+                        it.updateIsConnected(true)
+                    else it
+                }
             }
             is ContactDisconnectedEvent -> {
                 LOG.info("Contact disconnected, update state")
-                updateItem(e.contactId) { it.updateIsConnected(false) }
+                updateItem(e.contactId) {
+                    if (it is RealContactItem)
+                        it.updateIsConnected(false)
+                    else it
+                }
             }
             is ContactRemovedEvent -> {
                 LOG.info("Contact removed, removing item")
@@ -84,12 +103,23 @@ abstract class ContactsViewModel(
     }
 
     protected open fun updateItem(contactId: ContactId, update: (ContactItem) -> ContactItem) {
-        _fullContactList.replaceFirst({ it.contactId == contactId }, update)
+        _fullContactList.replaceFirst(
+            {
+                if (it is RealContactItem)
+                    it.contactId == contactId
+                else false
+            },
+            update
+        )
         updateFilteredList()
     }
 
     protected open fun removeItem(contactId: ContactId) {
-        _fullContactList.removeFirst { it.contactId == contactId }
+        _fullContactList.removeFirst {
+            if (it is RealContactItem)
+                it.contactId == contactId
+            else false
+        }
         updateFilteredList()
     }
 }
