@@ -34,6 +34,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import org.briarproject.briar.desktop.login.LoginViewModel.LoginState.SIGNED_OUT
+import org.briarproject.briar.desktop.ui.Loader
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.viewmodel.viewModel
 
@@ -46,6 +48,12 @@ fun LoginScreen(
 ) {
     val signIn = {
         viewModel.signIn(onSignedIn)
+    }
+
+    if (viewModel.state.value != SIGNED_OUT) {
+        // todo: handle states individually
+        Loader()
+        return
     }
 
     val initialFocusRequester = remember { FocusRequester() }
