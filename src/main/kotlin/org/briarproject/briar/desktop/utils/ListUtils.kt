@@ -1,5 +1,10 @@
 package org.briarproject.briar.desktop.utils
 
+fun <T> MutableList<T>.clearAndAddAll(elements: Collection<T>) {
+    clear()
+    addAll(elements)
+}
+
 fun <T> MutableList<T>.replaceIf(predicate: (T) -> Boolean, transformation: (T) -> T) {
     val li = listIterator()
     while (li.hasNext()) {
