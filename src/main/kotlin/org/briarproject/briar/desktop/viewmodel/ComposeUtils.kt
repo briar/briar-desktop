@@ -7,6 +7,9 @@ package org.briarproject.briar.desktop.viewmodel
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import org.briarproject.briar.desktop.ui.LocalViewModelProvider
 import kotlin.reflect.KClass
 
@@ -64,3 +67,7 @@ fun <VM : ViewModel> viewModel(
 
     return viewModel
 }
+
+fun <T> MutableState<T>.asState(): State<T> = this
+
+fun <T> SnapshotStateList<T>.asList(): List<T> = this
