@@ -1,6 +1,5 @@
 package org.briarproject.briar.desktop.contact
 
-import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import mu.KotlinLogging
 import org.briarproject.bramble.api.connection.ConnectionRegistry
@@ -15,6 +14,7 @@ import org.briarproject.briar.api.conversation.ConversationManager
 import org.briarproject.briar.api.conversation.event.ConversationMessageTrackedEvent
 import org.briarproject.briar.desktop.conversation.ConversationMessagesReadEvent
 import org.briarproject.briar.desktop.viewmodel.BriarExecutors
+import org.briarproject.briar.desktop.viewmodel.asState
 import javax.inject.Inject
 
 class ContactListViewModel
@@ -43,8 +43,8 @@ constructor(
     private val _filterBy = mutableStateOf("")
     private val _selectedContactId = mutableStateOf<ContactId?>(null)
 
-    val filterBy: State<String> = _filterBy
-    val selectedContactId: State<ContactId?> = _selectedContactId
+    val filterBy = _filterBy.asState()
+    val selectedContactId = _selectedContactId.asState()
 
     fun selectContact(contactId: ContactId) {
         _selectedContactId.value = contactId

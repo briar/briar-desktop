@@ -1,6 +1,5 @@
 package org.briarproject.briar.desktop.login
 
-import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import org.briarproject.bramble.api.account.AccountManager
 import org.briarproject.bramble.api.crypto.DecryptionException
@@ -20,6 +19,7 @@ import org.briarproject.briar.desktop.login.LoginViewModel.LoginState.STARTING
 import org.briarproject.briar.desktop.viewmodel.BriarExecutors
 import org.briarproject.briar.desktop.viewmodel.EventListenerDbViewModel
 import org.briarproject.briar.desktop.viewmodel.UiExecutor
+import org.briarproject.briar.desktop.viewmodel.asState
 import javax.inject.Inject
 
 class LoginViewModel
@@ -39,8 +39,8 @@ constructor(
     private val _state = mutableStateOf(SIGNED_OUT)
     private val _password = mutableStateOf("")
 
-    val state: State<LoginState> = _state
-    val password: State<String> = _password
+    val state = _state.asState()
+    val password = _password.asState()
 
     override fun onInit() {
         super.onInit()
@@ -72,7 +72,6 @@ constructor(
         _password.value = password
     }
 
-    @UiExecutor
     fun signIn(@UiExecutor success: () -> Unit) {
         _state.value = SIGNING_IN
         briarExecutors.onIoThread {

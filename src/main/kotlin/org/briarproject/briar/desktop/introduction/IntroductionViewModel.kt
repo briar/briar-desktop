@@ -1,6 +1,5 @@
 package org.briarproject.briar.desktop.introduction
 
-import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import org.briarproject.bramble.api.connection.ConnectionRegistry
 import org.briarproject.bramble.api.contact.ContactManager
@@ -11,6 +10,7 @@ import org.briarproject.briar.api.conversation.ConversationManager
 import org.briarproject.briar.desktop.contact.ContactItem
 import org.briarproject.briar.desktop.contact.ContactsViewModel
 import org.briarproject.briar.desktop.viewmodel.BriarExecutors
+import org.briarproject.briar.desktop.viewmodel.asState
 import javax.inject.Inject
 
 class IntroductionViewModel
@@ -32,10 +32,10 @@ constructor(
     private val _secondScreen = mutableStateOf(false)
     private val _introductionMessage = mutableStateOf("")
 
-    val firstContact: State<ContactItem?> = _firstContact
-    val secondContact: State<ContactItem?> = _secondContact
-    val secondScreen: State<Boolean> = _secondScreen
-    val introductionMessage: State<String> = _introductionMessage
+    val firstContact = _firstContact.asState()
+    val secondContact = _secondContact.asState()
+    val secondScreen = _secondScreen.asState()
+    val introductionMessage = _introductionMessage.asState()
 
     fun setFirstContact(contactItem: ContactItem) {
         _firstContact.value = contactItem
