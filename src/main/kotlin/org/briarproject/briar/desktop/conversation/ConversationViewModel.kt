@@ -1,6 +1,5 @@
 package org.briarproject.briar.desktop.conversation
 
-import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -10,14 +9,17 @@ import org.briarproject.bramble.api.connection.ConnectionRegistry
 import org.briarproject.bramble.api.contact.ContactId
 import org.briarproject.bramble.api.contact.ContactManager
 import org.briarproject.bramble.api.contact.event.ContactRemovedEvent
+import org.briarproject.bramble.api.db.DatabaseExecutor
 import org.briarproject.bramble.api.db.DbException
 import org.briarproject.bramble.api.db.NoSuchContactException
+import org.briarproject.bramble.api.db.Transaction
 import org.briarproject.bramble.api.db.TransactionManager
 import org.briarproject.bramble.api.event.Event
 import org.briarproject.bramble.api.event.EventBus
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.bramble.api.plugin.event.ContactConnectedEvent
 import org.briarproject.bramble.api.plugin.event.ContactDisconnectedEvent
+import org.briarproject.bramble.api.sync.GroupId
 import org.briarproject.bramble.api.sync.MessageId
 import org.briarproject.bramble.api.sync.event.MessagesAckedEvent
 import org.briarproject.bramble.api.sync.event.MessagesSentEvent
@@ -33,11 +35,14 @@ import org.briarproject.briar.api.messaging.PrivateMessageFactory
 import org.briarproject.briar.api.messaging.PrivateMessageHeader
 import org.briarproject.briar.desktop.contact.ContactItem
 import org.briarproject.briar.desktop.utils.KLoggerUtils.logDuration
+import org.briarproject.briar.desktop.utils.clearAndAddAll
 import org.briarproject.briar.desktop.utils.replaceIf
 import org.briarproject.briar.desktop.utils.replaceIfIndexed
 import org.briarproject.briar.desktop.viewmodel.BriarExecutors
 import org.briarproject.briar.desktop.viewmodel.EventListenerDbViewModel
-import java.util.Date
+import org.briarproject.briar.desktop.viewmodel.UiExecutor
+import org.briarproject.briar.desktop.viewmodel.asList
+import org.briarproject.briar.desktop.viewmodel.asState
 import javax.inject.Inject
 
 class ConversationViewModel
@@ -64,76 +69,95 @@ constructor(
 
     private val _newMessage = mutableStateOf("")
 
-    val contactItem: State<ContactItem?> = _contactItem
-    val messages: List<ConversationItem> = _messages
+    val contactItem = _contactItem.asState()
+    val messages = _messages.asList()
 
-    val newMessage: State<String> = _newMessage
+    val newMessage = _newMessage.asState()
 
+    @UiExecutor
     fun setContactId(id: ContactId) {
         if (_contactId.value == id)
             return
 
         _contactId.value = id
-        _contactItem.value = ContactItem(
-            contactManager.getContact(id),
-            connectionRegistry.isConnected(id),
-            conversationManager.getGroupCount(id),
-        )
-        loadMessages()
+        _contactItem.value = null
+        _messages.clear()
+
+        loadContact(id)
+        loadMessages(id)
+
         setNewMessage("")
     }
 
+    @UiExecutor
     fun setNewMessage(msg: String) {
         _newMessage.value = msg
     }
 
     fun sendMessage() {
-        try {
-            val text = _newMessage.value
+        val text = _newMessage.value
 
-            // don't send empty or blank messages
-            if (text.isBlank()) return
+        // don't send empty or blank messages
+        if (text.isBlank()) return
 
-            _newMessage.value = ""
+        _newMessage.value = ""
 
-            val start = LogUtils.now()
-            val m = createMessage(text)
-            messagingManager.addLocalMessage(m)
-            LOG.logDuration("Storing message", start)
+        val contactId = _contactId.value!!
+        runOnDbThreadWithTransaction(false) { txn ->
+            try {
+                val start = LogUtils.now()
+                val groupId = messagingManager.getContactGroup(contactManager.getContact(txn, contactId)).id
+                // todo: following would be easier if function with txn would exist
+                // val groupId = messagingManager.getConversationId(contactId)
+                val m = createMessage(txn, contactId, groupId, text)
+                messagingManager.addLocalMessage(txn, m)
+                LOG.logDuration("Storing message", start)
 
-            val message = m.message
-            val h = PrivateMessageHeader(
-                message.id, message.groupId,
-                message.timestamp, true, true, false, false,
-                m.hasText(), m.attachmentHeaders,
-                m.autoDeleteTimer
-            )
-            _messages.add(0, messageHeaderToItem(h))
-        } catch (e: UnexpectedTimerException) {
-            LOG.warn(e) {}
-        } catch (e: DbException) {
-            LOG.warn(e) {}
+                val message = m.message
+                val h = PrivateMessageHeader(
+                    message.id, message.groupId,
+                    message.timestamp, true, true, false, false,
+                    m.hasText(), m.attachmentHeaders,
+                    m.autoDeleteTimer
+                )
+                txn.attach {
+                    _messages.add(0, messageHeaderToItem(h))
+                }
+            } catch (e: UnexpectedTimerException) {
+                // todo: handle this properly
+                LOG.warn(e) {}
+            } catch (e: DbException) {
+                // todo: handle this properly
+                LOG.warn(e) {}
+            }
         }
     }
 
     val hasUnreadMessages = derivedStateOf { _messages.any { !it.isRead } }
 
     fun markMessagesRead(untilIndex: Int) {
-        var count = 0
-        _messages.replaceIfIndexed({ idx, it -> idx >= untilIndex && !it.isRead }) { _, it ->
-            conversationManager.setReadFlag(it.groupId, it.id, true)
-            count++
-            it.markRead()
+        val id = _contactId.value!!
+        val messages = _messages.toList()
+        runOnDbThread {
+            var count = 0
+            messages.filterIndexed { idx, it -> idx >= untilIndex && !it.isRead }.forEach {
+                // todo: might be more performant when only using one transaction for all those calls
+                conversationManager.setReadFlag(it.groupId, it.id, true)
+                count++
+            }
+            _messages.postUpdate { list ->
+                list.replaceIfIndexed({ idx, it -> idx >= untilIndex && !it.isRead }) { _, it ->
+                    it.markRead()
+                }
+            }
+            if (count > 0) eventBus.broadcast(ConversationMessagesReadEvent(count, id))
         }
-        eventBus.broadcast(ConversationMessagesReadEvent(count, contactItem.value!!.contactId))
     }
 
+    @DatabaseExecutor
     @Throws(DbException::class)
-    private fun createMessage(text: String): PrivateMessage {
-        val groupId = messagingManager.getConversationId(_contactItem.value!!.contactId)
-        // todo: this API call needs a database transaction context
-        // val timestamp = conversationManager.getTimestampForOutgoingMessage(_contactId.value!!)
-        val timestamp = Date().time
+    private fun createMessage(txn: Transaction, contactId: ContactId, groupId: GroupId, text: String): PrivateMessage {
+        val timestamp = conversationManager.getTimestampForOutgoingMessage(txn, contactId)
         try {
             return privateMessageFactory.createLegacyPrivateMessage(
                 groupId, timestamp, text
@@ -143,29 +167,43 @@ constructor(
         }
     }
 
-    private fun loadMessages() {
+    private fun loadContact(id: ContactId) = runOnDbThreadWithTransaction(true) { txn ->
         try {
             val start = LogUtils.now()
-            val headers = conversationManager.getMessageHeaders(_contactId.value!!)
-            LOG.logDuration("Loading message headers", start)
-            // Sort headers by timestamp in *descending* order
-            val sorted = headers.sortedByDescending { it.timestamp }
-            _messages.apply {
-                clear()
-                val start = LogUtils.now()
-                addAll(
-                    // todo: use ConversationVisitor to also display Request and Notice Messages
-                    sorted.filterIsInstance<PrivateMessageHeader>().map(::messageHeaderToItem)
-                )
-                LOG.logDuration("Loading messages", start)
-            }
+            val contactItem = ContactItem(
+                contactManager.getContact(txn, id),
+                connectionRegistry.isConnected(id),
+                conversationManager.getGroupCount(txn, id),
+            )
+            LOG.logDuration("Loading contact", start)
+            _contactItem.postValue(contactItem)
+            // todo: or the following?
+            // txn.attach { _contactItem.value = contactItem }
         } catch (e: NoSuchContactException) {
-            LOG.warn(e) {}
-        } catch (e: DbException) {
+            // todo: handle this properly
             LOG.warn(e) {}
         }
     }
 
+    private fun loadMessages(id: ContactId) = runOnDbThread {
+        try {
+            var start = LogUtils.now()
+            val headers = conversationManager.getMessageHeaders(id)
+            LOG.logDuration("Loading message headers", start)
+            // Sort headers by timestamp in *descending* order
+            val sorted = headers.sortedByDescending { it.timestamp }
+            // todo: use ConversationVisitor to also display Request and Notice Messages
+            start = LogUtils.now()
+            val messages = sorted.filterIsInstance<PrivateMessageHeader>().map(::messageHeaderToItem)
+            LOG.logDuration("Loading messages", start)
+            _messages.postUpdate { it.clearAndAddAll(messages) }
+        } catch (e: NoSuchContactException) {
+            // todo: handle this properly
+            LOG.warn(e) {}
+        }
+    }
+
+    @DatabaseExecutor
     private fun messageHeaderToItem(h: PrivateMessageHeader): ConversationMessageItem {
         // todo: use ConversationVisitor instead and support other MessageHeader
         val item = ConversationMessageItem(h)
@@ -177,6 +215,7 @@ constructor(
         return item
     }
 
+    @DatabaseExecutor
     private fun loadMessageText(m: MessageId): String? {
         try {
             return messagingManager.getMessageText(m)
@@ -243,6 +282,7 @@ constructor(
         }
     }
 
+    @UiExecutor
     private fun markMessages(
         messageIds: Collection<MessageId>,
         sent: Boolean,
