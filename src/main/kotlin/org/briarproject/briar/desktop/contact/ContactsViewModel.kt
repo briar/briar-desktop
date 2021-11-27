@@ -35,32 +35,25 @@ abstract class ContactsViewModel(
         private val LOG = KotlinLogging.logger {}
     }
 
-    private val _fullContactList = mutableListOf<ContactItem>()
+    private val _fullContactList = mutableStateListOf<ContactItem>()
     private val _filteredContactList = mutableStateListOf<ContactItem>()
 
     val contactList: List<ContactItem> = _filteredContactList
 
     protected open fun filterContactItem(contactItem: ContactItem) = true
 
-    open fun loadContacts() {
-        loadOnDbThreadWithTransaction(
-            task = { txn ->
-                contactManager.getContacts(txn).map { contact ->
-                    ContactItem(
-                        contact,
-                        connectionRegistry.isConnected(contact.id),
-                        conversationManager.getGroupCount(txn, contact.id),
-                    )
-                }
-            },
-            onResult = { contactList ->
-                _fullContactList.clearAndAddAll(contactList)
-                updateFilteredList()
-            },
-            onError = { e ->
-                LOG.error("Error while loading contacts", e)
-            }
-        )
+    open fun loadContacts() = runOnDbThreadWithTransaction(true) { txn ->
+        val contactList = contactManager.getContacts(txn).map { contact ->
+            ContactItem(
+                contact,
+                connectionRegistry.isConnected(contact.id),
+                conversationManager.getGroupCount(txn, contact.id),
+            )
+        }
+        _fullContactList.postUpdate {
+            it.clearAndAddAll(contactList)
+            updateFilteredList()
+        }
     }
 
     // todo: when migrated to StateFlow, this could be done implicitly instead

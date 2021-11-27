@@ -1,23 +1,29 @@
 package org.briarproject.briar.desktop.contact.add.remote
 
-import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import org.briarproject.bramble.api.FormatException
 import org.briarproject.bramble.api.contact.ContactManager
 import org.briarproject.bramble.api.contact.HandshakeLinkConstants
 import org.briarproject.bramble.api.db.ContactExistsException
 import org.briarproject.bramble.api.db.PendingContactExistsException
+import org.briarproject.bramble.api.db.TransactionManager
 import org.briarproject.bramble.api.identity.AuthorConstants
+import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.bramble.util.StringUtils
-import org.briarproject.briar.desktop.viewmodel.ViewModel
+import org.briarproject.briar.desktop.viewmodel.BriarExecutors
+import org.briarproject.briar.desktop.viewmodel.DbViewModel
+import org.briarproject.briar.desktop.viewmodel.asState
 import java.security.GeneralSecurityException
 import javax.inject.Inject
 
 class AddContactViewModel
 @Inject
 constructor(
+    briarExecutors: BriarExecutors,
+    lifecycleManager: LifecycleManager,
+    db: TransactionManager,
     private val contactManager: ContactManager,
-) : ViewModel {
+) : DbViewModel(briarExecutors, lifecycleManager, db) {
 
     override fun onInit() {
         fetchHandshakeLink()
@@ -27,9 +33,9 @@ constructor(
     private val _remoteHandshakeLink = mutableStateOf("")
     private val _handshakeLink = mutableStateOf("")
 
-    val alias: State<String> = _alias
-    val remoteHandshakeLink: State<String> = _remoteHandshakeLink
-    val handshakeLink: State<String> = _handshakeLink
+    val alias = _alias.asState()
+    val remoteHandshakeLink = _remoteHandshakeLink.asState()
+    val handshakeLink = _handshakeLink.asState()
 
     fun setAddContactAlias(alias: String) {
         _alias.value = alias
@@ -39,8 +45,9 @@ constructor(
         _remoteHandshakeLink.value = link
     }
 
-    fun fetchHandshakeLink() {
-        _handshakeLink.value = contactManager.handshakeLink
+    private fun fetchHandshakeLink() = runOnDbThread {
+        val link = contactManager.handshakeLink
+        _handshakeLink.postValue(link)
     }
 
     fun onSubmitAddContactDialog() {
@@ -63,28 +70,30 @@ constructor(
             return
         }
 
-        try {
-            contactManager.addPendingContact(link, alias)
-        } catch (e: FormatException) {
-            println("Link is invalid")
-            println(e.stackTrace)
-        } catch (e: GeneralSecurityException) {
-            println("Public key is invalid")
-            println(e.stackTrace)
-        }
-        /*
-        TODO: Warn user that the following two errors might be an attack
+        runOnDbThread {
+            try {
+                contactManager.addPendingContact(link, alias)
+            } catch (e: FormatException) {
+                println("Link is invalid")
+                println(e.stackTrace)
+            } catch (e: GeneralSecurityException) {
+                println("Public key is invalid")
+                println(e.stackTrace)
+            }
+            /*
+            TODO: Warn user that the following two errors might be an attack
 
-         Use `e.pendingContact.id.bytes` and `e.pendingContact.alias` to implement the following logic:
-         https://code.briarproject.org/briar/briar-gtk/-/merge_requests/97
+             Use `e.pendingContact.id.bytes` and `e.pendingContact.alias` to implement the following logic:
+             https://code.briarproject.org/briar/briar-gtk/-/merge_requests/97
 
-        */
-        catch (e: ContactExistsException) {
-            println("Contact already exists")
-            println(e.stackTrace)
-        } catch (e: PendingContactExistsException) {
-            println("Pending Contact already exists")
-            println(e.stackTrace)
+            */
+            catch (e: ContactExistsException) {
+                println("Contact already exists")
+                println(e.stackTrace)
+            } catch (e: PendingContactExistsException) {
+                println("Pending Contact already exists")
+                println(e.stackTrace)
+            }
         }
     }
 
