@@ -68,6 +68,12 @@ fun <VM : ViewModel> viewModel(
     return viewModel
 }
 
+/**
+ * Returns this [MutableState] as an immutable [State].
+ */
 fun <T> MutableState<T>.asState(): State<T> = this
 
+/**
+ * Returns this [SnapshotStateList] as an immutable [List].
+ */
 fun <T> SnapshotStateList<T>.asList(): List<T> = this
