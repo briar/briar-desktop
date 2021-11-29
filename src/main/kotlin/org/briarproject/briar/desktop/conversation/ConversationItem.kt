@@ -4,6 +4,7 @@ import org.briarproject.bramble.api.sync.GroupId
 import org.briarproject.bramble.api.sync.MessageId
 
 sealed class ConversationItem {
+    abstract var text: String?
     abstract val id: MessageId
     abstract val groupId: GroupId
     abstract val time: Long

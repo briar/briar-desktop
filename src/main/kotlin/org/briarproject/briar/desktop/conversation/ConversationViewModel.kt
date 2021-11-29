@@ -61,6 +61,14 @@ constructor(
         private val LOG = KotlinLogging.logger {}
     }
 
+    private val conversationVisitor = derivedStateOf {
+        val c = _contactItem.value
+        if (c != null)
+            ConversationVisitor(c.name, ::loadMessageText)
+        else
+            null
+    }
+
     private val _contactId = mutableStateOf<ContactId?>(null)
     private val _contactItem = mutableStateOf<ContactItem?>(null)
     private val _messages = mutableStateListOf<ConversationItem>()
@@ -114,9 +122,8 @@ constructor(
                     m.hasText(), m.attachmentHeaders,
                     m.autoDeleteTimer
                 )
-                val msg = messageHeaderToItem(txn, h)
                 txn.attach {
-                    _messages.add(0, msg)
+                    _messages.add(0, h.accept(conversationVisitor.value)!!)
                 }
             } catch (e: UnexpectedTimerException) {
                 // todo: handle this properly
@@ -185,7 +192,7 @@ constructor(
             val sorted = headers.sortedByDescending { it.timestamp }
             // todo: use ConversationVisitor to also display Request and Notice Messages
             start = LogUtils.now()
-            val messages = sorted.filterIsInstance<PrivateMessageHeader>().map { messageHeaderToItem(txn, it) }
+            val messages = sorted.map { h -> h.accept(conversationVisitor.value)!! }
             LOG.logDuration("Loading messages", start)
             txn.attach { _messages.clearAndAddAll(messages) }
         } catch (e: NoSuchContactException) {
@@ -194,20 +201,9 @@ constructor(
         }
     }
 
-    private fun messageHeaderToItem(txn: Transaction, h: PrivateMessageHeader): ConversationMessageItem {
-        // todo: use ConversationVisitor instead and support other MessageHeader
-        val item = ConversationMessageItem(h)
-        if (h.hasText()) {
-            item.text = loadMessageText(txn, h.id)
-        } else {
-            LOG.warn { "private message without text" }
-        }
-        return item
-    }
-
-    private fun loadMessageText(txn: Transaction, m: MessageId): String? {
+    private fun loadMessageText(m: MessageId): String? {
         try {
-            return messagingManager.getMessageText(txn, m)
+            return messagingManager.getMessageText(m) // todo: use transactional API call somehow
         } catch (e: DbException) {
             LOG.warn(e) {}
         }
@@ -226,13 +222,8 @@ constructor(
                 if (e.contactId == _contactId.value) {
                     LOG.info("Message received, adding")
                     val h = e.messageHeader
-                    if (h is PrivateMessageHeader) {
-                        // insert at start of list according to descending sort order
-                        runOnDbThreadWithTransaction(true) { txn ->
-                            val msg = messageHeaderToItem(txn, h)
-                            txn.attach { _messages.add(0, msg) }
-                        }
-                    }
+                    // insert at start of list according to descending sort order
+                    _messages.add(0, h.accept(conversationVisitor.value)!!)
                 }
             }
             is MessagesSentEvent -> {
