@@ -3,6 +3,7 @@ package org.briarproject.briar.desktop.contact
 import org.briarproject.bramble.api.contact.Contact
 import org.briarproject.bramble.api.identity.AuthorId
 import org.briarproject.briar.api.client.MessageTracker
+import org.briarproject.briar.desktop.utils.UiUtils.getContactDisplayName
 import kotlin.math.max
 
 data class ContactItem(
@@ -16,7 +17,7 @@ data class ContactItem(
     override val timestamp: Long
 ) : BaseContactItem {
 
-    override val displayName = if (alias == null) name else "$alias ($name)"
+    override val displayName = getContactDisplayName(name, alias)
 
     constructor(contact: Contact, isConnected: Boolean, groupCount: MessageTracker.GroupCount) : this(
         idWrapper = RealContactIdWrapper(contact.id),

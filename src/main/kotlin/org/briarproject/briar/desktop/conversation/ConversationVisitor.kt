@@ -15,6 +15,7 @@ import org.briarproject.briar.api.messaging.PrivateMessageHeader
 import org.briarproject.briar.api.privategroup.invitation.GroupInvitationRequest
 import org.briarproject.briar.api.privategroup.invitation.GroupInvitationResponse
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nF
+import org.briarproject.briar.desktop.utils.UiUtils.getContactDisplayName
 
 internal class ConversationVisitor(
     private val contactName: String,
@@ -143,8 +144,7 @@ internal class ConversationVisitor(
     }
 
     override fun visitIntroductionRequest(r: IntroductionRequest): ConversationItem {
-        // todo: use displayName logic somehow?
-        val name = r.nameable.name
+        val name = getContactDisplayName(r.nameable.name, r.alias)
         return if (r.isLocal)
             ConversationNoticeItem(
                 i18nF("introduction_request_sent", contactName, name),
@@ -167,8 +167,7 @@ internal class ConversationVisitor(
     }
 
     override fun visitIntroductionResponse(r: IntroductionResponse): ConversationItem {
-        // todo: use displayName logic somehow?
-        val name = r.introducedAuthor.name
+        val name = getContactDisplayName(r.introducedAuthor.name, r.introducedAuthorInfo.alias)
         return if (r.isLocal) {
             val text = when {
                 r.wasAccepted() -> {
