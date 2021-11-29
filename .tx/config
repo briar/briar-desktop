@@ -4,7 +4,7 @@ lang_map = zh-Hans: zh_CN, zh-Hant: zh_TW
 
 [briar.briar-desktop]
 file_filter = src/main/resources/strings/BriarDesktop_<lang>.properties
-minimum_perc = 0
+minimum_perc = 50
 source_file = src/main/resources/strings/BriarDesktop.properties
 source_lang = en
 type = UNICODEPROPERTIES
