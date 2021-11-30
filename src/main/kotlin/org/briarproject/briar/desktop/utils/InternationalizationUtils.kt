@@ -30,6 +30,10 @@ object InternationalizationUtils {
 
     /**
      * Returns the translated text of a string with plurals identified with `key`
+     *
+     * Example key:
+     * {0, plural, one {You have {0} message} other {You have {0} messages}}
+     *
      */
     fun i18nP(key: String, amount: Int): String =
         try {

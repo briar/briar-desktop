@@ -1,13 +1,19 @@
 package org.briarproject.briar.desktop.privategroups
 
-import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
@@ -15,7 +21,8 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.drawscope.withTransform
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.briarproject.briar.desktop.contact.ProfileCircle
@@ -24,7 +31,8 @@ import org.briarproject.briar.desktop.theme.selectedCard
 import org.briarproject.briar.desktop.theme.surfaceVariant
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
 import org.briarproject.briar.desktop.ui.HorizontalDivider
-import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
+import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nF
+import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nP
 import org.briarproject.briar.desktop.utils.TimeUtils.getFormattedTimestamp
 
 @Composable
@@ -35,44 +43,62 @@ fun PrivateGroupCard(
 ) {
     val bgColor = if (selected) MaterialTheme.colors.selectedCard else MaterialTheme.colors.surfaceVariant
     val outlineColor = MaterialTheme.colors.outline
-    val briarPrimary = MaterialTheme.colors.primary
     val briarSecondary = MaterialTheme.colors.secondary
-    val briarSurfaceVar = MaterialTheme.colors.surfaceVariant
 
     Card(
-        modifier = Modifier.fillMaxWidth().height(HEADER_SIZE).clickable(onClick = onSel),
+        modifier = Modifier.fillMaxWidth().defaultMinSize(minHeight = HEADER_SIZE).clickable(onClick = onSel),
         shape = RoundedCornerShape(0.dp),
         backgroundColor = bgColor,
         contentColor = MaterialTheme.colors.onSurface
     ) {
         Row(horizontalArrangement = Arrangement.SpaceBetween) {
             Row(modifier = Modifier.align(Alignment.CenterVertically).padding(horizontal = 16.dp)) {
-                // TODO Pull profile pictures
-                ProfileCircle(36.dp, privateGroupItem.privateGroup.id.bytes)
-                // Draw notification badges
-                if (privateGroupItem.unread > 0) {
-                    Canvas(
-                        modifier = Modifier.align(Alignment.CenterVertically),
-                        onDraw = {
-                            val size = 10.dp.toPx()
-                            withTransform({ translate(left = -6f, top = -12f) }) {
-                                drawCircle(color = outlineColor, radius = (size + 2.dp.toPx()) / 2f)
-                                drawCircle(color = briarPrimary, radius = size / 2f)
-                            }
+                Box(modifier = Modifier.align(Alignment.CenterVertically)) {
+                    // TODO Do like `TextAvatarView` in Android
+                    ProfileCircle(36.dp, privateGroupItem.privateGroup.id.bytes)
+                    // Draw new message counter
+                    if (privateGroupItem.unread > 0) {
+                        Box(
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .offset(6.dp, (-6).dp)
+                                .height(20.dp)
+                                .widthIn(min = 20.dp, max = Dp.Infinity)
+                                .border(2.dp, outlineColor, CircleShape)
+                                .background(briarSecondary, CircleShape)
+                                .padding(horizontal = 6.dp)
+                        ) {
+                            Text(
+                                modifier = Modifier.align(Alignment.Center),
+                                fontSize = 8.sp,
+                                textAlign = TextAlign.Center,
+                                text = privateGroupItem.unread.toString(),
+                                maxLines = 1
+                            )
                         }
-                    )
+                    }
                 }
-                Column(modifier = Modifier.align(Alignment.CenterVertically).padding(start = 12.dp)) {
+                Column(modifier = Modifier.align(Alignment.CenterVertically).padding(start = 16.dp)) {
                     Text(
                         privateGroupItem.privateGroup.name,
                         fontSize = 14.sp,
-                        modifier = Modifier.align(Alignment.Start).padding(bottom = 2.dp)
+                        modifier = Modifier.align(Alignment.Start).padding(bottom = 4.dp)
                     )
                     Text(
-                        if (privateGroupItem.isEmpty) i18n("contacts.card.nothing") else getFormattedTimestamp(privateGroupItem.timestamp),
+                        i18nF("groups.card.created", privateGroupItem.privateGroup.creator.name),
                         fontSize = 10.sp,
-                        modifier = Modifier.align(Alignment.Start)
+                        modifier = Modifier.align(Alignment.Start).padding(bottom = 2.dp)
                     )
+                    Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
+                        Text(
+                            i18nP("groups.card.messages", privateGroupItem.msgCount),
+                            fontSize = 10.sp,
+                        )
+                        Text(
+                            getFormattedTimestamp(privateGroupItem.timestamp),
+                            fontSize = 10.sp,
+                        )
+                    }
                 }
             }
         }
