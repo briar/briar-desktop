@@ -19,8 +19,6 @@ fun PrivateGroupScreen(
             viewModel.privateGroupList,
             viewModel::isSelected,
             viewModel::selectPrivateGroup,
-            viewModel.filterBy.value,
-            viewModel::setFilterBy
         )
         VerticalDivider()
         Column(modifier = Modifier.weight(1f).fillMaxHeight()) {
