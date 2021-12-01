@@ -1,6 +1,5 @@
 package org.briarproject.briar.desktop.contact
 
-import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -19,7 +18,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -30,36 +28,38 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.briarproject.bramble.api.contact.ContactId
 import org.briarproject.bramble.api.identity.AuthorId
-import org.briarproject.briar.desktop.theme.DarkColors
 import org.briarproject.briar.desktop.theme.outline
 import org.briarproject.briar.desktop.theme.selectedCard
 import org.briarproject.briar.desktop.theme.surfaceVariant
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
 import org.briarproject.briar.desktop.ui.HorizontalDivider
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
+import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 import org.briarproject.briar.desktop.utils.TimeUtils.getFormattedTimestamp
 import java.time.Instant
 
-@Preview
-@Composable
-fun PreviewContactCard() {
-    MaterialTheme(colors = DarkColors) {
-        Surface {
-            ContactCard(
-                ContactItem(
-                    contactId = ContactId(0),
-                    authorId = AuthorId(ByteArray(0)),
-                    name = "Paul",
-                    alias = "UI Master",
-                    isConnected = true,
-                    isEmpty = false,
-                    unread = 3,
-                    timestamp = Instant.now().epochSecond
-                ),
-                {}, false
-            )
-        }
-    }
+fun main() = preview(
+    "name" to "Paul",
+    "alias" to "UI Master",
+    "isConnected" to true,
+    "isEmpty" to false,
+    "unread" to 3,
+    "timestamp" to Instant.now().toEpochMilli(),
+    "selected" to false,
+) {
+    ContactCard(
+        ContactItem(
+            contactId = ContactId(0),
+            authorId = AuthorId(getRandomId()),
+            name = getStringParameter("name"),
+            alias = getStringParameter("alias"),
+            isConnected = getBooleanParameter("isConnected"),
+            isEmpty = getBooleanParameter("isEmpty"),
+            unread = getIntParameter("unread"),
+            timestamp = getLongParameter("timestamp")
+        ),
+        {}, getBooleanParameter("selected")
+    )
 }
 
 @Composable

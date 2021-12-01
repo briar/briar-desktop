@@ -1,0 +1,134 @@
+package org.briarproject.briar.desktop.utils
+
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Done
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.singleWindowApplication
+import org.briarproject.bramble.api.UniqueId
+import org.briarproject.briar.desktop.theme.DarkColors
+import org.briarproject.briar.desktop.theme.LightColors
+import kotlin.random.Random
+
+object PreviewUtils {
+
+    class PreviewScope {
+        private val random = Random(0)
+
+        val parameters = mutableMapOf<String, State<Any>>()
+
+        private inline fun <reified T> getDatatype(name: String): T {
+            val state = parameters[name] ?: throw IllegalArgumentException("No parameter found with name '$name'")
+            if (state.value !is T) throw IllegalArgumentException("Parameter '$name' is not of type ${T::class.simpleName}")
+            return state.value as T
+        }
+
+        fun getStringParameter(name: String) = getDatatype<String>(name)
+
+        fun getBooleanParameter(name: String) = getDatatype<Boolean>(name)
+
+        fun getIntParameter(name: String) = getDatatype<Int>(name)
+
+        fun getLongParameter(name: String) = getDatatype<Long>(name)
+
+        @Composable
+        fun getRandomId() =
+            remember { random.nextBytes(UniqueId.LENGTH) }
+    }
+
+    @Composable
+    private fun <T : Any> PreviewScope.addParameter(
+        name: String,
+        initial: T,
+        editField: @Composable (MutableState<T>) -> Unit
+    ) {
+        val value = remember { mutableStateOf(initial) }
+
+        Row {
+            Text("$name: ")
+            editField(value)
+        }
+
+        parameters[name] = value
+    }
+
+    @Composable
+    private fun PreviewScope.addStringParameter(name: String, initial: String) = addParameter(name, initial) { value ->
+        BasicTextField(value.value, { value.value = it })
+    }
+
+    @Composable
+    private fun PreviewScope.addBooleanParameter(name: String, initial: Boolean) =
+        addParameter(name, initial) { value ->
+            Box(modifier = Modifier.size(15.dp).border(1.dp, Color.Black).clickable { value.value = !value.value }) {
+                if (value.value) Icon(Icons.Filled.Done, "")
+            }
+        }
+
+    @Composable
+    private fun PreviewScope.addIntParameter(name: String, initial: Int) = addParameter(name, initial) { value ->
+        BasicTextField(value.value.toString(), { value.value = it.toInt() })
+    }
+
+    @Composable
+    private fun PreviewScope.addLongParameter(name: String, initial: Long) = addParameter(name, initial) { value ->
+        BasicTextField(value.value.toString(), { value.value = it.toLong() })
+    }
+
+    /**
+     * Open an interactive preview of the composable specified by [content].
+     * All [parameters] passed to this function will be changeable on the fly.
+     * They can be retrieved as [State] using [PreviewScope.getStringParameter] or similar functions
+     * and used inside the composable [content].
+     */
+    fun preview(
+        vararg parameters: Pair<String, Any>,
+        content: @Composable PreviewScope.() -> Unit
+    ) {
+        val scope = PreviewScope()
+
+        singleWindowApplication(title = "Interactive Preview") {
+            Column {
+                Column(Modifier.padding(10.dp)) {
+                    scope.addBooleanParameter("darkTheme", true)
+                    parameters.forEach { (name, initial) ->
+                        when (initial) {
+                            is String -> scope.addStringParameter(name, initial)
+                            is Boolean -> scope.addBooleanParameter(name, initial)
+                            is Int -> scope.addIntParameter(name, initial)
+                            is Long -> scope.addLongParameter(name, initial)
+                            else -> throw IllegalArgumentException("Type ${initial::class.simpleName} is not supported for previewing.")
+                        }
+                    }
+                }
+
+                MaterialTheme(colors = if (scope.getBooleanParameter("darkTheme")) DarkColors else LightColors) {
+                    Surface(Modifier.fillMaxSize(1f)) {
+                        Column(Modifier.padding(10.dp)) {
+                            content(scope)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -19,10 +19,37 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.briarproject.bramble.api.sync.GroupId
+import org.briarproject.bramble.api.sync.MessageId
 import org.briarproject.briar.desktop.theme.awayMsgBubble
 import org.briarproject.briar.desktop.theme.localMsgBubble
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
+import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 import org.briarproject.briar.desktop.utils.TimeUtils
+import java.time.Instant
+
+fun main() = preview(
+    "text" to "Lorem ipsum dolor sit amet.",
+    "time" to Instant.now().toEpochMilli(),
+    "isIncoming" to false,
+    "isRead" to false,
+    "isSent" to false,
+    "isSeen" to false,
+) {
+    TextBubble(
+        ConversationMessageItem(
+            text = getStringParameter("text"),
+            id = MessageId(getRandomId()),
+            groupId = GroupId(getRandomId()),
+            time = getLongParameter("time"),
+            autoDeleteTimer = 0,
+            isIncoming = getBooleanParameter("isIncoming"),
+            isRead = getBooleanParameter("isRead"),
+            isSent = getBooleanParameter("isSent"),
+            isSeen = getBooleanParameter("isSeen"),
+        )
+    )
+}
 
 @Composable
 fun TextBubble(m: ConversationMessageItem) {
