@@ -32,3 +32,6 @@ flatpak-builder:
 ```
 --env=LC_ALL=de_DE.utf8
 ```
+
+There's also a section in [HACKING.md](./HACKING.md#testing-different-locales)
+dedicated to testing of different locales in order to try out translations.

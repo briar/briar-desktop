@@ -89,6 +89,11 @@ If you want to use the JDKs downloaded by Intellij IDEA, you can for example spe
 
 See [TRANSLATION.md](./TRANSLATION.md) for more information.
 
+## Hacking
+
+See [HACKING.md](./HACKING.md) for useful information when trying to work
+with the source code.
+
 ## Maintenance
 
 From time to time, translations and Flatpak's dependencies should be
