@@ -21,7 +21,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -81,8 +80,9 @@ fun ConversationScreen(
                 ) {
                     items(viewModel.messages) { m ->
                         when (m) {
-                            is ConversationMessageItem -> TextBubble(m)
-                            else -> Text("Placeholder for something else.")
+                            is ConversationMessageItem -> ConversationMessageItemView(m)
+                            is ConversationNoticeItem -> ConversationNoticeItemView(m)
+                            is ConversationRequestItem -> ConversationRequestItemView(m)
                         }
                     }
                 }

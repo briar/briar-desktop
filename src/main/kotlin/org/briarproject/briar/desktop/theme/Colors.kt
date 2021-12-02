@@ -2,8 +2,11 @@ package org.briarproject.briar.desktop.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Night500 = Color(0xff435B77)
-val Night700 = Color(0xff2E3D4F)
+val Night50 = Color(0xffebf3fa)
+val Night500 = Color(0xff435b77)
+val Night700 = Color(0xff2e3d4f)
+val Night800 = Color(0xff212d3b)
+val Night950 = Color(0xff0e171f)
 
 val Gray50 = Color(0xfffafafa)
 val Gray100 = Color(0xfff2f2f2)
@@ -17,10 +20,19 @@ val Gray900 = Color(0xff2e2e2e)
 val Gray950 = Color(0xff1f1f1f)
 val materialDarkBg = Color(0xff121212)
 
-val Blue500 = Color(0xff1f78d1)
+val Red500 = Color(0xffdb3b21)
+
+val Blue400 = Color(0xff418cd8)
+val Blue500 = Color(0xff1f78d1) // todo: unused in Android
+val Blue600 = Color(0xff1b69b6)
 val Blue800 = Color(0xff134a81)
 
 val Lime300 = Color(0xff95DE2D)
 val Lime500 = Color(0xff74B816)
+
+val TextPrimaryMaterialDark = Color(0xffffffff)
+val TextPrimaryMaterialLight = Color(0xde000000)
+val TextSecondaryMaterialDark = Color(0xb3ffffff)
+val TextSecondaryMaterialLight = Color(0x8a000000)
 
 val briarError = Color(0xffb00020)
