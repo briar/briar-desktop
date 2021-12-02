@@ -28,12 +28,13 @@ import org.briarproject.briar.desktop.theme.noticeOut
 import org.briarproject.briar.desktop.theme.privateMessageDate
 import org.briarproject.briar.desktop.theme.textPrimary
 import org.briarproject.briar.desktop.theme.textSecondary
+import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 import java.time.Instant
 
 fun main() = preview(
-    "msgText" to "Short message",
-    "text" to "Text of notice message.",
+    "notice" to "Text of notice message.",
+    "text" to "Short message",
     "time" to Instant.now().toEpochMilli(),
     "isIncoming" to true,
     "isRead" to false,
@@ -46,7 +47,7 @@ fun main() = preview(
             requestType = INTRODUCTION,
             sessionId = SessionId(getRandomId()),
             answered = false,
-            msgText = getStringParameter("msgText"),
+            notice = getStringParameter("notice"),
             text = getStringParameter("text"),
             id = MessageId(getRandomId()),
             groupId = GroupId(getRandomId()),
@@ -61,7 +62,11 @@ fun main() = preview(
 }
 
 @Composable
-fun ConversationRequestItemView(m: ConversationRequestItem) {
+fun ConversationRequestItemView(
+    m: ConversationRequestItem,
+    onAccept: () -> Unit = {},
+    onDecline: () -> Unit = {}
+) {
     val statusAlignment = if (m.isIncoming) Alignment.End else Alignment.Start
     val textColor = if (m.isIncoming) MaterialTheme.colors.textPrimary else Color.White
     val noticeBackground = if (m.isIncoming) MaterialTheme.colors.noticeIn else MaterialTheme.colors.noticeOut
@@ -69,7 +74,7 @@ fun ConversationRequestItemView(m: ConversationRequestItem) {
     ConversationItemView(m) {
         Column(Modifier.width(IntrinsicSize.Max)) {
             Text(
-                m.msgText,
+                m.text!!,
                 fontSize = 16.sp,
                 color = textColor,
                 modifier = Modifier.padding(12.dp, 8.dp).align(Alignment.Start)
@@ -78,18 +83,26 @@ fun ConversationRequestItemView(m: ConversationRequestItem) {
                 Modifier.fillMaxWidth().background(noticeBackground).padding(12.dp, 8.dp)
             ) {
                 Text(
-                    text = m.text!!,
+                    text = m.notice,
                     fontSize = 14.sp,
                     fontStyle = FontStyle.Italic,
                     color = noticeColor,
                     modifier = Modifier.align(Alignment.Start),
                 )
                 Row(modifier = Modifier.align(statusAlignment)) {
-                    TextButton({}) {
-                        Text("Decline".uppercase(), fontSize = 16.sp, color = MaterialTheme.colors.buttonTextNegative)
+                    TextButton(onDecline) {
+                        Text(
+                            i18n("decline").uppercase(),
+                            fontSize = 16.sp,
+                            color = MaterialTheme.colors.buttonTextNegative
+                        )
                     }
-                    TextButton({}) {
-                        Text("Accept".uppercase(), fontSize = 16.sp, color = MaterialTheme.colors.buttonTextPositive)
+                    TextButton(onAccept) {
+                        Text(
+                            i18n("accept").uppercase(),
+                            fontSize = 16.sp,
+                            color = MaterialTheme.colors.buttonTextPositive
+                        )
                     }
                 }
                 ConversationItemStatusView(m)

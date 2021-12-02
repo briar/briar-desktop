@@ -26,8 +26,8 @@ import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 import java.time.Instant
 
 fun main() = preview(
-    "msgText" to "This is a long long long message that spans over several lines.\n\nIt ends here.",
-    "text" to "Text of notice message.",
+    "notice" to "Text of notice message.",
+    "text" to "This is a long long long message that spans over several lines.\n\nIt ends here.",
     "time" to Instant.now().toEpochMilli(),
     "isIncoming" to false,
     "isRead" to false,
@@ -36,7 +36,7 @@ fun main() = preview(
 ) {
     ConversationNoticeItemView(
         ConversationNoticeItem(
-            msgText = getStringParameter("msgText"),
+            notice = getStringParameter("notice"),
             text = getStringParameter("text"),
             id = MessageId(getRandomId()),
             groupId = GroupId(getRandomId()),
@@ -55,19 +55,22 @@ fun ConversationNoticeItemView(m: ConversationNoticeItem) {
     val textColor = if (m.isIncoming) MaterialTheme.colors.textPrimary else Color.White
     val noticeBackground = if (m.isIncoming) MaterialTheme.colors.noticeIn else MaterialTheme.colors.noticeOut
     val noticeColor = if (m.isIncoming) MaterialTheme.colors.textSecondary else MaterialTheme.colors.privateMessageDate
+    val text = m.text
     ConversationItemView(m) {
         Column(Modifier.width(IntrinsicSize.Max)) {
-            Text(
-                m.msgText,
-                fontSize = 16.sp,
-                color = textColor,
-                modifier = Modifier.padding(12.dp, 8.dp).align(Alignment.Start)
-            )
+            if (text != null) {
+                Text(
+                    text,
+                    fontSize = 16.sp,
+                    color = textColor,
+                    modifier = Modifier.padding(12.dp, 8.dp).align(Alignment.Start)
+                )
+            }
             Column(
                 Modifier.fillMaxWidth().background(noticeBackground).padding(12.dp, 8.dp)
             ) {
                 Text(
-                    text = m.text!!,
+                    text = m.notice,
                     fontSize = 14.sp,
                     fontStyle = FontStyle.Italic,
                     color = noticeColor,

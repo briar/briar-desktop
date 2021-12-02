@@ -14,6 +14,7 @@ import org.briarproject.briar.api.introduction.IntroductionResponse
 import org.briarproject.briar.api.messaging.PrivateMessageHeader
 import org.briarproject.briar.api.privategroup.invitation.GroupInvitationRequest
 import org.briarproject.briar.api.privategroup.invitation.GroupInvitationResponse
+import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nF
 import org.briarproject.briar.desktop.utils.UiUtils.getContactDisplayName
 
@@ -41,33 +42,42 @@ internal class ConversationVisitor(
 
         return if (r.isLocal)
             ConversationNoticeItem(
-                i18nF("blogs_sharing_invitation_sent", r.name, contactName),
+                i18nF("blog.invitation.sent", r.name, contactName),
                 r
             )
-        else
-            ConversationRequestItem(
-                i18nF("blogs_sharing_invitation_received", contactName, r.name),
-                ConversationRequestItem.RequestType.BLOG, r
-            )
+        else {
+            val text = i18nF("blog.invitation.received", contactName, r.name)
+            // todo: add proper check for feature support
+            if (false)
+                ConversationRequestItem(
+                    text,
+                    ConversationRequestItem.RequestType.BLOG, r
+                )
+            else
+                ConversationNoticeItem(
+                    text + "\n" + i18n("unsupported_feature"),
+                    r
+                )
+        }
     }
 
     override fun visitBlogInvitationResponse(r: BlogInvitationResponse): ConversationItem {
         return if (r.isLocal) {
             val text = when {
                 r.wasAccepted() ->
-                    i18nF("blogs_sharing_response_accepted_sent", contactName)
+                    i18nF("blog.invitation.response.accepted.sent", contactName)
                 r.isAutoDecline ->
-                    i18nF("blogs_sharing_response_declined_auto", contactName)
+                    i18nF("blog.invitation.response.declined.auto", contactName)
                 else ->
-                    i18nF("blogs_sharing_response_declined_sent", contactName)
+                    i18nF("blog.invitation.response.declined.sent", contactName)
             }
             ConversationNoticeItem(text, r)
         } else {
             val text = when {
                 r.wasAccepted() ->
-                    i18nF("blogs_sharing_response_accepted_received", contactName)
+                    i18nF("blog.invitation.response.accepted.received", contactName)
                 else ->
-                    i18nF("blogs_sharing_response_declined_received", contactName)
+                    i18nF("blog.invitation.response.declined.received", contactName)
             }
             ConversationNoticeItem(text, r)
         }
@@ -76,33 +86,42 @@ internal class ConversationVisitor(
     override fun visitForumInvitationRequest(r: ForumInvitationRequest): ConversationItem {
         return if (r.isLocal)
             ConversationNoticeItem(
-                i18nF("forum_invitation_sent", r.name, contactName),
+                i18nF("forum.invitation.sent", r.name, contactName),
                 r
             )
-        else
-            ConversationRequestItem(
-                i18nF("forum_invitation_received", contactName, r.name),
-                ConversationRequestItem.RequestType.FORUM, r
-            )
+        else {
+            val text = i18nF("forum.invitation.received", contactName, r.name)
+            // todo: add proper check for feature support
+            if (false)
+                ConversationRequestItem(
+                    text,
+                    ConversationRequestItem.RequestType.FORUM, r
+                )
+            else
+                ConversationNoticeItem(
+                    text + "\n" + i18n("unsupported_feature"),
+                    r
+                )
+        }
     }
 
     override fun visitForumInvitationResponse(r: ForumInvitationResponse): ConversationItem {
         return if (r.isLocal) {
             val text = when {
                 r.wasAccepted() ->
-                    i18nF("forum_invitation_response_accepted_sent", contactName)
+                    i18nF("forum.invitation.response.accepted.sent", contactName)
                 r.isAutoDecline ->
-                    i18nF("forum_invitation_response_declined_auto", contactName)
+                    i18nF("forum.invitation.response.declined.auto", contactName)
                 else ->
-                    i18nF("forum_invitation_response_declined_sent", contactName)
+                    i18nF("forum.invitation.response.declined.sent", contactName)
             }
             ConversationNoticeItem(text, r)
         } else {
             val text = when {
                 r.wasAccepted() ->
-                    i18nF("forum_invitation_response_accepted_received", contactName)
+                    i18nF("forum.invitation.response.accepted.received", contactName)
                 else ->
-                    i18nF("forum_invitation_response_declined_received", contactName)
+                    i18nF("forum.invitation.response.declined.received", contactName)
             }
             ConversationNoticeItem(text, r)
         }
@@ -111,33 +130,42 @@ internal class ConversationVisitor(
     override fun visitGroupInvitationRequest(r: GroupInvitationRequest): ConversationItem {
         return if (r.isLocal)
             ConversationNoticeItem(
-                i18nF("groups_invitations_invitation_sent", contactName, r.name),
+                i18nF("group.invitation.sent", contactName, r.name),
                 r
             )
-        else
-            ConversationRequestItem(
-                i18nF("groups_invitations_invitation_received", contactName, r.name),
-                ConversationRequestItem.RequestType.GROUP, r
-            )
+        else {
+            val text = i18nF("group.invitation.received", contactName, r.name)
+            // todo: add proper check for feature support
+            if (false)
+                ConversationRequestItem(
+                    text,
+                    ConversationRequestItem.RequestType.GROUP, r
+                )
+            else
+                ConversationNoticeItem(
+                    text + "\n" + i18n("unsupported_feature"),
+                    r
+                )
+        }
     }
 
     override fun visitGroupInvitationResponse(r: GroupInvitationResponse): ConversationItem {
         return if (r.isLocal) {
             val text = when {
                 r.wasAccepted() ->
-                    i18nF("groups_invitations_response_accepted_sent", contactName)
+                    i18nF("group.invitation.response.accepted.sent", contactName)
                 r.isAutoDecline ->
-                    i18nF("groups_invitations_response_declined_auto", contactName)
+                    i18nF("group.invitation.response.declined.auto", contactName)
                 else ->
-                    i18nF("groups_invitations_response_declined_sent", contactName)
+                    i18nF("group.invitation.response.declined.sent", contactName)
             }
             ConversationNoticeItem(text, r)
         } else {
             val text = when {
                 r.wasAccepted() ->
-                    i18nF("groups_invitations_response_accepted_received", contactName)
+                    i18nF("group.invitation.response.accepted.received", contactName)
                 else ->
-                    i18nF("groups_invitations_response_declined_received", contactName)
+                    i18nF("group.invitation.response.declined.received", contactName)
             }
             ConversationNoticeItem(text, r)
         }
@@ -147,17 +175,17 @@ internal class ConversationVisitor(
         val name = getContactDisplayName(r.nameable.name, r.alias)
         return if (r.isLocal)
             ConversationNoticeItem(
-                i18nF("introduction_request_sent", contactName, name),
+                i18nF("introduction.request.sent", contactName, name),
                 r
             )
         else {
             val text = when {
                 r.wasAnswered() ->
-                    i18nF("introduction_request_answered_received", contactName, name)
+                    i18nF("introduction.request.answered.received", contactName, name)
                 r.isContact ->
-                    i18nF("introduction_request_exists_received", contactName, name)
+                    i18nF("introduction.request.exists.received", contactName, name)
                 else ->
-                    i18nF("introduction_request_received", contactName, name)
+                    i18nF("introduction.request.received", contactName, name)
             }
             ConversationRequestItem(
                 text,
@@ -172,24 +200,24 @@ internal class ConversationVisitor(
             val text = when {
                 r.wasAccepted() -> {
                     val suffix = if (r.canSucceed())
-                        "\n\n" + i18nF("introduction_response_accepted_sent_info", name)
+                        "\n\n" + i18nF("introduction.response.accepted.sent.info", name)
                     else ""
-                    i18nF("introduction_request_answered_received", name) + suffix
+                    i18nF("introduction.response.accepted.sent", name) + suffix
                 }
                 r.isAutoDecline ->
-                    i18nF("introduction_response_declined_auto", name)
+                    i18nF("introduction.response.declined.auto", name)
                 else ->
-                    i18nF("introduction_response_declined_sent", name)
+                    i18nF("introduction.response.declined.sent", name)
             }
             ConversationNoticeItem(text, r)
         } else {
             val text = when {
                 r.wasAccepted() ->
-                    i18nF("introduction_response_accepted_received", contactName, name)
+                    i18nF("introduction.response.accepted.received", contactName, name)
                 r.isIntroducer ->
-                    i18nF("introduction_response_declined_received", contactName, name)
+                    i18nF("introduction.response.declined.received", contactName, name)
                 else ->
-                    i18nF("introduction_response_declined_received_by_introducee", contactName, name)
+                    i18nF("introduction.response.declined.received_by_introducee", contactName, name)
             }
             ConversationNoticeItem(text, r)
         }

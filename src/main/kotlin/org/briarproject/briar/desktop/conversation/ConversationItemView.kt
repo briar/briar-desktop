@@ -42,8 +42,8 @@ fun main() = preview {
         item {
             ConversationNoticeItemView(
                 ConversationNoticeItem(
-                    msgText = "Let's test a received notice message.",
-                    text = "Text of notice message.",
+                    notice = "Text of notice message.",
+                    text = "Let's test a received notice message.",
                     id = MessageId(getRandomId()),
                     groupId = GroupId(getRandomId()),
                     time = Instant.now().toEpochMilli(),
@@ -77,8 +77,8 @@ fun main() = preview {
                     requestType = INTRODUCTION,
                     sessionId = SessionId(getRandomId()),
                     answered = false,
-                    msgText = "Short message.",
-                    text = "Text of notice message.",
+                    notice = "Text of notice message.",
+                    text = "Short message.",
                     id = MessageId(getRandomId()),
                     groupId = GroupId(getRandomId()),
                     time = Instant.now().toEpochMilli(),
@@ -93,8 +93,8 @@ fun main() = preview {
         item {
             ConversationNoticeItemView(
                 ConversationNoticeItem(
-                    msgText = "This is a long long long message that spans over several lines.\n\nIt ends here.",
-                    text = "Text of notice message.",
+                    notice = "Text of notice message.",
+                    text = "This is a long long long message that spans over several lines.\n\nIt ends here.",
                     id = MessageId(getRandomId()),
                     groupId = GroupId(getRandomId()),
                     time = Instant.now().toEpochMilli(),
@@ -118,6 +118,22 @@ fun main() = preview {
                     isRead = true,
                     isSent = false,
                     isSeen = false,
+                )
+            )
+        }
+        item {
+            ConversationNoticeItemView(
+                ConversationNoticeItem(
+                    notice = "Text of notice message.",
+                    text = null,
+                    id = MessageId(getRandomId()),
+                    groupId = GroupId(getRandomId()),
+                    time = Instant.now().toEpochMilli(),
+                    autoDeleteTimer = 0,
+                    isIncoming = false,
+                    isRead = false,
+                    isSent = true,
+                    isSeen = true,
                 )
             )
         }

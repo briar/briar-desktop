@@ -6,7 +6,7 @@ import org.briarproject.briar.api.conversation.ConversationRequest
 import org.briarproject.briar.api.conversation.ConversationResponse
 
 data class ConversationNoticeItem(
-    val msgText: String,
+    val notice: String,
     override var text: String?,
     override val id: MessageId,
     override val groupId: GroupId,
@@ -18,8 +18,8 @@ data class ConversationNoticeItem(
     override var isSeen: Boolean,
 ) : ConversationItem() {
 
-    constructor(msgText: String, r: ConversationRequest<*>) : this(
-        msgText = msgText,
+    constructor(notice: String, r: ConversationRequest<*>) : this(
+        notice = notice,
         text = r.text,
         id = r.id,
         groupId = r.groupId,
@@ -31,8 +31,8 @@ data class ConversationNoticeItem(
         isIncoming = !r.isLocal,
     )
 
-    constructor(msgText: String, r: ConversationResponse) : this(
-        msgText = msgText,
+    constructor(notice: String, r: ConversationResponse) : this(
+        notice = notice,
         text = null,
         id = r.id,
         groupId = r.groupId,

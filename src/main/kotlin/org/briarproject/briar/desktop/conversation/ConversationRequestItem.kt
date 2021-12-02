@@ -12,7 +12,7 @@ data class ConversationRequestItem(
     val requestType: RequestType,
     val sessionId: SessionId,
     val answered: Boolean,
-    val msgText: String,
+    val notice: String,
     override var text: String?,
     override val id: MessageId,
     override val groupId: GroupId,
@@ -28,12 +28,12 @@ data class ConversationRequestItem(
         INTRODUCTION, FORUM, BLOG, GROUP
     }
 
-    constructor(msgText: String, type: RequestType, r: ConversationRequest<*>) : this(
+    constructor(notice: String, type: RequestType, r: ConversationRequest<*>) : this(
         requestedGroupId = if (r is InvitationRequest) (r.nameable as Shareable).id else null,
         requestType = type,
         sessionId = r.sessionId,
         answered = r.wasAnswered(),
-        msgText = msgText,
+        notice = notice,
         text = r.text,
         id = r.id,
         groupId = r.groupId,
