@@ -28,11 +28,13 @@ import org.briarproject.briar.api.autodelete.UnexpectedTimerException
 import org.briarproject.briar.api.autodelete.event.ConversationMessagesDeletedEvent
 import org.briarproject.briar.api.conversation.ConversationManager
 import org.briarproject.briar.api.conversation.event.ConversationMessageReceivedEvent
+import org.briarproject.briar.api.introduction.IntroductionManager
 import org.briarproject.briar.api.messaging.MessagingManager
 import org.briarproject.briar.api.messaging.PrivateMessage
 import org.briarproject.briar.api.messaging.PrivateMessageFactory
 import org.briarproject.briar.api.messaging.PrivateMessageHeader
 import org.briarproject.briar.desktop.contact.ContactItem
+import org.briarproject.briar.desktop.conversation.ConversationRequestItem.RequestType.INTRODUCTION
 import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.utils.KLoggerUtils.logDuration
 import org.briarproject.briar.desktop.utils.clearAndAddAll
@@ -49,6 +51,7 @@ constructor(
     private val connectionRegistry: ConnectionRegistry,
     private val contactManager: ContactManager,
     private val conversationManager: ConversationManager,
+    private val introductionManager: IntroductionManager,
     private val messagingManager: MessagingManager,
     private val privateMessageFactory: PrivateMessageFactory,
     briarExecutors: BriarExecutors,
@@ -190,7 +193,6 @@ constructor(
             LOG.logDuration("Loading message headers", start)
             // Sort headers by timestamp in *descending* order
             val sorted = headers.sortedByDescending { it.timestamp }
-            // todo: use ConversationVisitor to also display Request and Notice Messages
             start = LogUtils.now()
             val messages = sorted.map { h -> h.accept(conversationVisitor.value)!! }
             LOG.logDuration("Loading messages", start)
@@ -273,6 +275,20 @@ constructor(
         val messages = HashSet(messageIds)
         _messages.replaceIf({ !it.isIncoming && messages.contains(it.id) }) {
             it.mark(sent, seen)
+        }
+    }
+
+    fun respondToRequest(item: ConversationRequestItem, accept: Boolean) {
+        _messages.replaceIf({ item == it }) {
+            item.markAnswered()
+        }
+        runOnDbThreadWithTransaction(false) { txn ->
+            when (item.requestType) {
+                INTRODUCTION ->
+                    introductionManager.respondToIntroduction(txn, _contactId.value!!, item.sessionId, accept)
+                else ->
+                    throw IllegalArgumentException("Only introduction requests are supported for the time being.")
+            }
         }
     }
 }

@@ -4,7 +4,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.MaterialTheme
@@ -33,6 +35,8 @@ import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 import java.time.Instant
 
 fun main() = preview(
+    "canBeOpened" to false,
+    "answered" to false,
     "notice" to "Text of notice message.",
     "text" to "Short message",
     "time" to Instant.now().toEpochMilli(),
@@ -43,10 +47,10 @@ fun main() = preview(
 ) {
     ConversationRequestItemView(
         ConversationRequestItem(
-            requestedGroupId = null,
+            requestedGroupId = if (getBooleanParameter("canBeOpened")) GroupId(getRandomId()) else null,
             requestType = INTRODUCTION,
             sessionId = SessionId(getRandomId()),
-            answered = false,
+            answered = getBooleanParameter("answered"),
             notice = getStringParameter("notice"),
             text = getStringParameter("text"),
             id = MessageId(getRandomId()),
@@ -64,8 +68,8 @@ fun main() = preview(
 @Composable
 fun ConversationRequestItemView(
     m: ConversationRequestItem,
-    onAccept: () -> Unit = {},
-    onDecline: () -> Unit = {}
+    onResponse: (Boolean) -> Unit = {},
+    onOpenRequestedShareable: () -> Unit = {},
 ) {
     val statusAlignment = if (m.isIncoming) Alignment.End else Alignment.Start
     val textColor = if (m.isIncoming) MaterialTheme.colors.textPrimary else Color.White
@@ -89,20 +93,33 @@ fun ConversationRequestItemView(
                     color = noticeColor,
                     modifier = Modifier.align(Alignment.Start),
                 )
+
                 Row(modifier = Modifier.align(statusAlignment)) {
-                    TextButton(onDecline) {
-                        Text(
-                            i18n("decline").uppercase(),
-                            fontSize = 16.sp,
-                            color = MaterialTheme.colors.buttonTextNegative
-                        )
-                    }
-                    TextButton(onAccept) {
-                        Text(
-                            i18n("accept").uppercase(),
-                            fontSize = 16.sp,
-                            color = MaterialTheme.colors.buttonTextPositive
-                        )
+                    if (!m.answered) {
+                        TextButton({ onResponse(false) }) {
+                            Text(
+                                i18n("decline").uppercase(),
+                                fontSize = 16.sp,
+                                color = MaterialTheme.colors.buttonTextNegative
+                            )
+                        }
+                        TextButton({ onResponse(true) }) {
+                            Text(
+                                i18n("accept").uppercase(),
+                                fontSize = 16.sp,
+                                color = MaterialTheme.colors.buttonTextPositive
+                            )
+                        }
+                    } else if (m.canBeOpened) {
+                        TextButton(onOpenRequestedShareable) {
+                            Text(
+                                i18n("open").uppercase(),
+                                fontSize = 16.sp,
+                                color = MaterialTheme.colors.buttonTextPositive
+                            )
+                        }
+                    } else {
+                        Spacer(Modifier.height(8.dp))
                     }
                 }
                 ConversationItemStatusView(m)

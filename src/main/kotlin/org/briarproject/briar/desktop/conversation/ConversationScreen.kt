@@ -80,7 +80,11 @@ fun ConversationScreen(
                         when (m) {
                             is ConversationMessageItem -> ConversationMessageItemView(m)
                             is ConversationNoticeItem -> ConversationNoticeItemView(m)
-                            is ConversationRequestItem -> ConversationRequestItemView(m)
+                            is ConversationRequestItem ->
+                                ConversationRequestItemView(
+                                    m,
+                                    onResponse = { accept -> viewModel.respondToRequest(m, accept) },
+                                )
                         }
                     }
                 }
