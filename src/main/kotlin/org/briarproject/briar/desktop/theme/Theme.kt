@@ -3,10 +3,15 @@ package org.briarproject.briar.desktop.theme
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.Colors
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Typography
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.platform.Font
+import androidx.compose.ui.unit.sp
 
 val Colors.divider: Color get() = if (isLight) Gray300 else Gray800
 val Colors.outline: Color get() = if (isLight) Gray900 else Gray200
@@ -48,6 +53,32 @@ val LightColors = lightColors(
     onSurface = Color.Black,
     error = briarError
 )
+val interRegular = FontFamily(
+    Font(resource = "fonts/Inter-Regular.ttf")
+)
+val interLight = FontFamily(
+    Font(resource = "fonts/Inter-Light.ttf")
+)
+val interMedium = FontFamily(
+    Font(resource = "fonts/Inter-Medium.ttf")
+)
+// Reference: https://briar-styleguide.netlify.app/design/#typography
+val briarTypography = Typography(
+    defaultFontFamily = interRegular,
+    h1 = TextStyle(fontFamily = interLight, fontSize = 96.sp, letterSpacing = (-1.5).sp),
+    h2 = TextStyle(fontFamily = interLight, fontSize = 60.sp, letterSpacing = (-0.5).sp),
+    h3 = TextStyle(fontFamily = interRegular, fontSize = 48.sp, letterSpacing = 0.sp),
+    h4 = TextStyle(fontFamily = interRegular, fontSize = 34.sp, letterSpacing = 0.25.sp),
+    h5 = TextStyle(fontFamily = interRegular, fontSize = 24.sp, letterSpacing = 0.sp),
+    h6 = TextStyle(fontFamily = interMedium, fontSize = 20.sp, letterSpacing = 0.15.sp),
+    subtitle1 = TextStyle(fontFamily = interRegular, fontSize = 16.sp, letterSpacing = 0.15.sp),
+    subtitle2 = TextStyle(fontFamily = interMedium, fontSize = 14.sp, letterSpacing = 0.1.sp),
+    body1 = TextStyle(fontFamily = interRegular, fontSize = 16.sp, letterSpacing = 0.sp),
+    body2 = TextStyle(fontFamily = interRegular, fontSize = 14.sp, letterSpacing = 0.sp),
+    button = TextStyle(fontFamily = interMedium, fontSize = 14.sp, letterSpacing = 0.5.sp),
+    caption = TextStyle(fontFamily = interRegular, fontSize = 12.sp, letterSpacing = 0.4.sp),
+    overline = TextStyle(fontFamily = interRegular, fontSize = 10.sp, letterSpacing = 1.5.sp),
+)
 
 @Composable
 fun BriarTheme(
@@ -56,9 +87,9 @@ fun BriarTheme(
     content: @Composable () -> Unit
 ) {
     val myColors = colors ?: if (isDarkTheme) DarkColors else LightColors
-
     MaterialTheme(
         colors = myColors,
         content = content,
+        typography = briarTypography,
     )
 }
