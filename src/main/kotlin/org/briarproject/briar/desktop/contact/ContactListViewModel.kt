@@ -13,7 +13,7 @@ import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.briar.api.conversation.ConversationManager
 import org.briarproject.briar.api.conversation.event.ConversationMessageTrackedEvent
 import org.briarproject.briar.desktop.conversation.ConversationMessagesReadEvent
-import org.briarproject.briar.desktop.viewmodel.BriarExecutors
+import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.viewmodel.asState
 import javax.inject.Inject
 

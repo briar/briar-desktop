@@ -10,7 +10,7 @@ import org.briarproject.bramble.api.db.TransactionManager
 import org.briarproject.bramble.api.identity.AuthorConstants
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.bramble.util.StringUtils
-import org.briarproject.briar.desktop.viewmodel.BriarExecutors
+import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.viewmodel.DbViewModel
 import org.briarproject.briar.desktop.viewmodel.asState
 import java.security.GeneralSecurityException
@@ -26,6 +26,7 @@ constructor(
 ) : DbViewModel(briarExecutors, lifecycleManager, db) {
 
     override fun onInit() {
+        super.onInit()
         fetchHandshakeLink()
     }
 
@@ -45,9 +46,9 @@ constructor(
         _remoteHandshakeLink.value = link
     }
 
-    private fun fetchHandshakeLink() = runOnDbThread {
-        val link = contactManager.handshakeLink
-        _handshakeLink.postValue(link)
+    private fun fetchHandshakeLink() = runOnDbThreadWithTransaction(true) { txn ->
+        val link = contactManager.getHandshakeLink(txn)
+        txn.attach { _handshakeLink.value = link }
     }
 
     fun onSubmitAddContactDialog() {
@@ -70,9 +71,9 @@ constructor(
             return
         }
 
-        runOnDbThread {
+        runOnDbThreadWithTransaction(false) { txn ->
             try {
-                contactManager.addPendingContact(link, alias)
+                contactManager.addPendingContact(txn, link, alias)
             } catch (e: FormatException) {
                 println("Link is invalid")
                 println(e.stackTrace)

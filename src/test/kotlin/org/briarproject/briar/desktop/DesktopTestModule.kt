@@ -33,11 +33,11 @@ import org.briarproject.bramble.util.OsUtils.isMac
 import org.briarproject.briar.api.test.TestAvatarCreator
 import org.briarproject.briar.desktop.testdata.DeterministicTestDataCreator
 import org.briarproject.briar.desktop.testdata.DeterministicTestDataCreatorImpl
+import org.briarproject.briar.desktop.threading.BriarExecutors
+import org.briarproject.briar.desktop.threading.BriarExecutorsImpl
+import org.briarproject.briar.desktop.threading.UiExecutor
 import org.briarproject.briar.desktop.ui.BriarUi
 import org.briarproject.briar.desktop.ui.BriarUiImpl
-import org.briarproject.briar.desktop.viewmodel.BriarExecutors
-import org.briarproject.briar.desktop.viewmodel.BriarExecutorsImpl
-import org.briarproject.briar.desktop.viewmodel.UiExecutor
 import org.briarproject.briar.desktop.viewmodel.ViewModelModule
 import org.briarproject.briar.test.TestModule
 import java.io.File

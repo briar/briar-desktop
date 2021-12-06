@@ -4,6 +4,7 @@ import org.briarproject.bramble.api.db.TransactionManager
 import org.briarproject.bramble.api.event.EventBus
 import org.briarproject.bramble.api.event.EventListener
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
+import org.briarproject.briar.desktop.threading.BriarExecutors
 
 abstract class EventListenerDbViewModel(
     briarExecutors: BriarExecutors,

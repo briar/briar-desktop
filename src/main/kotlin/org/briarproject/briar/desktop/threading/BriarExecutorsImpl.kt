@@ -1,4 +1,4 @@
-package org.briarproject.briar.desktop.viewmodel
+package org.briarproject.briar.desktop.threading
 
 import org.briarproject.bramble.api.db.DatabaseExecutor
 import org.briarproject.bramble.api.lifecycle.IoExecutor
