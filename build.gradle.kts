@@ -21,6 +21,8 @@ buildscript {
     // keep version here in sync when updating briar
     extra.apply {
         set("dagger_version", "2.33")
+        set("tor_version", "0.3.5.17")
+        set("obfs4proxy_version", "0.0.12-dev-40245c4a")
         set("junit_version", "4.13.2")
         set("jmock_version", "2.12.0")
     }

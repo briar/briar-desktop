@@ -30,11 +30,11 @@ import org.briarproject.bramble.system.DesktopSecureRandomModule
 import org.briarproject.bramble.system.JavaSystemModule
 import org.briarproject.bramble.util.OsUtils.isLinux
 import org.briarproject.bramble.util.OsUtils.isMac
+import org.briarproject.briar.desktop.threading.BriarExecutors
+import org.briarproject.briar.desktop.threading.BriarExecutorsImpl
+import org.briarproject.briar.desktop.threading.UiExecutor
 import org.briarproject.briar.desktop.ui.BriarUi
 import org.briarproject.briar.desktop.ui.BriarUiImpl
-import org.briarproject.briar.desktop.viewmodel.BriarExecutors
-import org.briarproject.briar.desktop.viewmodel.BriarExecutorsImpl
-import org.briarproject.briar.desktop.viewmodel.UiExecutor
 import org.briarproject.briar.desktop.viewmodel.ViewModelModule
 import java.io.File
 import java.nio.file.Path

@@ -9,7 +9,6 @@ import org.briarproject.bramble.api.connection.ConnectionRegistry
 import org.briarproject.bramble.api.contact.ContactId
 import org.briarproject.bramble.api.contact.ContactManager
 import org.briarproject.bramble.api.contact.event.ContactRemovedEvent
-import org.briarproject.bramble.api.db.DatabaseExecutor
 import org.briarproject.bramble.api.db.DbException
 import org.briarproject.bramble.api.db.NoSuchContactException
 import org.briarproject.bramble.api.db.Transaction
@@ -34,13 +33,12 @@ import org.briarproject.briar.api.messaging.PrivateMessage
 import org.briarproject.briar.api.messaging.PrivateMessageFactory
 import org.briarproject.briar.api.messaging.PrivateMessageHeader
 import org.briarproject.briar.desktop.contact.ContactItem
+import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.utils.KLoggerUtils.logDuration
 import org.briarproject.briar.desktop.utils.clearAndAddAll
 import org.briarproject.briar.desktop.utils.replaceIf
 import org.briarproject.briar.desktop.utils.replaceIfIndexed
-import org.briarproject.briar.desktop.viewmodel.BriarExecutors
 import org.briarproject.briar.desktop.viewmodel.EventListenerDbViewModel
-import org.briarproject.briar.desktop.viewmodel.UiExecutor
 import org.briarproject.briar.desktop.viewmodel.asList
 import org.briarproject.briar.desktop.viewmodel.asState
 import javax.inject.Inject
@@ -74,7 +72,6 @@ constructor(
 
     val newMessage = _newMessage.asState()
 
-    @UiExecutor
     fun setContactId(id: ContactId) {
         if (_contactId.value == id)
             return
@@ -89,7 +86,6 @@ constructor(
         setNewMessage("")
     }
 
-    @UiExecutor
     fun setNewMessage(msg: String) {
         _newMessage.value = msg
     }
@@ -106,9 +102,7 @@ constructor(
         runOnDbThreadWithTransaction(false) { txn ->
             try {
                 val start = LogUtils.now()
-                val groupId = messagingManager.getContactGroup(contactManager.getContact(txn, contactId)).id
-                // todo: following would be easier if function with txn would exist
-                // val groupId = messagingManager.getConversationId(contactId)
+                val groupId = messagingManager.getConversationId(txn, contactId)
                 val m = createMessage(txn, contactId, groupId, text)
                 messagingManager.addLocalMessage(txn, m)
                 LOG.logDuration("Storing message", start)
@@ -120,8 +114,9 @@ constructor(
                     m.hasText(), m.attachmentHeaders,
                     m.autoDeleteTimer
                 )
+                val msg = messageHeaderToItem(txn, h)
                 txn.attach {
-                    _messages.add(0, messageHeaderToItem(h))
+                    _messages.add(0, msg)
                 }
             } catch (e: UnexpectedTimerException) {
                 // todo: handle this properly
@@ -138,15 +133,14 @@ constructor(
     fun markMessagesRead(untilIndex: Int) {
         val id = _contactId.value!!
         val messages = _messages.toList()
-        runOnDbThread {
+        runOnDbThreadWithTransaction(false) { txn ->
             var count = 0
             messages.filterIndexed { idx, it -> idx >= untilIndex && !it.isRead }.forEach {
-                // todo: might be more performant when only using one transaction for all those calls
-                conversationManager.setReadFlag(it.groupId, it.id, true)
+                conversationManager.setReadFlag(txn, it.groupId, it.id, true)
                 count++
             }
-            _messages.postUpdate { list ->
-                list.replaceIfIndexed({ idx, it -> idx >= untilIndex && !it.isRead }) { _, it ->
+            txn.attach {
+                _messages.replaceIfIndexed({ idx, it -> idx >= untilIndex && !it.isRead }) { _, it ->
                     it.markRead()
                 }
             }
@@ -154,7 +148,6 @@ constructor(
         }
     }
 
-    @DatabaseExecutor
     @Throws(DbException::class)
     private fun createMessage(txn: Transaction, contactId: ContactId, groupId: GroupId, text: String): PrivateMessage {
         val timestamp = conversationManager.getTimestampForOutgoingMessage(txn, contactId)
@@ -176,49 +169,45 @@ constructor(
                 conversationManager.getGroupCount(txn, id),
             )
             LOG.logDuration("Loading contact", start)
-            _contactItem.postValue(contactItem)
-            // todo: or the following?
-            // txn.attach { _contactItem.value = contactItem }
+            txn.attach { _contactItem.value = contactItem }
         } catch (e: NoSuchContactException) {
             // todo: handle this properly
             LOG.warn(e) {}
         }
     }
 
-    private fun loadMessages(id: ContactId) = runOnDbThread {
+    private fun loadMessages(id: ContactId) = runOnDbThreadWithTransaction(true) { txn ->
         try {
             var start = LogUtils.now()
-            val headers = conversationManager.getMessageHeaders(id)
+            val headers = conversationManager.getMessageHeaders(txn, id)
             LOG.logDuration("Loading message headers", start)
             // Sort headers by timestamp in *descending* order
             val sorted = headers.sortedByDescending { it.timestamp }
             // todo: use ConversationVisitor to also display Request and Notice Messages
             start = LogUtils.now()
-            val messages = sorted.filterIsInstance<PrivateMessageHeader>().map(::messageHeaderToItem)
+            val messages = sorted.filterIsInstance<PrivateMessageHeader>().map { messageHeaderToItem(txn, it) }
             LOG.logDuration("Loading messages", start)
-            _messages.postUpdate { it.clearAndAddAll(messages) }
+            txn.attach { _messages.clearAndAddAll(messages) }
         } catch (e: NoSuchContactException) {
             // todo: handle this properly
             LOG.warn(e) {}
         }
     }
 
-    @DatabaseExecutor
-    private fun messageHeaderToItem(h: PrivateMessageHeader): ConversationMessageItem {
+    private fun messageHeaderToItem(txn: Transaction, h: PrivateMessageHeader): ConversationMessageItem {
         // todo: use ConversationVisitor instead and support other MessageHeader
         val item = ConversationMessageItem(h)
         if (h.hasText()) {
-            item.text = loadMessageText(h.id)
+            item.text = loadMessageText(txn, h.id)
         } else {
             LOG.warn { "private message without text" }
         }
         return item
     }
 
-    @DatabaseExecutor
-    private fun loadMessageText(m: MessageId): String? {
+    private fun loadMessageText(txn: Transaction, m: MessageId): String? {
         try {
-            return messagingManager.getMessageText(m)
+            return messagingManager.getMessageText(txn, m)
         } catch (e: DbException) {
             LOG.warn(e) {}
         }
@@ -239,7 +228,10 @@ constructor(
                     val h = e.messageHeader
                     if (h is PrivateMessageHeader) {
                         // insert at start of list according to descending sort order
-                        _messages.add(0, messageHeaderToItem(h))
+                        runOnDbThreadWithTransaction(true) { txn ->
+                            val msg = messageHeaderToItem(txn, h)
+                            txn.attach { _messages.add(0, msg) }
+                        }
                     }
                 }
             }
@@ -282,7 +274,6 @@ constructor(
         }
     }
 
-    @UiExecutor
     private fun markMessages(
         messageIds: Collection<MessageId>,
         sent: Boolean,

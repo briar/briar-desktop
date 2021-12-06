@@ -1,13 +1,11 @@
 package org.briarproject.briar.desktop.viewmodel
 
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import mu.KotlinLogging
 import org.briarproject.bramble.api.db.DatabaseExecutor
 import org.briarproject.bramble.api.db.Transaction
 import org.briarproject.bramble.api.db.TransactionManager
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
+import org.briarproject.briar.desktop.threading.BriarExecutors
 
 abstract class DbViewModel(
     private val briarExecutors: BriarExecutors,
@@ -21,10 +19,11 @@ abstract class DbViewModel(
 
     /**
      * Waits for the DB to open and runs the given [task] on the [DatabaseExecutor].
-     *
-     * For thread-safety, do not access composable [State] inside [task],
-     * but use local variables and [MutableState.postValue] instead.
+     * To avoid inconsistent state between the database and the UI
+     * whenever the UI should react to a successful transaction,
+     * strongly consider using [runOnDbThreadWithTransaction] instead.
      */
+    @Deprecated("Consider using transactional API calls and [runOnDbThreadWithTransaction] instead.")
     protected fun runOnDbThread(task: () -> Unit) = briarExecutors.onDbThread {
         try {
             lifecycleManager.waitForDatabase()
@@ -40,9 +39,8 @@ abstract class DbViewModel(
     /**
      * Waits for the DB to open and runs the given [task] on the [DatabaseExecutor],
      * providing a [Transaction], that may be [readOnly] or not, to the task.
-     *
-     * For thread-safety, do not access composable [State] inside [task],
-     * but use local variables and [MutableState.postValue] instead.
+     * Updates to the UI that depend on a successfull transaction in the database
+     * should be attached to the transaction via [Transaction.attach].
      */
     protected fun runOnDbThreadWithTransaction(
         readOnly: Boolean,
@@ -63,13 +61,5 @@ abstract class DbViewModel(
         } catch (e: Exception) {
             LOG.warn(e) { "Unhandled exception in database executor" }
         }
-    }
-
-    fun <T> MutableState<T>.postValue(value: T) = briarExecutors.onUiThread {
-        this.value = value
-    }
-
-    fun <T> SnapshotStateList<T>.postUpdate(update: (SnapshotStateList<T>) -> Unit) = briarExecutors.onUiThread {
-        update(this)
     }
 }

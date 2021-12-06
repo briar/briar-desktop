@@ -16,9 +16,9 @@ import org.briarproject.briar.desktop.login.LoginViewModel.LoginState.SIGNED_OUT
 import org.briarproject.briar.desktop.login.LoginViewModel.LoginState.SIGNING_IN
 import org.briarproject.briar.desktop.login.LoginViewModel.LoginState.STARTED
 import org.briarproject.briar.desktop.login.LoginViewModel.LoginState.STARTING
-import org.briarproject.briar.desktop.viewmodel.BriarExecutors
+import org.briarproject.briar.desktop.threading.BriarExecutors
+import org.briarproject.briar.desktop.threading.UiExecutor
 import org.briarproject.briar.desktop.viewmodel.EventListenerDbViewModel
-import org.briarproject.briar.desktop.viewmodel.UiExecutor
 import org.briarproject.briar.desktop.viewmodel.asState
 import javax.inject.Inject
 
@@ -28,7 +28,7 @@ constructor(
     private val accountManager: AccountManager,
     private val briarExecutors: BriarExecutors,
     private val lifecycleManager: LifecycleManager,
-    private val eventBus: EventBus,
+    eventBus: EventBus,
     db: TransactionManager,
 ) : EventListenerDbViewModel(briarExecutors, lifecycleManager, db, eventBus) {
 
@@ -53,7 +53,6 @@ constructor(
         }
     }
 
-    @UiExecutor
     private fun updateState(s: LifecycleState) {
         _state.value =
             if (accountManager.hasDatabaseKey()) {

@@ -197,7 +197,7 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
             // Tor
             val tor = TransportProperties()
             val torAddress = randomTorAddress
-            tor[TorConstants.PROP_ONION_V2] = torAddress
+            tor[TorConstants.PROP_ONION_V3] = torAddress
             props[TorConstants.ID] = tor
             return props
         }

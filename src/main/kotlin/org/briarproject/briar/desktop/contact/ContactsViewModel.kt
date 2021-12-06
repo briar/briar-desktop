@@ -14,12 +14,11 @@ import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.bramble.api.plugin.event.ContactConnectedEvent
 import org.briarproject.bramble.api.plugin.event.ContactDisconnectedEvent
 import org.briarproject.briar.api.conversation.ConversationManager
+import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.utils.clearAndAddAll
 import org.briarproject.briar.desktop.utils.removeFirst
 import org.briarproject.briar.desktop.utils.replaceFirst
-import org.briarproject.briar.desktop.viewmodel.BriarExecutors
 import org.briarproject.briar.desktop.viewmodel.EventListenerDbViewModel
-import org.briarproject.briar.desktop.viewmodel.UiExecutor
 
 abstract class ContactsViewModel(
     protected val contactManager: ContactManager,
@@ -50,14 +49,13 @@ abstract class ContactsViewModel(
                 conversationManager.getGroupCount(txn, contact.id),
             )
         }
-        _fullContactList.postUpdate {
-            it.clearAndAddAll(contactList)
+        txn.attach {
+            _fullContactList.clearAndAddAll(contactList)
             updateFilteredList()
         }
     }
 
     // todo: when migrated to StateFlow, this could be done implicitly instead
-    @UiExecutor
     protected open fun updateFilteredList() {
         _filteredContactList.clearAndAddAll(
             _fullContactList.filter(::filterContactItem).sortedByDescending { it.timestamp }
@@ -85,13 +83,11 @@ abstract class ContactsViewModel(
         }
     }
 
-    @UiExecutor
     protected open fun updateItem(contactId: ContactId, update: (ContactItem) -> ContactItem) {
         _fullContactList.replaceFirst({ it.contactId == contactId }, update)
         updateFilteredList()
     }
 
-    @UiExecutor
     protected open fun removeItem(contactId: ContactId) {
         _fullContactList.removeFirst { it.contactId == contactId }
         updateFilteredList()
