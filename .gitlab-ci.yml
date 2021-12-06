@@ -6,6 +6,7 @@ stages:
 
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
+  JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
 
 before_script:
   - set -e
