@@ -54,7 +54,7 @@ fun ConversationHeader(
                 }
             )
             Text(
-                contactItem.displayName,
+                "John Doe",
                 modifier = Modifier.align(Alignment.CenterVertically).padding(start = 12.dp),
                 fontSize = 20.sp
             )
