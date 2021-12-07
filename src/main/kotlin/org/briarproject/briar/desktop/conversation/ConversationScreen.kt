@@ -43,9 +43,7 @@ fun ConversationScreen(
     contactId: ContactId,
     viewModel: ConversationViewModel = viewModel(),
 ) {
-    LaunchedEffect(contactId) {
-        viewModel.setContactId(contactId)
-    }
+    viewModel.setContactId(contactId)
 
     val contactItem = viewModel.contactItem.value
 
