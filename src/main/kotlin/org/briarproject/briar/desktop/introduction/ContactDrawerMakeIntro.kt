@@ -63,7 +63,7 @@ fun ContactDrawerMakeIntro(
                 }
                 HorizontalDivider()
                 LazyColumn {
-                    items(viewModel.contactList) { contactItem ->
+                    items(viewModel.contactList.value) { contactItem ->
                         if (contactItem is ContactItem)
                             ContactCard(
                                 contactItem,

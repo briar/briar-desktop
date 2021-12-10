@@ -19,7 +19,7 @@ fun PrivateMessageScreen(
 ) {
     Row(modifier = Modifier.fillMaxWidth()) {
         ContactList(
-            viewModel.contactList,
+            viewModel.contactList.value,
             viewModel::isSelected,
             viewModel::selectContact,
             viewModel.filterBy.value,

@@ -1,5 +1,6 @@
 package org.briarproject.briar.desktop.contact
 
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import mu.KotlinLogging
 import org.briarproject.bramble.api.connection.ConnectionRegistry
@@ -43,7 +44,16 @@ constructor(
     private val _selectedContactId = mutableStateOf<ContactIdWrapper?>(null)
 
     val filterBy = _filterBy.asState()
-    val selectedContactId = _selectedContactId.asState()
+    val selectedContactId = derivedStateOf {
+        // reset selected contact to null if not part of list after filtering
+        val id = _selectedContactId.value
+        if (id == null || contactList.value.map { it.idWrapper }.contains(id)) {
+            id
+        } else {
+            _selectedContactId.value = null
+            null
+        }
+    }
 
     fun selectContact(contactItem: BaseContactItem) {
         _selectedContactId.value = contactItem.idWrapper
@@ -56,17 +66,6 @@ constructor(
 
     fun setFilterBy(filter: String) {
         _filterBy.value = filter
-        updateFilteredList()
-    }
-
-    override fun updateFilteredList() {
-        super.updateFilteredList()
-
-        // reset selected contact to null if not available after filtering
-        val id = _selectedContactId.value
-        if (id != null && !contactList.map { it.idWrapper }.contains(id)) {
-            _selectedContactId.value = null
-        }
     }
 
     override fun eventOccurred(e: Event?) {

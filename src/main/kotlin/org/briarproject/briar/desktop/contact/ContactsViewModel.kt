@@ -1,5 +1,6 @@
 package org.briarproject.briar.desktop.contact
 
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateListOf
 import mu.KotlinLogging
 import org.briarproject.bramble.api.connection.ConnectionRegistry
@@ -36,9 +37,10 @@ abstract class ContactsViewModel(
     }
 
     private val _fullContactList = mutableStateListOf<BaseContactItem>()
-    private val _filteredContactList = mutableStateListOf<BaseContactItem>()
 
-    val contactList: List<BaseContactItem> = _filteredContactList
+    val contactList = derivedStateOf {
+        _fullContactList.filter(::filterContactItem).sortedByDescending { it.timestamp }
+    }
 
     protected open fun filterContactItem(contactItem: BaseContactItem) = true
 
@@ -61,16 +63,8 @@ abstract class ContactsViewModel(
             )
             txn.attach {
                 _fullContactList.clearAndAddAll(contactList)
-                updateFilteredList()
             }
         }
-    }
-
-    // todo: when migrated to StateFlow, this could be done implicitly instead
-    protected open fun updateFilteredList() {
-        _filteredContactList.clearAndAddAll(
-            _fullContactList.filter(::filterContactItem).sortedByDescending { it.timestamp }
-        )
     }
 
     override fun eventOccurred(e: Event?) {
@@ -105,13 +99,11 @@ abstract class ContactsViewModel(
             { it.idWrapper.contactId == contactId },
             update
         )
-        updateFilteredList()
     }
 
     protected open fun removeItem(contactId: ContactId) {
         _fullContactList.removeFirst<BaseContactItem, ContactItem> {
             it.idWrapper.contactId == contactId
         }
-        updateFilteredList()
     }
 }
