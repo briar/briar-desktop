@@ -29,7 +29,7 @@ buildscript {
 plugins {
     kotlin("jvm") version "1.5.31"
     kotlin("kapt") version "1.5.31"
-    id("org.jetbrains.compose") version "1.0.0"
+    id("org.jetbrains.compose") version "1.0.0-beta5"
     id("java")
     id("idea")
     id("org.jlleitschuh.gradle.ktlint") version "10.1.0"
