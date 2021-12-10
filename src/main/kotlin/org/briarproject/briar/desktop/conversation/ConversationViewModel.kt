@@ -64,14 +64,6 @@ constructor(
         private val LOG = KotlinLogging.logger {}
     }
 
-    private val conversationVisitor = derivedStateOf {
-        val c = _contactItem.value
-        if (c != null)
-            ConversationVisitor(c.name, ::loadMessageText)
-        else
-            null
-    }
-
     private val _contactId = mutableStateOf<ContactId?>(null)
     private val _contactItem = mutableStateOf<ContactItem?>(null)
     private val _messages = mutableStateListOf<ConversationItem>()
@@ -91,8 +83,10 @@ constructor(
         _contactItem.value = null
         _messages.clear()
 
-        loadContact(id)
-        loadMessages(id)
+        runOnDbThreadWithTransaction(true) { txn ->
+            val contact = loadContact(txn, id)
+            loadMessages(txn, contact)
+        }
 
         setNewMessage("")
     }
@@ -125,9 +119,9 @@ constructor(
                     m.hasText(), m.attachmentHeaders,
                     m.autoDeleteTimer
                 )
-                txn.attach {
-                    _messages.add(0, h.accept(conversationVisitor.value)!!)
-                }
+                val visitor = ConversationVisitor(contactItem.value!!.name, messagingManager, txn)
+                val msg = h.accept(visitor)!!
+                txn.attach { _messages.add(0, msg) }
             } catch (e: UnexpectedTimerException) {
                 // todo: handle this properly
                 LOG.warn(e) {}
@@ -170,7 +164,7 @@ constructor(
         }
     }
 
-    private fun loadContact(id: ContactId) = runOnDbThreadWithTransaction(true) { txn ->
+    private fun loadContact(txn: Transaction, id: ContactId): ContactItem {
         try {
             val start = LogUtils.now()
             val contactItem = ContactItem(
@@ -180,36 +174,30 @@ constructor(
             )
             LOG.logDuration("Loading contact", start)
             txn.attach { _contactItem.value = contactItem }
+            return contactItem
         } catch (e: NoSuchContactException) {
             // todo: handle this properly
             LOG.warn(e) {}
+            throw e
         }
     }
 
-    private fun loadMessages(id: ContactId) = runOnDbThreadWithTransaction(true) { txn ->
+    private fun loadMessages(txn: Transaction, contact: ContactItem) {
         try {
             var start = LogUtils.now()
-            val headers = conversationManager.getMessageHeaders(txn, id)
+            val headers = conversationManager.getMessageHeaders(txn, contact.idWrapper.contactId)
             LOG.logDuration("Loading message headers", start)
             // Sort headers by timestamp in *descending* order
             val sorted = headers.sortedByDescending { it.timestamp }
             start = LogUtils.now()
-            val messages = sorted.map { h -> h.accept(conversationVisitor.value)!! }
+            val visitor = ConversationVisitor(contact.name, messagingManager, txn)
+            val messages = sorted.map { h -> h.accept(visitor)!! }
             LOG.logDuration("Loading messages", start)
             txn.attach { _messages.clearAndAddAll(messages) }
         } catch (e: NoSuchContactException) {
             // todo: handle this properly
             LOG.warn(e) {}
         }
-    }
-
-    private fun loadMessageText(m: MessageId): String? {
-        try {
-            return messagingManager.getMessageText(m) // todo: use transactional API call somehow
-        } catch (e: DbException) {
-            LOG.warn(e) {}
-        }
-        return null
     }
 
     override fun eventOccurred(e: Event?) {
@@ -225,7 +213,11 @@ constructor(
                     LOG.info("Message received, adding")
                     val h = e.messageHeader
                     // insert at start of list according to descending sort order
-                    _messages.add(0, h.accept(conversationVisitor.value)!!)
+                    runOnDbThreadWithTransaction(true) { txn ->
+                        val visitor = ConversationVisitor(contactItem.value!!.name, messagingManager, txn)
+                        val msg = h.accept(visitor)!!
+                        txn.attach { _messages.add(0, msg) }
+                    }
                 }
             }
             is MessagesSentEvent -> {

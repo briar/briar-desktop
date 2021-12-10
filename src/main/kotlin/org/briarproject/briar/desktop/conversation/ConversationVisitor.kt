@@ -2,6 +2,7 @@ package org.briarproject.briar.desktop.conversation
 
 import mu.KotlinLogging
 import org.briarproject.bramble.api.db.DatabaseExecutor
+import org.briarproject.bramble.api.db.DbException
 import org.briarproject.bramble.api.db.Transaction
 import org.briarproject.bramble.api.sync.MessageId
 import org.briarproject.briar.api.blog.BlogInvitationRequest
@@ -11,6 +12,7 @@ import org.briarproject.briar.api.forum.ForumInvitationRequest
 import org.briarproject.briar.api.forum.ForumInvitationResponse
 import org.briarproject.briar.api.introduction.IntroductionRequest
 import org.briarproject.briar.api.introduction.IntroductionResponse
+import org.briarproject.briar.api.messaging.MessagingManager
 import org.briarproject.briar.api.messaging.PrivateMessageHeader
 import org.briarproject.briar.api.privategroup.invitation.GroupInvitationRequest
 import org.briarproject.briar.api.privategroup.invitation.GroupInvitationResponse
@@ -20,18 +22,29 @@ import org.briarproject.briar.desktop.utils.UiUtils.getContactDisplayName
 
 internal class ConversationVisitor(
     private val contactName: String,
-    private val loadMessageText: (MessageId) -> String?
+    private val messagingManager: MessagingManager,
+    private val txn: Transaction,
 ) : ConversationMessageVisitor<ConversationItem?> {
 
     companion object {
         private val LOG = KotlinLogging.logger {}
     }
 
+    // todo: implement some message cache similar to Briar Android
+    private fun loadMessageText(txn: Transaction, m: MessageId): String? {
+        try {
+            return messagingManager.getMessageText(txn, m)
+        } catch (e: DbException) {
+            LOG.warn(e) {}
+        }
+        return null
+    }
+
     @DatabaseExecutor
     override fun visitPrivateMessageHeader(h: PrivateMessageHeader): ConversationItem {
         val item = ConversationMessageItem(h)
         if (h.hasText()) {
-            item.text = loadMessageText(h.id)
+            item.text = loadMessageText(txn, h.id)
         } else {
             LOG.warn { "private message without text" }
         }
