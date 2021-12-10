@@ -38,7 +38,8 @@ ktlint:
 build_jar:
   stage: build
   script:
-    - ./gradlew --no-daemon packageUberJarForCurrentOS
+    - ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-11-openjdk-amd64 --no-daemon kaptKotlin
+    - ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-17-openjdk-amd64 --no-daemon -x kaptKotlin packageUberJarForCurrentOS
     - mv build/compose/jars/Briar-*.jar ./briar-desktop.jar
   artifacts:
     paths:
@@ -50,7 +51,8 @@ build_jar:
 build_deb:
   stage: build
   script:
-    - ./gradlew --no-daemon packageDeb
+    - ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-11-openjdk-amd64 --no-daemon kaptKotlin
+    - ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-17-openjdk-amd64 --no-daemon -x kaptKotlin packageDeb
     - mv build/compose/binaries/main/deb/*.deb ./briar-desktop.deb
   artifacts:
     paths:
