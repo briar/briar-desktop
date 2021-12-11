@@ -3,7 +3,6 @@ package org.briarproject.briar.desktop.testdata
 import mu.KotlinLogging
 import org.briarproject.bramble.api.FormatException
 import org.briarproject.bramble.api.client.ClientHelper
-import org.briarproject.bramble.api.contact.Contact
 import org.briarproject.bramble.api.contact.ContactId
 import org.briarproject.bramble.api.contact.ContactManager
 import org.briarproject.bramble.api.crypto.SecretKey
@@ -75,7 +74,7 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
     }
 
     private val random = Random()
-    private val localAuthors: MutableMap<Contact, LocalAuthor> = HashMap()
+    private val localAuthors: MutableMap<ContactId, LocalAuthor> = HashMap()
     override fun createTestData(
         numContacts: Int,
         numPrivateMsgs: Int,
@@ -120,8 +119,8 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
     }
 
     @Throws(DbException::class)
-    private fun createContacts(numContacts: Int, avatarPercent: Int): List<Contact> {
-        val contacts: MutableList<Contact> = ArrayList(numContacts)
+    private fun createContacts(numContacts: Int, avatarPercent: Int): List<ContactId> {
+        val contacts: MutableList<ContactId> = ArrayList(numContacts)
         val localAuthor = identityManager.localAuthor
 
         for (i in 0 until min(numContacts, conversations.persons.size)) {
@@ -142,7 +141,7 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
         alias: String?,
         avatarPercent: Int,
         date: LocalDateTime,
-    ): Contact {
+    ): ContactId {
         // prepare to add contact
         val secretKey = secretKey
         val timestamp = clock.currentTimeMillis()
@@ -150,7 +149,7 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
 
         // prepare transport properties
         val props = randomTransportProperties
-        val contact = db.transactionWithResult<Contact, RuntimeException>(false) { txn: Transaction ->
+        val contactId = db.transactionWithResult<ContactId, RuntimeException>(false) { txn: Transaction ->
             val contactId = contactManager.addContact(
                 txn, remote, localAuthorId, secretKey, timestamp, true, verified, true
             )
@@ -158,15 +157,14 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
                 contactManager.setContactAlias(txn, contactId, alias)
             }
             transportPropertyManager.addRemoteProperties(txn, contactId, props)
-            val contact = db.getContact(txn, contactId)
             val timestamp = date.toEpochSecond(ZoneOffset.UTC) * 1000
             GroupCountHelper.resetGroupTimestamp(txn, contactId, messagingManager, clientHelper, timestamp)
-            contact
+            contactId
         }
-        if (random.nextInt(100) + 1 <= avatarPercent) addAvatar(contact)
+        if (random.nextInt(100) + 1 <= avatarPercent) addAvatar(contactId)
         LOG.info { "Added contact ${remote.name} with transport properties: $props" }
-        localAuthors[contact] = remote
-        return contact
+        localAuthors[contactId] = remote
+        return contactId
     }
 
     private val secretKey: SecretKey
@@ -258,7 +256,8 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
         }
 
     @Throws(DbException::class)
-    private fun addAvatar(c: Contact) {
+    private fun addAvatar(contactId: ContactId) {
+        val c = contactManager.getContact(contactId)
         val authorId = c.author.id
         val groupId = groupFactory.createGroup(
             AvatarManager.CLIENT_ID,
@@ -277,8 +276,8 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
         }
         db.transaction<RuntimeException>(false) { txn: Transaction ->
             // TODO: Do this properly via clients without breaking encapsulation
-            db.setGroupVisibility(txn, c.id, groupId, Group.Visibility.SHARED)
-            db.receiveMessage(txn, c.id, m)
+            db.setGroupVisibility(txn, contactId, groupId, Group.Visibility.SHARED)
+            db.receiveMessage(txn, contactId, m)
         }
     }
 
@@ -292,19 +291,19 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
 
     @Throws(DbException::class)
     private fun createPrivateMessages(
-        contacts: List<Contact>,
+        contacts: List<ContactId>,
         numPrivateMsgs: Int
     ) {
         for (i in contacts.indices) {
-            val contact = contacts[i]
+            val contactId = contacts[i]
             // this cannot cause an IndexOutOfBoundsException here with conversation.persons
             // because we already made sure to only create as many contacts as we have
             // conversation templates available.
             val person = conversations.persons[i]
-            val group = messagingManager.getContactGroup(contact)
-            shareGroup(contact.id, group.id)
+            val groupId = messagingManager.getConversationId(contactId)
+            shareGroup(contactId, groupId)
             for (k in 0 until min(numPrivateMsgs, person.messages.size)) {
-                createPrivateMessage(contact.id, group.id, person.messages[k])
+                createPrivateMessage(contactId, groupId, person.messages[k])
             }
         }
         LOG.info { "Created $numPrivateMsgs private messages per contact." }
@@ -351,7 +350,7 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
     }
 
     @Throws(DbException::class)
-    private fun createPrivateGroups(contacts: List<Contact>, numPrivateGroups: Int): List<PrivateGroup> {
+    private fun createPrivateGroups(contacts: List<ContactId>, numPrivateGroups: Int): List<PrivateGroup> {
         val privateGroups: MutableList<PrivateGroup> = ArrayList(numPrivateGroups)
         for (i in 0 until min(numPrivateGroups, GROUP_NAMES.size)) {
             // create private group
@@ -365,8 +364,8 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
             privateGroupManager.addPrivateGroup(privateGroup, joinMsg, true)
 
             // share with all contacts
-            for (contact in contacts) {
-                shareGroup(contact.id, privateGroup.id)
+            for (contactId in contacts) {
+                shareGroup(contactId, privateGroup.id)
             }
             privateGroups.add(privateGroup)
         }
@@ -377,7 +376,7 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
     @Throws(DbException::class)
     private fun createRandomPrivateGroupMessages(
         privateGroup: PrivateGroup,
-        contacts: List<Contact>,
+        contacts: List<ContactId>,
         numPrivateGroupMessages: Int
     ) {
         // TODO
