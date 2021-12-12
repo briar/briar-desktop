@@ -23,4 +23,6 @@ val Blue800 = Color(0xff134a81)
 val Lime300 = Color(0xff95DE2D)
 val Lime500 = Color(0xff74B816)
 
+val Orange500 = Color(0xfffc9403)
+
 val briarError = Color(0xffb00020)

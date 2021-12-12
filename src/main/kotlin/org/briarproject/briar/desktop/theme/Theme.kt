@@ -15,6 +15,7 @@ val Colors.sidebarSurface: Color get() = if (isLight) Gray200 else Gray900
 val Colors.selectedCard: Color get() = if (isLight) Gray400 else Gray700
 val Colors.localMsgBubble: Color get() = Blue500
 val Colors.awayMsgBubble: Color get() = if (isLight) Gray300 else Gray800
+val Colors.onWarning: Color get() = Orange500
 
 val DarkColors = darkColors(
     primary = Blue500,
