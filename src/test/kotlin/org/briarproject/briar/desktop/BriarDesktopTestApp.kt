@@ -5,11 +5,13 @@ import org.briarproject.bramble.BrambleCoreEagerSingletons
 import org.briarproject.bramble.BrambleCoreModule
 import org.briarproject.bramble.api.account.AccountManager
 import org.briarproject.bramble.api.contact.ContactManager
+import org.briarproject.bramble.api.event.EventBus
 import org.briarproject.bramble.api.identity.IdentityManager
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.bramble.api.lifecycle.ShutdownManager
 import org.briarproject.briar.BriarCoreEagerSingletons
 import org.briarproject.briar.BriarCoreModule
+import org.briarproject.briar.api.introduction.IntroductionManager
 import org.briarproject.briar.api.test.TestDataCreator
 import org.briarproject.briar.desktop.testdata.DeterministicTestDataCreator
 import org.briarproject.briar.desktop.ui.BriarUi
@@ -28,7 +30,11 @@ internal interface BriarDesktopTestApp : BrambleCoreEagerSingletons, BriarCoreEa
 
     fun getBriarUi(): BriarUi
 
+    fun getEventBus(): EventBus
+
     fun getIdentityManager(): IdentityManager
+
+    fun getIntroductionManager(): IntroductionManager
 
     fun getContactManager(): ContactManager
 

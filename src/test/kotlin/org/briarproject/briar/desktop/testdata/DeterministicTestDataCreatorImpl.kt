@@ -82,8 +82,7 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
         numPrivateGroups: Int,
         numPrivateGroupPosts: Int,
     ) {
-        require(numContacts != 0)
-        require(numPrivateGroups != 0)
+        require(numContacts != 0 || numPrivateGroups != 0)
         require(!(avatarPercent < 0 || avatarPercent > 100))
         ioExecutor.execute {
             try {

@@ -281,6 +281,9 @@ constructor(
                 else ->
                     throw IllegalArgumentException("Only introduction requests are supported for the time being.")
             }
+            // reload all messages to also show request response message
+            // todo: might be better to have an event to react to, also for (all) outgoing messages
+            loadMessages(txn, contactItem.value!!)
         }
     }
 }

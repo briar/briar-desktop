@@ -23,13 +23,17 @@ object TestUtils {
         forEachIndexed { i, app1 ->
             forEachIndexed inner@{ k, app2 ->
                 if (i >= k) return@inner
-                val cm1 = app1.getContactManager()
-                val cm2 = app2.getContactManager()
-                val name1 = app1.getIdentityManager().localAuthor.name
-                val name2 = app2.getIdentityManager().localAuthor.name
-                cm1.addPendingContact(cm2.handshakeLink, name2)
-                cm2.addPendingContact(cm1.handshakeLink, name1)
+                connectApps(app1, app2)
             }
         }
+    }
+
+    internal fun connectApps(app1: BriarDesktopTestApp, app2: BriarDesktopTestApp) {
+        val cm1 = app1.getContactManager()
+        val cm2 = app2.getContactManager()
+        val name1 = app1.getIdentityManager().localAuthor.name
+        val name2 = app2.getIdentityManager().localAuthor.name
+        cm1.addPendingContact(cm2.handshakeLink, name2)
+        cm2.addPendingContact(cm1.handshakeLink, name1)
     }
 }
