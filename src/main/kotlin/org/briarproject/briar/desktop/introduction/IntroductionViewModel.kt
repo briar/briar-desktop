@@ -7,6 +7,7 @@ import org.briarproject.bramble.api.db.TransactionManager
 import org.briarproject.bramble.api.event.EventBus
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.briar.api.conversation.ConversationManager
+import org.briarproject.briar.api.introduction.IntroductionManager
 import org.briarproject.briar.desktop.contact.BaseContactItem
 import org.briarproject.briar.desktop.contact.ContactItem
 import org.briarproject.briar.desktop.contact.ContactsViewModel
@@ -17,6 +18,7 @@ import javax.inject.Inject
 class IntroductionViewModel
 @Inject
 constructor(
+    private val introductionManager: IntroductionManager,
     contactManager: ContactManager,
     conversationManager: ConversationManager,
     connectionRegistry: ConnectionRegistry,
@@ -62,5 +64,17 @@ constructor(
         return if (contactItem is ContactItem) {
             _firstContact.value?.idWrapper != contactItem.idWrapper
         } else false
+    }
+
+    fun makeIntroduction() {
+        val c1 = requireNotNull(_firstContact.value)
+        val c2 = requireNotNull(_secondContact.value)
+        val msg = _introductionMessage.value
+
+        runOnDbThread {
+            val c1 = contactManager.getContact(c1.idWrapper.contactId)
+            val c2 = contactManager.getContact(c2.idWrapper.contactId)
+            introductionManager.makeIntroduction(c1, c2, msg)
+        }
     }
 }

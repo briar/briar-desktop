@@ -125,7 +125,16 @@ fun ConversationScreen(
                         RoundedCornerShape(topStart = 10.dp, bottomStart = 10.dp)
                     )
             ) {
-                ContactInfoDrawer(contactItem, setInfoDrawer, contactDrawerState)
+                ContactInfoDrawer(
+                    contactItem,
+                    closeInfoDrawer = {
+                        setInfoDrawer(false)
+                        // reload all messages to also show introduction message
+                        // todo: might be better to have an event to react to, also for (all) outgoing messages
+                        viewModel.reloadMessages()
+                    },
+                    contactDrawerState
+                )
             }
         }
     }

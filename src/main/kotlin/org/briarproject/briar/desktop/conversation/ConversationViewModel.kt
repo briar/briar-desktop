@@ -182,6 +182,10 @@ constructor(
         }
     }
 
+    fun reloadMessages() = runOnDbThreadWithTransaction(true) { txn ->
+        loadMessages(txn, contactItem.value!!)
+    }
+
     private fun loadMessages(txn: Transaction, contact: ContactItem) {
         try {
             var start = LogUtils.now()
@@ -282,7 +286,7 @@ constructor(
                     throw IllegalArgumentException("Only introduction requests are supported for the time being.")
             }
             // reload all messages to also show request response message
-            // todo: might be better to have an event to react to, also for (all) outgoing messages
+            // todo: might be better to have an event to react to, also for (other) outgoing messages
             loadMessages(txn, contactItem.value!!)
         }
     }

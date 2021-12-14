@@ -14,10 +14,10 @@ enum class ContactInfoDrawerState {
 @Composable
 fun ContactInfoDrawer(
     contactItem: ContactItem,
-    setInfoDrawer: (Boolean) -> Unit,
+    closeInfoDrawer: () -> Unit,
     drawerState: ContactInfoDrawerState
 ) {
     when (drawerState) {
-        MakeIntro -> ContactDrawerMakeIntro(contactItem, setInfoDrawer)
+        MakeIntro -> ContactDrawerMakeIntro(contactItem, closeInfoDrawer)
     }
 }
