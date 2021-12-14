@@ -106,7 +106,7 @@ abstract class ContactsViewModel(
         _fullContactList.replaceFirst(
             {
                 if (it is RealContactItem)
-                    it.contactId == contactId
+                    it.idWrapper.contactId == contactId
                 else false
             },
             update
@@ -117,7 +117,7 @@ abstract class ContactsViewModel(
     protected open fun removeItem(contactId: ContactId) {
         _fullContactList.removeFirst {
             if (it is RealContactItem)
-                it.contactId == contactId
+                it.idWrapper.contactId == contactId
             else false
         }
         updateFilteredList()

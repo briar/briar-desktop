@@ -40,16 +40,16 @@ constructor(
     }
 
     private val _filterBy = mutableStateOf("")
-    private val _selectedContactId = mutableStateOf<Any?>(null)
+    private val _selectedContactId = mutableStateOf<ContactIdWrapper?>(null)
 
     val filterBy = _filterBy.asState()
     val selectedContactId = _selectedContactId.asState()
 
-    fun selectContact(contactId: Any) {
-        _selectedContactId.value = contactId
+    fun selectContact(contactItem: ContactItem) {
+        _selectedContactId.value = contactItem.idWrapper
     }
 
-    fun isSelected(contactId: Any) = _selectedContactId.value == contactId
+    fun isSelected(contactItem: ContactItem) = _selectedContactId.value == contactItem.idWrapper
 
     override fun filterContactItem(contactItem: ContactItem) =
         contactItem.displayName.contains(_filterBy.value, ignoreCase = true)
@@ -64,7 +64,7 @@ constructor(
 
         // reset selected contact to null if not available after filtering
         val id = _selectedContactId.value
-        if (id != null && !contactList.map { it.contactId }.contains(id)) {
+        if (id != null && !contactList.map { it.idWrapper }.contains(id)) {
             _selectedContactId.value = null
         }
     }

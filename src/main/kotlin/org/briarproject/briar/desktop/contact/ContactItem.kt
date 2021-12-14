@@ -2,7 +2,7 @@ package org.briarproject.briar.desktop.contact
 
 sealed interface ContactItem {
 
-    val contactId: Any
+    val idWrapper: ContactIdWrapper
     val displayName: String
     val isConnected: Boolean
     val isEmpty: Boolean

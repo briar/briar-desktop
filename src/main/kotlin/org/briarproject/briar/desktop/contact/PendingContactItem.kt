@@ -1,10 +1,9 @@
 package org.briarproject.briar.desktop.contact
 
 import org.briarproject.bramble.api.contact.PendingContact
-import org.briarproject.bramble.api.contact.PendingContactId
 
 data class PendingContactItem(
-    override val contactId: PendingContactId,
+    override val idWrapper: PendingContactIdWrapper,
     val name: String,
     val alias: String?,
     override val isConnected: Boolean,
@@ -16,7 +15,7 @@ data class PendingContactItem(
     override val displayName = if (alias == null) name else "$alias ($name)"
 
     constructor(contact: PendingContact) : this(
-        contactId = contact.id,
+        idWrapper = PendingContactIdWrapper(contact.id),
         name = contact.alias,
         alias = contact.alias,
         isConnected = false,

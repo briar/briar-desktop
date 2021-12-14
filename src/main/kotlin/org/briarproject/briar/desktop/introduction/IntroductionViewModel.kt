@@ -60,7 +60,7 @@ constructor(
 
     override fun filterContactItem(contactItem: ContactItem): Boolean {
         return if (contactItem is RealContactItem) {
-            _firstContact.value?.contactId != contactItem.contactId
+            _firstContact.value?.idWrapper != contactItem.idWrapper
         } else false
     }
 }

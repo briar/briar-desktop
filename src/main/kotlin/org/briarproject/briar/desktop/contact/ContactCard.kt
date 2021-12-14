@@ -51,7 +51,7 @@ fun main() = preview(
 ) {
     ContactCard(
         RealContactItem(
-            contactId = ContactId(0),
+            idWrapper = RealContactIdWrapper(ContactId(0)),
             authorId = AuthorId(getRandomId()),
             name = getStringParameter("name"),
             alias = getStringParameter("alias"),

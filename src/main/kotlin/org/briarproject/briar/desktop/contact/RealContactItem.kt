@@ -1,13 +1,12 @@
 package org.briarproject.briar.desktop.contact
 
 import org.briarproject.bramble.api.contact.Contact
-import org.briarproject.bramble.api.contact.ContactId
 import org.briarproject.bramble.api.identity.AuthorId
 import org.briarproject.briar.api.client.MessageTracker
 import kotlin.math.max
 
 data class RealContactItem(
-    override val contactId: ContactId,
+    override val idWrapper: RealContactIdWrapper,
     val authorId: AuthorId,
     val name: String,
     val alias: String?,
@@ -20,7 +19,7 @@ data class RealContactItem(
     override val displayName = if (alias == null) name else "$alias ($name)"
 
     constructor(contact: Contact, isConnected: Boolean, groupCount: MessageTracker.GroupCount) : this(
-        contactId = contact.id,
+        idWrapper = RealContactIdWrapper(contact.id),
         authorId = contact.author.id,
         name = contact.author.name,
         alias = contact.alias,
