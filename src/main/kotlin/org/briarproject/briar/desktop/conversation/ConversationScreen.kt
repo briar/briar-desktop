@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
@@ -37,6 +38,7 @@ import org.briarproject.briar.desktop.ui.Constants.CONTACTLIST_WIDTH
 import org.briarproject.briar.desktop.ui.Loader
 import org.briarproject.briar.desktop.viewmodel.viewModel
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ConversationScreen(
     contactId: ContactId,
@@ -55,6 +57,7 @@ fun ConversationScreen(
 
     val (infoDrawer, setInfoDrawer) = remember { mutableStateOf(false) }
     val (contactDrawerState, setDrawerState) = remember { mutableStateOf(ContactInfoDrawerState.MakeIntro) }
+    val (deleteAllMessagesDialogVisible, setDeleteAllMessagesDialog) = remember { mutableStateOf(false) }
     val scrollState = rememberLazyListState()
 
     BoxWithConstraints(Modifier.fillMaxSize()) {
@@ -65,6 +68,9 @@ fun ConversationScreen(
                     contactItem,
                     onMakeIntroduction = {
                         setInfoDrawer(true)
+                    },
+                    onDeleteAllMessages = {
+                        setDeleteAllMessagesDialog(true)
                     }
                 )
             },
@@ -139,5 +145,16 @@ fun ConversationScreen(
                 )
             }
         }
+
+        DeleteAllMessagesConfirmationDialog(
+            isVisible = deleteAllMessagesDialogVisible,
+            close = { setDeleteAllMessagesDialog(false) },
+            onDelete = viewModel::deleteAllMessages
+        )
+
+        DeleteAllMessagesFailedDialog(
+            deletionResult = viewModel.deletionResult.value,
+            close = viewModel::confirmDeletionResult
+        )
     }
 }

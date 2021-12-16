@@ -28,6 +28,7 @@ import org.briarproject.briar.api.attachment.AttachmentReader
 import org.briarproject.briar.api.autodelete.UnexpectedTimerException
 import org.briarproject.briar.api.autodelete.event.ConversationMessagesDeletedEvent
 import org.briarproject.briar.api.conversation.ConversationManager
+import org.briarproject.briar.api.conversation.DeletionResult
 import org.briarproject.briar.api.conversation.event.ConversationMessageReceivedEvent
 import org.briarproject.briar.api.identity.AuthorManager
 import org.briarproject.briar.api.introduction.IntroductionManager
@@ -75,10 +76,14 @@ constructor(
 
     private val _newMessage = mutableStateOf("")
 
+    private val _deletionResult = mutableStateOf<DeletionResult?>(null)
+
     val contactItem = _contactItem.asState()
     val messages = _messages.asList()
 
     val newMessage = _newMessage.asState()
+
+    val deletionResult = _deletionResult.asState()
 
     fun setContactId(id: ContactId) {
         if (_contactId.value == id)
@@ -298,5 +303,23 @@ constructor(
             // todo: might be better to have an event to react to, also for (other) outgoing messages
             loadMessages(txn, contactItem.value!!)
         }
+    }
+
+    fun deleteAllMessages() = runOnDbThread {
+        try {
+            val result = conversationManager.deleteAllMessages(_contactId.value!!)
+            reloadConversationAfterDeletingMessages(result)
+        } finally {
+            // todo:
+        }
+    }
+
+    private fun reloadConversationAfterDeletingMessages(result: DeletionResult) {
+        reloadMessages()
+        _deletionResult.value = if (!result.allDeleted()) result else null
+    }
+
+    fun confirmDeletionResult() {
+        _deletionResult.value = null
     }
 }

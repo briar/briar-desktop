@@ -34,6 +34,7 @@ import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 fun ConversationHeader(
     contactItem: ContactItem,
     onMakeIntroduction: () -> Unit,
+    onDeleteAllMessages: () -> Unit,
 ) {
     val (isExpanded, setExpanded) = remember { mutableStateOf(false) }
     val onlineColor =
@@ -64,7 +65,7 @@ fun ConversationHeader(
             modifier = Modifier.align(Alignment.CenterEnd).padding(end = 16.dp)
         ) {
             Icon(Icons.Filled.MoreVert, i18n("access.contact.menu"), modifier = Modifier.size(24.dp))
-            ContactDropDown(isExpanded, setExpanded, onMakeIntroduction)
+            ContactDropDown(isExpanded, { setExpanded(false) }, onMakeIntroduction, onDeleteAllMessages)
         }
         HorizontalDivider(modifier = Modifier.align(Alignment.BottomCenter))
     }
