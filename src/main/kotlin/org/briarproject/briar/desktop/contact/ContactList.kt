@@ -23,9 +23,9 @@ import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
 
 @Composable
 fun ContactList(
-    contactList: List<ContactItem>,
-    isSelected: (ContactItem) -> Boolean,
-    selectContact: (ContactItem) -> Unit,
+    contactList: List<BaseContactItem>,
+    isSelected: (BaseContactItem) -> Boolean,
+    selectContact: (BaseContactItem) -> Unit,
     filterBy: String,
     setFilterBy: (String) -> Unit,
 ) {

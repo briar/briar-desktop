@@ -13,7 +13,7 @@ enum class ContactInfoDrawerState {
 
 @Composable
 fun ContactInfoDrawer(
-    contactItem: RealContactItem,
+    contactItem: ContactItem,
     setInfoDrawer: (Boolean) -> Unit,
     drawerState: ContactInfoDrawerState
 ) {

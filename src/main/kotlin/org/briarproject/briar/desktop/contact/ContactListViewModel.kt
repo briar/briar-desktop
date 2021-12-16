@@ -45,13 +45,13 @@ constructor(
     val filterBy = _filterBy.asState()
     val selectedContactId = _selectedContactId.asState()
 
-    fun selectContact(contactItem: ContactItem) {
+    fun selectContact(contactItem: BaseContactItem) {
         _selectedContactId.value = contactItem.idWrapper
     }
 
-    fun isSelected(contactItem: ContactItem) = _selectedContactId.value == contactItem.idWrapper
+    fun isSelected(contactItem: BaseContactItem) = _selectedContactId.value == contactItem.idWrapper
 
-    override fun filterContactItem(contactItem: ContactItem) =
+    override fun filterContactItem(contactItem: BaseContactItem) =
         contactItem.displayName.contains(_filterBy.value, ignoreCase = true)
 
     fun setFilterBy(filter: String) {
@@ -74,26 +74,15 @@ constructor(
         when (e) {
             is ConversationMessageTrackedEvent -> {
                 LOG.info { "Conversation message tracked, updating item" }
-                updateItem(e.contactId) {
-                    if (it is RealContactItem)
-                        it.updateTimestampAndUnread(e.timestamp, e.read)
-                    else it
-                }
+                updateItem(e.contactId) { it.updateTimestampAndUnread(e.timestamp, e.read) }
             }
             // is AvatarUpdatedEvent -> {}
             is ContactAliasChangedEvent -> {
-                updateItem(e.contactId) {
-                    if (it is RealContactItem)
-                        it.updateAlias(e.alias) else it
-                }
+                updateItem(e.contactId) { it.updateAlias(e.alias) }
             }
             is ConversationMessagesReadEvent -> {
                 LOG.info("${e.count} conversation messages read, updating item")
-                updateItem(e.contactId) {
-                    if (it is RealContactItem) {
-                        it.updateFromMessagesRead(e.count)
-                    } else it
-                }
+                updateItem(e.contactId) { it.updateFromMessagesRead(e.count) }
             }
         }
     }

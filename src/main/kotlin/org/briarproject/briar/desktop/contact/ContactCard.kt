@@ -6,10 +6,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -50,7 +48,7 @@ fun main() = preview(
     "selected" to false,
 ) {
     ContactCard(
-        RealContactItem(
+        ContactItem(
             idWrapper = RealContactIdWrapper(ContactId(0)),
             authorId = AuthorId(getRandomId()),
             name = getStringParameter("name"),
@@ -66,7 +64,7 @@ fun main() = preview(
 
 @Composable
 fun ContactCard(
-    contactItem: ContactItem,
+    contactItem: BaseContactItem,
     onSel: () -> Unit,
     selected: Boolean,
 ) {
@@ -83,44 +81,55 @@ fun ContactCard(
     ) {
         Row(horizontalArrangement = Arrangement.SpaceBetween) {
             Row(modifier = Modifier.align(Alignment.CenterVertically).padding(horizontal = 16.dp)) {
-                if (contactItem is RealContactItem) {
-                    Box(modifier = Modifier.align(Alignment.CenterVertically)) {
-                        // TODO Pull profile pictures
-                        ProfileCircle(36.dp, contactItem.authorId.bytes)
-                        MessageCounter(contactItem)
+                when (contactItem) {
+                    is ContactItem -> {
+                        Box(modifier = Modifier.align(Alignment.CenterVertically)) {
+                            // TODO Pull profile pictures
+                            ProfileCircle(36.dp, contactItem.authorId.bytes)
+                            MessageCounter(
+                                unread = contactItem.unread,
+                                modifier = Modifier.align(Alignment.TopEnd)
+                            )
+                        }
+                        RealContactInfo(
+                            contactItem = contactItem,
+                            modifier = Modifier.align(Alignment.CenterVertically)
+                        )
                     }
-                    RealContactInfo(contactItem)
-                } else if (contactItem is PendingContactItem) {
-                    Box(modifier = Modifier.align(Alignment.CenterVertically)) {
+                    is PendingContactItem -> {
                         ProfileCircle(36.dp)
+                        PendingContactInfo(
+                            contactItem = contactItem,
+                            modifier = Modifier.align(Alignment.CenterVertically)
+                        )
                     }
-                    PendingContactInfo(contactItem)
                 }
             }
-            Canvas(
-                modifier = Modifier.padding(start = 32.dp, end = 18.dp).size(22.dp).align(Alignment.CenterVertically),
-                onDraw = {
-                    val size = 16.dp
-                    drawCircle(color = outlineColor, radius = size.toPx() / 2f)
-                    drawCircle(
-                        color = if (contactItem.isConnected) briarSecondary else briarSurfaceVar,
-                        radius = (size - 2.dp).toPx() / 2f
-                    )
-                }
-            )
+            if (contactItem is ContactItem)
+                Canvas(
+                    modifier = Modifier.padding(start = 32.dp, end = 18.dp).size(22.dp)
+                        .align(Alignment.CenterVertically),
+                    onDraw = {
+                        val size = 16.dp
+                        drawCircle(color = outlineColor, radius = size.toPx() / 2f)
+                        drawCircle(
+                            color = if (contactItem.isConnected) briarSecondary else briarSurfaceVar,
+                            radius = (size - 2.dp).toPx() / 2f
+                        )
+                    }
+                )
         }
     }
     HorizontalDivider()
 }
 
 @Composable
-fun BoxScope.MessageCounter(contactItem: ContactItem) {
+fun MessageCounter(unread: Int, modifier: Modifier = Modifier) {
     val outlineColor = MaterialTheme.colors.outline
     val briarSecondary = MaterialTheme.colors.secondary
-    if (contactItem.unread > 0) {
+    if (unread > 0) {
         Box(
-            modifier = Modifier
-                .align(Alignment.TopEnd)
+            modifier = modifier
                 .offset(6.dp, (-6).dp)
                 .height(20.dp)
                 .widthIn(min = 20.dp, max = Dp.Infinity)
@@ -132,7 +141,7 @@ fun BoxScope.MessageCounter(contactItem: ContactItem) {
                 modifier = Modifier.align(Alignment.Center),
                 fontSize = 8.sp,
                 textAlign = TextAlign.Center,
-                text = contactItem.unread.toString(),
+                text = unread.toString(),
                 maxLines = 1
             )
         }
@@ -140,8 +149,8 @@ fun BoxScope.MessageCounter(contactItem: ContactItem) {
 }
 
 @Composable
-fun RowScope.RealContactInfo(contactItem: RealContactItem) {
-    Column(modifier = Modifier.align(Alignment.CenterVertically).padding(start = 12.dp)) {
+fun RealContactInfo(contactItem: ContactItem, modifier: Modifier = Modifier) {
+    Column(modifier = modifier.padding(start = 12.dp)) {
         Text(
             contactItem.displayName,
             fontSize = 14.sp,
@@ -158,17 +167,15 @@ fun RowScope.RealContactInfo(contactItem: RealContactItem) {
 }
 
 @Composable
-fun RowScope.PendingContactInfo(contactItem: PendingContactItem) {
-    Column(modifier = Modifier.align(Alignment.CenterVertically).padding(start = 12.dp)) {
+fun PendingContactInfo(contactItem: PendingContactItem, modifier: Modifier = Modifier) {
+    Column(modifier = modifier.padding(start = 12.dp)) {
         Text(
             contactItem.displayName,
             fontSize = 14.sp,
             modifier = Modifier.align(Alignment.Start).padding(bottom = 2.dp)
         )
         Text(
-            if (contactItem.isEmpty) i18n("contacts.card.pending") else getFormattedTimestamp(
-                contactItem.timestamp
-            ),
+            getFormattedTimestamp(contactItem.timestamp),
             fontSize = 10.sp,
             modifier = Modifier.align(Alignment.Start)
         )

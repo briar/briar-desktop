@@ -7,9 +7,9 @@ import org.briarproject.bramble.api.db.TransactionManager
 import org.briarproject.bramble.api.event.EventBus
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.briar.api.conversation.ConversationManager
+import org.briarproject.briar.desktop.contact.BaseContactItem
 import org.briarproject.briar.desktop.contact.ContactItem
 import org.briarproject.briar.desktop.contact.ContactsViewModel
-import org.briarproject.briar.desktop.contact.RealContactItem
 import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.viewmodel.asState
 import javax.inject.Inject
@@ -28,8 +28,8 @@ constructor(
     contactManager, conversationManager, connectionRegistry, briarExecutors, lifecycleManager, db, eventBus
 ) {
 
-    private val _firstContact = mutableStateOf<RealContactItem?>(null)
-    private val _secondContact = mutableStateOf<RealContactItem?>(null)
+    private val _firstContact = mutableStateOf<ContactItem?>(null)
+    private val _secondContact = mutableStateOf<ContactItem?>(null)
     private val _secondScreen = mutableStateOf(false)
     private val _introductionMessage = mutableStateOf("")
 
@@ -38,13 +38,13 @@ constructor(
     val secondScreen = _secondScreen.asState()
     val introductionMessage = _introductionMessage.asState()
 
-    fun setFirstContact(contactItem: RealContactItem) {
+    fun setFirstContact(contactItem: ContactItem) {
         _firstContact.value = contactItem
         loadContacts()
         backToFirstScreen()
     }
 
-    fun setSecondContact(contactItem: RealContactItem) {
+    fun setSecondContact(contactItem: ContactItem) {
         _secondContact.value = contactItem
         _secondScreen.value = true
     }
@@ -58,8 +58,8 @@ constructor(
         _introductionMessage.value = msg
     }
 
-    override fun filterContactItem(contactItem: ContactItem): Boolean {
-        return if (contactItem is RealContactItem) {
+    override fun filterContactItem(contactItem: BaseContactItem): Boolean {
+        return if (contactItem is ContactItem) {
             _firstContact.value?.idWrapper != contactItem.idWrapper
         } else false
     }

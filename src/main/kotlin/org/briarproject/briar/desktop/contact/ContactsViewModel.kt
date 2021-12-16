@@ -7,6 +7,7 @@ import org.briarproject.bramble.api.contact.ContactId
 import org.briarproject.bramble.api.contact.ContactManager
 import org.briarproject.bramble.api.contact.event.ContactAddedEvent
 import org.briarproject.bramble.api.contact.event.ContactRemovedEvent
+import org.briarproject.bramble.api.contact.event.PendingContactAddedEvent
 import org.briarproject.bramble.api.db.TransactionManager
 import org.briarproject.bramble.api.event.Event
 import org.briarproject.bramble.api.event.EventBus
@@ -34,25 +35,24 @@ abstract class ContactsViewModel(
         private val LOG = KotlinLogging.logger {}
     }
 
-    private val _fullContactList = mutableStateListOf<ContactItem>()
-    private val _filteredContactList = mutableStateListOf<ContactItem>()
+    private val _fullContactList = mutableStateListOf<BaseContactItem>()
+    private val _filteredContactList = mutableStateListOf<BaseContactItem>()
 
-    val contactList: List<ContactItem> = _filteredContactList
+    val contactList: List<BaseContactItem> = _filteredContactList
 
-    protected open fun filterContactItem(contactItem: ContactItem) = true
+    protected open fun filterContactItem(contactItem: BaseContactItem) = true
 
     open fun loadContacts() {
-        val contactList = mutableListOf<ContactItem>()
-        // TODO: move this inside transaction once briar has transactional method for this
-        contactList.addAll(
-            contactManager.pendingContacts.map { contact ->
-                PendingContactItem(contact.first)
-            }
-        )
+        val contactList = mutableListOf<BaseContactItem>()
         runOnDbThreadWithTransaction(true) { txn ->
             contactList.addAll(
+                contactManager.getPendingContacts(txn).map { contact ->
+                    PendingContactItem(contact.first)
+                }
+            )
+            contactList.addAll(
                 contactManager.getContacts(txn).map { contact ->
-                    RealContactItem(
+                    ContactItem(
                         contact,
                         connectionRegistry.isConnected(contact.id),
                         conversationManager.getGroupCount(txn, contact.id),
@@ -79,21 +79,19 @@ abstract class ContactsViewModel(
                 LOG.info("Contact added, reloading")
                 loadContacts()
             }
+            is PendingContactAddedEvent -> {
+                LOG.info("Pending contact added, reloading")
+                loadContacts()
+            }
             is ContactConnectedEvent -> {
                 LOG.info("Contact connected, update state")
                 updateItem(e.contactId) {
-                    if (it is RealContactItem)
-                        it.updateIsConnected(true)
-                    else it
+                    it.updateIsConnected(true)
                 }
             }
             is ContactDisconnectedEvent -> {
                 LOG.info("Contact disconnected, update state")
-                updateItem(e.contactId) {
-                    if (it is RealContactItem)
-                        it.updateIsConnected(false)
-                    else it
-                }
+                updateItem(e.contactId) { it.updateIsConnected(false) }
             }
             is ContactRemovedEvent -> {
                 LOG.info("Contact removed, removing item")
@@ -104,21 +102,15 @@ abstract class ContactsViewModel(
 
     protected open fun updateItem(contactId: ContactId, update: (ContactItem) -> ContactItem) {
         _fullContactList.replaceFirst(
-            {
-                if (it is RealContactItem)
-                    it.idWrapper.contactId == contactId
-                else false
-            },
+            { it.idWrapper.contactId == contactId },
             update
         )
         updateFilteredList()
     }
 
     protected open fun removeItem(contactId: ContactId) {
-        _fullContactList.removeFirst {
-            if (it is RealContactItem)
-                it.idWrapper.contactId == contactId
-            else false
+        _fullContactList.removeFirst<BaseContactItem, ContactItem> {
+            it.idWrapper.contactId == contactId
         }
         updateFilteredList()
     }
