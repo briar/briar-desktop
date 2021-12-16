@@ -1,4 +1,4 @@
-image: briar/ci-image-android:bullseye
+image: briar/ci-image-android:latest
 
 stages:
   - test
