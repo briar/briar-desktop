@@ -66,7 +66,9 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
     private val avatarMessageEncoder: AvatarMessageEncoder,
     private val clientHelper: ClientHelper,
     private val eventBus: EventBus,
-    @field:IoExecutor @param:IoExecutor private val ioExecutor: Executor
+    @field:IoExecutor
+    @param:IoExecutor
+    private val ioExecutor: Executor,
 ) : DeterministicTestDataCreator {
 
     companion object {
@@ -75,6 +77,7 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
 
     private val random = Random()
     private val localAuthors: MutableMap<ContactId, LocalAuthor> = HashMap()
+
     override fun createTestData(
         numContacts: Int,
         numPrivateMsgs: Int,
@@ -204,6 +207,7 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
             props[TorConstants.ID] = tor
             return props
         }
+
     private val randomBluetoothAddress: String
         get() {
             val mac = ByteArray(6)
@@ -215,6 +219,7 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
             }
             return sb.toString()
         }
+
     private val randomUUID: String
         get() {
             val uuid = ByteArray(BluetoothConstants.UUID_BYTES)
@@ -240,6 +245,7 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
             sb.append(':').append(randomPortNumber)
             return sb.toString()
         }
+
     private val randomPortNumber: Int
         get() = 32768 + random.nextInt(32768)
 

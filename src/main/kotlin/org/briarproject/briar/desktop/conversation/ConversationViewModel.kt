@@ -24,10 +24,12 @@ import org.briarproject.bramble.api.sync.event.MessagesAckedEvent
 import org.briarproject.bramble.api.sync.event.MessagesSentEvent
 import org.briarproject.bramble.api.versioning.event.ClientVersionUpdatedEvent
 import org.briarproject.bramble.util.LogUtils
+import org.briarproject.briar.api.attachment.AttachmentReader
 import org.briarproject.briar.api.autodelete.UnexpectedTimerException
 import org.briarproject.briar.api.autodelete.event.ConversationMessagesDeletedEvent
 import org.briarproject.briar.api.conversation.ConversationManager
 import org.briarproject.briar.api.conversation.event.ConversationMessageReceivedEvent
+import org.briarproject.briar.api.identity.AuthorManager
 import org.briarproject.briar.api.introduction.IntroductionManager
 import org.briarproject.briar.api.messaging.MessagingManager
 import org.briarproject.briar.api.messaging.PrivateMessage
@@ -36,6 +38,7 @@ import org.briarproject.briar.api.messaging.PrivateMessageHeader
 import org.briarproject.briar.desktop.contact.ContactItem
 import org.briarproject.briar.desktop.conversation.ConversationRequestItem.RequestType.INTRODUCTION
 import org.briarproject.briar.desktop.threading.BriarExecutors
+import org.briarproject.briar.desktop.utils.ImageUtils.loadAvatar
 import org.briarproject.briar.desktop.utils.KLoggerUtils.logDuration
 import org.briarproject.briar.desktop.utils.clearAndAddAll
 import org.briarproject.briar.desktop.utils.replaceIf
@@ -50,6 +53,7 @@ class ConversationViewModel
 constructor(
     private val connectionRegistry: ConnectionRegistry,
     private val contactManager: ContactManager,
+    private val authorManager: AuthorManager,
     private val conversationManager: ConversationManager,
     private val introductionManager: IntroductionManager,
     private val messagingManager: MessagingManager,
@@ -57,6 +61,7 @@ constructor(
     briarExecutors: BriarExecutors,
     lifecycleManager: LifecycleManager,
     db: TransactionManager,
+    private val attachmentReader: AttachmentReader,
     private val eventBus: EventBus,
 ) : EventListenerDbViewModel(briarExecutors, lifecycleManager, db, eventBus) {
 
@@ -167,10 +172,14 @@ constructor(
     private fun loadContact(txn: Transaction, id: ContactId): ContactItem {
         try {
             val start = LogUtils.now()
+
+            val contact = contactManager.getContact(txn, id)
+
             val contactItem = ContactItem(
-                contactManager.getContact(txn, id),
+                contact,
                 connectionRegistry.isConnected(id),
                 conversationManager.getGroupCount(txn, id),
+                loadAvatar(authorManager, attachmentReader, txn, contact),
             )
             LOG.logDuration("Loading contact", start)
             txn.attach { _contactItem.value = contactItem }

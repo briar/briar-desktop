@@ -2,6 +2,7 @@ package org.briarproject.briar.desktop.contact
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -9,6 +10,8 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import org.briarproject.briar.desktop.theme.outline
@@ -25,7 +28,24 @@ fun PreviewProfileCircle() {
 }
 
 /**
+ * Display the avatar for a [ContactItem]. If it has an avatar image, display that, otherwise
+ * display an [Identicon] based on the user's author id. Either way the profile image is displayed
+ * within a circle.
+ *
+ * @param size the size of the circle. In order to avoid aliasing effects for Identicon-based profile images,
+ *             pass a multiple of 9 here. That helps as the image is based on a 9x9 square grid.
+ */
+@Composable
+fun ProfileCircle(size: Dp, contactItem: ContactItem) {
+    if (contactItem.avatar == null)
+        ProfileCircle(size, contactItem.authorId.bytes)
+    else
+        ProfileCircle(size, contactItem.avatar)
+}
+
+/**
  * Display an [Identicon] as a profile image within a circle based on a user's author id.
+ *
  * @param size the size of the circle. In order to avoid aliasing effects, pass a multiple
  *             of 9 here. That helps as the image is based on a 9x9 square grid.
  */
@@ -37,7 +57,24 @@ fun ProfileCircle(size: Dp, input: ByteArray) {
 }
 
 /**
- * Used for pending contacts.
+ * Display an avatar bitmap as a profile image within a circle.
+ *
+ * @param size the size of the circle.
+ */
+@Composable
+fun ProfileCircle(size: Dp, avatar: ImageBitmap) {
+    Image(
+        bitmap = avatar,
+        contentDescription = null,
+        contentScale = ContentScale.FillBounds,
+        modifier = Modifier.size(size).clip(CircleShape).border(2.dp, MaterialTheme.colors.outline, CircleShape),
+    )
+}
+
+/**
+ * Display a placeholder avatar for pending contacts.
+ *
+ * @param size the size of the circle.
  */
 @Composable
 fun ProfileCircle(size: Dp) {

@@ -1,5 +1,6 @@
 package org.briarproject.briar.desktop.contact
 
+import androidx.compose.ui.graphics.ImageBitmap
 import org.briarproject.bramble.api.contact.Contact
 import org.briarproject.bramble.api.identity.AuthorId
 import org.briarproject.briar.api.client.MessageTracker
@@ -14,12 +15,18 @@ data class ContactItem(
     val isConnected: Boolean,
     val isEmpty: Boolean,
     val unread: Int,
-    override val timestamp: Long
+    override val timestamp: Long,
+    val avatar: ImageBitmap?,
 ) : BaseContactItem {
 
     override val displayName = getContactDisplayName(name, alias)
 
-    constructor(contact: Contact, isConnected: Boolean, groupCount: MessageTracker.GroupCount) : this(
+    constructor(
+        contact: Contact,
+        isConnected: Boolean,
+        groupCount: MessageTracker.GroupCount,
+        avatar: ImageBitmap?
+    ) : this(
         idWrapper = RealContactIdWrapper(contact.id),
         authorId = contact.author.id,
         name = contact.author.name,
@@ -27,7 +34,8 @@ data class ContactItem(
         isConnected = isConnected,
         isEmpty = groupCount.msgCount == 0,
         unread = groupCount.unreadCount,
-        timestamp = groupCount.latestMsgTime
+        timestamp = groupCount.latestMsgTime,
+        avatar = avatar,
     )
 
     fun updateTimestampAndUnread(timestamp: Long, read: Boolean): ContactItem =

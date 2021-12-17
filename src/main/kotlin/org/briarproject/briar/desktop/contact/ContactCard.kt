@@ -56,7 +56,8 @@ fun main() = preview(
             isConnected = getBooleanParameter("isConnected"),
             isEmpty = getBooleanParameter("isEmpty"),
             unread = getIntParameter("unread"),
-            timestamp = getLongParameter("timestamp")
+            timestamp = getLongParameter("timestamp"),
+            avatar = null,
         ),
         {}, getBooleanParameter("selected")
     )
@@ -84,8 +85,7 @@ fun ContactCard(
                 when (contactItem) {
                     is ContactItem -> {
                         Box(modifier = Modifier.align(Alignment.CenterVertically)) {
-                            // TODO Pull profile pictures
-                            ProfileCircle(36.dp, contactItem.authorId.bytes)
+                            ProfileCircle(36.dp, contactItem)
                             MessageCounter(
                                 unread = contactItem.unread,
                                 modifier = Modifier.align(Alignment.TopEnd)

@@ -30,12 +30,16 @@ import org.briarproject.bramble.system.DesktopSecureRandomModule
 import org.briarproject.bramble.system.JavaSystemModule
 import org.briarproject.bramble.util.OsUtils.isLinux
 import org.briarproject.bramble.util.OsUtils.isMac
+import org.briarproject.briar.attachment.AttachmentModule
+import org.briarproject.briar.desktop.attachment.media.ImageCompressor
+import org.briarproject.briar.desktop.attachment.media.ImageCompressorImpl
 import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.threading.BriarExecutorsImpl
 import org.briarproject.briar.desktop.threading.UiExecutor
 import org.briarproject.briar.desktop.ui.BriarUi
 import org.briarproject.briar.desktop.ui.BriarUiImpl
 import org.briarproject.briar.desktop.viewmodel.ViewModelModule
+import org.briarproject.briar.identity.IdentityModule
 import java.io.File
 import java.nio.file.Path
 import java.util.Collections.emptyList
@@ -45,6 +49,7 @@ import javax.inject.Singleton
 @Module(
     includes = [
         AccountModule::class,
+        IdentityModule::class,
         CircumventionModule::class,
         ClockModule::class,
         DefaultBatteryManagerModule::class,
@@ -55,6 +60,7 @@ import javax.inject.Singleton
         JavaSystemModule::class,
         SocksModule::class,
         ViewModelModule::class,
+        AttachmentModule::class,
     ]
 )
 internal class DesktopModule(
@@ -122,5 +128,11 @@ internal class DesktopModule(
         override fun shouldEnableImageAttachments() = false
         override fun shouldEnableProfilePictures() = false
         override fun shouldEnableDisappearingMessages() = false
+    }
+
+    @Provides
+    @Singleton
+    internal fun provideImageCompressor(imageCompressor: ImageCompressorImpl): ImageCompressor {
+        return imageCompressor
     }
 }

@@ -15,8 +15,11 @@ import org.briarproject.bramble.api.event.EventBus
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.bramble.api.plugin.event.ContactConnectedEvent
 import org.briarproject.bramble.api.plugin.event.ContactDisconnectedEvent
+import org.briarproject.briar.api.attachment.AttachmentReader
 import org.briarproject.briar.api.conversation.ConversationManager
+import org.briarproject.briar.api.identity.AuthorManager
 import org.briarproject.briar.desktop.threading.BriarExecutors
+import org.briarproject.briar.desktop.utils.ImageUtils.loadAvatar
 import org.briarproject.briar.desktop.utils.clearAndAddAll
 import org.briarproject.briar.desktop.utils.removeFirst
 import org.briarproject.briar.desktop.utils.replaceFirst
@@ -24,8 +27,10 @@ import org.briarproject.briar.desktop.viewmodel.EventListenerDbViewModel
 
 abstract class ContactsViewModel(
     protected val contactManager: ContactManager,
+    private val authorManager: AuthorManager,
     private val conversationManager: ConversationManager,
     private val connectionRegistry: ConnectionRegistry,
+    private val attachmentReader: AttachmentReader,
     briarExecutors: BriarExecutors,
     lifecycleManager: LifecycleManager,
     db: TransactionManager,
@@ -58,6 +63,7 @@ abstract class ContactsViewModel(
                         contact,
                         connectionRegistry.isConnected(contact.id),
                         conversationManager.getGroupCount(txn, contact.id),
+                        loadAvatar(authorManager, attachmentReader, txn, contact),
                     )
                 }
             )

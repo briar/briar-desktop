@@ -31,14 +31,19 @@ import org.briarproject.bramble.system.JavaSystemModule
 import org.briarproject.bramble.util.OsUtils.isLinux
 import org.briarproject.bramble.util.OsUtils.isMac
 import org.briarproject.briar.api.test.TestAvatarCreator
+import org.briarproject.briar.attachment.AttachmentModule
+import org.briarproject.briar.desktop.attachment.media.ImageCompressor
+import org.briarproject.briar.desktop.attachment.media.ImageCompressorImpl
 import org.briarproject.briar.desktop.testdata.DeterministicTestDataCreator
 import org.briarproject.briar.desktop.testdata.DeterministicTestDataCreatorImpl
+import org.briarproject.briar.desktop.testdata.TestAvatarCreatorImpl
 import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.threading.BriarExecutorsImpl
 import org.briarproject.briar.desktop.threading.UiExecutor
 import org.briarproject.briar.desktop.ui.BriarUi
 import org.briarproject.briar.desktop.ui.BriarUiImpl
 import org.briarproject.briar.desktop.viewmodel.ViewModelModule
+import org.briarproject.briar.identity.IdentityModule
 import org.briarproject.briar.test.TestModule
 import java.io.File
 import java.nio.file.Path
@@ -49,6 +54,7 @@ import javax.inject.Singleton
 @Module(
     includes = [
         AccountModule::class,
+        IdentityModule::class,
         CircumventionModule::class,
         ClockModule::class,
         DefaultBatteryManagerModule::class,
@@ -59,7 +65,8 @@ import javax.inject.Singleton
         JavaSystemModule::class,
         SocksModule::class,
         TestModule::class,
-        ViewModelModule::class
+        ViewModelModule::class,
+        AttachmentModule::class,
     ]
 )
 internal class DesktopTestModule(
@@ -130,7 +137,16 @@ internal class DesktopTestModule(
     }
 
     @Provides
-    internal fun provideTestAvatarCreator() = TestAvatarCreator { null }
+    @Singleton
+    internal fun provideImageCompressor(imageCompressor: ImageCompressorImpl): ImageCompressor {
+        return imageCompressor
+    }
+
+    @Provides
+    @Singleton
+    internal fun provideTestAvatarCreator(testAvatarCreator: TestAvatarCreatorImpl): TestAvatarCreator {
+        return testAvatarCreator
+    }
 
     @Provides
     @Singleton

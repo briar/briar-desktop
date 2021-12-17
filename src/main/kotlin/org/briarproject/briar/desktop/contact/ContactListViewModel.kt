@@ -10,8 +10,11 @@ import org.briarproject.bramble.api.db.TransactionManager
 import org.briarproject.bramble.api.event.Event
 import org.briarproject.bramble.api.event.EventBus
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
+import org.briarproject.briar.api.attachment.AttachmentReader
+import org.briarproject.briar.api.avatar.event.AvatarUpdatedEvent
 import org.briarproject.briar.api.conversation.ConversationManager
 import org.briarproject.briar.api.conversation.event.ConversationMessageTrackedEvent
+import org.briarproject.briar.api.identity.AuthorManager
 import org.briarproject.briar.desktop.conversation.ConversationMessagesReadEvent
 import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.viewmodel.asState
@@ -21,14 +24,24 @@ class ContactListViewModel
 @Inject
 constructor(
     contactManager: ContactManager,
+    authorManager: AuthorManager,
     conversationManager: ConversationManager,
     connectionRegistry: ConnectionRegistry,
+    attachmentReader: AttachmentReader,
     briarExecutors: BriarExecutors,
     lifecycleManager: LifecycleManager,
     db: TransactionManager,
     eventBus: EventBus,
 ) : ContactsViewModel(
-    contactManager, conversationManager, connectionRegistry, briarExecutors, lifecycleManager, db, eventBus
+    contactManager,
+    authorManager,
+    conversationManager,
+    connectionRegistry,
+    attachmentReader,
+    briarExecutors,
+    lifecycleManager,
+    db,
+    eventBus,
 ) {
 
     companion object {
@@ -75,13 +88,16 @@ constructor(
                 LOG.info { "Conversation message tracked, updating item" }
                 updateItem(e.contactId) { it.updateTimestampAndUnread(e.timestamp, e.read) }
             }
-            // is AvatarUpdatedEvent -> {}
             is ContactAliasChangedEvent -> {
                 updateItem(e.contactId) { it.updateAlias(e.alias) }
             }
             is ConversationMessagesReadEvent -> {
                 LOG.info("${e.count} conversation messages read, updating item")
                 updateItem(e.contactId) { it.updateFromMessagesRead(e.count) }
+            }
+            is AvatarUpdatedEvent -> {
+                LOG.info("received avatar update: ${e.attachmentHeader}")
+                // TODO: update avatar
             }
         }
     }

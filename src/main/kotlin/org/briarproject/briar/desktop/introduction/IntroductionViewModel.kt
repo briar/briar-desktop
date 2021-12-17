@@ -6,7 +6,9 @@ import org.briarproject.bramble.api.contact.ContactManager
 import org.briarproject.bramble.api.db.TransactionManager
 import org.briarproject.bramble.api.event.EventBus
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
+import org.briarproject.briar.api.attachment.AttachmentReader
 import org.briarproject.briar.api.conversation.ConversationManager
+import org.briarproject.briar.api.identity.AuthorManager
 import org.briarproject.briar.api.introduction.IntroductionManager
 import org.briarproject.briar.desktop.contact.BaseContactItem
 import org.briarproject.briar.desktop.contact.ContactItem
@@ -20,14 +22,24 @@ class IntroductionViewModel
 constructor(
     private val introductionManager: IntroductionManager,
     contactManager: ContactManager,
+    authorManager: AuthorManager,
     conversationManager: ConversationManager,
     connectionRegistry: ConnectionRegistry,
+    attachmentReader: AttachmentReader,
     briarExecutors: BriarExecutors,
     lifecycleManager: LifecycleManager,
     db: TransactionManager,
     eventBus: EventBus,
 ) : ContactsViewModel(
-    contactManager, conversationManager, connectionRegistry, briarExecutors, lifecycleManager, db, eventBus
+    contactManager,
+    authorManager,
+    conversationManager,
+    connectionRegistry,
+    attachmentReader,
+    briarExecutors,
+    lifecycleManager,
+    db,
+    eventBus,
 ) {
 
     private val _firstContact = mutableStateOf<ContactItem?>(null)
