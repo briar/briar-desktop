@@ -47,14 +47,14 @@ fun main() = preview(
 ) {
     ConversationRequestItemView(
         ConversationRequestItem(
-            requestedGroupId = if (getBooleanParameter("canBeOpened")) GroupId(getRandomId()) else null,
+            requestedGroupId = if (getBooleanParameter("canBeOpened")) GroupId(getRandomIdPersistent()) else null,
             requestType = INTRODUCTION,
-            sessionId = SessionId(getRandomId()),
+            sessionId = SessionId(getRandomIdPersistent()),
             answered = getBooleanParameter("answered"),
             notice = getStringParameter("notice"),
             text = getStringParameter("text"),
-            id = MessageId(getRandomId()),
-            groupId = GroupId(getRandomId()),
+            id = MessageId(getRandomIdPersistent()),
+            groupId = GroupId(getRandomIdPersistent()),
             time = getLongParameter("time"),
             autoDeleteTimer = 0,
             isIncoming = getBooleanParameter("isIncoming"),

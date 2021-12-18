@@ -64,9 +64,11 @@ object PreviewUtils {
 
         fun setLongParameter(name: String, value: Long) = setDatatype(name, value)
 
+        fun getRandomId() = random.nextBytes(UniqueId.LENGTH)
+
         @Composable
-        fun getRandomId() =
-            remember { random.nextBytes(UniqueId.LENGTH) }
+        fun getRandomIdPersistent() =
+            remember { getRandomId() }
     }
 
     @Composable

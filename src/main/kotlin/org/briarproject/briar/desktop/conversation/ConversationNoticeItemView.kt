@@ -38,8 +38,8 @@ fun main() = preview(
         ConversationNoticeItem(
             notice = getStringParameter("notice"),
             text = getStringParameter("text"),
-            id = MessageId(getRandomId()),
-            groupId = GroupId(getRandomId()),
+            id = MessageId(getRandomIdPersistent()),
+            groupId = GroupId(getRandomIdPersistent()),
             time = getLongParameter("time"),
             autoDeleteTimer = 0,
             isIncoming = getBooleanParameter("isIncoming"),

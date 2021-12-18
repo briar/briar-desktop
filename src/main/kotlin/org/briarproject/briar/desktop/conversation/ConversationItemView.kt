@@ -49,8 +49,8 @@ fun main() = preview {
                 ConversationNoticeItem(
                     notice = "Text of notice message.",
                     text = "Let's test a received notice message.",
-                    id = MessageId(getRandomId()),
-                    groupId = GroupId(getRandomId()),
+                    id = MessageId(getRandomIdPersistent()),
+                    groupId = GroupId(getRandomIdPersistent()),
                     time = Instant.now().toEpochMilli(),
                     autoDeleteTimer = 0,
                     isIncoming = true,
@@ -64,8 +64,8 @@ fun main() = preview {
             ConversationMessageItemView(
                 ConversationMessageItem(
                     text = "This is a medium-sized message that has been sent before receiving the request message.",
-                    id = MessageId(getRandomId()),
-                    groupId = GroupId(getRandomId()),
+                    id = MessageId(getRandomIdPersistent()),
+                    groupId = GroupId(getRandomIdPersistent()),
                     time = Instant.now().toEpochMilli(),
                     autoDeleteTimer = 0,
                     isIncoming = false,
@@ -80,12 +80,12 @@ fun main() = preview {
                 ConversationRequestItem(
                     requestedGroupId = null,
                     requestType = INTRODUCTION,
-                    sessionId = SessionId(getRandomId()),
+                    sessionId = SessionId(getRandomIdPersistent()),
                     answered = false,
                     notice = "Text of notice message.",
                     text = "Short message.",
-                    id = MessageId(getRandomId()),
-                    groupId = GroupId(getRandomId()),
+                    id = MessageId(getRandomIdPersistent()),
+                    groupId = GroupId(getRandomIdPersistent()),
                     time = Instant.now().toEpochMilli(),
                     autoDeleteTimer = 0,
                     isIncoming = true,
@@ -100,8 +100,8 @@ fun main() = preview {
                 ConversationNoticeItem(
                     notice = "Text of notice message.",
                     text = "This is a long long long message that spans over several lines.\n\nIt ends here.",
-                    id = MessageId(getRandomId()),
-                    groupId = GroupId(getRandomId()),
+                    id = MessageId(getRandomIdPersistent()),
+                    groupId = GroupId(getRandomIdPersistent()),
                     time = Instant.now().toEpochMilli(),
                     autoDeleteTimer = 0,
                     isIncoming = false,
@@ -115,8 +115,8 @@ fun main() = preview {
             ConversationMessageItemView(
                 ConversationMessageItem(
                     text = "Just also receiving a normal message.",
-                    id = MessageId(getRandomId()),
-                    groupId = GroupId(getRandomId()),
+                    id = MessageId(getRandomIdPersistent()),
+                    groupId = GroupId(getRandomIdPersistent()),
                     time = Instant.now().toEpochMilli(),
                     autoDeleteTimer = 0,
                     isIncoming = true,
@@ -131,8 +131,8 @@ fun main() = preview {
                 ConversationNoticeItem(
                     notice = "Text of notice message.",
                     text = null,
-                    id = MessageId(getRandomId()),
-                    groupId = GroupId(getRandomId()),
+                    id = MessageId(getRandomIdPersistent()),
+                    groupId = GroupId(getRandomIdPersistent()),
                     time = Instant.now().toEpochMilli(),
                     autoDeleteTimer = 0,
                     isIncoming = false,

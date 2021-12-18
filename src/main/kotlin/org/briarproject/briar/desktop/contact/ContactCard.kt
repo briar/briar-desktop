@@ -50,7 +50,7 @@ fun main() = preview(
     ContactCard(
         ContactItem(
             idWrapper = RealContactIdWrapper(ContactId(0)),
-            authorId = AuthorId(getRandomId()),
+            authorId = AuthorId(getRandomIdPersistent()),
             name = getStringParameter("name"),
             alias = getStringParameter("alias"),
             isConnected = getBooleanParameter("isConnected"),
@@ -88,7 +88,7 @@ fun ContactCard(
                             ProfileCircle(36.dp, contactItem)
                             MessageCounter(
                                 unread = contactItem.unread,
-                                modifier = Modifier.align(Alignment.TopEnd)
+                                modifier = Modifier.align(Alignment.TopEnd).offset(6.dp, (-6).dp)
                             )
                         }
                         RealContactInfo(
@@ -130,7 +130,6 @@ fun MessageCounter(unread: Int, modifier: Modifier = Modifier) {
     if (unread > 0) {
         Box(
             modifier = modifier
-                .offset(6.dp, (-6).dp)
                 .height(20.dp)
                 .widthIn(min = 20.dp, max = Dp.Infinity)
                 .border(2.dp, outlineColor, CircleShape)

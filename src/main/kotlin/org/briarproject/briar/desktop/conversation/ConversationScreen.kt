@@ -7,16 +7,11 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
@@ -58,7 +53,6 @@ fun ConversationScreen(
     val (infoDrawer, setInfoDrawer) = remember { mutableStateOf(false) }
     val (contactDrawerState, setDrawerState) = remember { mutableStateOf(ContactInfoDrawerState.MakeIntro) }
     val (deleteAllMessagesDialogVisible, setDeleteAllMessagesDialog) = remember { mutableStateOf(false) }
-    val scrollState = rememberLazyListState()
 
     BoxWithConstraints(Modifier.fillMaxSize()) {
         val animatedInfoDrawerOffsetX by animateDpAsState(if (infoDrawer) (-275).dp else 0.dp)
@@ -79,27 +73,15 @@ fun ConversationScreen(
                     Loader()
                     return@Scaffold
                 }
-
-                LazyColumn(
-                    state = scrollState,
-                    // reverseLayout to display most recent message (index 0) at the bottom
-                    reverseLayout = true,
-                    contentPadding = PaddingValues(8.dp),
-                    modifier = Modifier.padding(padding).fillMaxHeight()
-                ) {
-                    items(viewModel.messages) { m ->
-                        when (m) {
-                            is ConversationMessageItem -> ConversationMessageItemView(m, viewModel::deleteMessage)
-                            is ConversationNoticeItem -> ConversationNoticeItemView(m, viewModel::deleteMessage)
-                            is ConversationRequestItem ->
-                                ConversationRequestItemView(
-                                    m,
-                                    onResponse = { accept -> viewModel.respondToRequest(m, accept) },
-                                    onDelete = viewModel::deleteMessage,
-                                )
-                        }
-                    }
-                }
+                ConversationList(
+                    padding,
+                    viewModel.messages,
+                    viewModel.initialFirstUnreadMessageIndex.value,
+                    viewModel.currentUnreadMessagesInfo.value,
+                    viewModel::markMessagesRead,
+                    viewModel::respondToRequest,
+                    viewModel::deleteMessage,
+                )
             },
             bottomBar = {
                 ConversationInput(
@@ -109,13 +91,6 @@ fun ConversationScreen(
                 )
             },
         )
-
-        if (viewModel.hasUnreadMessages.value) {
-            LaunchedEffect(scrollState.firstVisibleItemIndex) {
-                // mark all messages older than the first visible item as read
-                viewModel.markMessagesRead(scrollState.firstVisibleItemIndex)
-            }
-        }
 
         if (infoDrawer) {
             // TODO Find non-hacky way of setting scrim on entire app

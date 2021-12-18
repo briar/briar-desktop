@@ -133,7 +133,7 @@ constructor(
                 )
                 val visitor = ConversationVisitor(contactItem.value!!.name, messagingManager, txn)
                 val msg = h.accept(visitor)!!
-                txn.attach { _messages.add(0, msg) }
+                txn.attach { _messages.add(msg) }
             } catch (e: UnexpectedTimerException) {
                 // todo: handle this properly
                 LOG.warn(e) {}
@@ -144,19 +144,35 @@ constructor(
         }
     }
 
-    val hasUnreadMessages = derivedStateOf { _messages.any { !it.isRead } }
+    // first unread message when first opening the list
+    // used to draw a horizontal divider on that position as long as list is opened
+    // we cannot use [derivedStateOf] here as it would move the line after first showing the list
+    private val _initialFirstUnreadMessageIndex = mutableStateOf(-1)
+    val initialFirstUnreadMessageIndex = _initialFirstUnreadMessageIndex.asState()
 
-    fun markMessagesRead(untilIndex: Int) {
+    val currentUnreadMessagesInfo = derivedStateOf {
+        UnreadMessagesInfo(
+            amount = _messages.count { !it.isRead },
+            firstIndex = _messages.indexOfFirst { !it.isRead }
+        )
+    }
+
+    data class UnreadMessagesInfo(
+        val amount: Int,
+        val firstIndex: Int
+    )
+
+    fun markMessagesRead(indices: List<Int>) {
         val id = _contactId.value!!
         val messages = _messages.toList()
         runOnDbThreadWithTransaction(false) { txn ->
             var count = 0
-            messages.filterIndexed { idx, it -> idx >= untilIndex && !it.isRead }.forEach {
+            messages.filterIndexed { idx, it -> idx in indices && !it.isRead }.forEach {
                 conversationManager.setReadFlag(txn, it.groupId, it.id, true)
                 count++
             }
             txn.attach {
-                _messages.replaceIfIndexed({ idx, it -> idx >= untilIndex && !it.isRead }) { _, it ->
+                _messages.replaceIfIndexed({ idx, it -> idx in indices && !it.isRead }) { _, it ->
                     it.markRead()
                 }
             }
@@ -209,12 +225,16 @@ constructor(
             val headers = conversationManager.getMessageHeaders(txn, contact.idWrapper.contactId)
             LOG.logDuration("Loading message headers", start)
             // Sort headers by timestamp in *descending* order
-            val sorted = headers.sortedByDescending { it.timestamp }
+            // val sorted = headers.sortedByDescending { it.timestamp }
+            val sorted = headers.sortedBy { it.timestamp }
             start = LogUtils.now()
             val visitor = ConversationVisitor(contact.name, messagingManager, txn)
             val messages = sorted.map { h -> h.accept(visitor)!! }
             LOG.logDuration("Loading messages", start)
-            txn.attach { _messages.clearAndAddAll(messages) }
+            txn.attach {
+                _messages.clearAndAddAll(messages)
+                _initialFirstUnreadMessageIndex.value = messages.indexOfFirst { !it.isRead }
+            }
         } catch (e: NoSuchContactException) {
             // todo: handle this properly
             LOG.warn(e) {}
@@ -239,7 +259,7 @@ constructor(
                     runOnDbThreadWithTransaction(true) { txn ->
                         val visitor = ConversationVisitor(contactItem.value!!.name, messagingManager, txn)
                         val msg = h.accept(visitor)!!
-                        txn.attach { _messages.add(0, msg) }
+                        txn.attach { _messages.add(msg) }
                     }
                 }
             }
