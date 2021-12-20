@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -68,6 +69,7 @@ fun ContactCard(
     contactItem: BaseContactItem,
     onSel: () -> Unit,
     selected: Boolean,
+    padding: PaddingValues = PaddingValues(0.dp),
 ) {
     val bgColor = if (selected) MaterialTheme.colors.selectedCard else MaterialTheme.colors.surfaceVariant
     val outlineColor = MaterialTheme.colors.outline
@@ -80,7 +82,7 @@ fun ContactCard(
         backgroundColor = bgColor,
         contentColor = MaterialTheme.colors.onSurface
     ) {
-        Row(horizontalArrangement = Arrangement.SpaceBetween) {
+        Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.padding(padding)) {
             Row(modifier = Modifier.align(Alignment.CenterVertically).padding(horizontal = 16.dp)) {
                 when (contactItem) {
                     is ContactItem -> {
