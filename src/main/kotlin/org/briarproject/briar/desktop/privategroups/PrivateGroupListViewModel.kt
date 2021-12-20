@@ -1,14 +1,19 @@
 package org.briarproject.briar.desktop.privategroups
 
 import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import org.briarproject.bramble.api.connection.ConnectionRegistry
+import org.briarproject.bramble.api.db.TransactionManager
 import org.briarproject.bramble.api.event.Event
 import org.briarproject.bramble.api.event.EventBus
+import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.bramble.api.sync.GroupId
 import org.briarproject.briar.api.conversation.ConversationManager
 import org.briarproject.briar.api.privategroup.PrivateGroupManager
-import org.briarproject.briar.desktop.viewmodel.BriarEventListenerViewModel
+import org.briarproject.briar.desktop.threading.BriarExecutors
+import org.briarproject.briar.desktop.utils.clearAndAddAll
+import org.briarproject.briar.desktop.viewmodel.EventListenerDbViewModel
 import javax.inject.Inject
 
 class PrivateGroupListViewModel
@@ -17,24 +22,30 @@ constructor(
     private val privateGroupManager: PrivateGroupManager,
     val conversationManager: ConversationManager,
     val connectionRegistry: ConnectionRegistry,
+    briarExecutors: BriarExecutors,
+    lifecycleManager: LifecycleManager,
+    db: TransactionManager,
     eventBus: EventBus,
-) : BriarEventListenerViewModel(eventBus) {
+) : EventListenerDbViewModel(briarExecutors, lifecycleManager, db, eventBus) {
 
-    private val _fullPrivateGroupList = mutableListOf<PrivateGroupItem>()
+    private val _fullPrivateGroupList = mutableStateListOf<PrivateGroupItem>()
 
     val privateGroupList: List<PrivateGroupItem> = _fullPrivateGroupList
 
     private fun loadPrivateGroups() {
-        _fullPrivateGroupList.apply {
-            clear()
-            addAll(
-                privateGroupManager.privateGroups.map { privateGroup ->
+        val privateGroupList = mutableListOf<PrivateGroupItem>()
+        runOnDbThreadWithTransaction(true) { txn ->
+            privateGroupList.addAll(
+                privateGroupManager.getPrivateGroups(txn).map { privateGroup ->
                     PrivateGroupItem(
                         privateGroup,
-                        privateGroupManager.getGroupCount(privateGroup.id),
+                        privateGroupManager.getGroupCount(txn, privateGroup.id),
                     )
                 }
             )
+            txn.attach {
+                _fullPrivateGroupList.clearAndAddAll(privateGroupList)
+            }
         }
     }
 
