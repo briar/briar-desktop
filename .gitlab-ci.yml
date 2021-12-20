@@ -12,13 +12,16 @@ workflow:
     - if: '$CI_COMMIT_BRANCH'
     - if: '$CI_COMMIT_TAG'
 
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+
 test:
   stage: test
   before_script:
     - set -e
     - export GRADLE_USER_HOME=$PWD/.gradle
   script:
-    - ./gradlew --no-daemon ktlintCheck
+    - ./gradlew --no-daemon :check
   after_script:
     # these file change every time and should not be cached
     - rm -f $GRADLE_USER_HOME/caches/modules-2/modules-2.lock
