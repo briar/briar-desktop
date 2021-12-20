@@ -1,5 +1,29 @@
 # Hacking guide
 
+## Running style checks and unit tests
+
+When working on the code base, consider running the style checks and unit
+tests locally, because the CI will complain anyway:
+
+    ./gradlew :check
+
+The above command does both. To run style checks only:
+
+    ./gradlew ktlintCheck
+
+If that fails, try formatting:
+
+    ./gradlew ktlintFormat
+
+Running unit tests only:
+
+    ./gradlew :test --tests "*"
+
+That will run tests from the desktop project only. On the other hand, this
+will also run tests on briar core:
+
+    ./gradlew test
+
 ## Testing different locales
 
 To test the app with a different locale, add this e.g. in `Main.kt`:
