@@ -18,6 +18,7 @@ test:
     - set -e
     - export GRADLE_USER_HOME=$PWD/.gradle
   script:
+    - git submodule update
     - ./gradlew --no-daemon ktlintCheck
   after_script:
     # these file change every time and should not be cached
