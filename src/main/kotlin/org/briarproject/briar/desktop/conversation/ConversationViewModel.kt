@@ -45,6 +45,7 @@ import org.briarproject.briar.desktop.utils.clearAndAddAll
 import org.briarproject.briar.desktop.utils.replaceIf
 import org.briarproject.briar.desktop.utils.replaceIfIndexed
 import org.briarproject.briar.desktop.viewmodel.EventListenerDbViewModel
+import org.briarproject.briar.desktop.viewmodel.SingleStateEvent
 import org.briarproject.briar.desktop.viewmodel.asList
 import org.briarproject.briar.desktop.viewmodel.asState
 import javax.inject.Inject
@@ -133,7 +134,7 @@ constructor(
                 )
                 val visitor = ConversationVisitor(contactItem.value!!.name, messagingManager, txn)
                 val msg = h.accept(visitor)!!
-                txn.attach { _messages.add(msg) }
+                txn.attach { addMessage(msg) }
             } catch (e: UnexpectedTimerException) {
                 // todo: handle this properly
                 LOG.warn(e) {}
@@ -161,6 +162,10 @@ constructor(
         val amount: Int,
         val firstIndex: Int
     )
+
+    val onMessageAddedToBottom = SingleStateEvent<MessageAddedType>()
+
+    enum class MessageAddedType { OUTGOING, INCOMING }
 
     fun markMessagesRead(indices: List<Int>) {
         val id = _contactId.value!!
@@ -259,7 +264,7 @@ constructor(
                     runOnDbThreadWithTransaction(true) { txn ->
                         val visitor = ConversationVisitor(contactItem.value!!.name, messagingManager, txn)
                         val msg = h.accept(visitor)!!
-                        txn.attach { _messages.add(msg) }
+                        txn.attach { addMessage(msg) }
                     }
                 }
             }
@@ -300,6 +305,14 @@ constructor(
                 }
             }
         }
+    }
+
+    private fun addMessage(msg: ConversationItem) {
+        // currently this method adds the message always at the end
+        // todo: instead we should check where to insert it to maintain the timely order
+        _messages.add(msg)
+        val type = if (msg.isIncoming) MessageAddedType.INCOMING else MessageAddedType.OUTGOING
+        onMessageAddedToBottom.emit(type)
     }
 
     private fun markMessages(

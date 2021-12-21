@@ -4,16 +4,19 @@ import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Button
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -43,6 +46,7 @@ import org.briarproject.briar.desktop.ui.Loader
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 import org.briarproject.briar.desktop.utils.replaceIfIndexed
+import org.briarproject.briar.desktop.viewmodel.SingleStateEvent
 import java.time.Instant
 
 fun main() = preview(
@@ -51,6 +55,8 @@ fun main() = preview(
 ) {
     val numMessages = getIntParameter("num_messages")
     val initialFirstUnreadIndex = getIntParameter("first_unread_index")
+
+    val onMessageAddedToBottom = remember { SingleStateEvent<ConversationViewModel.MessageAddedType>() }
 
     // re-create messages and currentUnreadMessageInfo as soon as numMessages or initialFirstUnreadIndex change
     val loading by produceState(true, numMessages, initialFirstUnreadIndex) { value = true; delay(500); value = false }
@@ -89,20 +95,44 @@ fun main() = preview(
         return@preview
     }
 
-    ConversationList(
-        padding = PaddingValues(0.dp),
-        messages = messages,
-        initialFirstUnreadMessageIndex = initialFirstUnreadIndex,
-        currentUnreadMessagesInfo = currentUnreadMessagesInfo,
-        markMessagesRead = { lst ->
-            messages.replaceIfIndexed(
-                { idx, it -> idx in lst && !it.isRead },
-                { _, it -> it.markRead() }
-            )
-        },
-        respondToRequest = { _, _ -> },
-        deleteMessage = {}
-    )
+    Column {
+        Button(
+            onClick = {
+                messages.add(
+                    ConversationMessageItem(
+                        text = "Extra Message",
+                        id = MessageId(getRandomId()),
+                        groupId = GroupId(getRandomId()),
+                        time = Instant.now().toEpochMilli(),
+                        autoDeleteTimer = 0,
+                        isIncoming = true,
+                        isRead = false,
+                        isSent = false,
+                        isSeen = false
+                    )
+                )
+                onMessageAddedToBottom.emit(ConversationViewModel.MessageAddedType.INCOMING)
+            }
+        ) {
+            Text("Add new incoming message to bottom")
+        }
+
+        ConversationList(
+            padding = PaddingValues(0.dp),
+            messages = messages,
+            initialFirstUnreadMessageIndex = initialFirstUnreadIndex,
+            currentUnreadMessagesInfo = currentUnreadMessagesInfo,
+            onMessageAddedToBottom = onMessageAddedToBottom,
+            markMessagesRead = { lst ->
+                messages.replaceIfIndexed(
+                    { idx, it -> idx in lst && !it.isRead },
+                    { _, it -> it.markRead() }
+                )
+            },
+            respondToRequest = { _, _ -> },
+            deleteMessage = {},
+        )
+    }
 }
 
 @Composable
@@ -111,6 +141,7 @@ fun ConversationList(
     messages: List<ConversationItem>,
     initialFirstUnreadMessageIndex: Int,
     currentUnreadMessagesInfo: ConversationViewModel.UnreadMessagesInfo,
+    onMessageAddedToBottom: SingleStateEvent<ConversationViewModel.MessageAddedType>,
     markMessagesRead: (List<Int>) -> Unit,
     respondToRequest: (ConversationRequestItem, Boolean) -> Unit,
     deleteMessage: (MessageId) -> Unit,
@@ -129,19 +160,20 @@ fun ConversationList(
         LazyColumn(
             state = scrollState,
             contentPadding = PaddingValues(top = 8.dp, bottom = 8.dp),
-            modifier = Modifier.fillMaxSize().padding(end = 12.dp)
+            modifier = Modifier.fillMaxSize().padding(end = 12.dp, top = 8.dp, bottom = 8.dp)
         ) {
             itemsIndexed(messages) { idx, m ->
                 if (idx == initialFirstUnreadMessageIndex) {
                     UnreadMessagesMarker()
                 }
                 when (m) {
-                    is ConversationMessageItem -> ConversationMessageItemView(m)
-                    is ConversationNoticeItem -> ConversationNoticeItemView(m)
+                    is ConversationMessageItem -> ConversationMessageItemView(m, deleteMessage)
+                    is ConversationNoticeItem -> ConversationNoticeItemView(m, deleteMessage)
                     is ConversationRequestItem ->
                         ConversationRequestItemView(
                             m,
                             onResponse = { accept -> respondToRequest(m, accept) },
+                            onDelete = deleteMessage
                         )
                 }
             }
@@ -178,6 +210,15 @@ fun ConversationList(
             }
         }
     }
+
+    onMessageAddedToBottom.react { type ->
+        // scroll to bottom for new *outgoing* message or if scroll position was at last message before
+        if (type == ConversationViewModel.MessageAddedType.OUTGOING || scrollState.isScrolledToPenultimate()) {
+            scope.launch {
+                scrollState.animateScrollToItem(messages.lastIndex)
+            }
+        }
+    }
 }
 
 @Composable
@@ -210,4 +251,10 @@ fun UnreadMessagesFAB(
         counter,
         Modifier.align(Alignment.TopEnd).offset(3.dp, (-3).dp)
     )
+}
+
+fun LazyListState.isScrolledToPenultimate(): Boolean {
+    val last = layoutInfo.visibleItemsInfo.lastOrNull() ?: return false
+    return last.index == layoutInfo.totalItemsCount - 1 &&
+        last.offset == layoutInfo.viewportEndOffset
 }

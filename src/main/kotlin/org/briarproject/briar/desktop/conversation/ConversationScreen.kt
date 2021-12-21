@@ -78,6 +78,7 @@ fun ConversationScreen(
                     viewModel.messages,
                     viewModel.initialFirstUnreadMessageIndex.value,
                     viewModel.currentUnreadMessagesInfo.value,
+                    viewModel.onMessageAddedToBottom,
                     viewModel::markMessagesRead,
                     viewModel::respondToRequest,
                     viewModel::deleteMessage,
