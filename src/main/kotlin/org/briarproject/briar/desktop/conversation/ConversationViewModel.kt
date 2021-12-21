@@ -85,6 +85,10 @@ constructor(
             val text = _newMessage.value
             _newMessage.value = ""
 
+            val substituted = text.replace("\r", "\\r")
+                .replace("\n", "\\n")
+            println("Sending: '$substituted'")
+
             // don't send empty or blank messages
             if (text.isBlank()) return
 
