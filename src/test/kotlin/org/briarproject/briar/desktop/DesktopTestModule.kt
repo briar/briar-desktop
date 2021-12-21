@@ -18,7 +18,7 @@ import org.briarproject.bramble.battery.DefaultBatteryManagerModule
 import org.briarproject.bramble.event.DefaultEventExecutorModule
 import org.briarproject.bramble.network.JavaNetworkModule
 import org.briarproject.bramble.plugin.tor.CircumventionModule
-import org.briarproject.bramble.plugin.tor.UnixTorPluginFactory
+import org.briarproject.bramble.plugin.tor.DesktopTorPluginFactory
 import org.briarproject.bramble.socks.SocksModule
 import org.briarproject.bramble.system.ClockModule
 import org.briarproject.bramble.system.DefaultTaskSchedulerModule
@@ -89,7 +89,7 @@ internal class DesktopTestModule(
     internal fun provideTorControlPort() = controlPort
 
     @Provides
-    internal fun providePluginConfig(tor: UnixTorPluginFactory): PluginConfig {
+    internal fun providePluginConfig(tor: DesktopTorPluginFactory): PluginConfig {
         val duplex: List<DuplexPluginFactory> =
             if (isLinux() || isMac()) listOf(tor) else emptyList()
         return object : PluginConfig {
