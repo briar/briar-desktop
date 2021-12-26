@@ -19,13 +19,52 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 import org.briarproject.briar.desktop.viewmodel.viewModel
+
+fun main() = preview(
+    "visible" to true,
+    "remote link" to "",
+    "local link" to "briar://ady23gvb2r76afe5zhxh5kvnh4b22zrcnxibn63tfknrdcwrw7zrs",
+    "alias" to "Alice",
+) {
+    if (getBooleanParameter("visible")) {
+        AddContactDialog(
+            onClose = { setBooleanParameter("visible", false) },
+            remoteHandshakeLink = getStringParameter("remote link"),
+            setRemoteHandshakeLink = { link -> setStringParameter("remote link", link) },
+            alias = getStringParameter("alias"),
+            setAddContactAlias = { alias -> setStringParameter("alias", alias) },
+            handshakeLink = getStringParameter("local link"),
+            onSubmitAddContactDialog = {}
+        )
+    }
+}
+
+@Composable
+fun AddContactDialog(
+    onClose: () -> Unit,
+    viewModel: AddContactViewModel = viewModel(),
+) = AddContactDialog(
+    onClose = onClose,
+    viewModel.remoteHandshakeLink.value,
+    viewModel::setRemoteHandshakeLink,
+    viewModel.alias.value,
+    viewModel::setAddContactAlias,
+    viewModel.handshakeLink.value,
+    viewModel::onSubmitAddContactDialog,
+)
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun AddContactDialog(
     onClose: () -> Unit,
-    viewModel: AddContactViewModel = viewModel(),
+    remoteHandshakeLink: String,
+    setRemoteHandshakeLink: (String) -> Unit,
+    alias: String,
+    setAddContactAlias: (String) -> Unit,
+    handshakeLink: String,
+    onSubmitAddContactDialog: () -> Unit,
 ) {
     AlertDialog(
         onDismissRequest = onClose,
@@ -44,8 +83,8 @@ fun AddContactDialog(
                         Modifier.width(128.dp).align(Alignment.CenterVertically),
                     )
                     TextField(
-                        viewModel.remoteHandshakeLink.value,
-                        viewModel::setRemoteHandshakeLink,
+                        remoteHandshakeLink,
+                        setRemoteHandshakeLink,
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -55,8 +94,8 @@ fun AddContactDialog(
                         Modifier.width(128.dp).align(Alignment.CenterVertically),
                     )
                     TextField(
-                        viewModel.alias.value,
-                        viewModel::setAddContactAlias,
+                        alias,
+                        setAddContactAlias,
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -66,7 +105,7 @@ fun AddContactDialog(
                         modifier = Modifier.width(128.dp).align(Alignment.CenterVertically),
                     )
                     TextField(
-                        viewModel.handshakeLink.value,
+                        handshakeLink,
                         onValueChange = {},
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -74,7 +113,7 @@ fun AddContactDialog(
             }
         },
         confirmButton = {
-            Button(onClick = { viewModel.onSubmitAddContactDialog(); onClose() }) {
+            Button(onClick = { onSubmitAddContactDialog(); onClose() }) {
                 Text("Add")
             }
         },

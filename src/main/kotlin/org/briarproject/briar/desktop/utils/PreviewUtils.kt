@@ -34,7 +34,7 @@ object PreviewUtils {
     class PreviewScope {
         private val random = Random(0)
 
-        val parameters = mutableMapOf<String, State<Any>>()
+        val parameters = mutableMapOf<String, MutableState<Any>>()
 
         private inline fun <reified T> getDatatype(name: String): T {
             val state = parameters[name] ?: throw IllegalArgumentException("No parameter found with name '$name'")
@@ -42,13 +42,27 @@ object PreviewUtils {
             return state.value as T
         }
 
+        private inline fun <reified T> setDatatype(name: String, value: T) {
+            val state = parameters[name] ?: throw IllegalArgumentException("No parameter found with name '$name'")
+            if (state.value !is T) throw IllegalArgumentException("Parameter '$name' is not of type ${T::class.simpleName}")
+            state.value = value!!
+        }
+
         fun getStringParameter(name: String) = getDatatype<String>(name)
+
+        fun setStringParameter(name: String, value: String) = setDatatype(name, value)
 
         fun getBooleanParameter(name: String) = getDatatype<Boolean>(name)
 
+        fun setBooleanParameter(name: String, value: Boolean) = setDatatype(name, value)
+
         fun getIntParameter(name: String) = getDatatype<Int>(name)
 
+        fun setIntParameter(name: String, value: Int) = setDatatype(name, value)
+
         fun getLongParameter(name: String) = getDatatype<Long>(name)
+
+        fun setLongParameter(name: String, value: Long) = setDatatype(name, value)
 
         @Composable
         fun getRandomId() =
@@ -68,7 +82,7 @@ object PreviewUtils {
             editField(value)
         }
 
-        parameters[name] = value
+        parameters[name] = value as MutableState<Any>
     }
 
     @Composable
