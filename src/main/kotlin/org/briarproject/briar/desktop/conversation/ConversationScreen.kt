@@ -127,11 +127,13 @@ fun ConversationScreen(
             ) {
                 ContactInfoDrawer(
                     contactItem,
-                    closeInfoDrawer = {
+                    closeInfoDrawer = { reload ->
                         setInfoDrawer(false)
-                        // reload all messages to also show introduction message
-                        // todo: might be better to have an event to react to, also for (all) outgoing messages
-                        viewModel.reloadMessages()
+                        if (reload) {
+                            // reload all messages to also show introduction message
+                            // todo: might be better to have an event to react to, also for (all) outgoing messages
+                            viewModel.reloadMessages()
+                        }
                     },
                     contactDrawerState
                 )

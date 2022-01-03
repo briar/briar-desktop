@@ -39,7 +39,7 @@ import java.util.Locale
 @Composable
 fun ContactDrawerMakeIntro(
     contactItem: ContactItem,
-    closeInfoDrawer: () -> Unit,
+    closeInfoDrawer: (reload: Boolean) -> Unit,
     viewModel: IntroductionViewModel = viewModel(),
 ) {
     LaunchedEffect(contactItem) {
@@ -50,7 +50,7 @@ fun ContactDrawerMakeIntro(
             Column {
                 Row(Modifier.fillMaxWidth().height(HEADER_SIZE)) {
                     IconButton(
-                        onClick = closeInfoDrawer,
+                        onClick = { closeInfoDrawer(false) },
                         Modifier.padding(horizontal = 11.dp).size(32.dp).align(Alignment.CenterVertically)
                     ) {
                         Icon(Icons.Filled.Close, i18n("access.introduction.close"))
@@ -111,7 +111,7 @@ fun ContactDrawerMakeIntro(
                 TextButton(
                     onClick = {
                         viewModel.makeIntroduction()
-                        closeInfoDrawer()
+                        closeInfoDrawer(true)
                     },
                     Modifier.fillMaxWidth()
                 ) {

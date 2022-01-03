@@ -14,7 +14,7 @@ enum class ContactInfoDrawerState {
 @Composable
 fun ContactInfoDrawer(
     contactItem: ContactItem,
-    closeInfoDrawer: () -> Unit,
+    closeInfoDrawer: (reload: Boolean) -> Unit,
     drawerState: ContactInfoDrawerState
 ) {
     when (drawerState) {

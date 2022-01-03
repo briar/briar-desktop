@@ -65,6 +65,9 @@ fun main() = preview(
     )
 }
 
+/**
+ * Composable for private messages containing a request to action.
+ */
 @Composable
 fun ConversationRequestItemView(
     m: ConversationRequestItem,

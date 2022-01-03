@@ -43,6 +43,7 @@ internal class ConversationVisitor(
     @DatabaseExecutor
     override fun visitPrivateMessageHeader(h: PrivateMessageHeader): ConversationItem {
         val item = ConversationMessageItem(h)
+        // todo: handle attachments here
         if (h.hasText()) {
             item.text = loadMessageText(txn, h.id)
         } else {
@@ -52,23 +53,22 @@ internal class ConversationVisitor(
     }
 
     override fun visitBlogInvitationRequest(r: BlogInvitationRequest): ConversationItem {
-
         return if (r.isLocal)
             ConversationNoticeItem(
                 i18nF("blog.invitation.sent", r.name, contactName),
                 r
             )
         else {
-            val text = i18nF("blog.invitation.received", contactName, r.name)
+            val notice = i18nF("blog.invitation.received", contactName, r.name)
             // todo: add proper check for feature support
             if (false)
                 ConversationRequestItem(
-                    text,
+                    notice,
                     ConversationRequestItem.RequestType.BLOG, r
                 )
             else
                 ConversationNoticeItem(
-                    text + "\n" + i18n("unsupported_feature"),
+                    notice + "\n" + i18n("unsupported_feature"),
                     r
                 )
         }
@@ -76,7 +76,7 @@ internal class ConversationVisitor(
 
     override fun visitBlogInvitationResponse(r: BlogInvitationResponse): ConversationItem {
         return if (r.isLocal) {
-            val text = when {
+            val notice = when {
                 r.wasAccepted() ->
                     i18nF("blog.invitation.response.accepted.sent", contactName)
                 r.isAutoDecline ->
@@ -84,15 +84,15 @@ internal class ConversationVisitor(
                 else ->
                     i18nF("blog.invitation.response.declined.sent", contactName)
             }
-            ConversationNoticeItem(text, r)
+            ConversationNoticeItem(notice, r)
         } else {
-            val text = when {
+            val notice = when {
                 r.wasAccepted() ->
                     i18nF("blog.invitation.response.accepted.received", contactName)
                 else ->
                     i18nF("blog.invitation.response.declined.received", contactName)
             }
-            ConversationNoticeItem(text, r)
+            ConversationNoticeItem(notice, r)
         }
     }
 
@@ -103,16 +103,16 @@ internal class ConversationVisitor(
                 r
             )
         else {
-            val text = i18nF("forum.invitation.received", contactName, r.name)
+            val notice = i18nF("forum.invitation.received", contactName, r.name)
             // todo: add proper check for feature support
             if (false)
                 ConversationRequestItem(
-                    text,
+                    notice,
                     ConversationRequestItem.RequestType.FORUM, r
                 )
             else
                 ConversationNoticeItem(
-                    text + "\n" + i18n("unsupported_feature"),
+                    notice + "\n" + i18n("unsupported_feature"),
                     r
                 )
         }
@@ -120,7 +120,7 @@ internal class ConversationVisitor(
 
     override fun visitForumInvitationResponse(r: ForumInvitationResponse): ConversationItem {
         return if (r.isLocal) {
-            val text = when {
+            val notice = when {
                 r.wasAccepted() ->
                     i18nF("forum.invitation.response.accepted.sent", contactName)
                 r.isAutoDecline ->
@@ -128,15 +128,15 @@ internal class ConversationVisitor(
                 else ->
                     i18nF("forum.invitation.response.declined.sent", contactName)
             }
-            ConversationNoticeItem(text, r)
+            ConversationNoticeItem(notice, r)
         } else {
-            val text = when {
+            val notice = when {
                 r.wasAccepted() ->
                     i18nF("forum.invitation.response.accepted.received", contactName)
                 else ->
                     i18nF("forum.invitation.response.declined.received", contactName)
             }
-            ConversationNoticeItem(text, r)
+            ConversationNoticeItem(notice, r)
         }
     }
 
@@ -147,16 +147,16 @@ internal class ConversationVisitor(
                 r
             )
         else {
-            val text = i18nF("group.invitation.received", contactName, r.name)
+            val notice = i18nF("group.invitation.received", contactName, r.name)
             // todo: add proper check for feature support
             if (false)
                 ConversationRequestItem(
-                    text,
+                    notice,
                     ConversationRequestItem.RequestType.GROUP, r
                 )
             else
                 ConversationNoticeItem(
-                    text + "\n" + i18n("unsupported_feature"),
+                    notice + "\n" + i18n("unsupported_feature"),
                     r
                 )
         }
@@ -164,7 +164,7 @@ internal class ConversationVisitor(
 
     override fun visitGroupInvitationResponse(r: GroupInvitationResponse): ConversationItem {
         return if (r.isLocal) {
-            val text = when {
+            val notice = when {
                 r.wasAccepted() ->
                     i18nF("group.invitation.response.accepted.sent", contactName)
                 r.isAutoDecline ->
@@ -172,15 +172,15 @@ internal class ConversationVisitor(
                 else ->
                     i18nF("group.invitation.response.declined.sent", contactName)
             }
-            ConversationNoticeItem(text, r)
+            ConversationNoticeItem(notice, r)
         } else {
-            val text = when {
+            val notice = when {
                 r.wasAccepted() ->
                     i18nF("group.invitation.response.accepted.received", contactName)
                 else ->
                     i18nF("group.invitation.response.declined.received", contactName)
             }
-            ConversationNoticeItem(text, r)
+            ConversationNoticeItem(notice, r)
         }
     }
 
@@ -192,7 +192,7 @@ internal class ConversationVisitor(
                 r
             )
         else {
-            val text = when {
+            val notice = when {
                 r.wasAnswered() ->
                     i18nF("introduction.request.answered.received", contactName, name)
                 r.isContact ->
@@ -201,7 +201,7 @@ internal class ConversationVisitor(
                     i18nF("introduction.request.received", contactName, name)
             }
             ConversationRequestItem(
-                text,
+                notice,
                 ConversationRequestItem.RequestType.INTRODUCTION, r
             )
         }
@@ -210,7 +210,7 @@ internal class ConversationVisitor(
     override fun visitIntroductionResponse(r: IntroductionResponse): ConversationItem {
         val name = getContactDisplayName(r.introducedAuthor.name, r.introducedAuthorInfo.alias)
         return if (r.isLocal) {
-            val text = when {
+            val notice = when {
                 r.wasAccepted() -> {
                     val suffix = if (r.canSucceed())
                         "\n\n" + i18nF("introduction.response.accepted.sent.info", name)
@@ -222,9 +222,9 @@ internal class ConversationVisitor(
                 else ->
                     i18nF("introduction.response.declined.sent", name)
             }
-            ConversationNoticeItem(text, r)
+            ConversationNoticeItem(notice, r)
         } else {
-            val text = when {
+            val notice = when {
                 r.wasAccepted() ->
                     i18nF("introduction.response.accepted.received", contactName, name)
                 r.isIntroducer ->
@@ -232,7 +232,7 @@ internal class ConversationVisitor(
                 else ->
                     i18nF("introduction.response.declined.received_by_introducee", contactName, name)
             }
-            ConversationNoticeItem(text, r)
+            ConversationNoticeItem(notice, r)
         }
     }
 }

@@ -39,6 +39,9 @@ fun main() = preview(
     )
 }
 
+/**
+ * Composable for normal private text messages.
+ */
 @Composable
 fun ConversationMessageItemView(m: ConversationMessageItem) {
     val textColor = if (m.isIncoming) MaterialTheme.colors.textPrimary else Color.White

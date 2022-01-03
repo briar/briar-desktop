@@ -140,6 +140,9 @@ fun main() = preview {
     }
 }
 
+/**
+ * Base Composable for all kind of messages in private chats.
+ */
 @Composable
 fun ConversationItemView(
     item: ConversationItem,
