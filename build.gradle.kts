@@ -99,6 +99,8 @@ compose.desktop {
             packageVersion = "0.0.1"
             description = "Secure messaging, anywhere"
             vendor = "The Briar Project"
+            copyright = "2021-2022 The Briar Project"
+            licenseFile.set(project.file("LICENSE.txt"))
             // As described at https://github.com/JetBrains/compose-jb/tree/master/tutorials/Native_distributions_and_local_execution#configuring-included-jdk-modules
             // the Gradle plugin does not automatically determine necessary JDK modules to ship
             // so that we need to define required modules here:
