@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.window.ApplicationScope
 import androidx.compose.ui.window.application
+import mu.KotlinLogging
 import org.briarproject.bramble.BrambleCoreEagerSingletons
 import org.briarproject.bramble.api.plugin.TorConstants.DEFAULT_CONTROL_PORT
 import org.briarproject.bramble.api.plugin.TorConstants.DEFAULT_SOCKS_PORT
@@ -11,7 +12,6 @@ import org.briarproject.briar.BriarCoreEagerSingletons
 import org.briarproject.briar.desktop.TestUtils.getDataDir
 import org.briarproject.briar.desktop.utils.LogUtils
 import java.util.logging.Level.ALL
-import java.util.logging.Logger
 
 internal class RunWithMultipleTemporaryAccounts(
     private val names: List<String>,
@@ -19,7 +19,7 @@ internal class RunWithMultipleTemporaryAccounts(
 ) {
 
     companion object {
-        private val LOG = Logger.getLogger(RunWithMultipleTemporaryAccounts::class.java.name)
+        private val LOG = KotlinLogging.logger {}
     }
 
     private val apps = mutableListOf<BriarDesktopTestApp>()

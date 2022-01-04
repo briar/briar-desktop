@@ -1,6 +1,7 @@
 package org.briarproject.briar.desktop.contact.add.remote
 
 import androidx.compose.runtime.mutableStateOf
+import mu.KotlinLogging
 import org.briarproject.bramble.api.FormatException
 import org.briarproject.bramble.api.contact.ContactManager
 import org.briarproject.bramble.api.contact.HandshakeLinkConstants
@@ -24,6 +25,10 @@ constructor(
     db: TransactionManager,
     private val contactManager: ContactManager,
 ) : DbViewModel(briarExecutors, lifecycleManager, db) {
+
+    companion object {
+        private val LOG = KotlinLogging.logger {}
+    }
 
     override fun onInit() {
         super.onInit()
@@ -59,15 +64,18 @@ constructor(
 
     private fun addPendingContact(link: String, alias: String) {
         if (_handshakeLink.value == link) {
-            println("Please enter contact's link, not your own")
+            LOG.warn { "Please enter contact's link, not your own" }
+            // TODO: show warning to user
             return
         }
         if (remoteHandshakeLinkIsInvalid(link)) {
-            println("Remote handshake link is invalid")
+            LOG.warn { "Remote handshake link is invalid" }
+            // TODO: show message to user
             return
         }
         if (aliasIsInvalid(alias)) {
-            println("Alias is invalid")
+            LOG.warn { "Alias is invalid" }
+            // TODO: show message to user
             return
         }
 
@@ -75,11 +83,11 @@ constructor(
             try {
                 contactManager.addPendingContact(txn, link, alias)
             } catch (e: FormatException) {
-                println("Link is invalid")
-                println(e.stackTrace)
+                LOG.warn(e) { "Link is invalid" }
+                // TODO: show error to user
             } catch (e: GeneralSecurityException) {
-                println("Public key is invalid")
-                println(e.stackTrace)
+                LOG.warn(e) { "Public key is invalid" }
+                // TODO: show error to user
             }
             /*
             TODO: Warn user that the following two errors might be an attack
@@ -89,11 +97,11 @@ constructor(
 
             */
             catch (e: ContactExistsException) {
-                println("Contact already exists")
-                println(e.stackTrace)
+                LOG.warn(e) { "Contact already exists" }
+                // TODO: show error to user
             } catch (e: PendingContactExistsException) {
-                println("Pending Contact already exists")
-                println(e.stackTrace)
+                LOG.warn(e) { "Pending Contact already exists" }
+                // TODO: show error to user
             }
         }
     }
