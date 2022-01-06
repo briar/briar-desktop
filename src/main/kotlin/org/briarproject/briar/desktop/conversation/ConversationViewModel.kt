@@ -73,6 +73,7 @@ constructor(
     private val _contactId = mutableStateOf<ContactId?>(null)
     private val _contactItem = mutableStateOf<ContactItem?>(null)
     private val _messages = mutableStateListOf<ConversationItem>()
+    private val _loadingMessages = mutableStateOf(false)
 
     private val _newMessage = mutableStateOf("")
 
@@ -80,6 +81,7 @@ constructor(
 
     val contactItem = _contactItem.asState()
     val messages = _messages.asList()
+    val loadingMessages = _loadingMessages.asState()
 
     val newMessage = _newMessage.asState()
 
@@ -201,6 +203,7 @@ constructor(
     }
 
     private fun loadMessages(txn: Transaction, contact: ContactItem) {
+        _loadingMessages.value = true
         try {
             var start = LogUtils.now()
             val headers = conversationManager.getMessageHeaders(txn, contact.idWrapper.contactId)
@@ -215,6 +218,8 @@ constructor(
         } catch (e: NoSuchContactException) {
             // todo: handle this properly
             LOG.warn(e) {}
+        } finally {
+            _loadingMessages.value = false
         }
     }
 
@@ -306,11 +311,12 @@ constructor(
     }
 
     fun deleteAllMessages() = runOnDbThread {
+        _loadingMessages.value = true
         try {
             val result = conversationManager.deleteAllMessages(_contactId.value!!)
             reloadConversationAfterDeletingMessages(result)
         } finally {
-            // todo:
+            _loadingMessages.value = false
         }
     }
 

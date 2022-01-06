@@ -75,6 +75,11 @@ fun ConversationScreen(
                 )
             },
             content = { padding ->
+                if (viewModel.loadingMessages.value) {
+                    Loader()
+                    return@Scaffold
+                }
+
                 LazyColumn(
                     state = scrollState,
                     // reverseLayout to display most recent message (index 0) at the bottom
