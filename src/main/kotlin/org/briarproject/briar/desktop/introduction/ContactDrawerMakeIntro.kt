@@ -23,7 +23,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.briarproject.briar.desktop.contact.ContactCard
@@ -45,9 +44,9 @@ fun ContactDrawerMakeIntro(
     LaunchedEffect(contactItem) {
         viewModel.setFirstContact(contactItem)
     }
-    if (!viewModel.secondScreen.value) {
-        Surface {
-            Column {
+    Surface {
+        Column {
+            if (!viewModel.secondScreen.value) {
                 Row(Modifier.fillMaxWidth().height(HEADER_SIZE)) {
                     IconButton(
                         onClick = { closeInfoDrawer(false) },
@@ -57,8 +56,8 @@ fun ContactDrawerMakeIntro(
                     }
                     Text(
                         text = i18nF("introduction.title_first", contactItem.displayName),
+                        modifier = Modifier.align(Alignment.CenterVertically),
                         fontSize = 16.sp,
-                        modifier = Modifier.align(Alignment.CenterVertically)
                     )
                 }
                 HorizontalDivider()
@@ -72,51 +71,57 @@ fun ContactDrawerMakeIntro(
                             )
                     }
                 }
-            }
-        }
-    } else {
-        Column {
-            Row(Modifier.fillMaxWidth().height(HEADER_SIZE)) {
-                IconButton(
-                    onClick = viewModel::backToFirstScreen,
-                    Modifier.padding(horizontal = 11.dp).size(32.dp).align(Alignment.CenterVertically)
-                ) {
-                    Icon(Icons.Filled.ArrowBack, i18n("access.introduction.back.contact"), tint = Color.White)
+            } else {
+                Row(Modifier.fillMaxWidth().height(HEADER_SIZE)) {
+                    IconButton(
+                        onClick = viewModel::backToFirstScreen,
+                        Modifier.padding(horizontal = 11.dp).size(32.dp).align(Alignment.CenterVertically)
+                    ) {
+                        Icon(Icons.Filled.ArrowBack, i18n("access.introduction.back.contact"))
+                    }
+                    Text(
+                        text = i18n("introduction.title_second"),
+                        modifier = Modifier.align(Alignment.CenterVertically),
+                        fontSize = 16.sp,
+                    )
                 }
-                Text(
-                    text = i18n("introduction.title_second"),
-                    fontSize = 16.sp,
-                    modifier = Modifier.align(Alignment.CenterVertically)
-                )
-            }
-            Row(Modifier.fillMaxWidth().padding(12.dp), horizontalArrangement = Arrangement.SpaceAround) {
-                Column(Modifier.align(Alignment.CenterVertically)) {
-                    ProfileCircle(36.dp, viewModel.firstContact.value!!.authorId.bytes)
-                    Text(viewModel.firstContact.value!!.displayName, Modifier.padding(top = 4.dp), Color.White, 16.sp)
+                Row(Modifier.fillMaxWidth().padding(12.dp), horizontalArrangement = Arrangement.SpaceAround) {
+                    Column(Modifier.align(Alignment.CenterVertically)) {
+                        ProfileCircle(36.dp, viewModel.firstContact.value!!.authorId.bytes)
+                        Text(
+                            text = viewModel.firstContact.value!!.displayName,
+                            modifier = Modifier.padding(top = 4.dp),
+                            fontSize = 16.sp
+                        )
+                    }
+                    Icon(Icons.Filled.SwapHoriz, i18n("access.swap"), modifier = Modifier.size(48.dp))
+                    Column(Modifier.align(Alignment.CenterVertically)) {
+                        ProfileCircle(36.dp, viewModel.secondContact.value!!.authorId.bytes)
+                        Text(
+                            text = viewModel.secondContact.value!!.displayName,
+                            modifier = Modifier.padding(top = 4.dp),
+                            fontSize = 16.sp
+                        )
+                    }
                 }
-                Icon(Icons.Filled.SwapHoriz, i18n("access.swap"), modifier = Modifier.size(48.dp))
-                Column(Modifier.align(Alignment.CenterVertically)) {
-                    ProfileCircle(36.dp, viewModel.secondContact.value!!.authorId.bytes)
-                    Text(viewModel.secondContact.value!!.displayName, Modifier.padding(top = 4.dp), Color.White, 16.sp)
+                Row(Modifier.padding(8.dp)) {
+                    TextField(
+                        value = viewModel.introductionMessage.value,
+                        onValueChange = viewModel::setIntroductionMessage,
+                        placeholder = { Text(text = i18n("introduction.message")) },
+                    )
                 }
-            }
-            Row(Modifier.padding(8.dp)) {
-                TextField(
-                    viewModel.introductionMessage.value,
-                    viewModel::setIntroductionMessage,
-                    placeholder = { Text(text = i18n("introduction.message")) },
-                )
-            }
-            Row(Modifier.padding(8.dp)) {
-                TextButton(
-                    onClick = {
-                        viewModel.makeIntroduction()
-                        closeInfoDrawer(true)
-                    },
-                    Modifier.fillMaxWidth()
-                ) {
-                    val text = i18n("introduction.introduce")
-                    Text(text.uppercase(Locale.getDefault()))
+                Row(Modifier.padding(8.dp).weight(1f, true)) {
+                    TextButton(
+                        onClick = {
+                            viewModel.makeIntroduction()
+                            closeInfoDrawer(true)
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        val text = i18n("introduction.introduce")
+                        Text(text.uppercase(Locale.getDefault()))
+                    }
                 }
             }
         }
