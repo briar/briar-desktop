@@ -117,3 +117,8 @@ This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 [GNU Affero General Public License](LICENSE.md) for more details.
+
+## Dependency Report
+
+    ./gradlew generateLicenseReport
+    cp -a build/reports/dependency-license/ dependency-report
