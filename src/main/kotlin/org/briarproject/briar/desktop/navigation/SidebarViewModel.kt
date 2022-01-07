@@ -4,6 +4,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import org.briarproject.bramble.api.identity.IdentityManager
 import org.briarproject.bramble.api.identity.LocalAuthor
+import org.briarproject.briar.desktop.DesktopFeatureFlags
 import org.briarproject.briar.desktop.ui.UiMode
 import org.briarproject.briar.desktop.viewmodel.ViewModel
 import javax.inject.Inject
@@ -12,6 +13,7 @@ class SidebarViewModel
 @Inject
 constructor(
     private val identityManager: IdentityManager,
+    val desktopFeatureFlags: DesktopFeatureFlags,
 ) : ViewModel {
 
     override fun onInit() {

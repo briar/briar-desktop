@@ -138,6 +138,15 @@ internal class DesktopTestModule(
 
     @Provides
     @Singleton
+    internal fun provideDesktopFeatureFlags() = object : DesktopFeatureFlags {
+        override fun shouldEnablePrivateGroups() = false
+        override fun shouldEnableForums() = false
+        override fun shouldEnableBlogs() = false
+        override fun shouldEnableTransportSettings() = false
+    }
+
+    @Provides
+    @Singleton
     internal fun provideImageCompressor(imageCompressor: ImageCompressorImpl): ImageCompressor {
         return imageCompressor
     }
