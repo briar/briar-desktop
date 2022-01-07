@@ -206,6 +206,7 @@ constructor(
             val visitor = ConversationVisitor(contact.name, messagingManager, txn)
             val messages = sorted.map { h -> h.accept(visitor)!! }
             LOG.logDuration("Loading messages", start)
+            Thread.sleep(3000)
             txn.attach { _messages.clearAndAddAll(messages) }
         } catch (e: NoSuchContactException) {
             // todo: handle this properly
