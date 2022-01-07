@@ -8,10 +8,8 @@ import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.platform.Font
-import androidx.compose.ui.unit.sp
 
 val Colors.divider: Color get() = if (isLight) Gray300 else Gray800
 val Colors.outline: Color get() = if (isLight) Gray900 else Gray200
