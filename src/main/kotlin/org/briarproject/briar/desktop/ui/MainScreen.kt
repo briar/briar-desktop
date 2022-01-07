@@ -23,7 +23,7 @@ fun MainScreen(
         BriarSidebar(
             viewModel.account.value,
             viewModel.uiMode.value,
-            viewModel::setUiMode
+            viewModel::setUiMode,
         )
         VerticalDivider()
         when (viewModel.uiMode.value) {

@@ -132,6 +132,17 @@ internal class DesktopModule(
 
     @Provides
     @Singleton
+    internal fun provideDesktopFeatureFlags() = object : DesktopFeatureFlags {
+        // TODO: once we have shouldEnableBlogsInCore() in briar core, wire them up with these here
+        // so that the value for shouldEnableBlogs() is always the same the respective core flag.
+        override fun shouldEnablePrivateGroups() = false
+        override fun shouldEnableForums() = false
+        override fun shouldEnableBlogs() = false
+        override fun shouldEnableTransportSettings() = false
+    }
+
+    @Provides
+    @Singleton
     internal fun provideImageCompressor(imageCompressor: ImageCompressorImpl): ImageCompressor {
         return imageCompressor
     }

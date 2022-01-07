@@ -12,6 +12,7 @@ import androidx.compose.ui.window.Window
 import org.briarproject.bramble.api.account.AccountManager
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.bramble.api.lifecycle.LifecycleManager.LifecycleState.RUNNING
+import org.briarproject.briar.desktop.DesktopFeatureFlags
 import org.briarproject.briar.desktop.login.LoginScreen
 import org.briarproject.briar.desktop.login.RegistrationScreen
 import org.briarproject.briar.desktop.theme.BriarTheme
@@ -37,6 +38,7 @@ interface BriarUi {
 }
 
 val LocalViewModelProvider = staticCompositionLocalOf<ViewModelProvider?> { null }
+val LocalDesktopFeatureFlags = staticCompositionLocalOf<DesktopFeatureFlags?> { null }
 
 @Immutable
 @Singleton
@@ -46,6 +48,7 @@ constructor(
     private val accountManager: AccountManager,
     private val lifecycleManager: LifecycleManager,
     private val viewModelProvider: ViewModelProvider,
+    private val desktopFeatureFlags: DesktopFeatureFlags,
 ) : BriarUi {
 
     override fun stop() {
@@ -79,7 +82,10 @@ constructor(
             icon = painterResource("images/logo_circle.svg")
         ) {
             window.minimumSize = Dimension(800, 600)
-            CompositionLocalProvider(LocalViewModelProvider provides viewModelProvider) {
+            CompositionLocalProvider(
+                LocalViewModelProvider provides viewModelProvider,
+                LocalDesktopFeatureFlags provides desktopFeatureFlags
+            ) {
                 BriarTheme(isDarkTheme = isDark) {
                     when (screenState) {
                         Screen.REGISTRATION ->

@@ -27,6 +27,7 @@ import org.briarproject.bramble.api.identity.LocalAuthor
 import org.briarproject.briar.desktop.contact.ProfileCircle
 import org.briarproject.briar.desktop.theme.sidebarSurface
 import org.briarproject.briar.desktop.ui.UiMode
+import org.briarproject.briar.desktop.utils.getDesktopFeatureFlags
 
 val SIDEBAR_WIDTH = 56.dp
 
@@ -54,26 +55,27 @@ fun BriarSidebar(
             ) {
                 account?.let { ProfileCircle(size = 45.dp, it.id.bytes) }
             }
-
-            for (
-                (mode, icon) in listOf(
-                    Pair(UiMode.CONTACTS, Icons.Filled.Contacts),
-                    Pair(UiMode.GROUPS, Icons.Filled.Group),
-                    Pair(UiMode.FORUMS, Icons.Filled.Forum),
-                    Pair(UiMode.BLOGS, Icons.Filled.ChromeReaderMode),
-                )
-            ) {
+            val items = buildList {
+                add(Pair(UiMode.CONTACTS, Icons.Filled.Contacts))
+                val featureFlags = getDesktopFeatureFlags()
+                if (featureFlags.shouldEnablePrivateGroups()) add(Pair(UiMode.GROUPS, Icons.Filled.Group))
+                if (featureFlags.shouldEnableForums()) add(Pair(UiMode.FORUMS, Icons.Filled.Forum))
+                if (featureFlags.shouldEnableBlogs()) add(Pair(UiMode.BLOGS, Icons.Filled.ChromeReaderMode))
+            }
+            for ((mode, icon) in items) {
                 displayButton(uiMode, mode, icon)
             }
         }
         Column(verticalArrangement = Arrangement.Bottom) {
-            for (
-                (mode, icon) in listOf(
-                    Pair(UiMode.TRANSPORTS, Icons.Filled.WifiTethering),
-                    Pair(UiMode.SETTINGS, Icons.Filled.Settings),
-                    Pair(UiMode.SIGNOUT, Icons.Filled.Logout),
+            val items = buildList {
+                val featureFlags = getDesktopFeatureFlags()
+                if (featureFlags.shouldEnableTransportSettings()) add(
+                    Pair(UiMode.TRANSPORTS, Icons.Filled.WifiTethering)
                 )
-            ) {
+                add(Pair(UiMode.SETTINGS, Icons.Filled.Settings))
+                add(Pair(UiMode.SIGNOUT, Icons.Filled.Logout))
+            }
+            for ((mode, icon) in items) {
                 displayButton(uiMode, mode, icon)
             }
         }
