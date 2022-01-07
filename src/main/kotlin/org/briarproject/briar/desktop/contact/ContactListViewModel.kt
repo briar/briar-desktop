@@ -17,6 +17,7 @@ import org.briarproject.briar.api.conversation.event.ConversationMessageTrackedE
 import org.briarproject.briar.api.identity.AuthorManager
 import org.briarproject.briar.desktop.conversation.ConversationMessagesReadEvent
 import org.briarproject.briar.desktop.threading.BriarExecutors
+import org.briarproject.briar.desktop.utils.ImageUtils
 import org.briarproject.briar.desktop.viewmodel.asState
 import javax.inject.Inject
 
@@ -27,7 +28,7 @@ constructor(
     authorManager: AuthorManager,
     conversationManager: ConversationManager,
     connectionRegistry: ConnectionRegistry,
-    attachmentReader: AttachmentReader,
+    private val attachmentReader: AttachmentReader,
     briarExecutors: BriarExecutors,
     lifecycleManager: LifecycleManager,
     db: TransactionManager,
@@ -97,7 +98,16 @@ constructor(
             }
             is AvatarUpdatedEvent -> {
                 LOG.info("received avatar update: ${e.attachmentHeader}")
-                // TODO: update avatar
+                if (e.attachmentHeader == null) {
+                    updateItem(e.contactId) { it.updateAvatar(null) }
+                } else {
+                    runOnDbThreadWithTransaction(true) { txn ->
+                        val image = ImageUtils.loadAvatar(txn, attachmentReader, e.attachmentHeader)
+                        txn.attach {
+                            updateItem(e.contactId) { it.updateAvatar(image) }
+                        }
+                    }
+                }
             }
         }
     }

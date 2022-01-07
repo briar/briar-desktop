@@ -38,21 +38,22 @@ data class ContactItem(
         avatar = avatar,
     )
 
-    fun updateTimestampAndUnread(timestamp: Long, read: Boolean): ContactItem =
+    fun updateTimestampAndUnread(timestamp: Long, read: Boolean) =
         copy(
             isEmpty = false,
             unread = if (read) unread else unread + 1,
             timestamp = max(timestamp, this.timestamp)
         )
 
-    fun updateIsConnected(c: Boolean): ContactItem {
-        return copy(isConnected = c)
-    }
+    fun updateIsConnected(c: Boolean) =
+        copy(isConnected = c)
 
-    fun updateAlias(a: String?): ContactItem {
-        return copy(alias = a)
-    }
+    fun updateAlias(a: String?) =
+        copy(alias = a)
 
-    fun updateFromMessagesRead(c: Int): ContactItem =
+    fun updateFromMessagesRead(c: Int) =
         copy(unread = unread - c)
+
+    fun updateAvatar(avatar: ImageBitmap?) =
+        copy(avatar = avatar)
 }

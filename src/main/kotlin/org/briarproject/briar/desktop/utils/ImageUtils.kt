@@ -4,6 +4,7 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.res.loadImageBitmap
 import org.briarproject.bramble.api.contact.Contact
 import org.briarproject.bramble.api.db.Transaction
+import org.briarproject.briar.api.attachment.AttachmentHeader
 import org.briarproject.briar.api.attachment.AttachmentReader
 import org.briarproject.briar.api.identity.AuthorManager
 
@@ -13,13 +14,19 @@ object ImageUtils {
         authorManager: AuthorManager,
         attachmentReader: AttachmentReader,
         txn: Transaction,
-        contact: Contact
+        contact: Contact,
     ): ImageBitmap? {
         val authorInfo = authorManager.getAuthorInfo(txn, contact)
-        if (authorInfo.avatarHeader == null) {
-            return null
-        }
-        val attachment = attachmentReader.getAttachment(txn, authorInfo.avatarHeader)
+        val avatarHeader = authorInfo.avatarHeader ?: return null
+        return loadAvatar(txn, attachmentReader, avatarHeader)
+    }
+
+    fun loadAvatar(
+        txn: Transaction,
+        attachmentReader: AttachmentReader,
+        attachmentHeader: AttachmentHeader,
+    ): ImageBitmap? {
+        val attachment = attachmentReader.getAttachment(txn, attachmentHeader)
         attachment.stream.use {
             return loadImageBitmap(it)
         }
