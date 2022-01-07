@@ -1,3 +1,8 @@
+import com.github.jk1.license.filter.DependencyFilter
+import com.github.jk1.license.filter.LicenseBundleNormalizer
+import com.github.jk1.license.render.InventoryHtmlReportRenderer
+import com.github.jk1.license.render.InventoryMarkdownReportRenderer
+import com.github.jk1.license.render.ReportRenderer
 import org.jetbrains.compose.compose
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.compose.jetbrainsCompose
@@ -36,6 +41,7 @@ plugins {
     id("java")
     id("idea")
     id("org.jlleitschuh.gradle.ktlint") version "10.1.0"
+    id("com.github.jk1.dependency-license-report") version "2.0"
 }
 
 group = "app.briar.desktop"
@@ -117,4 +123,11 @@ compose.desktop {
             }
         }
     }
+}
+
+licenseReport {
+    // this renderer produces a report that groups dependencies by license
+    renderers = arrayOf<ReportRenderer>(InventoryHtmlReportRenderer(), InventoryMarkdownReportRenderer())
+    // this filter normalizes license names so that same licenses end up in the same bucket
+    filters = arrayOf<DependencyFilter>(LicenseBundleNormalizer())
 }
