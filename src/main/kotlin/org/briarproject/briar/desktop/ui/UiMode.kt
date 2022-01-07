@@ -7,5 +7,4 @@ enum class UiMode {
     BLOGS,
     TRANSPORTS,
     SETTINGS,
-    SIGNOUT
 }

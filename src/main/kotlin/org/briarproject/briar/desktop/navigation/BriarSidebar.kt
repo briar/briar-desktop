@@ -15,7 +15,6 @@ import androidx.compose.material.icons.filled.ChromeReaderMode
 import androidx.compose.material.icons.filled.Contacts
 import androidx.compose.material.icons.filled.Forum
 import androidx.compose.material.icons.filled.Group
-import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.WifiTethering
 import androidx.compose.runtime.Composable
@@ -73,7 +72,6 @@ fun BriarSidebar(
                     Pair(UiMode.TRANSPORTS, Icons.Filled.WifiTethering)
                 )
                 add(Pair(UiMode.SETTINGS, Icons.Filled.Settings))
-                add(Pair(UiMode.SIGNOUT, Icons.Filled.Logout))
             }
             for ((mode, icon) in items) {
                 displayButton(uiMode, mode, icon)
