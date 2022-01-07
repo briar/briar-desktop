@@ -43,9 +43,12 @@ fun main() = preview(
  * Composable for normal private text messages.
  */
 @Composable
-fun ConversationMessageItemView(m: ConversationMessageItem) {
+fun ConversationMessageItemView(
+    m: ConversationMessageItem,
+    onDelete: (MessageId) -> Unit = {},
+) {
     val textColor = if (m.isIncoming) MaterialTheme.colors.textPrimary else Color.White
-    ConversationItemView(m) {
+    ConversationItemView(m, onDelete) {
         Column(
             Modifier.padding(12.dp, 8.dp)
         ) {

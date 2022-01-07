@@ -310,6 +310,15 @@ constructor(
         }
     }
 
+    fun deleteMessage(id: MessageId) = runOnDbThread {
+        val result = conversationManager.deleteMessages(_contactId.value!!, listOf(id))
+        if (result.allDeleted()) {
+            _messages.removeIf { it.id == id }
+        } else {
+            _deletionResult.value = result
+        }
+    }
+
     fun deleteAllMessages() = runOnDbThread {
         _loadingMessages.value = true
         try {

@@ -54,12 +54,15 @@ fun main() = preview(
  * Composable for private messages containing a notice.
  */
 @Composable
-fun ConversationNoticeItemView(m: ConversationNoticeItem) {
+fun ConversationNoticeItemView(
+    m: ConversationNoticeItem,
+    onDelete: (MessageId) -> Unit = {},
+) {
     val textColor = if (m.isIncoming) MaterialTheme.colors.textPrimary else Color.White
     val noticeBackground = if (m.isIncoming) MaterialTheme.colors.noticeIn else MaterialTheme.colors.noticeOut
     val noticeColor = if (m.isIncoming) MaterialTheme.colors.textSecondary else MaterialTheme.colors.privateMessageDate
     val text = m.text
-    ConversationItemView(m) {
+    ConversationItemView(m, onDelete) {
         Column(Modifier.width(IntrinsicSize.Max)) {
             if (text != null) {
                 Text(

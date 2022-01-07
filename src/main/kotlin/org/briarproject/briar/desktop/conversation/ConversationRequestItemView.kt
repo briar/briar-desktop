@@ -73,12 +73,13 @@ fun ConversationRequestItemView(
     m: ConversationRequestItem,
     onResponse: (Boolean) -> Unit = {},
     onOpenRequestedShareable: () -> Unit = {},
+    onDelete: (MessageId) -> Unit = {},
 ) {
     val statusAlignment = if (m.isIncoming) Alignment.End else Alignment.Start
     val textColor = if (m.isIncoming) MaterialTheme.colors.textPrimary else Color.White
     val noticeBackground = if (m.isIncoming) MaterialTheme.colors.noticeIn else MaterialTheme.colors.noticeOut
     val noticeColor = if (m.isIncoming) MaterialTheme.colors.textSecondary else MaterialTheme.colors.privateMessageDate
-    ConversationItemView(m) {
+    ConversationItemView(m, onDelete) {
         Column(Modifier.width(IntrinsicSize.Max)) {
             Text(
                 m.text!!,

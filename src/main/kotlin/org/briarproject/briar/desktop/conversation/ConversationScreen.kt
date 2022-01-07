@@ -89,12 +89,13 @@ fun ConversationScreen(
                 ) {
                     items(viewModel.messages) { m ->
                         when (m) {
-                            is ConversationMessageItem -> ConversationMessageItemView(m)
-                            is ConversationNoticeItem -> ConversationNoticeItemView(m)
+                            is ConversationMessageItem -> ConversationMessageItemView(m, viewModel::deleteMessage)
+                            is ConversationNoticeItem -> ConversationNoticeItemView(m, viewModel::deleteMessage)
                             is ConversationRequestItem ->
                                 ConversationRequestItemView(
                                     m,
                                     onResponse = { accept -> viewModel.respondToRequest(m, accept) },
+                                    onDelete = viewModel::deleteMessage,
                                 )
                         }
                     }

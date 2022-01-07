@@ -1,7 +1,11 @@
 package org.briarproject.briar.desktop.conversation
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.ContextMenuArea
+import androidx.compose.foundation.ContextMenuItem
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -33,6 +37,7 @@ import org.briarproject.briar.desktop.theme.msgStroke
 import org.briarproject.briar.desktop.theme.privateMessageDate
 import org.briarproject.briar.desktop.theme.textPrimary
 import org.briarproject.briar.desktop.utils.InternationalizationUtils
+import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 import org.briarproject.briar.desktop.utils.TimeUtils.getFormattedTimestamp
 import java.time.Instant
@@ -143,28 +148,39 @@ fun main() = preview {
 /**
  * Base Composable for all kind of messages in private chats.
  */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ConversationItemView(
     item: ConversationItem,
+    onDelete: (MessageId) -> Unit = {},
     content: @Composable () -> Unit
 ) {
-    val alignment = if (item.isIncoming) Alignment.Start else Alignment.End
+    val arrangement = if (item.isIncoming) Arrangement.Start else Arrangement.End
+    val alignment = if (item.isIncoming) Alignment.CenterStart else Alignment.CenterEnd
     val color = if (item.isIncoming) MaterialTheme.colors.msgIn else MaterialTheme.colors.msgOut
     val shape = if (item.isIncoming)
         RoundedCornerShape(topStart = 4.dp, topEnd = 16.dp, bottomStart = 16.dp, bottomEnd = 16.dp)
     else
         RoundedCornerShape(topStart = 16.dp, topEnd = 4.dp, bottomStart = 16.dp, bottomEnd = 16.dp)
 
-    Column(Modifier.fillMaxWidth()) {
-        Column(Modifier.fillMaxWidth(fraction = 0.8f).align(alignment)) {
-            Card(
-                backgroundColor = color,
-                elevation = 2.dp,
-                shape = shape,
-                border = BorderStroke(Dp.Hairline, MaterialTheme.colors.msgStroke),
-                modifier = Modifier.align(alignment).padding(8.dp),
+    Row(Modifier.fillMaxWidth(), arrangement) {
+        Box(Modifier.fillMaxWidth(0.8f), contentAlignment = alignment) {
+            ContextMenuArea(
+                items = {
+                    listOf(
+                        ContextMenuItem(i18n("delete")) { onDelete(item.id) }
+                    )
+                }
             ) {
-                content()
+                Card(
+                    backgroundColor = color,
+                    elevation = 2.dp,
+                    shape = shape,
+                    border = BorderStroke(Dp.Hairline, MaterialTheme.colors.msgStroke),
+                    modifier = Modifier.padding(8.dp),
+                ) {
+                    content()
+                }
             }
         }
     }
