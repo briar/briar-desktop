@@ -41,6 +41,7 @@ import org.briarproject.briar.desktop.conversation.ConversationRequestItem.Reque
 import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.utils.ImageUtils.loadAvatar
 import org.briarproject.briar.desktop.utils.KLoggerUtils.logDuration
+import org.briarproject.briar.desktop.utils.addAfterLast
 import org.briarproject.briar.desktop.utils.clearAndAddAll
 import org.briarproject.briar.desktop.utils.replaceIf
 import org.briarproject.briar.desktop.utils.replaceIfIndexed
@@ -229,8 +230,7 @@ constructor(
             var start = LogUtils.now()
             val headers = conversationManager.getMessageHeaders(txn, contact.idWrapper.contactId)
             LOG.logDuration("Loading message headers", start)
-            // Sort headers by timestamp in *descending* order
-            // val sorted = headers.sortedByDescending { it.timestamp }
+            // Sort headers by timestamp in *ascending* order
             val sorted = headers.sortedBy { it.timestamp }
             start = LogUtils.now()
             val visitor = ConversationVisitor(contact.name, messagingManager, txn)
@@ -308,11 +308,12 @@ constructor(
     }
 
     private fun addMessage(msg: ConversationItem) {
-        // currently this method adds the message always at the end
-        // todo: instead we should check where to insert it to maintain the timely order
-        _messages.add(msg)
-        val type = if (msg.isIncoming) MessageAddedType.INCOMING else MessageAddedType.OUTGOING
-        onMessageAddedToBottom.emit(type)
+        val idx = _messages.addAfterLast(msg) { it.time < msg.time }
+        if (idx == _messages.lastIndex) {
+            // only emit the event in case the message was actually added to the bottom
+            val type = if (msg.isIncoming) MessageAddedType.INCOMING else MessageAddedType.OUTGOING
+            onMessageAddedToBottom.emit(type)
+        }
     }
 
     private fun markMessages(

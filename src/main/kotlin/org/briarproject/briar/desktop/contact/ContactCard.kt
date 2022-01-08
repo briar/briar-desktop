@@ -1,8 +1,6 @@
 package org.briarproject.briar.desktop.contact
 
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,8 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
@@ -23,8 +19,6 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.briarproject.bramble.api.contact.ContactId
@@ -34,6 +28,7 @@ import org.briarproject.briar.desktop.theme.selectedCard
 import org.briarproject.briar.desktop.theme.surfaceVariant
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
 import org.briarproject.briar.desktop.ui.HorizontalDivider
+import org.briarproject.briar.desktop.ui.MessageCounter
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 import org.briarproject.briar.desktop.utils.TimeUtils.getFormattedTimestamp
@@ -123,30 +118,6 @@ fun ContactCard(
         }
     }
     HorizontalDivider()
-}
-
-@Composable
-fun MessageCounter(unread: Int, modifier: Modifier = Modifier) {
-    val outlineColor = MaterialTheme.colors.outline
-    val briarSecondary = MaterialTheme.colors.secondary
-    if (unread > 0) {
-        Box(
-            modifier = modifier
-                .height(20.dp)
-                .widthIn(min = 20.dp, max = Dp.Infinity)
-                .border(2.dp, outlineColor, CircleShape)
-                .background(briarSecondary, CircleShape)
-                .padding(horizontal = 6.dp)
-        ) {
-            Text(
-                modifier = Modifier.align(Alignment.Center),
-                fontSize = 8.sp,
-                textAlign = TextAlign.Center,
-                text = unread.toString(),
-                maxLines = 1
-            )
-        }
-    }
 }
 
 @Composable

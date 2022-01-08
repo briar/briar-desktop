@@ -1,5 +1,20 @@
 package org.briarproject.briar.desktop.utils
 
+/**
+ * Add [element] to the list after the last element that matches the given [predicate].
+ * If no element matches the [predicate], add [element] to the beginning of the list.
+ * This method makes most sense for pre-sorted lists.
+ */
+fun <T> MutableList<T>.addAfterLast(element: T, predicate: (T) -> Boolean): Int {
+    val idx = indexOfLast(predicate)
+    if (idx == lastIndex || isEmpty()) {
+        add(element)
+    } else {
+        add(idx + 1, element)
+    }
+    return idx + 1
+}
+
 fun <T> MutableList<T>.clearAndAddAll(elements: Collection<T>) {
     clear()
     addAll(elements)

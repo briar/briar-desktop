@@ -37,12 +37,12 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.briarproject.bramble.api.sync.GroupId
 import org.briarproject.bramble.api.sync.MessageId
-import org.briarproject.briar.desktop.contact.MessageCounter
 import org.briarproject.briar.desktop.theme.ChevronDown
 import org.briarproject.briar.desktop.theme.ChevronUp
 import org.briarproject.briar.desktop.theme.divider
 import org.briarproject.briar.desktop.ui.HorizontalDivider
 import org.briarproject.briar.desktop.ui.Loader
+import org.briarproject.briar.desktop.ui.MessageCounter
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 import org.briarproject.briar.desktop.utils.replaceIfIndexed
@@ -123,9 +123,9 @@ fun main() = preview(
             initialFirstUnreadMessageIndex = initialFirstUnreadIndex,
             currentUnreadMessagesInfo = currentUnreadMessagesInfo,
             onMessageAddedToBottom = onMessageAddedToBottom,
-            markMessagesRead = { lst ->
+            markMessagesRead = { list ->
                 messages.replaceIfIndexed(
-                    { idx, it -> idx in lst && !it.isRead },
+                    { idx, it -> idx in list && !it.isRead },
                     { _, it -> it.markRead() }
                 )
             },
@@ -159,7 +159,6 @@ fun ConversationList(
     Box(modifier = Modifier.padding(padding).fillMaxSize()) {
         LazyColumn(
             state = scrollState,
-            contentPadding = PaddingValues(top = 8.dp, bottom = 8.dp),
             modifier = Modifier.fillMaxSize().padding(end = 12.dp, top = 8.dp, bottom = 8.dp)
         ) {
             itemsIndexed(messages) { idx, m ->
@@ -255,6 +254,7 @@ fun UnreadMessagesFAB(
 
 fun LazyListState.isScrolledToPenultimate(): Boolean {
     val last = layoutInfo.visibleItemsInfo.lastOrNull() ?: return false
+    // WARNING: this doesn't work when `contentPadding` is used on the LazyList!
     return last.index == layoutInfo.totalItemsCount - 1 &&
         last.offset == layoutInfo.viewportEndOffset
 }
