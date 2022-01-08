@@ -36,6 +36,7 @@ plugins {
     id("java")
     id("idea")
     id("org.jlleitschuh.gradle.ktlint") version "10.1.0"
+    id("org.briarproject.briar.desktop.build-data-gradle-plugin")
 }
 
 group = "app.briar.desktop"
@@ -48,6 +49,10 @@ allprojects {
         google()
         jcenter()
     }
+}
+
+buildData {
+    packageName = "org.briarproject.briar.desktop"
 }
 
 dependencies {

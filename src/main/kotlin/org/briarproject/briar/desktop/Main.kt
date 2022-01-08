@@ -8,6 +8,7 @@ import com.github.ajalt.clikt.parameters.options.default
 import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.types.int
+import mu.KotlinLogging
 import org.briarproject.bramble.BrambleCoreEagerSingletons
 import org.briarproject.bramble.api.plugin.TorConstants.DEFAULT_CONTROL_PORT
 import org.briarproject.bramble.api.plugin.TorConstants.DEFAULT_SOCKS_PORT
@@ -22,6 +23,9 @@ import java.lang.System.getProperty
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.logging.Level.ALL
 import java.util.logging.Level.INFO
 import java.util.logging.Level.WARNING
@@ -32,6 +36,11 @@ private class Main : CliktCommand(
     name = "briar-desktop",
     help = i18n("main.help.title")
 ) {
+
+    companion object {
+        private val LOG = KotlinLogging.logger {}
+    }
+
     private val debug by option("--debug", "-d", help = i18n("main.help.debug")).flag(
         default = false
     )
@@ -64,6 +73,12 @@ private class Main : CliktCommand(
         }
 
         LogUtils.setupLogging(level)
+
+        val buildTime = Instant.ofEpochMilli(BuildData.getBuildTime()).atZone(ZoneId.systemDefault()).toLocalDateTime()
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+        LOG.info { "This is briar-desktop version ${BuildData.getVersion()}" }
+        LOG.info { "Build time ${formatter.format(buildTime)}" }
+        LOG.info { "Built from Git hash ${BuildData.getGitHash()}" }
 
         val dataDir = getDataDir()
         val app =
