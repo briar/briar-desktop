@@ -43,7 +43,7 @@ public class GenerateBuildDataSourceTask extends AbstractBuildDataTask {
 		String version = project.getVersion().toString();
 
 		/*
-		 * Get Git hash and last commit time using JGit
+		 * Get Git hash, last commit time and current branch using JGit
 		 */
 		// Open git repository
 		File dir = project.getProjectDir();
@@ -65,8 +65,21 @@ public class GenerateBuildDataSourceTask extends AbstractBuildDataTask {
 		// Convert from seconds to milliseconds
 		long commitTime = first.getCommitTime() * 1000L;
 
+		// Get current branch, if any
+		String gitBranch = "<unknown>";
+		String prefix = "refs/heads/";
+		String fullBranch = repository.getFullBranch();
+		if (fullBranch.startsWith(prefix)) {
+			gitBranch = fullBranch.substring(prefix.length());
+		}
+
+		/*
+		 * Generate output file
+		 */
+
 		if (packageName == null) {
-			throw new IllegalStateException("Please specify 'packageName'.");
+			throw new IllegalStateException(
+					"Please specify 'packageName'.");
 		}
 
 		String[] parts = packageName.split("\\.");
@@ -83,7 +96,7 @@ public class GenerateBuildDataSourceTask extends AbstractBuildDataTask {
 		Path file = path.resolve(className + ".java");
 
 		String content = createSource(packageName, className, version,
-				commitTime, gitHash);
+				commitTime, gitHash, gitBranch);
 
 		InputStream in = new ByteArrayInputStream(
 				content.getBytes(StandardCharsets.UTF_8));
@@ -101,7 +114,7 @@ public class GenerateBuildDataSourceTask extends AbstractBuildDataTask {
 	}
 
 	private String createSource(String packageName, String className,
-			String version, long gitTime, String gitHash) {
+			String version, long gitTime, String gitHash, String gitBranch) {
 		FileBuilder buffer = new FileBuilder();
 		// // this file is generated, do not edit
 		// package org.briarproject.briar.desktop;
@@ -118,17 +131,26 @@ public class GenerateBuildDataSourceTask extends AbstractBuildDataTask {
 		buffer.line("    public static String getVersion() {");
 		buffer.line("        return \"" + version + "\";");
 		buffer.line("    }");
+		buffer.line();
 		// public static long getGitTime() {
 		//		return 1641645802088L;
 		// }
 		buffer.line("    public static long getGitTime() {");
 		buffer.line("        return " + gitTime + "L;");
 		buffer.line("    }");
+		buffer.line();
 		// public static long getGitHash() {
 		//		return "749dda081c3e7862050255817bc239b9255b1582";
 		// }
 		buffer.line("    public static String getGitHash() {");
 		buffer.line("        return \"" + gitHash + "\";");
+		buffer.line("    }");
+		buffer.line();
+		// public static String getGitBranch() {
+		//		return "master";
+		// }
+		buffer.line("    public static String getGitBranch() {");
+		buffer.line("        return \"" + gitBranch + "\";");
 		buffer.line("    }");
 		buffer.line();
 		buffer.line("}");
