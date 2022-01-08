@@ -84,7 +84,6 @@ fun ConversationScreen(
                     state = scrollState,
                     // reverseLayout to display most recent message (index 0) at the bottom
                     reverseLayout = true,
-                    contentPadding = PaddingValues(8.dp),
                     modifier = Modifier.padding(padding).fillMaxHeight()
                 ) {
                     items(viewModel.messages) { m ->
