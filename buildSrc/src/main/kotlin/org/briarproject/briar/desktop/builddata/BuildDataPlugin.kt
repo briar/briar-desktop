@@ -3,7 +3,7 @@ package org.briarproject.briar.desktop.builddata
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.file.SourceDirectorySet
-import org.gradle.api.plugins.JavaPluginConvention
+import org.gradle.api.plugins.JavaPluginExtension
 
 class BuildDataPlugin : Plugin<Project> {
     override fun apply(project: Project) {
@@ -20,9 +20,7 @@ class BuildDataPlugin : Plugin<Project> {
         project.tasks.findByName("compileJava")!!.dependsOn(task)
         val pathBuildDir = project.buildDir.toPath()
         val source = Util.getSourceDir(pathBuildDir)
-        val sourceSets = project.convention
-            .getPlugin(JavaPluginConvention::class.java).sourceSets
-            .findByName("main")
+        val sourceSets = project.extensions.getByType(JavaPluginExtension::class.java).sourceSets.findByName("main")
         sourceSets!!.java { sourceSet: SourceDirectorySet -> sourceSet.srcDir(source) }
     }
 }
