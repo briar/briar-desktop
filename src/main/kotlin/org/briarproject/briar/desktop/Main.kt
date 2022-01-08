@@ -74,11 +74,11 @@ private class Main : CliktCommand(
 
         LogUtils.setupLogging(level)
 
-        val buildTime = Instant.ofEpochMilli(BuildData.getBuildTime()).atZone(ZoneId.systemDefault()).toLocalDateTime()
+        val buildTime = Instant.ofEpochMilli(BuildData.getGitTime()).atZone(ZoneId.systemDefault()).toLocalDateTime()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
         LOG.info { "This is briar-desktop version ${BuildData.getVersion()}" }
-        LOG.info { "Build time ${formatter.format(buildTime)}" }
         LOG.info { "Built from Git hash ${BuildData.getGitHash()}" }
+        LOG.info { "Last commit time ${formatter.format(buildTime)}" }
 
         val dataDir = getDataDir()
         val app =
