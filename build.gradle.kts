@@ -40,7 +40,7 @@ plugins {
 }
 
 group = "app.briar.desktop"
-version = "0.1"
+version = "0.1-nightly"
 
 allprojects {
     repositories {
