@@ -9,7 +9,11 @@ import org.briarproject.briar.desktop.TestUtils.getDataDir
 import org.briarproject.briar.desktop.utils.LogUtils
 import java.util.logging.Level.ALL
 
-internal class RunWithTemporaryAccount(val customization: BriarDesktopTestApp.() -> Unit) {
+internal class RunWithTemporaryAccount(
+    val createAccount: Boolean = true,
+    val login: Boolean = true,
+    val customization: BriarDesktopTestApp.() -> Unit = {}
+) {
 
     companion object {
         private val LOG = KotlinLogging.logger {}
@@ -40,12 +44,16 @@ internal class RunWithTemporaryAccount(val customization: BriarDesktopTestApp.()
         val lifecycleManager = app.getLifecycleManager()
         val accountManager = app.getAccountManager()
 
-        val password = "verySecret123!"
-        accountManager.createAccount("alice", password)
+        if (createAccount) {
+            val password = "verySecret123!"
+            accountManager.createAccount("alice", password)
 
-        val dbKey = accountManager.databaseKey ?: throw AssertionError()
-        lifecycleManager.startServices(dbKey)
-        lifecycleManager.waitForStartup()
+            if (login) {
+                val dbKey = accountManager.databaseKey ?: throw AssertionError()
+                lifecycleManager.startServices(dbKey)
+                lifecycleManager.waitForStartup()
+            }
+        }
 
         customization(app)
 
