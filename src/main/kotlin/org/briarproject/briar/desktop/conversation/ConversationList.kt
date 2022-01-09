@@ -74,7 +74,7 @@ fun main() = preview(
                         isIncoming = idx % 2 == 0,
                         isRead = idx % 2 == 1 || idx < initialFirstUnreadIndex,
                         isSent = false,
-                        isSeen = false
+                        isSeen = false,
                     )
                 }
             )

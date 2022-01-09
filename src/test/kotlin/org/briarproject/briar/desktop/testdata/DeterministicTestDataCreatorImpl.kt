@@ -1,5 +1,7 @@
 package org.briarproject.briar.desktop.testdata
 
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.res.ResourceLoader
 import mu.KotlinLogging
 import org.briarproject.bramble.api.FormatException
 import org.briarproject.bramble.api.client.ClientHelper
@@ -9,7 +11,6 @@ import org.briarproject.bramble.api.crypto.SecretKey
 import org.briarproject.bramble.api.db.DatabaseComponent
 import org.briarproject.bramble.api.db.DbException
 import org.briarproject.bramble.api.db.Transaction
-import org.briarproject.bramble.api.event.EventBus
 import org.briarproject.bramble.api.identity.AuthorFactory
 import org.briarproject.bramble.api.identity.AuthorId
 import org.briarproject.bramble.api.identity.IdentityManager
@@ -38,6 +39,7 @@ import org.briarproject.briar.api.privategroup.PrivateGroupFactory
 import org.briarproject.briar.api.privategroup.PrivateGroupManager
 import org.briarproject.briar.api.test.TestAvatarCreator
 import org.briarproject.briar.desktop.GroupCountHelper
+import org.briarproject.briar.desktop.attachment.media.ImageCompressor
 import java.io.IOException
 import java.io.InputStream
 import java.time.LocalDateTime
@@ -45,6 +47,7 @@ import java.time.ZoneOffset
 import java.util.Random
 import java.util.UUID
 import java.util.concurrent.Executor
+import javax.imageio.ImageIO
 import javax.inject.Inject
 import kotlin.math.min
 
@@ -65,7 +68,7 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
     private val testAvatarCreator: TestAvatarCreator,
     private val avatarMessageEncoder: AvatarMessageEncoder,
     private val clientHelper: ClientHelper,
-    private val eventBus: EventBus,
+    private val imageCompressor: ImageCompressor,
     @field:IoExecutor
     @param:IoExecutor
     private val ioExecutor: Executor,
@@ -324,7 +327,8 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
         val text = message.text
         val local = message.direction == Direction.OUTGOING
         val autoDelete = random.nextBoolean()
-        createPrivateMessage(contactId, groupId, text, timestamp, local, autoDelete)
+        val images = message.images
+        createPrivateMessage(contactId, groupId, text, images, timestamp, local, autoDelete)
     }
 
     @Throws(DbException::class)
@@ -332,6 +336,7 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
         contactId: ContactId,
         groupId: GroupId,
         text: String,
+        images: List<String>,
         timestamp: Long,
         local: Boolean,
         autoDelete: Boolean
@@ -339,19 +344,35 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
         val timer =
             if (autoDelete) AutoDeleteConstants.MIN_AUTO_DELETE_TIMER_MS else AutoDeleteConstants.NO_AUTO_DELETE_TIMER
         try {
+            val headers = buildList {
+                for (image in images.map { image(it) }) {
+                    messagingManager.addLocalAttachment(
+                        groupId, timestamp, "image/jpeg", image
+                    ).also { add(it) }
+                }
+            }
             val m = privateMessageFactory.createPrivateMessage(
-                groupId, timestamp, text, emptyList(), timer
+                groupId, timestamp, text, headers, timer
             )
             if (local) {
                 messagingManager.addLocalMessage(m)
             } else {
-                db.transaction<RuntimeException>(false) { txn: Transaction ->
+                db.transaction<RuntimeException>(false) { txn ->
                     db.receiveMessage(txn, contactId, m.message)
                 }
             }
         } catch (e: FormatException) {
             throw AssertionError(e)
         }
+    }
+
+    @OptIn(ExperimentalComposeUiApi::class)
+    private fun image(imageResource: String): InputStream {
+        val input = ResourceLoader.Default.load(imageResource)
+        val image = input.use {
+            ImageIO.read(input)
+        }
+        return imageCompressor.compressImage(image)
     }
 
     @Throws(DbException::class)

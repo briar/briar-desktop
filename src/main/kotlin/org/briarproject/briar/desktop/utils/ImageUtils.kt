@@ -18,14 +18,14 @@ object ImageUtils {
     ): ImageBitmap? {
         val authorInfo = authorManager.getAuthorInfo(txn, contact)
         val avatarHeader = authorInfo.avatarHeader ?: return null
-        return loadAvatar(txn, attachmentReader, avatarHeader)
+        return loadImage(txn, attachmentReader, avatarHeader)
     }
 
-    fun loadAvatar(
+    fun loadImage(
         txn: Transaction,
         attachmentReader: AttachmentReader,
         attachmentHeader: AttachmentHeader,
-    ): ImageBitmap? {
+    ): ImageBitmap {
         val attachment = attachmentReader.getAttachment(txn, attachmentHeader)
         attachment.stream.use {
             return loadImageBitmap(it)

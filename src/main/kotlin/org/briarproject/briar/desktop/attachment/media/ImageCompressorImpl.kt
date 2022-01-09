@@ -20,6 +20,10 @@ class ImageCompressorImpl @Inject internal constructor() : ImageCompressor {
 
     override fun compressImage(image: BufferedImage): InputStream {
         val out = ByteArrayOutputStream()
+        val withoutAlpha = if (!image.colorModel.hasAlpha()) image else {
+            val replacement = BufferedImage(image.width, image.height, BufferedImage.TYPE_INT_RGB)
+            replacement.apply { createGraphics().drawImage(image, 0, 0, null) }
+        }
         for (quality in 100 downTo 1 step 10) {
             val jpgWriter = ImageIO.getImageWritersByFormatName("jpg").next()
             jpgWriter.output = ImageIO.createImageOutputStream(out)
@@ -28,7 +32,7 @@ class ImageCompressorImpl @Inject internal constructor() : ImageCompressor {
             jpgWriteParam.compressionMode = ImageWriteParam.MODE_EXPLICIT
             jpgWriteParam.compressionQuality = quality / 100f
 
-            val outputImage = IIOImage(image, null, null)
+            val outputImage = IIOImage(withoutAlpha, null, null)
             jpgWriter.write(null, outputImage, jpgWriteParam)
 
             jpgWriter.dispose()

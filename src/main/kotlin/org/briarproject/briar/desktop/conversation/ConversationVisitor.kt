@@ -5,6 +5,7 @@ import org.briarproject.bramble.api.db.DatabaseExecutor
 import org.briarproject.bramble.api.db.DbException
 import org.briarproject.bramble.api.db.Transaction
 import org.briarproject.bramble.api.sync.MessageId
+import org.briarproject.briar.api.attachment.AttachmentReader
 import org.briarproject.briar.api.blog.BlogInvitationRequest
 import org.briarproject.briar.api.blog.BlogInvitationResponse
 import org.briarproject.briar.api.conversation.ConversationMessageVisitor
@@ -16,6 +17,7 @@ import org.briarproject.briar.api.messaging.MessagingManager
 import org.briarproject.briar.api.messaging.PrivateMessageHeader
 import org.briarproject.briar.api.privategroup.invitation.GroupInvitationRequest
 import org.briarproject.briar.api.privategroup.invitation.GroupInvitationResponse
+import org.briarproject.briar.desktop.utils.ImageUtils
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nF
 import org.briarproject.briar.desktop.utils.UiUtils.getContactDisplayName
@@ -23,6 +25,7 @@ import org.briarproject.briar.desktop.utils.UiUtils.getContactDisplayName
 internal class ConversationVisitor(
     private val contactName: String,
     private val messagingManager: MessagingManager,
+    private val attachmentReader: AttachmentReader,
     private val txn: Transaction,
 ) : ConversationMessageVisitor<ConversationItem?> {
 
@@ -43,7 +46,13 @@ internal class ConversationVisitor(
     @DatabaseExecutor
     override fun visitPrivateMessageHeader(h: PrivateMessageHeader): ConversationItem {
         val item = ConversationMessageItem(h)
-        // todo: handle attachments here
+        item.attachments = buildList {
+            for (header in h.attachmentHeaders) {
+                ImageUtils.loadImage(txn, attachmentReader, header)?.also {
+                    add(AttachmentItem(it))
+                }
+            }
+        }
         if (h.hasText()) {
             item.text = loadMessageText(txn, h.id)
         } else {

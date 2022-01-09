@@ -36,7 +36,6 @@ import org.briarproject.briar.desktop.theme.msgOut
 import org.briarproject.briar.desktop.theme.msgStroke
 import org.briarproject.briar.desktop.theme.privateMessageDate
 import org.briarproject.briar.desktop.theme.textPrimary
-import org.briarproject.briar.desktop.utils.InternationalizationUtils
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 import org.briarproject.briar.desktop.utils.TimeUtils.getFormattedTimestamp
@@ -202,7 +201,7 @@ fun ColumnScope.ConversationItemStatusView(item: ConversationItem, rowModifier: 
                 if (item.isSeen) Icons.Filled.DoneAll // acknowledged
                 else if (item.isSent) Icons.Filled.Done // sent
                 else Icons.Filled.Schedule // waiting
-            Icon(icon, InternationalizationUtils.i18n("access.message.sent"), modifier, statusColor)
+            Icon(icon, i18n("access.message.sent"), modifier, statusColor)
         }
     }
 }

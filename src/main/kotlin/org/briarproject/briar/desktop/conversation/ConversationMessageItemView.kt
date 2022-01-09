@@ -1,5 +1,6 @@
 package org.briarproject.briar.desktop.conversation
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
@@ -52,12 +53,19 @@ fun ConversationMessageItemView(
         Column(
             Modifier.padding(12.dp, 8.dp)
         ) {
-            Text(
-                m.text!!,
-                fontSize = 16.sp,
-                color = textColor,
-                modifier = Modifier.align(Alignment.Start).padding(bottom = 8.dp)
-            )
+            if (m.attachments.isNotEmpty()) {
+                for (attachment in m.attachments) {
+                    Image(attachment.image, null, modifier = Modifier.padding(bottom = 8.dp))
+                }
+            }
+            if (m.text != null) {
+                Text(
+                    m.text!!,
+                    fontSize = 16.sp,
+                    color = textColor,
+                    modifier = Modifier.align(Alignment.Start).padding(bottom = 8.dp)
+                )
+            }
             ConversationItemStatusView(m)
         }
     }

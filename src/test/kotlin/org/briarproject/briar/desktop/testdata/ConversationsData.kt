@@ -97,4 +97,42 @@ val conversations = conversations {
             date = "2019-02-13 13:15:00"
         }
     }
+    conversation {
+        contactName = "Georgy Voronoy"
+        val start = dt(2021, 3, 13, 10, 3, 1)
+        outgoing {
+            text = "Hey Georgy!"
+            read = true
+            date = start
+        }
+        incoming {
+            text = "Good morning, Alice"
+            read = true
+            date = start.plusSeconds(100)
+        }
+        incoming {
+            text = "Check out my latest diagrams"
+            images = listOf("images/voronoi1.png")
+            read = true
+            date = start.plusSeconds(120)
+        }
+        outgoing {
+            text = "Awesome, thanks!"
+            read = true
+            date = start.plusSeconds(240)
+        }
+        outgoing {
+            text = "I've also made some"
+            images = listOf(
+                "images/voronoi2.png",
+                "images/voronoi3.png",
+                "images/voronoi4.png",
+                "images/voronoi2.png",
+                "images/voronoi3.png",
+                "images/voronoi4.png",
+            )
+            read = true
+            date = start.plusSeconds(250)
+        }
+    }
 }

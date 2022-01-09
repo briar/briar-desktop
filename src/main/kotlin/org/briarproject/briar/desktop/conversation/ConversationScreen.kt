@@ -88,7 +88,9 @@ fun ConversationScreen(
                 ConversationInput(
                     viewModel.newMessage.value,
                     viewModel::setNewMessage,
-                    viewModel::sendMessage
+                    viewModel.newMessageImage.value,
+                    viewModel::setNewMessageImage,
+                    viewModel::sendMessage,
                 )
             },
         )

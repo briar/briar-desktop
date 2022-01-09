@@ -18,6 +18,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -29,6 +30,7 @@ import androidx.compose.ui.window.singleWindowApplication
 import org.briarproject.bramble.api.UniqueId
 import org.briarproject.briar.desktop.theme.DarkColors
 import org.briarproject.briar.desktop.theme.LightColors
+import org.briarproject.briar.desktop.ui.LocalWindowScope
 import kotlin.random.Random
 
 object PreviewUtils {
@@ -139,26 +141,28 @@ object PreviewUtils {
         val scope = PreviewScope()
 
         singleWindowApplication(title = "Interactive Preview") {
-            Column {
-                Column(Modifier.padding(10.dp)) {
-                    scope.addBooleanParameter("darkTheme", true)
-                    parameters.forEach { (name, initial) ->
-                        when (initial) {
-                            is String -> scope.addStringParameter(name, initial)
-                            is Boolean -> scope.addBooleanParameter(name, initial)
-                            is Int -> scope.addIntParameter(name, initial)
-                            is Long -> scope.addLongParameter(name, initial)
-                            is Float -> scope.addFloatParameter(name, initial)
-                            is FloatSlider -> scope.addFloatSliderParameter(name, initial)
-                            else -> throw IllegalArgumentException("Type ${initial::class.simpleName} is not supported for previewing.")
+            CompositionLocalProvider(LocalWindowScope provides this) {
+                Column {
+                    Column(Modifier.padding(10.dp)) {
+                        scope.addBooleanParameter("darkTheme", true)
+                        parameters.forEach { (name, initial) ->
+                            when (initial) {
+                                is String -> scope.addStringParameter(name, initial)
+                                is Boolean -> scope.addBooleanParameter(name, initial)
+                                is Int -> scope.addIntParameter(name, initial)
+                                is Long -> scope.addLongParameter(name, initial)
+                                is Float -> scope.addFloatParameter(name, initial)
+                                is FloatSlider -> scope.addFloatSliderParameter(name, initial)
+                                else -> throw IllegalArgumentException("Type ${initial::class.simpleName} is not supported for previewing.")
+                            }
                         }
                     }
-                }
 
-                MaterialTheme(colors = if (scope.getBooleanParameter("darkTheme")) DarkColors else LightColors) {
-                    Surface(Modifier.fillMaxSize(1f)) {
-                        Column(Modifier.padding(10.dp)) {
-                            content(scope)
+                    MaterialTheme(colors = if (scope.getBooleanParameter("darkTheme")) DarkColors else LightColors) {
+                        Surface(Modifier.fillMaxSize(1f)) {
+                            Column(Modifier.padding(10.dp)) {
+                                content(scope)
+                            }
                         }
                     }
                 }

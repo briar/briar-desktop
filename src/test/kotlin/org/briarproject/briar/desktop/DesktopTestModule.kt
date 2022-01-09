@@ -131,8 +131,8 @@ internal class DesktopTestModule(
 
     @Provides
     internal fun provideFeatureFlags() = object : FeatureFlags {
-        override fun shouldEnableImageAttachments() = false
-        override fun shouldEnableProfilePictures() = false
+        override fun shouldEnableImageAttachments() = true
+        override fun shouldEnableProfilePictures() = true
         override fun shouldEnableDisappearingMessages() = false
     }
 

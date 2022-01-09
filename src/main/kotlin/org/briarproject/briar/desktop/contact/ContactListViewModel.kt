@@ -102,7 +102,7 @@ constructor(
                     updateItem(e.contactId) { it.updateAvatar(null) }
                 } else {
                     runOnDbThreadWithTransaction(true) { txn ->
-                        val image = ImageUtils.loadAvatar(txn, attachmentReader, e.attachmentHeader)
+                        val image = ImageUtils.loadImage(txn, attachmentReader, e.attachmentHeader)
                         txn.attach {
                             updateItem(e.contactId) { it.updateAvatar(image) }
                         }

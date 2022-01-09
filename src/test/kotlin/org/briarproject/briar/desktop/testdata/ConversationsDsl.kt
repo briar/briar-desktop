@@ -46,6 +46,7 @@ var formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
 class MessageBuilder(private val direction: Direction) {
 
     var text: String = ""
+    var images: List<String> = emptyList()
     var read: Boolean = false
 
     private var sent: LocalDateTime = LocalDateTime.now()
@@ -58,5 +59,5 @@ class MessageBuilder(private val direction: Direction) {
             }
         }
 
-    fun build(): Message = Message(text, direction, sent, read)
+    fun build(): Message = Message(text, images, direction, sent, read)
 }

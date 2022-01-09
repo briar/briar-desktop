@@ -13,6 +13,7 @@ data class Conversation(
 
 data class Message(
     val text: String,
+    val images: List<String>,
     val direction: Direction,
     val date: LocalDateTime,
     val read: Boolean

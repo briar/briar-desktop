@@ -14,9 +14,7 @@ data class ConversationMessageItem(
     override var isRead: Boolean,
     override var isSent: Boolean,
     override var isSeen: Boolean,
-
-    // todo: support attachments
-    // val attachments: List<AttachmentItem>
+    var attachments: List<AttachmentItem> = emptyList(),
 ) : ConversationItem() {
 
     constructor(h: ConversationMessageHeader) : this(

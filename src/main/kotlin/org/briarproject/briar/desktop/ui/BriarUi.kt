@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.window.FrameWindowScope
 import androidx.compose.ui.window.Window
 import org.briarproject.bramble.api.FeatureFlags
 import org.briarproject.bramble.api.event.Event
@@ -42,6 +43,7 @@ interface BriarUi {
     fun stop()
 }
 
+val LocalWindowScope = staticCompositionLocalOf<FrameWindowScope?> { null }
 val LocalViewModelProvider = staticCompositionLocalOf<ViewModelProvider?> { null }
 val LocalCoreFeatureFlags = staticCompositionLocalOf<FeatureFlags?> { null }
 val LocalDesktopFeatureFlags = staticCompositionLocalOf<DesktopFeatureFlags?> { null }
@@ -88,6 +90,7 @@ constructor(
         ) {
             window.minimumSize = Dimension(800, 600)
             CompositionLocalProvider(
+                LocalWindowScope provides this,
                 LocalViewModelProvider provides viewModelProvider,
                 LocalCoreFeatureFlags provides featureFlags,
                 LocalDesktopFeatureFlags provides desktopFeatureFlags

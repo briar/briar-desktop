@@ -3,6 +3,8 @@ package org.briarproject.briar.desktop.conversation
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.toAwtImage
 import mu.KotlinLogging
 import org.briarproject.bramble.api.FormatException
 import org.briarproject.bramble.api.connection.ConnectionRegistry
@@ -24,6 +26,7 @@ import org.briarproject.bramble.api.sync.event.MessagesAckedEvent
 import org.briarproject.bramble.api.sync.event.MessagesSentEvent
 import org.briarproject.bramble.api.versioning.event.ClientVersionUpdatedEvent
 import org.briarproject.bramble.util.LogUtils
+import org.briarproject.briar.api.attachment.AttachmentHeader
 import org.briarproject.briar.api.attachment.AttachmentReader
 import org.briarproject.briar.api.autodelete.UnexpectedTimerException
 import org.briarproject.briar.api.autodelete.event.ConversationMessagesDeletedEvent
@@ -36,6 +39,7 @@ import org.briarproject.briar.api.messaging.MessagingManager
 import org.briarproject.briar.api.messaging.PrivateMessage
 import org.briarproject.briar.api.messaging.PrivateMessageFactory
 import org.briarproject.briar.api.messaging.PrivateMessageHeader
+import org.briarproject.briar.desktop.attachment.media.ImageCompressor
 import org.briarproject.briar.desktop.contact.ContactItem
 import org.briarproject.briar.desktop.conversation.ConversationRequestItem.RequestType.INTRODUCTION
 import org.briarproject.briar.desktop.threading.BriarExecutors
@@ -65,6 +69,7 @@ constructor(
     lifecycleManager: LifecycleManager,
     db: TransactionManager,
     private val attachmentReader: AttachmentReader,
+    private val imageCompressor: ImageCompressor,
     private val eventBus: EventBus,
 ) : EventListenerDbViewModel(briarExecutors, lifecycleManager, db, eventBus) {
 
@@ -77,6 +82,7 @@ constructor(
     private val _messages = mutableStateListOf<ConversationItem>()
     private val _loadingMessages = mutableStateOf(false)
 
+    private val _newMessageImage = mutableStateOf<ImageBitmap?>(null)
     private val _newMessage = mutableStateOf("")
 
     private val _deletionResult = mutableStateOf<DeletionResult?>(null)
@@ -85,6 +91,7 @@ constructor(
     val messages = _messages.asList()
     val loadingMessages = _loadingMessages.asState()
 
+    val newMessageImage = _newMessageImage.asState()
     val newMessage = _newMessage.asState()
 
     val deletionResult = _deletionResult.asState()
@@ -103,26 +110,43 @@ constructor(
         }
 
         setNewMessage("")
+        setNewMessageImage(null)
     }
 
     fun setNewMessage(msg: String) {
         _newMessage.value = msg
     }
 
+    fun setNewMessageImage(image: ImageBitmap?) {
+        _newMessageImage.value = image
+    }
+
     fun sendMessage() {
         val text = _newMessage.value
+        val image = _newMessageImage.value
 
         // don't send empty or blank messages
-        if (text.isBlank()) return
+        if (text.isBlank() && image == null) return
 
         _newMessage.value = ""
+        _newMessageImage.value = null
 
         val contactId = _contactId.value!!
+
+        // TODO: unfortunately, there is no transactional version of addLocalAttachment yet,
+        //  so I need to create the headers outside of the transaction below.
+        //  It' done similarly on Android: https://code.briarproject.org/briar/briar/-/blob/master/briar-android/src/main/java/org/briarproject/briar/android/attachment/AttachmentCreationTask.java#L95
+        val groupId = messagingManager.getConversationId(contactId)
+        val headers = if (image == null) emptyList() else buildList {
+            val timestamp = System.currentTimeMillis()
+            val compressed = imageCompressor.compressImage(image!!.toAwtImage())
+            add(messagingManager.addLocalAttachment(groupId, timestamp, "image/jpeg", compressed))
+        }
+
         runOnDbThreadWithTransaction(false) { txn ->
             try {
                 val start = LogUtils.now()
-                val groupId = messagingManager.getConversationId(txn, contactId)
-                val m = createMessage(txn, contactId, groupId, text)
+                val m = createMessage(txn, contactId, groupId, text, headers)
                 messagingManager.addLocalMessage(txn, m)
                 LOG.logDuration("Storing message", start)
 
@@ -133,7 +157,7 @@ constructor(
                     m.hasText(), m.attachmentHeaders,
                     m.autoDeleteTimer
                 )
-                val visitor = ConversationVisitor(contactItem.value!!.name, messagingManager, txn)
+                val visitor = ConversationVisitor(contactItem.value!!.name, messagingManager, attachmentReader, txn)
                 val msg = h.accept(visitor)!!
                 txn.attach { addMessage(msg) }
             } catch (e: UnexpectedTimerException) {
@@ -187,12 +211,16 @@ constructor(
     }
 
     @Throws(DbException::class)
-    private fun createMessage(txn: Transaction, contactId: ContactId, groupId: GroupId, text: String): PrivateMessage {
+    private fun createMessage(
+        txn: Transaction,
+        contactId: ContactId,
+        groupId: GroupId,
+        text: String,
+        headers: List<AttachmentHeader>,
+    ): PrivateMessage {
         val timestamp = conversationManager.getTimestampForOutgoingMessage(txn, contactId)
         try {
-            return privateMessageFactory.createLegacyPrivateMessage(
-                groupId, timestamp, text
-            )
+            return privateMessageFactory.createPrivateMessage(groupId, timestamp, text, headers)
         } catch (e: FormatException) {
             throw AssertionError(e)
         }
@@ -233,7 +261,7 @@ constructor(
             // Sort headers by timestamp in *ascending* order
             val sorted = headers.sortedBy { it.timestamp }
             start = LogUtils.now()
-            val visitor = ConversationVisitor(contact.name, messagingManager, txn)
+            val visitor = ConversationVisitor(contact.name, messagingManager, attachmentReader, txn)
             val messages = sorted.map { h -> h.accept(visitor)!! }
             LOG.logDuration("Loading messages", start)
             txn.attach {
@@ -262,7 +290,8 @@ constructor(
                     val h = e.messageHeader
                     // insert at start of list according to descending sort order
                     runOnDbThreadWithTransaction(true) { txn ->
-                        val visitor = ConversationVisitor(contactItem.value!!.name, messagingManager, txn)
+                        val visitor =
+                            ConversationVisitor(contactItem.value!!.name, messagingManager, attachmentReader, txn)
                         val msg = h.accept(visitor)!!
                         txn.attach { addMessage(msg) }
                     }
