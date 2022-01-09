@@ -1,7 +1,6 @@
 package org.briarproject.briar.desktop.builddata
 
 import org.eclipse.jgit.api.Git
-import org.eclipse.jgit.api.errors.GitAPIException
 import org.eclipse.jgit.lib.Constants
 import org.eclipse.jgit.revwalk.RevCommit
 import org.gradle.api.GradleScriptException
@@ -28,15 +27,11 @@ open class GenerateBuildDataSourceTask : AbstractBuildDataTask() {
             className = "BuildData"
         }
 
-        /*
-		 * Get version from Gradle project information
-		 */
+        // Get version from Gradle project information
         val version = project.version.toString()
 
-        /*
-		 * Get Git hash, last commit time and current branch using JGit
-		 */
-        // Open git repository
+        // Get Git hash, last commit time and current branch using JGit.
+        // First, open git repository
         val dir = project.projectDir
         val git = Git.open(dir)
         val repository = git.repository
@@ -48,9 +43,7 @@ open class GenerateBuildDataSourceTask : AbstractBuildDataTask() {
         // Get latest commit and its commit time
         val first: RevCommit = try {
             getLastCommit(git)
-        } catch (e: GitAPIException) {
-            throw GradleScriptException("Error while fetching commits", e)
-        } catch (e: NoSuchElementException) {
+        } catch (e: Throwable) {
             throw GradleScriptException("Error while fetching commits", e)
         }
 
@@ -65,9 +58,7 @@ open class GenerateBuildDataSourceTask : AbstractBuildDataTask() {
             gitBranch = fullBranch.substring(prefix.length)
         }
 
-        /*
-		 * Generate output file
-		 */
+        // Generate output file
         checkNotNull(packageName) { "Please specify 'packageName'." }
         val parts = packageName.split("\\.".toRegex()).toTypedArray()
         val pathBuildDir = project.buildDir.toPath()
@@ -82,13 +73,12 @@ open class GenerateBuildDataSourceTask : AbstractBuildDataTask() {
             packageName, className, version,
             commitTime, gitHash, gitBranch
         )
-        val `in`: InputStream = ByteArrayInputStream(
+        val input: InputStream = ByteArrayInputStream(
             content.toByteArray(StandardCharsets.UTF_8)
         )
-        Files.copy(`in`, file, StandardCopyOption.REPLACE_EXISTING)
+        Files.copy(input, file, StandardCopyOption.REPLACE_EXISTING)
     }
 
-    @Throws(GitAPIException::class)
     private fun getLastCommit(git: Git): RevCommit {
         val commits = git.log().call()
         val iterator: Iterator<RevCommit> = commits.iterator()
@@ -105,49 +95,45 @@ open class GenerateBuildDataSourceTask : AbstractBuildDataTask() {
         gitTime: Long,
         gitHash: String,
         gitBranch: String,
-    ): String {
-        return FileBuilder().also {
-            with(it) {
-                line("// this file is generated, do not edit")
-                // // this file is generated, do not edit
-                // package org.briarproject.briar.desktop;
-                //
-                // public class BuildData {
-                line("// this file is generated, do not edit")
-                line("package $packageName;")
-                line()
-                line("public class $className {")
-                line()
-                // public static String getVersion() {
-                //     return "0.1";
-                // }
-                line("    public static String getVersion() {")
-                line("        return \"$version\";")
-                line("    }")
-                line()
-                // public static long getGitTime() {
-                //     return 1641645802088L;
-                // }
-                line("    public static long getGitTime() {")
-                line("        return " + gitTime + "L;")
-                line("    }")
-                line()
-                // public static long getGitHash() {
-                //     return "749dda081c3e7862050255817bc239b9255b1582";
-                // }
-                line("    public static String getGitHash() {")
-                line("        return \"$gitHash\";")
-                line("    }")
-                line()
-                // public static String getGitBranch() {
-                //     return "master";
-                // }
-                line("    public static String getGitBranch() {")
-                line("        return \"$gitBranch\";")
-                line("    }")
-                line()
-                line("}")
-            }
-        }.toString()
-    }
+    ) = FileBuilder().apply {
+        line("// this file is generated, do not edit")
+        // // this file is generated, do not edit
+        // package org.briarproject.briar.desktop;
+        //
+        // public class BuildData {
+        line("// this file is generated, do not edit")
+        line("package $packageName;")
+        line()
+        line("public class $className {")
+        line()
+        // public static String getVersion() {
+        //     return "0.1";
+        // }
+        line("    public static String getVersion() {")
+        line("        return \"$version\";")
+        line("    }")
+        line()
+        // public static long getGitTime() {
+        //     return 1641645802088L;
+        // }
+        line("    public static long getGitTime() {")
+        line("        return " + gitTime + "L;")
+        line("    }")
+        line()
+        // public static long getGitHash() {
+        //     return "749dda081c3e7862050255817bc239b9255b1582";
+        // }
+        line("    public static String getGitHash() {")
+        line("        return \"$gitHash\";")
+        line("    }")
+        line()
+        // public static String getGitBranch() {
+        //     return "master";
+        // }
+        line("    public static String getGitBranch() {")
+        line("        return \"$gitBranch\";")
+        line("    }")
+        line()
+        line("}")
+    }.toString()
 }
