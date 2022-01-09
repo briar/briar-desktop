@@ -68,7 +68,7 @@ open class GenerateBuildDataSourceTask : AbstractBuildDataTask() {
             path = path.resolve(parts[i])
         }
         Files.createDirectories(path)
-        val file = path.resolve("$className.java")
+        val file = path.resolve("$className.kt")
         val content = createSource(
             packageName, className, version,
             commitTime, gitHash, gitBranch
@@ -97,43 +97,13 @@ open class GenerateBuildDataSourceTask : AbstractBuildDataTask() {
         gitBranch: String,
     ) = FileBuilder().apply {
         line("// this file is generated, do not edit")
-        // // this file is generated, do not edit
-        // package org.briarproject.briar.desktop;
-        //
-        // public class BuildData {
-        line("// this file is generated, do not edit")
-        line("package $packageName;")
+        line("package $packageName")
         line()
-        line("public class $className {")
-        line()
-        // public static String getVersion() {
-        //     return "0.1";
-        // }
-        line("    public static String getVersion() {")
-        line("        return \"$version\";")
-        line("    }")
-        line()
-        // public static long getGitTime() {
-        //     return 1641645802088L;
-        // }
-        line("    public static long getGitTime() {")
-        line("        return " + gitTime + "L;")
-        line("    }")
-        line()
-        // public static long getGitHash() {
-        //     return "749dda081c3e7862050255817bc239b9255b1582";
-        // }
-        line("    public static String getGitHash() {")
-        line("        return \"$gitHash\";")
-        line("    }")
-        line()
-        // public static String getGitBranch() {
-        //     return "master";
-        // }
-        line("    public static String getGitBranch() {")
-        line("        return \"$gitBranch\";")
-        line("    }")
-        line()
+        line("object $className {")
+        line("    val VERSION = \"$version\"")
+        line("    val GIT_TIME = ${gitTime}L")
+        line("    val GIT_HASH = \"$gitHash\"")
+        line("    val GIT_BRANCH = \"$gitBranch\"")
         line("}")
     }.toString()
 }
