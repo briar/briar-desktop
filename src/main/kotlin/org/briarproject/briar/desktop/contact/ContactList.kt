@@ -26,7 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.briarproject.briar.desktop.contact.add.remote.AddContactDialog
 import org.briarproject.briar.desktop.theme.surfaceVariant
-import org.briarproject.briar.desktop.ui.Constants.CONTACTLIST_WIDTH
+import org.briarproject.briar.desktop.ui.Constants.COLUMN_WIDTH
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
 
 @Composable
@@ -43,7 +43,7 @@ fun ContactList(
     val scrollState = rememberLazyListState()
 
     Scaffold(
-        modifier = Modifier.fillMaxHeight().width(CONTACTLIST_WIDTH),
+        modifier = Modifier.fillMaxHeight().width(COLUMN_WIDTH),
         backgroundColor = MaterialTheme.colors.surfaceVariant,
         topBar = {
             Column(

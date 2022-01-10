@@ -15,9 +15,11 @@ import org.briarproject.bramble.api.lifecycle.LifecycleManager.LifecycleState.RU
 import org.briarproject.briar.desktop.DesktopFeatureFlags
 import org.briarproject.briar.desktop.login.LoginScreen
 import org.briarproject.briar.desktop.login.RegistrationScreen
+import org.briarproject.briar.desktop.settings.SettingsViewModel
 import org.briarproject.briar.desktop.theme.BriarTheme
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.viewmodel.ViewModelProvider
+import org.briarproject.briar.desktop.viewmodel.viewModel
 import java.awt.Dimension
 import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
@@ -61,7 +63,6 @@ constructor(
 
     @Composable
     override fun start(onClose: () -> Unit) {
-        val (isDark, setDark) = remember { mutableStateOf(true) }
         val title = i18n("main.title")
         var screenState by remember {
             mutableStateOf(
@@ -86,7 +87,8 @@ constructor(
                 LocalViewModelProvider provides viewModelProvider,
                 LocalDesktopFeatureFlags provides desktopFeatureFlags
             ) {
-                BriarTheme(isDarkTheme = isDark) {
+                val settingsViewModel: SettingsViewModel = viewModel()
+                BriarTheme(isDarkTheme = settingsViewModel.isDarkMode.value) {
                     when (screenState) {
                         Screen.REGISTRATION ->
                             RegistrationScreen(
@@ -101,7 +103,7 @@ constructor(
                                 }
                             )
                         else ->
-                            MainScreen(isDark, setDark)
+                            MainScreen(settingsViewModel)
                     }
                 }
             }

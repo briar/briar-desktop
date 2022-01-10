@@ -13,6 +13,7 @@ import org.briarproject.briar.desktop.login.RegistrationViewModel
 import org.briarproject.briar.desktop.navigation.SidebarViewModel
 import org.briarproject.briar.desktop.privategroups.PrivateGroupListViewModel
 import org.briarproject.briar.desktop.privategroups.ThreadedConversationViewModel
+import org.briarproject.briar.desktop.settings.SettingsViewModel
 import kotlin.reflect.KClass
 
 @Module
@@ -64,4 +65,9 @@ abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(ThreadedConversationViewModel::class)
     abstract fun bindThreadedConversationViewModel(threadedConversationViewModel: ThreadedConversationViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(SettingsViewModel::class)
+    abstract fun bindSettingsViewModel(settingsViewModel: SettingsViewModel): ViewModel
 }

@@ -7,12 +7,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import org.briarproject.bramble.api.sync.GroupId
 import org.briarproject.briar.desktop.theme.surfaceVariant
-import org.briarproject.briar.desktop.ui.Constants.PRIVATE_GROUP_LIST_WIDTH
+import org.briarproject.briar.desktop.ui.Constants.COLUMN_WIDTH
 
 @Composable
 fun PrivateGroupList(
@@ -22,7 +20,7 @@ fun PrivateGroupList(
 ) {
     // TODO AddPrivateGroupDialog
     Scaffold(
-        modifier = Modifier.fillMaxHeight().width(PRIVATE_GROUP_LIST_WIDTH),
+        modifier = Modifier.fillMaxHeight().width(COLUMN_WIDTH),
         backgroundColor = MaterialTheme.colors.surfaceVariant,
         // TODO SearchTextField
         content = {

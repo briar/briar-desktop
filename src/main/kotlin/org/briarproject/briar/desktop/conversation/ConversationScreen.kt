@@ -29,7 +29,7 @@ import org.briarproject.briar.desktop.contact.ContactInfoDrawer
 import org.briarproject.briar.desktop.contact.ContactInfoDrawerState
 import org.briarproject.briar.desktop.navigation.SIDEBAR_WIDTH
 import org.briarproject.briar.desktop.theme.surfaceVariant
-import org.briarproject.briar.desktop.ui.Constants.CONTACTLIST_WIDTH
+import org.briarproject.briar.desktop.ui.Constants.COLUMN_WIDTH
 import org.briarproject.briar.desktop.ui.Loader
 import org.briarproject.briar.desktop.viewmodel.viewModel
 
@@ -96,8 +96,8 @@ fun ConversationScreen(
         if (infoDrawer) {
             // TODO Find non-hacky way of setting scrim on entire app
             Box(
-                Modifier.offset(-(CONTACTLIST_WIDTH + SIDEBAR_WIDTH))
-                    .requiredSize(maxWidth + CONTACTLIST_WIDTH + SIDEBAR_WIDTH, maxHeight)
+                Modifier.offset(-(COLUMN_WIDTH + SIDEBAR_WIDTH))
+                    .requiredSize(maxWidth + COLUMN_WIDTH + SIDEBAR_WIDTH, maxHeight)
                     .background(Color(0, 0, 0, 100))
                     .clickable(
                         // prevent visual indication
@@ -106,7 +106,7 @@ fun ConversationScreen(
                     ) { setInfoDrawer(false) }
             )
             Column(
-                modifier = Modifier.fillMaxHeight().width(CONTACTLIST_WIDTH)
+                modifier = Modifier.fillMaxHeight().width(COLUMN_WIDTH)
                     .offset(maxWidth + animatedInfoDrawerOffsetX)
                     .background(
                         MaterialTheme.colors.surfaceVariant,

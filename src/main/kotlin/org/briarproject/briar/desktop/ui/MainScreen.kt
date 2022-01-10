@@ -6,7 +6,8 @@ import org.briarproject.briar.desktop.conversation.PrivateMessageScreen
 import org.briarproject.briar.desktop.navigation.BriarSidebar
 import org.briarproject.briar.desktop.navigation.SidebarViewModel
 import org.briarproject.briar.desktop.privategroups.PrivateGroupScreen
-import org.briarproject.briar.desktop.settings.PlaceHolderSettingsView
+import org.briarproject.briar.desktop.settings.SettingsScreen
+import org.briarproject.briar.desktop.settings.SettingsViewModel
 import org.briarproject.briar.desktop.viewmodel.viewModel
 
 /*
@@ -16,8 +17,7 @@ import org.briarproject.briar.desktop.viewmodel.viewModel
  */
 @Composable
 fun MainScreen(
-    isDark: Boolean,
-    setDark: (Boolean) -> Unit,
+    settingsViewModel: SettingsViewModel,
     viewModel: SidebarViewModel = viewModel(),
 ) {
     Row {
@@ -30,7 +30,7 @@ fun MainScreen(
         when (viewModel.uiMode.value) {
             UiMode.CONTACTS -> PrivateMessageScreen()
             UiMode.GROUPS -> PrivateGroupScreen()
-            UiMode.SETTINGS -> PlaceHolderSettingsView(isDark, setDark)
+            UiMode.SETTINGS -> SettingsScreen(settingsViewModel)
             else -> UiPlaceholder()
         }
     }
