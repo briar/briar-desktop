@@ -1,5 +1,6 @@
 package org.briarproject.briar.desktop.login
 
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import org.briarproject.bramble.api.account.AccountManager
 import org.briarproject.bramble.api.crypto.DecryptionException
@@ -10,14 +11,12 @@ import org.briarproject.bramble.api.lifecycle.IoExecutor
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.bramble.api.lifecycle.LifecycleManager.LifecycleState
 import org.briarproject.bramble.api.lifecycle.event.LifecycleEvent
-import org.briarproject.briar.desktop.login.LoginViewModel.LoginState.COMPACTING
-import org.briarproject.briar.desktop.login.LoginViewModel.LoginState.MIGRATING
-import org.briarproject.briar.desktop.login.LoginViewModel.LoginState.SIGNED_OUT
-import org.briarproject.briar.desktop.login.LoginViewModel.LoginState.SIGNING_IN
-import org.briarproject.briar.desktop.login.LoginViewModel.LoginState.STARTED
-import org.briarproject.briar.desktop.login.LoginViewModel.LoginState.STARTING
+import org.briarproject.briar.desktop.login.LoginViewModel.State.COMPACTING
+import org.briarproject.briar.desktop.login.LoginViewModel.State.MIGRATING
+import org.briarproject.briar.desktop.login.LoginViewModel.State.SIGNED_OUT
+import org.briarproject.briar.desktop.login.LoginViewModel.State.STARTED
+import org.briarproject.briar.desktop.login.LoginViewModel.State.STARTING
 import org.briarproject.briar.desktop.threading.BriarExecutors
-import org.briarproject.briar.desktop.threading.UiExecutor
 import org.briarproject.briar.desktop.viewmodel.EventListenerDbViewModel
 import org.briarproject.briar.desktop.viewmodel.asState
 import javax.inject.Inject
@@ -32,15 +31,21 @@ constructor(
     db: TransactionManager,
 ) : EventListenerDbViewModel(briarExecutors, lifecycleManager, db, eventBus) {
 
-    enum class LoginState {
-        SIGNED_OUT, SIGNING_IN, SIGNED_IN, STARTING, MIGRATING, COMPACTING, STARTED
+    enum class State {
+        SIGNED_OUT, STARTING, MIGRATING, COMPACTING, STARTED
     }
 
     private val _state = mutableStateOf(SIGNED_OUT)
-    private val _password = mutableStateOf("")
-
     val state = _state.asState()
+
+    private val _password = mutableStateOf("")
     val password = _password.asState()
+
+    val buttonEnabled = derivedStateOf { password.value.isNotEmpty() }
+
+    fun setPassword(password: String) {
+        _password.value = password
+    }
 
     override fun onInit() {
         super.onInit()
@@ -60,25 +65,28 @@ constructor(
                     s.isAfter(LifecycleState.STARTING_SERVICES) -> STARTED
                     s == LifecycleState.MIGRATING_DATABASE -> MIGRATING
                     s == LifecycleState.COMPACTING_DATABASE -> COMPACTING
-                    else -> STARTING
+                    else -> _state.value
                 }
             } else {
                 SIGNED_OUT
             }
     }
 
-    fun setPassword(password: String) {
-        _password.value = password
+    @IoExecutor
+    private fun signedIn() {
+        val dbKey = accountManager.databaseKey ?: throw AssertionError()
+        lifecycleManager.startServices(dbKey)
+        lifecycleManager.waitForStartup()
     }
 
-    fun signIn(@UiExecutor success: () -> Unit) {
-        _state.value = SIGNING_IN
+    fun signIn() {
+        if (!buttonEnabled.value) return
+
+        _state.value = STARTING
         briarExecutors.onIoThread {
             try {
                 accountManager.signIn(password.value)
                 signedIn()
-
-                briarExecutors.onUiThread(success)
             } catch (e: DecryptionException) {
                 // failure, try again
                 briarExecutors.onUiThread {
@@ -87,12 +95,5 @@ constructor(
                 }
             }
         }
-    }
-
-    @IoExecutor
-    private fun signedIn() {
-        val dbKey = accountManager.databaseKey ?: throw AssertionError()
-        lifecycleManager.startServices(dbKey)
-        lifecycleManager.waitForStartup()
     }
 }

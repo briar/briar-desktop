@@ -4,20 +4,26 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.window.Window
 import org.briarproject.bramble.api.FeatureFlags
 import org.briarproject.bramble.api.account.AccountManager
+import org.briarproject.bramble.api.event.Event
+import org.briarproject.bramble.api.event.EventBus
+import org.briarproject.bramble.api.event.EventListener
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.bramble.api.lifecycle.LifecycleManager.LifecycleState.RUNNING
+import org.briarproject.bramble.api.lifecycle.event.LifecycleEvent
 import org.briarproject.briar.desktop.DesktopFeatureFlags
 import org.briarproject.briar.desktop.login.LoginScreen
 import org.briarproject.briar.desktop.login.RegistrationScreen
 import org.briarproject.briar.desktop.settings.SettingsViewModel
 import org.briarproject.briar.desktop.theme.BriarTheme
+import org.briarproject.briar.desktop.ui.Screen.LOGIN
+import org.briarproject.briar.desktop.ui.Screen.MAIN
+import org.briarproject.briar.desktop.ui.Screen.REGISTRATION
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.viewmodel.ViewModelProvider
 import org.briarproject.briar.desktop.viewmodel.viewModel
@@ -51,10 +57,23 @@ internal class BriarUiImpl
 constructor(
     private val accountManager: AccountManager,
     private val lifecycleManager: LifecycleManager,
+    private val eventBus: EventBus,
     private val viewModelProvider: ViewModelProvider,
     private val featureFlags: FeatureFlags,
     private val desktopFeatureFlags: DesktopFeatureFlags,
-) : BriarUi {
+) : BriarUi, EventListener {
+
+    private var screenState by mutableStateOf(
+        if (lifecycleManager.lifecycleState == RUNNING) MAIN
+        else if (accountManager.accountExists()) LOGIN
+        else REGISTRATION
+    )
+
+    override fun eventOccurred(e: Event?) {
+        if (e is LifecycleEvent && e.lifecycleState == RUNNING) {
+            screenState = MAIN
+        }
+    }
 
     override fun stop() {
         // TODO: check how briar is doing this
@@ -62,24 +81,13 @@ constructor(
             lifecycleManager.stopServices()
             lifecycleManager.waitForShutdown()
         }
+        eventBus.removeListener(this)
     }
 
     @Composable
     override fun start(onClose: () -> Unit) {
         val title = i18n("main.title")
-        var screenState by remember {
-            mutableStateOf(
-                if (accountManager.hasDatabaseKey()) {
-                    // this should only happen during testing when we launch the main UI directly
-                    // without a need to enter the password.
-                    Screen.MAIN
-                } else if (accountManager.accountExists()) {
-                    Screen.LOGIN
-                } else {
-                    Screen.REGISTRATION
-                }
-            )
-        }
+        eventBus.addListener(this)
         Window(
             title = title,
             onCloseRequest = onClose,
@@ -94,20 +102,9 @@ constructor(
                 val settingsViewModel: SettingsViewModel = viewModel()
                 BriarTheme(isDarkTheme = settingsViewModel.isDarkMode.value) {
                     when (screenState) {
-                        Screen.REGISTRATION ->
-                            RegistrationScreen(
-                                onSignedUp = {
-                                    screenState = Screen.MAIN
-                                }
-                            )
-                        Screen.LOGIN ->
-                            LoginScreen(
-                                onSignedIn = {
-                                    screenState = Screen.MAIN
-                                }
-                            )
-                        else ->
-                            MainScreen(settingsViewModel)
+                        REGISTRATION -> RegistrationScreen()
+                        LOGIN -> LoginScreen()
+                        MAIN -> MainScreen(settingsViewModel)
                     }
                 }
             }

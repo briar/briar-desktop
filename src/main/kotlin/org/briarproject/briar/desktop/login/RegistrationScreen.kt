@@ -1,105 +1,148 @@
 package org.briarproject.briar.desktop.login
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Button
+import androidx.compose.material.InitialFocusState.AFTER_FIRST_FOCUSSED
+import androidx.compose.material.InitialFocusState.AFTER_FOCUS_LOST_ONCE
 import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.KeyEventType
-import androidx.compose.ui.input.key.key
-import androidx.compose.ui.input.key.onPreviewKeyEvent
-import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.unit.dp
-import org.briarproject.briar.desktop.ui.BriarLogo
+import org.briarproject.briar.desktop.login.RegistrationViewModel.State.CREATED
+import org.briarproject.briar.desktop.login.RegistrationViewModel.State.CREATING
+import org.briarproject.briar.desktop.login.RegistrationViewModel.State.INSERT_NICKNAME
+import org.briarproject.briar.desktop.login.RegistrationViewModel.State.INSERT_PASSWORD
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.viewmodel.viewModel
-import java.util.Locale
 
-// TODO: Error handling and password strength
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun RegistrationScreen(
-    onSignedUp: () -> Unit,
     viewModel: RegistrationViewModel = viewModel(),
+) = StartupScreen(
+    title = i18n("startup.title.registration"),
+    showBackButton = viewModel.showBackButton.value,
+    onBackButton = viewModel::goBack
 ) {
-    val signUp = { viewModel.signUp(onSignedUp) }
+    when (viewModel.state.value) {
+        INSERT_NICKNAME ->
+            FormScaffold(
+                explanationText = i18n("startup.field.nickname.explanation"),
+                buttonText = i18n("next"),
+                buttonClick = viewModel::goToPassword,
+                buttonEnabled = viewModel.buttonEnabled.value
+            ) {
+                NicknameForm(
+                    viewModel.nickname.value,
+                    viewModel::setNickname,
+                    viewModel.nicknameTooLongError.value,
+                    viewModel::goToPassword
+                )
+            }
+        INSERT_PASSWORD ->
+            FormScaffold(
+                explanationText = i18n("startup.field.password.explanation"),
+                buttonText = i18n("startup.button.register"),
+                buttonClick = viewModel::signUp,
+                buttonEnabled = viewModel.buttonEnabled.value
+            ) {
+                PasswordForm(
+                    viewModel.password.value,
+                    viewModel::setPassword,
+                    viewModel.passwordConfirmation.value,
+                    viewModel::setPasswordConfirmation,
+                    viewModel.passwordStrength.value,
+                    viewModel.passwordTooWeakError.value,
+                    viewModel.passwordMatchError.value,
+                    viewModel::signUp
+                )
+            }
+        CREATING -> LoadingView(i18n("startup.database.creating"))
+        CREATED -> {} // case handled by BriarUi
+    }
+}
 
+@Composable
+fun NicknameForm(
+    nickname: String,
+    setNickname: (String) -> Unit,
+    nicknameTooLongError: Boolean,
+    onEnter: () -> Unit,
+) {
+    val initialFocusRequester = remember { FocusRequester() }
+
+    OutlinedTextField(
+        value = nickname,
+        onValueChange = setNickname,
+        label = { Text(i18n("startup.field.nickname")) },
+        singleLine = true,
+        isError = nicknameTooLongError,
+        errorMessage = i18n("startup.error.name_too_long"),
+        textStyle = TextStyle(color = Color.White),
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+        modifier = Modifier.fillMaxWidth().focusRequester(initialFocusRequester),
+        onEnter = onEnter
+    )
+
+    LaunchedEffect(Unit) {
+        initialFocusRequester.requestFocus()
+    }
+}
+
+@Composable
+fun PasswordForm(
+    password: String,
+    setPassword: (String) -> Unit,
+    passwordConfirmation: String,
+    setPasswordConfirmation: (String) -> Unit,
+    passwordStrength: Float,
+    passwordTooWeakError: Boolean,
+    passwordsDontMatchError: Boolean,
+    onEnter: () -> Unit,
+) {
     val initialFocusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
-    Surface {
-        Column(
-            modifier = Modifier.padding(16.dp).fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            BriarLogo()
-            Spacer(Modifier.height(32.dp))
-            OutlinedTextField(
-                value = viewModel.username.value,
-                onValueChange = { viewModel.setUsername(it) },
-                label = { Text(i18n("registration.username")) },
-                singleLine = true,
-                textStyle = TextStyle(color = Color.White),
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-                keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Next) }),
-                modifier = Modifier
-                    .focusRequester(initialFocusRequester)
-                    .onPreviewKeyEvent {
-                        if (it.type == KeyEventType.KeyUp && it.key == Key.Enter) {
-                            focusManager.moveFocus(FocusDirection.Next)
-                        }
-                        false
-                    },
-            )
-            OutlinedTextField(
-                value = viewModel.password.value,
-                onValueChange = { viewModel.setPassword(it) },
-                label = { Text(i18n("password")) },
-                singleLine = true,
-                textStyle = TextStyle(color = Color.White),
-                visualTransformation = PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
-                keyboardActions = KeyboardActions(onDone = { signUp() }),
-                modifier = Modifier.onPreviewKeyEvent {
-                    if (it.type == KeyEventType.KeyUp && it.key == Key.Enter) {
-                        signUp()
-                    }
-                    false
-                },
-            )
-            Spacer(Modifier.height(16.dp))
-            Button(onClick = { signUp() }) {
-                val text = i18n("registration.register")
-                Text(text.uppercase(Locale.getDefault()), color = Color.Black)
-            }
 
-            DisposableEffect(Unit) {
-                initialFocusRequester.requestFocus()
-                onDispose { }
-            }
-        }
+    OutlinedTextField(
+        value = password,
+        onValueChange = setPassword,
+        label = { Text(i18n("startup.field.password")) },
+        singleLine = true,
+        isError = passwordTooWeakError,
+        showErrorWhen = AFTER_FOCUS_LOST_ONCE,
+        errorMessage = i18n("startup.error.password_too_weak"),
+        textStyle = TextStyle(color = Color.White),
+        visualTransformation = PasswordVisualTransformation(),
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Next),
+        modifier = Modifier.fillMaxWidth().focusRequester(initialFocusRequester),
+        onEnter = { focusManager.moveFocus(FocusDirection.Next) }
+    )
+    OutlinedTextField(
+        value = passwordConfirmation,
+        onValueChange = setPasswordConfirmation,
+        label = { Text(i18n("startup.field.password_confirmation")) },
+        singleLine = true,
+        isError = passwordsDontMatchError,
+        showErrorWhen = AFTER_FIRST_FOCUSSED,
+        errorMessage = i18n("startup.error.passwords_not_match"),
+        textStyle = TextStyle(color = Color.White),
+        visualTransformation = PasswordVisualTransformation(),
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
+        modifier = Modifier.fillMaxWidth(),
+        onEnter = onEnter,
+    )
+
+    LaunchedEffect(Unit) {
+        initialFocusRequester.requestFocus()
     }
 }
