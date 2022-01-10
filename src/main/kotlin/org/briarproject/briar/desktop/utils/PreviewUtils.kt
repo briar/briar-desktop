@@ -64,6 +64,10 @@ object PreviewUtils {
 
         fun setLongParameter(name: String, value: Long) = setDatatype(name, value)
 
+        fun getFloatParameter(name: String) = getDatatype<Float>(name)
+
+        fun setFloatParameter(name: String, value: Float) = setDatatype(name, value)
+
         fun getRandomId() = random.nextBytes(UniqueId.LENGTH)
 
         @Composable
@@ -110,6 +114,11 @@ object PreviewUtils {
         BasicTextField(value.value.toString(), { value.value = it.toLong() })
     }
 
+    @Composable
+    private fun PreviewScope.addFloatParameter(name: String, initial: Float) = addParameter(name, initial) { value ->
+        BasicTextField(value.value.toString(), { value.value = it.toFloat() })
+    }
+
     /**
      * Open an interactive preview of the composable specified by [content].
      * All [parameters] passed to this function will be changeable on the fly.
@@ -132,6 +141,7 @@ object PreviewUtils {
                             is Boolean -> scope.addBooleanParameter(name, initial)
                             is Int -> scope.addIntParameter(name, initial)
                             is Long -> scope.addLongParameter(name, initial)
+                            is Float -> scope.addFloatParameter(name, initial)
                             else -> throw IllegalArgumentException("Type ${initial::class.simpleName} is not supported for previewing.")
                         }
                     }
