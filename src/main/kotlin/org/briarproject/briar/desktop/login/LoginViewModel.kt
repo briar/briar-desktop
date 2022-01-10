@@ -4,6 +4,8 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import org.briarproject.bramble.api.account.AccountManager
 import org.briarproject.bramble.api.crypto.DecryptionException
+import org.briarproject.bramble.api.crypto.DecryptionResult.INVALID_PASSWORD
+import org.briarproject.bramble.api.crypto.DecryptionResult.KEY_STRENGTHENER_ERROR
 import org.briarproject.bramble.api.db.TransactionManager
 import org.briarproject.bramble.api.event.Event
 import org.briarproject.bramble.api.event.EventBus
@@ -41,10 +43,21 @@ constructor(
     private val _password = mutableStateOf("")
     val password = _password.asState()
 
+    private val _passwordInvalidError = mutableStateOf(false)
+    val passwordInvalidError = _passwordInvalidError.asState()
+
+    private val _decryptionFailedError = mutableStateOf(false)
+    val decryptionFailedError = _decryptionFailedError.asState()
+
     val buttonEnabled = derivedStateOf { password.value.isNotEmpty() }
 
     fun setPassword(password: String) {
         _password.value = password
+        _passwordInvalidError.value = false
+    }
+
+    fun closeDecryptionFailedDialog() {
+        _decryptionFailedError.value = false
     }
 
     override fun onInit() {
@@ -90,8 +103,12 @@ constructor(
             } catch (e: DecryptionException) {
                 // failure, try again
                 briarExecutors.onUiThread {
-                    _state.value = SIGNED_OUT
+                    when (e.decryptionResult) {
+                        INVALID_PASSWORD -> _passwordInvalidError.value = true
+                        KEY_STRENGTHENER_ERROR -> _decryptionFailedError.value = true
+                    }
                     _password.value = ""
+                    _state.value = SIGNED_OUT
                 }
             }
         }

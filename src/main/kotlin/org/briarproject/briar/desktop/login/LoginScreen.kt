@@ -2,6 +2,9 @@ package org.briarproject.briar.desktop.login
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.AlertDialog
+import androidx.compose.material.Button
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -23,6 +26,7 @@ import org.briarproject.briar.desktop.login.LoginViewModel.State.STARTING
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.viewmodel.viewModel
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel = viewModel(),
@@ -38,6 +42,7 @@ fun LoginScreen(
                 LoginForm(
                     viewModel.password.value,
                     viewModel::setPassword,
+                    viewModel.passwordInvalidError.value,
                     viewModel::signIn
                 )
             }
@@ -46,12 +51,27 @@ fun LoginScreen(
         COMPACTING -> LoadingView(i18n("startup.database.compacting"))
         STARTED -> {} // case handled by BriarUi
     }
+
+    if (viewModel.decryptionFailedError.value) {
+        // todo: is this actually needed on Desktop?
+        AlertDialog(
+            onDismissRequest = viewModel::closeDecryptionFailedDialog,
+            title = { Text(i18n("startup.error.decryption.title")) },
+            text = { Text(i18n("startup.error.decryption.text")) },
+            confirmButton = {
+                Button(onClick = viewModel::closeDecryptionFailedDialog) {
+                    Text(i18n("ok"))
+                }
+            },
+        )
+    }
 }
 
 @Composable
 fun LoginForm(
     password: String,
     setPassword: (String) -> Unit,
+    passwordInvalidError: Boolean,
     onEnter: () -> Unit,
 ) {
     val initialFocusRequester = remember { FocusRequester() }
@@ -61,7 +81,8 @@ fun LoginForm(
         onValueChange = setPassword,
         label = { Text(i18n("startup.field.password")) },
         singleLine = true,
-        errorMessage = "Dies ist ein Fehler!",
+        isError = passwordInvalidError,
+        errorMessage = i18n("startup.error.password_wrong"),
         textStyle = TextStyle(color = Color.White),
         visualTransformation = PasswordVisualTransformation(),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Next),

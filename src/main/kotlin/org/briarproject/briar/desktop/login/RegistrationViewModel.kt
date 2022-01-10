@@ -2,12 +2,14 @@ package org.briarproject.briar.desktop.login
 
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
+import mu.KotlinLogging
 import org.briarproject.bramble.api.account.AccountManager
 import org.briarproject.bramble.api.crypto.PasswordStrengthEstimator
 import org.briarproject.bramble.api.crypto.PasswordStrengthEstimator.QUITE_WEAK
 import org.briarproject.bramble.api.identity.AuthorConstants.MAX_AUTHOR_NAME_LENGTH
 import org.briarproject.bramble.api.lifecycle.IoExecutor
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
+import org.briarproject.briar.desktop.login.RegistrationViewModel.State.CREATED
 import org.briarproject.briar.desktop.login.RegistrationViewModel.State.CREATING
 import org.briarproject.briar.desktop.login.RegistrationViewModel.State.INSERT_NICKNAME
 import org.briarproject.briar.desktop.login.RegistrationViewModel.State.INSERT_PASSWORD
@@ -24,6 +26,10 @@ constructor(
     private val lifecycleManager: LifecycleManager,
     private val passwordStrengthEstimator: PasswordStrengthEstimator
 ) : ViewModel {
+
+    companion object {
+        private val LOG = KotlinLogging.logger {}
+    }
 
     enum class State {
         INSERT_NICKNAME, INSERT_PASSWORD, CREATING, CREATED
@@ -103,8 +109,15 @@ constructor(
 
         _state.value = CREATING
         briarExecutors.onIoThread {
-            accountManager.createAccount(_nickname.value, _password.value)
-            signedIn()
+            if (accountManager.createAccount(_nickname.value, _password.value)) {
+                LOG.info { "Created account" }
+                signedIn()
+                _state.value = CREATED
+            } else {
+                LOG.warn { "Failed to create account" }
+                _state.value = INSERT_NICKNAME
+                // todo: show (meaningful) error to user
+            }
         }
     }
 }
