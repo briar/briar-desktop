@@ -17,6 +17,7 @@ import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.bramble.api.lifecycle.LifecycleManager.LifecycleState.RUNNING
 import org.briarproject.bramble.api.lifecycle.event.LifecycleEvent
 import org.briarproject.briar.desktop.DesktopFeatureFlags
+import org.briarproject.briar.desktop.login.AccountDeletedEvent
 import org.briarproject.briar.desktop.login.LoginScreen
 import org.briarproject.briar.desktop.login.RegistrationScreen
 import org.briarproject.briar.desktop.settings.SettingsViewModel
@@ -72,6 +73,8 @@ constructor(
     override fun eventOccurred(e: Event?) {
         if (e is LifecycleEvent && e.lifecycleState == RUNNING) {
             screenState = MAIN
+        } else if (e is AccountDeletedEvent) {
+            screenState = REGISTRATION
         }
     }
 

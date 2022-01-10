@@ -29,7 +29,7 @@ constructor(
     private val accountManager: AccountManager,
     private val briarExecutors: BriarExecutors,
     private val lifecycleManager: LifecycleManager,
-    eventBus: EventBus,
+    private val eventBus: EventBus,
     db: TransactionManager,
 ) : EventListenerDbViewModel(briarExecutors, lifecycleManager, db, eventBus) {
 
@@ -90,6 +90,11 @@ constructor(
         val dbKey = accountManager.databaseKey ?: throw AssertionError()
         lifecycleManager.startServices(dbKey)
         lifecycleManager.waitForStartup()
+    }
+
+    fun deleteAccount() = briarExecutors.onIoThread {
+        accountManager.deleteAccount()
+        eventBus.broadcast(AccountDeletedEvent())
     }
 
     fun signIn() {
