@@ -8,8 +8,7 @@ import org.briarproject.briar.desktop.contact.ContactListViewModel
 import org.briarproject.briar.desktop.contact.add.remote.AddContactViewModel
 import org.briarproject.briar.desktop.conversation.ConversationViewModel
 import org.briarproject.briar.desktop.introduction.IntroductionViewModel
-import org.briarproject.briar.desktop.login.LoginViewModel
-import org.briarproject.briar.desktop.login.RegistrationViewModel
+import org.briarproject.briar.desktop.login.StartupViewModel
 import org.briarproject.briar.desktop.navigation.SidebarViewModel
 import org.briarproject.briar.desktop.privategroups.PrivateGroupListViewModel
 import org.briarproject.briar.desktop.privategroups.ThreadedConversationViewModel
@@ -23,13 +22,8 @@ abstract class ViewModelModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(LoginViewModel::class)
-    abstract fun bindLoginViewModel(loginViewModel: LoginViewModel): ViewModel
-
-    @Binds
-    @IntoMap
-    @ViewModelKey(RegistrationViewModel::class)
-    abstract fun bindRegistrationViewModel(registrationViewModel: RegistrationViewModel): ViewModel
+    @ViewModelKey(StartupViewModel::class)
+    abstract fun bindStartupViewModel(startupViewModel: StartupViewModel): ViewModel
 
     @Binds
     @IntoMap

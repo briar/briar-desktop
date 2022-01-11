@@ -6,32 +6,21 @@ import org.briarproject.bramble.api.account.AccountManager
 import org.briarproject.bramble.api.crypto.DecryptionException
 import org.briarproject.bramble.api.crypto.DecryptionResult.INVALID_PASSWORD
 import org.briarproject.bramble.api.crypto.DecryptionResult.KEY_STRENGTHENER_ERROR
-import org.briarproject.bramble.api.db.TransactionManager
-import org.briarproject.bramble.api.event.Event
-import org.briarproject.bramble.api.event.EventBus
-import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.bramble.api.lifecycle.LifecycleManager.LifecycleState
-import org.briarproject.bramble.api.lifecycle.event.LifecycleEvent
-import org.briarproject.briar.desktop.login.LoginViewModel.State.COMPACTING
-import org.briarproject.briar.desktop.login.LoginViewModel.State.MIGRATING
-import org.briarproject.briar.desktop.login.LoginViewModel.State.SIGNED_OUT
-import org.briarproject.briar.desktop.login.LoginViewModel.State.STARTED
-import org.briarproject.briar.desktop.login.LoginViewModel.State.STARTING
-import org.briarproject.briar.desktop.login.StartupUtils.startBriarCore
+import org.briarproject.briar.desktop.login.LoginViewHolder.State.COMPACTING
+import org.briarproject.briar.desktop.login.LoginViewHolder.State.MIGRATING
+import org.briarproject.briar.desktop.login.LoginViewHolder.State.SIGNED_OUT
+import org.briarproject.briar.desktop.login.LoginViewHolder.State.STARTED
+import org.briarproject.briar.desktop.login.LoginViewHolder.State.STARTING
 import org.briarproject.briar.desktop.threading.BriarExecutors
-import org.briarproject.briar.desktop.viewmodel.EventListenerDbViewModel
 import org.briarproject.briar.desktop.viewmodel.asState
-import javax.inject.Inject
 
-class LoginViewModel
-@Inject
-constructor(
+class LoginViewHolder(
+    private val viewModel: StartupViewModel,
     private val accountManager: AccountManager,
     private val briarExecutors: BriarExecutors,
-    private val lifecycleManager: LifecycleManager,
-    private val eventBus: EventBus,
-    db: TransactionManager,
-) : EventListenerDbViewModel(briarExecutors, lifecycleManager, db, eventBus) {
+    initialLifecycleState: LifecycleState,
+) : StartupViewModel.ViewHolder {
 
     enum class State {
         SIGNED_OUT, STARTING, MIGRATING, COMPACTING, STARTED
@@ -60,18 +49,11 @@ constructor(
         _decryptionFailedError.value = false
     }
 
-    override fun onInit() {
-        super.onInit()
-        updateState(lifecycleManager.lifecycleState)
+    init {
+        lifecycleStateChanged(initialLifecycleState)
     }
 
-    override fun eventOccurred(e: Event?) {
-        if (e is LifecycleEvent) {
-            updateState(e.lifecycleState)
-        }
-    }
-
-    private fun updateState(s: LifecycleState) {
+    override fun lifecycleStateChanged(s: LifecycleState) {
         _state.value =
             if (accountManager.hasDatabaseKey()) {
                 when {
@@ -87,7 +69,7 @@ constructor(
 
     fun deleteAccount() = briarExecutors.onIoThread {
         accountManager.deleteAccount()
-        eventBus.broadcast(AccountDeletedEvent())
+        viewModel.showRegistration()
     }
 
     fun signIn() {
@@ -97,7 +79,7 @@ constructor(
         briarExecutors.onIoThread {
             try {
                 accountManager.signIn(password.value)
-                startBriarCore(accountManager, lifecycleManager, eventBus)
+                viewModel.startBriarCore()
             } catch (e: DecryptionException) {
                 // failure, try again
                 briarExecutors.onUiThread {

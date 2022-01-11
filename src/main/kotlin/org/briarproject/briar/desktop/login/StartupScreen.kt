@@ -28,10 +28,22 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import org.briarproject.briar.desktop.ui.BriarLogo
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
+import org.briarproject.briar.desktop.viewmodel.viewModel
 import java.util.Locale
 
 @Composable
 fun StartupScreen(
+    viewModel: StartupViewModel = viewModel(),
+) {
+    when (val holder = viewModel.mode.value) {
+        is LoginViewHolder -> LoginScreen(holder)
+        is RegistrationViewHolder -> RegistrationScreen(holder)
+        is ErrorViewHolder -> ErrorScreen(holder)
+    }
+}
+
+@Composable
+fun StartupScreenScaffold(
     title: String,
     showBackButton: Boolean = false,
     onBackButton: () -> Unit = {},

@@ -9,10 +9,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.Button
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -45,11 +47,22 @@ fun main() = preview {
         }
     }
 
-    ErrorScreen(error)
+    ErrorScreen(error) {}
 }
 
 @Composable
-fun ErrorScreen(error: StartResult) = Surface {
+fun ErrorScreen(viewHolder: ErrorViewHolder) =
+    ErrorScreen(viewHolder.error, viewHolder.onBackButton)
+
+@Composable
+fun ErrorScreen(
+    error: StartResult,
+    onBackButton: () -> Unit,
+) = Surface {
+    IconButton(onClick = onBackButton) {
+        Icon(Icons.Filled.ArrowBack, i18n("back"))
+    }
+
     Column(
         modifier = Modifier.fillMaxSize().padding(32.dp),
         horizontalAlignment = CenterHorizontally,

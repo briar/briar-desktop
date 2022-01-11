@@ -9,26 +9,18 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.window.Window
 import org.briarproject.bramble.api.FeatureFlags
-import org.briarproject.bramble.api.account.AccountManager
 import org.briarproject.bramble.api.event.Event
 import org.briarproject.bramble.api.event.EventBus
 import org.briarproject.bramble.api.event.EventListener
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.bramble.api.lifecycle.LifecycleManager.LifecycleState.RUNNING
-import org.briarproject.bramble.api.lifecycle.LifecycleManager.StartResult
 import org.briarproject.bramble.api.lifecycle.event.LifecycleEvent
 import org.briarproject.briar.desktop.DesktopFeatureFlags
-import org.briarproject.briar.desktop.login.AccountDeletedEvent
-import org.briarproject.briar.desktop.login.ErrorScreen
-import org.briarproject.briar.desktop.login.LoginScreen
-import org.briarproject.briar.desktop.login.RegistrationScreen
-import org.briarproject.briar.desktop.login.StartupFailedEvent
+import org.briarproject.briar.desktop.login.StartupScreen
 import org.briarproject.briar.desktop.settings.SettingsViewModel
 import org.briarproject.briar.desktop.theme.BriarTheme
-import org.briarproject.briar.desktop.ui.Screen.LOGIN
 import org.briarproject.briar.desktop.ui.Screen.MAIN
-import org.briarproject.briar.desktop.ui.Screen.REGISTRATION
-import org.briarproject.briar.desktop.ui.Screen.STARTUP_ERROR
+import org.briarproject.briar.desktop.ui.Screen.STARTUP
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.viewmodel.ViewModelProvider
 import org.briarproject.briar.desktop.viewmodel.viewModel
@@ -37,11 +29,9 @@ import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
 import javax.inject.Singleton
 
-sealed interface Screen {
-    object REGISTRATION : Screen
-    object LOGIN : Screen
-    object MAIN : Screen
-    class STARTUP_ERROR(val error: StartResult) : Screen
+enum class Screen {
+    STARTUP,
+    MAIN
 }
 
 interface BriarUi {
@@ -61,7 +51,6 @@ val LocalDesktopFeatureFlags = staticCompositionLocalOf<DesktopFeatureFlags?> { 
 internal class BriarUiImpl
 @Inject
 constructor(
-    private val accountManager: AccountManager,
     private val lifecycleManager: LifecycleManager,
     private val eventBus: EventBus,
     private val viewModelProvider: ViewModelProvider,
@@ -71,19 +60,12 @@ constructor(
 
     private var screenState by mutableStateOf(
         if (lifecycleManager.lifecycleState == RUNNING) MAIN
-        else if (accountManager.accountExists()) LOGIN
-        else REGISTRATION
+        else STARTUP
     )
 
     override fun eventOccurred(e: Event?) {
-        when {
-            e is LifecycleEvent && e.lifecycleState == RUNNING ->
-                screenState = MAIN
-            e is AccountDeletedEvent ->
-                screenState = REGISTRATION
-            e is StartupFailedEvent ->
-                screenState = STARTUP_ERROR(e.result)
-        }
+        if (e is LifecycleEvent && e.lifecycleState == RUNNING)
+            screenState = MAIN
     }
 
     override fun stop() {
@@ -112,11 +94,9 @@ constructor(
             ) {
                 val settingsViewModel: SettingsViewModel = viewModel()
                 BriarTheme(isDarkTheme = settingsViewModel.isDarkMode.value) {
-                    when (val state = screenState) {
-                        is REGISTRATION -> RegistrationScreen()
-                        is LOGIN -> LoginScreen()
-                        is STARTUP_ERROR -> ErrorScreen(state.error)
-                        is MAIN -> MainScreen(settingsViewModel)
+                    when (screenState) {
+                        STARTUP -> StartupScreen()
+                        MAIN -> MainScreen(settingsViewModel)
                     }
                 }
             }

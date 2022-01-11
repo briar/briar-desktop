@@ -21,33 +21,32 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import org.briarproject.briar.desktop.login.LoginViewModel.State.COMPACTING
-import org.briarproject.briar.desktop.login.LoginViewModel.State.MIGRATING
-import org.briarproject.briar.desktop.login.LoginViewModel.State.SIGNED_OUT
-import org.briarproject.briar.desktop.login.LoginViewModel.State.STARTED
-import org.briarproject.briar.desktop.login.LoginViewModel.State.STARTING
+import org.briarproject.briar.desktop.login.LoginViewHolder.State.COMPACTING
+import org.briarproject.briar.desktop.login.LoginViewHolder.State.MIGRATING
+import org.briarproject.briar.desktop.login.LoginViewHolder.State.SIGNED_OUT
+import org.briarproject.briar.desktop.login.LoginViewHolder.State.STARTED
+import org.briarproject.briar.desktop.login.LoginViewHolder.State.STARTING
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
-import org.briarproject.briar.desktop.viewmodel.viewModel
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun LoginScreen(
-    viewModel: LoginViewModel = viewModel(),
-) = StartupScreen(i18n("startup.title.login")) {
-    when (viewModel.state.value) {
+    viewHolder: LoginViewHolder,
+) = StartupScreenScaffold(i18n("startup.title.login")) {
+    when (viewHolder.state.value) {
         SIGNED_OUT ->
             FormScaffold(
                 explanationText = null,
                 buttonText = i18n("startup.button.login"),
-                buttonClick = viewModel::signIn,
-                buttonEnabled = viewModel.buttonEnabled.value
+                buttonClick = viewHolder::signIn,
+                buttonEnabled = viewHolder.buttonEnabled.value
             ) {
                 LoginForm(
-                    viewModel.password.value,
-                    viewModel::setPassword,
-                    viewModel.passwordInvalidError.value,
-                    viewModel::deleteAccount,
-                    viewModel::signIn
+                    viewHolder.password.value,
+                    viewHolder::setPassword,
+                    viewHolder.passwordInvalidError.value,
+                    viewHolder::deleteAccount,
+                    viewHolder::signIn
                 )
             }
         STARTING -> LoadingView(i18n("startup.database.opening"))
@@ -56,15 +55,15 @@ fun LoginScreen(
         STARTED -> {} // case handled by BriarUi
     }
 
-    if (viewModel.decryptionFailedError.value) {
+    if (viewHolder.decryptionFailedError.value) {
         // todo: is this actually needed on Desktop?
-        // todo: use ErrorScreen to display this instead
+        // todo: use ErrorScreen to display this instead?
         AlertDialog(
-            onDismissRequest = viewModel::closeDecryptionFailedDialog,
+            onDismissRequest = viewHolder::closeDecryptionFailedDialog,
             title = { Text(i18n("startup.error.decryption.title")) },
             text = { Text(i18n("startup.error.decryption.text")) },
             confirmButton = {
-                TextButton(onClick = viewModel::closeDecryptionFailedDialog) {
+                TextButton(onClick = viewHolder::closeDecryptionFailedDialog) {
                     Text(i18n("ok"))
                 }
             },

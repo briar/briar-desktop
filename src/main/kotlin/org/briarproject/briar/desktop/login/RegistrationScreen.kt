@@ -23,52 +23,51 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import org.briarproject.briar.desktop.login.RegistrationViewModel.State.CREATED
-import org.briarproject.briar.desktop.login.RegistrationViewModel.State.CREATING
-import org.briarproject.briar.desktop.login.RegistrationViewModel.State.INSERT_NICKNAME
-import org.briarproject.briar.desktop.login.RegistrationViewModel.State.INSERT_PASSWORD
+import org.briarproject.briar.desktop.login.RegistrationViewHolder.State.CREATED
+import org.briarproject.briar.desktop.login.RegistrationViewHolder.State.CREATING
+import org.briarproject.briar.desktop.login.RegistrationViewHolder.State.INSERT_NICKNAME
+import org.briarproject.briar.desktop.login.RegistrationViewHolder.State.INSERT_PASSWORD
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
-import org.briarproject.briar.desktop.viewmodel.viewModel
 
 @Composable
 fun RegistrationScreen(
-    viewModel: RegistrationViewModel = viewModel(),
-) = StartupScreen(
+    viewHolder: RegistrationViewHolder,
+) = StartupScreenScaffold(
     title = i18n("startup.title.registration"),
-    showBackButton = viewModel.showBackButton.value,
-    onBackButton = viewModel::goBack
+    showBackButton = viewHolder.showBackButton.value,
+    onBackButton = viewHolder::goBack
 ) {
-    when (viewModel.state.value) {
+    when (viewHolder.state.value) {
         INSERT_NICKNAME ->
             FormScaffold(
                 explanationText = i18n("startup.field.nickname.explanation"),
                 buttonText = i18n("next"),
-                buttonClick = viewModel::goToPassword,
-                buttonEnabled = viewModel.buttonEnabled.value
+                buttonClick = viewHolder::goToPassword,
+                buttonEnabled = viewHolder.buttonEnabled.value
             ) {
                 NicknameForm(
-                    viewModel.nickname.value,
-                    viewModel::setNickname,
-                    viewModel.nicknameTooLongError.value,
-                    viewModel::goToPassword
+                    viewHolder.nickname.value,
+                    viewHolder::setNickname,
+                    viewHolder.nicknameTooLongError.value,
+                    viewHolder::goToPassword
                 )
             }
         INSERT_PASSWORD ->
             FormScaffold(
                 explanationText = i18n("startup.field.password.explanation"),
                 buttonText = i18n("startup.button.register"),
-                buttonClick = viewModel::signUp,
-                buttonEnabled = viewModel.buttonEnabled.value
+                buttonClick = viewHolder::signUp,
+                buttonEnabled = viewHolder.buttonEnabled.value
             ) {
                 PasswordForm(
-                    viewModel.password.value,
-                    viewModel::setPassword,
-                    viewModel.passwordConfirmation.value,
-                    viewModel::setPasswordConfirmation,
-                    viewModel.passwordStrength.value,
-                    viewModel.passwordTooWeakError.value,
-                    viewModel.passwordMatchError.value,
-                    viewModel::signUp
+                    viewHolder.password.value,
+                    viewHolder::setPassword,
+                    viewHolder.passwordConfirmation.value,
+                    viewHolder::setPasswordConfirmation,
+                    viewHolder.passwordStrength.value,
+                    viewHolder.passwordTooWeakError.value,
+                    viewHolder.passwordMatchError.value,
+                    viewHolder::signUp
                 )
             }
         CREATING -> LoadingView(i18n("startup.database.creating"))

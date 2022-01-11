@@ -6,28 +6,19 @@ import mu.KotlinLogging
 import org.briarproject.bramble.api.account.AccountManager
 import org.briarproject.bramble.api.crypto.PasswordStrengthEstimator
 import org.briarproject.bramble.api.crypto.PasswordStrengthEstimator.QUITE_WEAK
-import org.briarproject.bramble.api.event.EventBus
 import org.briarproject.bramble.api.identity.AuthorConstants.MAX_AUTHOR_NAME_LENGTH
-import org.briarproject.bramble.api.lifecycle.LifecycleManager
-import org.briarproject.briar.desktop.login.RegistrationViewModel.State.CREATED
-import org.briarproject.briar.desktop.login.RegistrationViewModel.State.CREATING
-import org.briarproject.briar.desktop.login.RegistrationViewModel.State.INSERT_NICKNAME
-import org.briarproject.briar.desktop.login.RegistrationViewModel.State.INSERT_PASSWORD
-import org.briarproject.briar.desktop.login.StartupUtils.startBriarCore
+import org.briarproject.briar.desktop.login.RegistrationViewHolder.State.CREATING
+import org.briarproject.briar.desktop.login.RegistrationViewHolder.State.INSERT_NICKNAME
+import org.briarproject.briar.desktop.login.RegistrationViewHolder.State.INSERT_PASSWORD
 import org.briarproject.briar.desktop.threading.BriarExecutors
-import org.briarproject.briar.desktop.viewmodel.ViewModel
 import org.briarproject.briar.desktop.viewmodel.asState
-import javax.inject.Inject
 
-class RegistrationViewModel
-@Inject
-constructor(
+class RegistrationViewHolder(
+    private val viewModel: StartupViewModel,
     private val accountManager: AccountManager,
     private val briarExecutors: BriarExecutors,
-    private val lifecycleManager: LifecycleManager,
     private val passwordStrengthEstimator: PasswordStrengthEstimator,
-    private val eventBus: EventBus,
-) : ViewModel {
+) : StartupViewModel.ViewHolder {
 
     companion object {
         private val LOG = KotlinLogging.logger {}
@@ -106,8 +97,7 @@ constructor(
         briarExecutors.onIoThread {
             if (accountManager.createAccount(_nickname.value, _password.value)) {
                 LOG.info { "Created account" }
-                startBriarCore(accountManager, lifecycleManager, eventBus)
-                _state.value = CREATED
+                viewModel.startBriarCore()
             } else {
                 LOG.warn { "Failed to create account" }
                 _state.value = INSERT_NICKNAME
