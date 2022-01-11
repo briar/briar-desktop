@@ -57,3 +57,17 @@ quicker. In `RendezvousConstants`, change
 `long POLLING_INTERVAL_MS = MINUTES.toMillis(1);`
 to something lower such as
 `long POLLING_INTERVAL_MS = SECONDS.toMillis(10);`.
+
+## Updating Copyright headers
+
+In IntelliJ, right click the root of the project tree and select
+"Update Copyright". In the dialog choose "Custom scope" and select
+"briar-desktop" and confirm "OK".
+
+This applies the copyright profile configured in
+`Settings → Editor → Copyright Profiles`
+in the scope which is configured in
+`Settings → Appearance & Behavior → Scopes`.
+
+Which copyright profile is applied in which scope can be configured in
+`Settings → Editor → Copyright`.

@@ -1,4 +1,22 @@
 /*
+ * Briar Desktop
+ * Copyright (C) 2021-2022 The Briar Project
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/*
 Code inspired by and adapted to our needs from
 https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:lifecycle/lifecycle-viewmodel-compose/src/main/java/androidx/lifecycle/viewmodel/compose/ViewModel.kt;drc=0c44ec9ae8a43abafd966cd130196e9334fad359
 licensed under the Apache License, Version 2.0

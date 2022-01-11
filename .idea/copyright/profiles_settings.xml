@@ -1,0 +1,7 @@
+<component name="CopyrightManager">
+  <settings default="agpl">
+    <module2copyright>
+      <element module="briar-desktop" copyright="agpl" />
+    </module2copyright>
+  </settings>
+</component>
