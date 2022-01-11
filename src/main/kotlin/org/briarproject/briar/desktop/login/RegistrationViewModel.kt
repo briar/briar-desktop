@@ -6,13 +6,14 @@ import mu.KotlinLogging
 import org.briarproject.bramble.api.account.AccountManager
 import org.briarproject.bramble.api.crypto.PasswordStrengthEstimator
 import org.briarproject.bramble.api.crypto.PasswordStrengthEstimator.QUITE_WEAK
+import org.briarproject.bramble.api.event.EventBus
 import org.briarproject.bramble.api.identity.AuthorConstants.MAX_AUTHOR_NAME_LENGTH
-import org.briarproject.bramble.api.lifecycle.IoExecutor
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.briar.desktop.login.RegistrationViewModel.State.CREATED
 import org.briarproject.briar.desktop.login.RegistrationViewModel.State.CREATING
 import org.briarproject.briar.desktop.login.RegistrationViewModel.State.INSERT_NICKNAME
 import org.briarproject.briar.desktop.login.RegistrationViewModel.State.INSERT_PASSWORD
+import org.briarproject.briar.desktop.login.StartupUtils.startBriarCore
 import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.viewmodel.ViewModel
 import org.briarproject.briar.desktop.viewmodel.asState
@@ -24,7 +25,8 @@ constructor(
     private val accountManager: AccountManager,
     private val briarExecutors: BriarExecutors,
     private val lifecycleManager: LifecycleManager,
-    private val passwordStrengthEstimator: PasswordStrengthEstimator
+    private val passwordStrengthEstimator: PasswordStrengthEstimator,
+    private val eventBus: EventBus,
 ) : ViewModel {
 
     companion object {
@@ -87,13 +89,6 @@ constructor(
         _passwordConfirmation.value = passwordConfirmation
     }
 
-    @IoExecutor
-    private fun signedIn() { // todo: factor out?
-        val dbKey = accountManager.databaseKey ?: throw AssertionError()
-        lifecycleManager.startServices(dbKey)
-        lifecycleManager.waitForStartup()
-    }
-
     fun goToPassword() {
         if (!buttonEnabled.value) return
 
@@ -111,7 +106,7 @@ constructor(
         briarExecutors.onIoThread {
             if (accountManager.createAccount(_nickname.value, _password.value)) {
                 LOG.info { "Created account" }
-                signedIn()
+                startBriarCore(accountManager, lifecycleManager, eventBus)
                 _state.value = CREATED
             } else {
                 LOG.warn { "Failed to create account" }

@@ -9,7 +9,6 @@ import org.briarproject.bramble.api.crypto.DecryptionResult.KEY_STRENGTHENER_ERR
 import org.briarproject.bramble.api.db.TransactionManager
 import org.briarproject.bramble.api.event.Event
 import org.briarproject.bramble.api.event.EventBus
-import org.briarproject.bramble.api.lifecycle.IoExecutor
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.bramble.api.lifecycle.LifecycleManager.LifecycleState
 import org.briarproject.bramble.api.lifecycle.event.LifecycleEvent
@@ -18,6 +17,7 @@ import org.briarproject.briar.desktop.login.LoginViewModel.State.MIGRATING
 import org.briarproject.briar.desktop.login.LoginViewModel.State.SIGNED_OUT
 import org.briarproject.briar.desktop.login.LoginViewModel.State.STARTED
 import org.briarproject.briar.desktop.login.LoginViewModel.State.STARTING
+import org.briarproject.briar.desktop.login.StartupUtils.startBriarCore
 import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.viewmodel.EventListenerDbViewModel
 import org.briarproject.briar.desktop.viewmodel.asState
@@ -85,13 +85,6 @@ constructor(
             }
     }
 
-    @IoExecutor
-    private fun signedIn() {
-        val dbKey = accountManager.databaseKey ?: throw AssertionError()
-        lifecycleManager.startServices(dbKey)
-        lifecycleManager.waitForStartup()
-    }
-
     fun deleteAccount() = briarExecutors.onIoThread {
         accountManager.deleteAccount()
         eventBus.broadcast(AccountDeletedEvent())
@@ -104,7 +97,7 @@ constructor(
         briarExecutors.onIoThread {
             try {
                 accountManager.signIn(password.value)
-                signedIn()
+                startBriarCore(accountManager, lifecycleManager, eventBus)
             } catch (e: DecryptionException) {
                 // failure, try again
                 briarExecutors.onUiThread {

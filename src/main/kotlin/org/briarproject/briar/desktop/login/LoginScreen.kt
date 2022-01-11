@@ -33,7 +33,7 @@ import org.briarproject.briar.desktop.viewmodel.viewModel
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel = viewModel(),
-) = StartupScreen(i18n("startup.title.login")) { // todo: i18n
+) = StartupScreen(i18n("startup.title.login")) {
     when (viewModel.state.value) {
         SIGNED_OUT ->
             FormScaffold(
@@ -58,6 +58,7 @@ fun LoginScreen(
 
     if (viewModel.decryptionFailedError.value) {
         // todo: is this actually needed on Desktop?
+        // todo: use ErrorScreen to display this instead
         AlertDialog(
             onDismissRequest = viewModel::closeDecryptionFailedDialog,
             title = { Text(i18n("startup.error.decryption.title")) },

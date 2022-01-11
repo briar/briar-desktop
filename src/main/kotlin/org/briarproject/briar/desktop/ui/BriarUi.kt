@@ -15,16 +15,20 @@ import org.briarproject.bramble.api.event.EventBus
 import org.briarproject.bramble.api.event.EventListener
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.bramble.api.lifecycle.LifecycleManager.LifecycleState.RUNNING
+import org.briarproject.bramble.api.lifecycle.LifecycleManager.StartResult
 import org.briarproject.bramble.api.lifecycle.event.LifecycleEvent
 import org.briarproject.briar.desktop.DesktopFeatureFlags
 import org.briarproject.briar.desktop.login.AccountDeletedEvent
+import org.briarproject.briar.desktop.login.ErrorScreen
 import org.briarproject.briar.desktop.login.LoginScreen
 import org.briarproject.briar.desktop.login.RegistrationScreen
+import org.briarproject.briar.desktop.login.StartupFailedEvent
 import org.briarproject.briar.desktop.settings.SettingsViewModel
 import org.briarproject.briar.desktop.theme.BriarTheme
 import org.briarproject.briar.desktop.ui.Screen.LOGIN
 import org.briarproject.briar.desktop.ui.Screen.MAIN
 import org.briarproject.briar.desktop.ui.Screen.REGISTRATION
+import org.briarproject.briar.desktop.ui.Screen.STARTUP_ERROR
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.viewmodel.ViewModelProvider
 import org.briarproject.briar.desktop.viewmodel.viewModel
@@ -33,10 +37,11 @@ import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
 import javax.inject.Singleton
 
-enum class Screen {
-    REGISTRATION,
-    LOGIN,
-    MAIN
+sealed interface Screen {
+    object REGISTRATION : Screen
+    object LOGIN : Screen
+    object MAIN : Screen
+    class STARTUP_ERROR(val error: StartResult) : Screen
 }
 
 interface BriarUi {
@@ -71,10 +76,13 @@ constructor(
     )
 
     override fun eventOccurred(e: Event?) {
-        if (e is LifecycleEvent && e.lifecycleState == RUNNING) {
-            screenState = MAIN
-        } else if (e is AccountDeletedEvent) {
-            screenState = REGISTRATION
+        when {
+            e is LifecycleEvent && e.lifecycleState == RUNNING ->
+                screenState = MAIN
+            e is AccountDeletedEvent ->
+                screenState = REGISTRATION
+            e is StartupFailedEvent ->
+                screenState = STARTUP_ERROR(e.result)
         }
     }
 
@@ -104,10 +112,11 @@ constructor(
             ) {
                 val settingsViewModel: SettingsViewModel = viewModel()
                 BriarTheme(isDarkTheme = settingsViewModel.isDarkMode.value) {
-                    when (screenState) {
-                        REGISTRATION -> RegistrationScreen()
-                        LOGIN -> LoginScreen()
-                        MAIN -> MainScreen(settingsViewModel)
+                    when (val state = screenState) {
+                        is REGISTRATION -> RegistrationScreen()
+                        is LOGIN -> LoginScreen()
+                        is STARTUP_ERROR -> ErrorScreen(state.error)
+                        is MAIN -> MainScreen(settingsViewModel)
                     }
                 }
             }
