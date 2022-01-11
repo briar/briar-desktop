@@ -7,8 +7,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -19,6 +19,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.briarproject.bramble.api.contact.ContactId
@@ -72,13 +73,16 @@ fun ContactCard(
     val briarSurfaceVar = MaterialTheme.colors.surfaceVariant
 
     Card(
-        modifier = Modifier.fillMaxWidth().height(HEADER_SIZE).clickable(onClick = onSel),
+        modifier = Modifier.fillMaxWidth().defaultMinSize(minHeight = HEADER_SIZE).clickable(onClick = onSel),
         shape = RoundedCornerShape(0.dp),
         backgroundColor = bgColor,
         contentColor = MaterialTheme.colors.onSurface
     ) {
         Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.padding(padding)) {
-            Row(modifier = Modifier.align(Alignment.CenterVertically).padding(horizontal = 16.dp)) {
+            Row(
+                modifier = Modifier.align(Alignment.CenterVertically).padding(horizontal = 16.dp)
+                    .weight(1f, fill = false)
+            ) {
                 when (contactItem) {
                     is ContactItem -> {
                         Box(modifier = Modifier.align(Alignment.CenterVertically)) {
@@ -104,7 +108,7 @@ fun ContactCard(
             }
             if (contactItem is ContactItem)
                 Canvas(
-                    modifier = Modifier.padding(start = 32.dp, end = 18.dp).size(22.dp)
+                    modifier = Modifier.padding(end = 18.dp).size(22.dp)
                         .align(Alignment.CenterVertically),
                     onDraw = {
                         val size = 16.dp
@@ -126,6 +130,8 @@ fun RealContactInfo(contactItem: ContactItem, modifier: Modifier = Modifier) {
         Text(
             contactItem.displayName,
             fontSize = 14.sp,
+            maxLines = 3,
+            overflow = Ellipsis,
             modifier = Modifier.align(Alignment.Start).padding(bottom = 2.dp)
         )
         Text(
@@ -144,6 +150,8 @@ fun PendingContactInfo(contactItem: PendingContactItem, modifier: Modifier = Mod
         Text(
             contactItem.displayName,
             fontSize = 14.sp,
+            maxLines = 3,
+            overflow = Ellipsis,
             modifier = Modifier.align(Alignment.Start).padding(bottom = 2.dp)
         )
         Text(

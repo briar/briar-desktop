@@ -1,8 +1,10 @@
 package org.briarproject.briar.desktop.conversation
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -19,6 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.drawscope.withTransform
+import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.briarproject.briar.desktop.contact.ContactDropDown
@@ -42,30 +45,40 @@ fun ConversationHeader(
     val outlineColor = MaterialTheme.colors.outline
 
     Box(modifier = Modifier.fillMaxWidth().height(HEADER_SIZE + 1.dp)) {
-        Row(modifier = Modifier.align(Alignment.Center)) {
-            ProfileCircle(36.dp, contactItem)
-            Canvas(
-                modifier = Modifier.align(Alignment.CenterVertically),
-                onDraw = {
-                    val size = 10.dp.toPx()
-                    withTransform({ translate(left = -6f, top = 12f) }) {
-                        drawCircle(color = outlineColor, radius = (size + 2.dp.toPx()) / 2f)
-                        drawCircle(color = onlineColor, radius = size / 2f)
-                    }
-                }
-            )
-            Text(
-                contactItem.displayName,
-                modifier = Modifier.align(Alignment.CenterVertically).padding(start = 12.dp),
-                fontSize = 20.sp
-            )
-        }
-        IconButton(
-            onClick = { setExpanded(!isExpanded) },
-            modifier = Modifier.align(Alignment.CenterEnd).padding(end = 16.dp)
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth().align(Alignment.Center)
         ) {
-            Icon(Icons.Filled.MoreVert, i18n("access.contact.menu"), modifier = Modifier.size(24.dp))
-            ContactDropDown(isExpanded, { setExpanded(false) }, onMakeIntroduction, onDeleteAllMessages)
+            Row(modifier = Modifier.fillMaxHeight().padding(start = 8.dp).weight(1f, fill = false)) {
+                Box(modifier = Modifier.align(Alignment.CenterVertically)) {
+                    ProfileCircle(36.dp, contactItem)
+                    Canvas(
+                        modifier = Modifier,
+                        onDraw = {
+                            val size = 10.dp.toPx()
+                            withTransform({ translate(left = 30f, top = 30f) }) {
+                                drawCircle(color = outlineColor, radius = (size + 2.dp.toPx()) / 2f)
+                                drawCircle(color = onlineColor, radius = size / 2f)
+                            }
+                        }
+                    )
+                }
+                Text(
+                    contactItem.displayName,
+                    modifier = Modifier.align(Alignment.CenterVertically).padding(start = 12.dp)
+                        .weight(1f, fill = false),
+                    maxLines = 2,
+                    overflow = Ellipsis,
+                    fontSize = 20.sp
+                )
+            }
+            IconButton(
+                onClick = { setExpanded(!isExpanded) },
+                modifier = Modifier.align(Alignment.CenterVertically).padding(end = 16.dp)
+            ) {
+                Icon(Icons.Filled.MoreVert, i18n("access.contact.menu"), modifier = Modifier.size(24.dp))
+                ContactDropDown(isExpanded, { setExpanded(false) }, onMakeIntroduction, onDeleteAllMessages)
+            }
         }
         HorizontalDivider(modifier = Modifier.align(Alignment.BottomCenter))
     }
