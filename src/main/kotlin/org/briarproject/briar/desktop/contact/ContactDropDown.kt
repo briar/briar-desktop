@@ -18,6 +18,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.sp
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
+import org.briarproject.briar.desktop.utils.getCoreFeatureFlags
+import org.briarproject.briar.desktop.utils.getDesktopFeatureFlags
 
 @Composable
 fun ContactDropDown(
@@ -26,6 +28,9 @@ fun ContactDropDown(
     onMakeIntroduction: () -> Unit,
     onDeleteAllMessages: () -> Unit,
 ) {
+    val coreFeatureFlags = getCoreFeatureFlags()
+    val desktopFeatureFlags = getDesktopFeatureFlags()
+
     var connectionMode by remember { mutableStateOf(false) }
     var contactMode by remember { mutableStateOf(false) }
     DropdownMenu(
@@ -35,24 +40,28 @@ fun ContactDropDown(
         DropdownMenuItem(onClick = { close(); onMakeIntroduction() }) {
             Text(i18n("contacts.dropdown.introduction"), fontSize = 14.sp)
         }
-        DropdownMenuItem(onClick = {}) {
-            Text(i18n("contacts.dropdown.disappearing"), fontSize = 14.sp)
+        if (coreFeatureFlags.shouldEnableDisappearingMessages()) {
+            DropdownMenuItem(onClick = {}) {
+                Text(i18n("contacts.dropdown.disappearing"), fontSize = 14.sp)
+            }
         }
         DropdownMenuItem(onClick = { close(); onDeleteAllMessages() }) {
             Text(i18n("contacts.dropdown.delete.all"), fontSize = 14.sp)
         }
-        DropdownMenuItem(onClick = { connectionMode = true; close() }) {
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text(
-                    i18n("contacts.dropdown.connections"),
-                    fontSize = 14.sp,
-                    modifier = Modifier.align(Alignment.CenterVertically)
-                )
-                Icon(
-                    Icons.Filled.ArrowRight,
-                    i18n("access.contacts.dropdown.connections.expand"),
-                    modifier = Modifier.align(Alignment.CenterVertically)
-                )
+        if (desktopFeatureFlags.shouldEnableTransportSettings()) {
+            DropdownMenuItem(onClick = { connectionMode = true; close() }) {
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                    Text(
+                        i18n("contacts.dropdown.connections"),
+                        fontSize = 14.sp,
+                        modifier = Modifier.align(Alignment.CenterVertically)
+                    )
+                    Icon(
+                        Icons.Filled.ArrowRight,
+                        i18n("access.contacts.dropdown.connections.expand"),
+                        modifier = Modifier.align(Alignment.CenterVertically)
+                    )
+                }
             }
         }
         DropdownMenuItem(onClick = { contactMode = true; close() }) {
@@ -91,7 +100,7 @@ fun ContactDropDown(
         DropdownMenuItem(onClick = { false }) {
             Text(i18n("contacts.dropdown.contact.title"), fontSize = 12.sp)
         }
-        DropdownMenuItem(onClick = { false }) {
+        DropdownMenuItem(onClick = { false }, enabled = false) {
             Text(i18n("contacts.dropdown.contact.change"), fontSize = 14.sp)
         }
         DropdownMenuItem(onClick = { false }) {
