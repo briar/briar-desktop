@@ -17,14 +17,9 @@ import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import org.briarproject.briar.desktop.contact.add.remote.AddContactDialog
 import org.briarproject.briar.desktop.theme.surfaceVariant
 import org.briarproject.briar.desktop.ui.Constants.COLUMN_WIDTH
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
@@ -36,10 +31,8 @@ fun ContactList(
     selectContact: (BaseContactItem) -> Unit,
     filterBy: String,
     setFilterBy: (String) -> Unit,
+    onContactAdd: () -> Unit,
 ) {
-    var isContactDialogVisible by remember { mutableStateOf(false) }
-    if (isContactDialogVisible) AddContactDialog(onClose = { isContactDialogVisible = false })
-
     val scrollState = rememberLazyListState()
 
     Scaffold(
@@ -52,7 +45,7 @@ fun ContactList(
                 SearchTextField(
                     filterBy,
                     onValueChange = setFilterBy,
-                    onContactAdd = { isContactDialogVisible = true }
+                    onContactAdd = onContactAdd,
                 )
             }
         },
