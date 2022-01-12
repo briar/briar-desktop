@@ -1,10 +1,9 @@
 package androidx.compose.material
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredHeight
+import androidx.compose.foundation.layout.paddingFromBaseline
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.InitialFocusState.AFTER_FIRST_FOCUSSED
@@ -108,33 +107,18 @@ fun OutlinedTextField(
             shape = shape,
             colors = colors
         )
-        Box(
+        val message = if (showError && errorMessage != null) errorMessage else helperMessage ?: ""
+        val color = if (showError) MaterialTheme.colors.error else LocalTextStyle.current.color.copy(alpha = ContentAlpha.medium)
+        Text(
+            text = message,
+            style = TextStyle(
+                fontSize = 12.sp,
+                color = color
+            ),
             modifier = Modifier
-                .requiredHeight(20.dp)
-                .padding(start = 16.dp, end = 12.dp, top = 4.dp)
-        ) {
-            if (showError) {
-                if (errorMessage != null) {
-                    Text(
-                        text = errorMessage,
-                        style = LocalTextStyle.current.copy(
-                            fontSize = 12.sp,
-                            color = MaterialTheme.colors.error
-                        )
-                    )
-                }
-            } else {
-                if (helperMessage != null) {
-                    Text(
-                        text = helperMessage,
-                        style = LocalTextStyle.current.copy(
-                            fontSize = 12.sp,
-                            color = LocalTextStyle.current.color.copy(alpha = ContentAlpha.medium)
-                        )
-                    )
-                }
-            }
-        }
+                .paddingFromBaseline(top = 16.dp, bottom = 4.dp)
+                .padding(start = 16.dp, end = 12.dp)
+        )
     }
 }
 
