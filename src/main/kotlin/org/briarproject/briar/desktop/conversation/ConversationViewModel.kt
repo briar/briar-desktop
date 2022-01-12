@@ -54,6 +54,7 @@ import org.briarproject.briar.desktop.viewmodel.SingleStateEvent
 import org.briarproject.briar.desktop.viewmodel.asList
 import org.briarproject.briar.desktop.viewmodel.asState
 import javax.inject.Inject
+import kotlin.concurrent.thread
 
 class ConversationViewModel
 @Inject
@@ -134,38 +135,47 @@ constructor(
         val contactId = _contactId.value!!
 
         // TODO: unfortunately, there is no transactional version of addLocalAttachment yet,
-        //  so I need to create the headers outside of the transaction below.
-        //  It' done similarly on Android: https://code.briarproject.org/briar/briar/-/blob/master/briar-android/src/main/java/org/briarproject/briar/android/attachment/AttachmentCreationTask.java#L95
-        val groupId = messagingManager.getConversationId(contactId)
-        val headers = if (image == null) emptyList() else buildList {
-            val timestamp = System.currentTimeMillis()
-            val compressed = imageCompressor.compressImage(image!!.toAwtImage())
-            add(messagingManager.addLocalAttachment(groupId, timestamp, "image/jpeg", compressed))
-        }
+        //  so I need to create the attachment headers outside of the transaction that is used to adding the
+        //  actual message.
+        //  It's done similarly on Android: https://code.briarproject.org/briar/briar/-/blob/master/briar-android/src/main/java/org/briarproject/briar/android/attachment/AttachmentCreationTask.java#L95
 
-        runOnDbThreadWithTransaction(false) { txn ->
-            try {
-                val start = LogUtils.now()
-                val m = createMessage(txn, contactId, groupId, text, headers)
-                messagingManager.addLocalMessage(txn, m)
-                LOG.logDuration("Storing message", start)
+        // Offload to a separate thread in order not to block the UI while waiting for the images to be loaded
+        // and added to the database.
+        thread {
+            // First: get the group id and add images if any
+            val groupId = messagingManager.getConversationId(contactId)
+            val headers = if (image == null) emptyList() else buildList {
+                val timestamp = System.currentTimeMillis()
+                val compressed = imageCompressor.compressImage(image.toAwtImage())
+                add(messagingManager.addLocalAttachment(groupId, timestamp, "image/jpeg", compressed))
+            }
 
-                val message = m.message
-                val h = PrivateMessageHeader(
-                    message.id, message.groupId,
-                    message.timestamp, true, true, false, false,
-                    m.hasText(), m.attachmentHeaders,
-                    m.autoDeleteTimer
-                )
-                val visitor = ConversationVisitor(contactItem.value!!.name, messagingManager, attachmentReader, txn)
-                val msg = h.accept(visitor)!!
-                txn.attach { addMessage(msg) }
-            } catch (e: UnexpectedTimerException) {
-                // todo: handle this properly
-                LOG.warn(e) {}
-            } catch (e: DbException) {
-                // todo: handle this properly
-                LOG.warn(e) {}
+            // Second: add the actual message to the database
+            runOnDbThreadWithTransaction(false) { txn ->
+                try {
+                    val start = LogUtils.now()
+                    val m = createMessage(txn, contactId, groupId!!, text, headers)
+                    messagingManager.addLocalMessage(txn, m)
+                    LOG.logDuration("Storing message", start)
+
+                    val message = m.message
+                    val h = PrivateMessageHeader(
+                        message.id, message.groupId,
+                        message.timestamp, true, true, false, false,
+                        m.hasText(), m.attachmentHeaders,
+                        m.autoDeleteTimer
+                    )
+                    val visitor =
+                        ConversationVisitor(contactItem.value!!.name, messagingManager, attachmentReader, txn)
+                    val msg = h.accept(visitor)!!
+                    txn.attach { addMessage(msg) }
+                } catch (e: UnexpectedTimerException) {
+                    // todo: handle this properly
+                    LOG.warn(e) {}
+                } catch (e: DbException) {
+                    // todo: handle this properly
+                    LOG.warn(e) {}
+                }
             }
         }
     }
