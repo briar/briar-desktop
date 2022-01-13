@@ -17,6 +17,7 @@ import org.briarproject.briar.desktop.utils.FileUtils
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nF
 import org.briarproject.briar.desktop.utils.LogUtils
+import org.jetbrains.skiko.Version
 import java.io.File.separator
 import java.io.IOException
 import java.lang.System.getProperty
@@ -81,6 +82,11 @@ private class Main : CliktCommand(
         LOG.info { "  Git hash ${BuildData.GIT_HASH}" }
         LOG.info { "  Commit time ${formatter.format(buildTime)}" }
         LOG.info { "  Branch ${BuildData.GIT_BRANCH}" }
+
+        val skiaVersion = Version.skia
+        val skikoVersion = Version.skiko
+        LOG.info { "Skia version: $skiaVersion" }
+        LOG.info { "Skiko version: $skikoVersion" }
 
         val dataDir = getDataDir()
         val app =
