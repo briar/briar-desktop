@@ -7,11 +7,14 @@ import org.briarproject.bramble.BrambleCoreEagerSingletons
 import org.briarproject.briar.BriarCoreEagerSingletons
 import org.briarproject.briar.desktop.TestUtils.getDataDir
 import org.briarproject.briar.desktop.utils.LogUtils
+import java.nio.file.Files
+import java.nio.file.attribute.PosixFilePermissions
 import java.util.logging.Level.ALL
 
 internal class RunWithTemporaryAccount(
     val createAccount: Boolean = true,
     val login: Boolean = true,
+    val makeDirUnwritable: Boolean = false,
     val customization: BriarDesktopTestApp.() -> Unit = {}
 ) {
 
@@ -25,6 +28,11 @@ internal class RunWithTemporaryAccount(
 
         val dataDir = getDataDir()
         LOG.info { "Using data directory '$dataDir'" }
+
+        if (makeDirUnwritable) {
+            val permissions = PosixFilePermissions.fromString("r--r--r--")
+            Files.setPosixFilePermissions(dataDir, permissions)
+        }
 
         val app =
             DaggerBriarDesktopTestApp.builder().desktopTestModule(
