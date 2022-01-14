@@ -36,6 +36,9 @@ constructor(
         fun lifecycleStateChanged(s: LifecycleManager.LifecycleState) {}
     }
 
+    class StartingError(val error: LifecycleManager.StartResult):
+        ErrorViewHolder.Error
+
     private val _mode = mutableStateOf(decideMode())
     val mode = _mode.asState()
 
@@ -59,10 +62,10 @@ constructor(
         _mode.value = makeRegistration()
     }
 
-    private fun makeError(error: LifecycleManager.StartResult) = ErrorViewHolder(
+    private fun makeError(error: ErrorViewHolder.Error) = ErrorViewHolder(
         this, error, onBackButton = { _mode.value = decideMode() }
     )
-    fun showError(error: LifecycleManager.StartResult) {
+    fun showError(error: ErrorViewHolder.Error) {
         _mode.value = makeError(error)
     }
 
@@ -79,7 +82,7 @@ constructor(
             ALREADY_RUNNING -> LOG.info { "Already running" }
             else -> {
                 LOG.warn { "Startup failed: $result" }
-                showError(result)
+                showError(StartingError(result))
             }
         }
     }

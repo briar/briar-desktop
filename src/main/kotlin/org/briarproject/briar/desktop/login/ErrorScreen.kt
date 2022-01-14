@@ -37,11 +37,14 @@ import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 
 fun main() = preview {
-    var error by remember { mutableStateOf(SUCCESS) }
+    var error: ErrorViewHolder.Error by remember { mutableStateOf(RegistrationViewHolder.RegistrationError) }
 
     Row(horizontalArrangement = spacedBy(8.dp)) {
+        Button(onClick = { error = RegistrationViewHolder.RegistrationError }) {
+            Text("Registration")
+        }
         for (e in StartResult.values().filterNot { it in listOf(SUCCESS, ALREADY_RUNNING) }) {
-            Button(onClick = { error = e }) {
+            Button(onClick = { error = StartupViewModel.StartingError(e) }) {
                 Text(e.name.removeSuffix("_ERROR"))
             }
         }
@@ -56,7 +59,7 @@ fun ErrorScreen(viewHolder: ErrorViewHolder) =
 
 @Composable
 fun ErrorScreen(
-    error: StartResult,
+    error: ErrorViewHolder.Error,
     onBackButton: () -> Unit,
 ) = Surface {
     IconButton(onClick = onBackButton) {
@@ -78,12 +81,17 @@ fun ErrorScreen(
         Text(i18n("sorry"), style = MaterialTheme.typography.h5)
 
         val text = when (error) {
-            CLOCK_ERROR -> i18n("startup.failed.clock_error")
-            DB_ERROR -> i18n("startup.failed.db_error")
-            DATA_TOO_OLD_ERROR -> i18n("startup.failed.data_too_old_error")
-            DATA_TOO_NEW_ERROR -> i18n("startup.failed.data_too_new_error")
-            SERVICE_ERROR -> i18n("startup.failed.service_error")
-            else -> ""
+            is RegistrationViewHolder.RegistrationError -> i18n("startup.failed.registration")
+            is StartupViewModel.StartingError -> {
+                when (error.error) {
+                    CLOCK_ERROR -> i18n("startup.failed.clock_error")
+                    DB_ERROR -> i18n("startup.failed.db_error")
+                    DATA_TOO_OLD_ERROR -> i18n("startup.failed.data_too_old_error")
+                    DATA_TOO_NEW_ERROR -> i18n("startup.failed.data_too_new_error")
+                    SERVICE_ERROR -> i18n("startup.failed.service_error")
+                    else -> ""
+                }
+            }
         }
         Text(
             text = text,

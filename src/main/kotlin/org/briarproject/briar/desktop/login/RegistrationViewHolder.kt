@@ -24,6 +24,8 @@ class RegistrationViewHolder(
         private val LOG = KotlinLogging.logger {}
     }
 
+    object RegistrationError : ErrorViewHolder.Error
+
     enum class State {
         INSERT_NICKNAME, INSERT_PASSWORD, CREATING, CREATED
     }
@@ -100,8 +102,7 @@ class RegistrationViewHolder(
                 viewModel.startBriarCore()
             } else {
                 LOG.warn { "Failed to create account" }
-                _state.value = INSERT_NICKNAME
-                // todo: show (meaningful) error to user
+                viewModel.showError(RegistrationError)
             }
         }
     }

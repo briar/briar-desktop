@@ -4,6 +4,8 @@ import org.briarproject.bramble.api.lifecycle.LifecycleManager
 
 class ErrorViewHolder(
     private val viewModel: StartupViewModel,
-    val error: LifecycleManager.StartResult,
+    val error: Error,
     val onBackButton: () -> Unit,
-) : StartupViewModel.ViewHolder
+) : StartupViewModel.ViewHolder {
+    sealed interface Error
+}
