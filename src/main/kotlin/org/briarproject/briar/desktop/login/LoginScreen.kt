@@ -15,23 +15,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import org.briarproject.briar.desktop.login.LoginViewHolder.State.COMPACTING
-import org.briarproject.briar.desktop.login.LoginViewHolder.State.MIGRATING
-import org.briarproject.briar.desktop.login.LoginViewHolder.State.SIGNED_OUT
-import org.briarproject.briar.desktop.login.LoginViewHolder.State.STARTED
-import org.briarproject.briar.desktop.login.LoginViewHolder.State.STARTING
+import org.briarproject.briar.desktop.login.LoginSubViewModel.State.COMPACTING
+import org.briarproject.briar.desktop.login.LoginSubViewModel.State.MIGRATING
+import org.briarproject.briar.desktop.login.LoginSubViewModel.State.SIGNED_OUT
+import org.briarproject.briar.desktop.login.LoginSubViewModel.State.STARTED
+import org.briarproject.briar.desktop.login.LoginSubViewModel.State.STARTING
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun LoginScreen(
-    viewHolder: LoginViewHolder,
+    viewHolder: LoginSubViewModel,
 ) = StartupScreenScaffold(i18n("startup.title.login")) {
     when (viewHolder.state.value) {
         SIGNED_OUT ->
@@ -56,8 +54,10 @@ fun LoginScreen(
     }
 
     if (viewHolder.decryptionFailedError.value) {
-        // todo: is this actually needed on Desktop?
-        // todo: use ErrorScreen to display this instead?
+        // todo: this should never be triggered,
+        //  since we don't use any keyStrengthener for now
+        //  when adding this, we could think about showing
+        //  a proper error screen instead
         AlertDialog(
             onDismissRequest = viewHolder::closeDecryptionFailedDialog,
             title = { Text(i18n("startup.error.decryption.title")) },
@@ -90,7 +90,6 @@ fun LoginForm(
         singleLine = true,
         isError = passwordInvalidError,
         errorMessage = i18n("startup.error.password_wrong"),
-        textStyle = TextStyle(color = Color.White),
         visualTransformation = PasswordVisualTransformation(),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Next),
         modifier = Modifier.fillMaxWidth().focusRequester(initialFocusRequester),

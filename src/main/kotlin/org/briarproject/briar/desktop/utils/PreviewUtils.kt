@@ -8,9 +8,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Slider
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -119,6 +121,11 @@ object PreviewUtils {
         BasicTextField(value.value.toString(), { value.value = it.toFloat() })
     }
 
+    @Composable
+    private fun PreviewScope.addFloatSliderParameter(name: String, initial: FloatSlider) = addParameter(name, initial.initial) { value ->
+        Slider(value.value, { value.value = it }, valueRange = initial.min..initial.max, modifier = Modifier.width(400.dp))
+    }
+
     /**
      * Open an interactive preview of the composable specified by [content].
      * All [parameters] passed to this function will be changeable on the fly.
@@ -142,6 +149,7 @@ object PreviewUtils {
                             is Int -> scope.addIntParameter(name, initial)
                             is Long -> scope.addLongParameter(name, initial)
                             is Float -> scope.addFloatParameter(name, initial)
+                            is FloatSlider -> scope.addFloatSliderParameter(name, initial)
                             else -> throw IllegalArgumentException("Type ${initial::class.simpleName} is not supported for previewing.")
                         }
                     }
@@ -157,4 +165,10 @@ object PreviewUtils {
             }
         }
     }
+
+    data class FloatSlider(
+        val initial: Float,
+        val min: Float,
+        val max: Float,
+    )
 }

@@ -32,45 +32,46 @@ constructor(
         private val LOG = KotlinLogging.logger {}
     }
 
-    sealed interface ViewHolder {
+    sealed interface SubViewModel {
         fun lifecycleStateChanged(s: LifecycleManager.LifecycleState) {}
     }
 
-    class StartingError(val error: LifecycleManager.StartResult):
-        ErrorViewHolder.Error
+    class StartingError(val error: LifecycleManager.StartResult) :
+        ErrorSubViewModel.Error
 
-    private val _mode = mutableStateOf(decideMode())
-    val mode = _mode.asState()
+    private val _currentSubViewModel = mutableStateOf(decideSubViewModel())
+    val currentSubViewModel = _currentSubViewModel.asState()
 
-    private fun decideMode() =
+    private fun decideSubViewModel() =
         if (accountManager.accountExists()) makeLogin()
         else makeRegistration()
 
-    private fun makeLogin() = LoginViewHolder(
+    private fun makeLogin() = LoginSubViewModel(
         this, accountManager, briarExecutors, lifecycleManager.lifecycleState
     )
 
     fun showLogin() {
-        _mode.value = makeLogin()
+        _currentSubViewModel.value = makeLogin()
     }
 
-    private fun makeRegistration() = RegistrationViewHolder(
+    private fun makeRegistration() = RegistrationSubViewModel(
         this, accountManager, briarExecutors, passwordStrengthEstimator
     )
 
     fun showRegistration() {
-        _mode.value = makeRegistration()
+        _currentSubViewModel.value = makeRegistration()
     }
 
-    private fun makeError(error: ErrorViewHolder.Error) = ErrorViewHolder(
-        this, error, onBackButton = { _mode.value = decideMode() }
+    private fun makeError(error: ErrorSubViewModel.Error) = ErrorSubViewModel(
+        this, error, onBackButton = { _currentSubViewModel.value = decideSubViewModel() }
     )
-    fun showError(error: ErrorViewHolder.Error) {
-        _mode.value = makeError(error)
+
+    fun showError(error: ErrorSubViewModel.Error) {
+        _currentSubViewModel.value = makeError(error)
     }
 
     override fun eventOccurred(e: Event) {
-        if (e is LifecycleEvent) _mode.value.lifecycleStateChanged(e.lifecycleState)
+        if (e is LifecycleEvent) _currentSubViewModel.value.lifecycleStateChanged(e.lifecycleState)
     }
 
     @IoExecutor

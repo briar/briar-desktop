@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import org.briarproject.briar.desktop.viewmodel.viewModel
 
 @Composable
 fun SettingsScreen(viewModel: SettingsViewModel) {

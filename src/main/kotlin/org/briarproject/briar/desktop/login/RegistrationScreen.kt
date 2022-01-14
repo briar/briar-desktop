@@ -16,22 +16,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import org.briarproject.briar.desktop.login.RegistrationViewHolder.State.CREATED
-import org.briarproject.briar.desktop.login.RegistrationViewHolder.State.CREATING
-import org.briarproject.briar.desktop.login.RegistrationViewHolder.State.INSERT_NICKNAME
-import org.briarproject.briar.desktop.login.RegistrationViewHolder.State.INSERT_PASSWORD
+import org.briarproject.briar.desktop.login.RegistrationSubViewModel.State.CREATED
+import org.briarproject.briar.desktop.login.RegistrationSubViewModel.State.CREATING
+import org.briarproject.briar.desktop.login.RegistrationSubViewModel.State.INSERT_NICKNAME
+import org.briarproject.briar.desktop.login.RegistrationSubViewModel.State.INSERT_PASSWORD
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 
 @Composable
 fun RegistrationScreen(
-    viewHolder: RegistrationViewHolder,
+    viewHolder: RegistrationSubViewModel,
 ) = StartupScreenScaffold(
     title = i18n("startup.title.registration"),
     showBackButton = viewHolder.showBackButton.value,
@@ -91,7 +89,6 @@ fun NicknameForm(
         singleLine = true,
         isError = nicknameTooLongError,
         errorMessage = i18n("startup.error.name_too_long"),
-        textStyle = TextStyle(color = Color.White),
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
         modifier = Modifier.fillMaxWidth().focusRequester(initialFocusRequester),
         onEnter = onEnter
@@ -131,7 +128,6 @@ fun PasswordForm(
         isError = passwordTooWeakError,
         showErrorWhen = AFTER_FOCUS_LOST_ONCE,
         errorMessage = i18n("startup.error.password_too_weak"),
-        textStyle = TextStyle(color = Color.White),
         visualTransformation = PasswordVisualTransformation(),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Next),
         modifier = Modifier.fillMaxWidth().focusRequester(initialFocusRequester),
@@ -145,7 +141,6 @@ fun PasswordForm(
         isError = passwordsDontMatchError,
         showErrorWhen = AFTER_FIRST_FOCUSSED,
         errorMessage = i18n("startup.error.passwords_not_match"),
-        textStyle = TextStyle(color = Color.White),
         visualTransformation = PasswordVisualTransformation(),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
         modifier = Modifier.fillMaxWidth(),

@@ -7,24 +7,24 @@ import org.briarproject.bramble.api.account.AccountManager
 import org.briarproject.bramble.api.crypto.PasswordStrengthEstimator
 import org.briarproject.bramble.api.crypto.PasswordStrengthEstimator.QUITE_WEAK
 import org.briarproject.bramble.api.identity.AuthorConstants.MAX_AUTHOR_NAME_LENGTH
-import org.briarproject.briar.desktop.login.RegistrationViewHolder.State.CREATING
-import org.briarproject.briar.desktop.login.RegistrationViewHolder.State.INSERT_NICKNAME
-import org.briarproject.briar.desktop.login.RegistrationViewHolder.State.INSERT_PASSWORD
+import org.briarproject.briar.desktop.login.RegistrationSubViewModel.State.CREATING
+import org.briarproject.briar.desktop.login.RegistrationSubViewModel.State.INSERT_NICKNAME
+import org.briarproject.briar.desktop.login.RegistrationSubViewModel.State.INSERT_PASSWORD
 import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.viewmodel.asState
 
-class RegistrationViewHolder(
+class RegistrationSubViewModel(
     private val viewModel: StartupViewModel,
     private val accountManager: AccountManager,
     private val briarExecutors: BriarExecutors,
     private val passwordStrengthEstimator: PasswordStrengthEstimator,
-) : StartupViewModel.ViewHolder {
+) : StartupViewModel.SubViewModel {
 
     companion object {
         private val LOG = KotlinLogging.logger {}
     }
 
-    object RegistrationError : ErrorViewHolder.Error
+    object RegistrationError : ErrorSubViewModel.Error
 
     enum class State {
         INSERT_NICKNAME, INSERT_PASSWORD, CREATING, CREATED
@@ -59,7 +59,7 @@ class RegistrationViewHolder(
     val buttonEnabled = derivedStateOf {
         when (_state.value) {
             INSERT_NICKNAME ->
-                nickname.value.isNotEmpty() && !nicknameTooLongError.value
+                nickname.value.isNotBlank() && !nicknameTooLongError.value
             INSERT_PASSWORD ->
                 password.value.isNotEmpty() && passwordConfirmation.value.isNotEmpty() &&
                     !passwordTooWeakError.value && !passwordMatchError.value

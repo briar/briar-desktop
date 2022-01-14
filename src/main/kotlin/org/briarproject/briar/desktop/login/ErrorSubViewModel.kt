@@ -1,11 +1,9 @@
 package org.briarproject.briar.desktop.login
 
-import org.briarproject.bramble.api.lifecycle.LifecycleManager
-
-class ErrorViewHolder(
+class ErrorSubViewModel(
     private val viewModel: StartupViewModel,
     val error: Error,
     val onBackButton: () -> Unit,
-) : StartupViewModel.ViewHolder {
+) : StartupViewModel.SubViewModel {
     sealed interface Error
 }

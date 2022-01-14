@@ -33,14 +33,15 @@ import org.briarproject.bramble.api.lifecycle.LifecycleManager.StartResult.DB_ER
 import org.briarproject.bramble.api.lifecycle.LifecycleManager.StartResult.SERVICE_ERROR
 import org.briarproject.bramble.api.lifecycle.LifecycleManager.StartResult.SUCCESS
 import org.briarproject.briar.desktop.theme.Red500
+import org.briarproject.briar.desktop.ui.Constants.STARTUP_FIELDS_WIDTH
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 
 fun main() = preview {
-    var error: ErrorViewHolder.Error by remember { mutableStateOf(RegistrationViewHolder.RegistrationError) }
+    var error: ErrorSubViewModel.Error by remember { mutableStateOf(RegistrationSubViewModel.RegistrationError) }
 
     Row(horizontalArrangement = spacedBy(8.dp)) {
-        Button(onClick = { error = RegistrationViewHolder.RegistrationError }) {
+        Button(onClick = { error = RegistrationSubViewModel.RegistrationError }) {
             Text("Registration")
         }
         for (e in StartResult.values().filterNot { it in listOf(SUCCESS, ALREADY_RUNNING) }) {
@@ -54,12 +55,12 @@ fun main() = preview {
 }
 
 @Composable
-fun ErrorScreen(viewHolder: ErrorViewHolder) =
+fun ErrorScreen(viewHolder: ErrorSubViewModel) =
     ErrorScreen(viewHolder.error, viewHolder.onBackButton)
 
 @Composable
 fun ErrorScreen(
-    error: ErrorViewHolder.Error,
+    error: ErrorSubViewModel.Error,
     onBackButton: () -> Unit,
 ) = Surface {
     IconButton(onClick = onBackButton) {
@@ -81,7 +82,7 @@ fun ErrorScreen(
         Text(i18n("sorry"), style = MaterialTheme.typography.h5)
 
         val text = when (error) {
-            is RegistrationViewHolder.RegistrationError -> i18n("startup.failed.registration")
+            is RegistrationSubViewModel.RegistrationError -> i18n("startup.failed.registration")
             is StartupViewModel.StartingError -> {
                 when (error.error) {
                     CLOCK_ERROR -> i18n("startup.failed.clock_error")
@@ -96,7 +97,7 @@ fun ErrorScreen(
         Text(
             text = text,
             style = MaterialTheme.typography.body1,
-            modifier = Modifier.widthIn(max = 400.dp)
+            modifier = Modifier.widthIn(max = STARTUP_FIELDS_WIDTH)
         )
     }
 }

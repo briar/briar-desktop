@@ -108,7 +108,8 @@ fun OutlinedTextField(
             colors = colors
         )
         val message = if (showError && errorMessage != null) errorMessage else helperMessage ?: ""
-        val color = if (showError) MaterialTheme.colors.error else LocalTextStyle.current.color.copy(alpha = ContentAlpha.medium)
+        val color =
+            if (showError) MaterialTheme.colors.error else LocalTextStyle.current.color.copy(alpha = ContentAlpha.medium)
         Text(
             text = message,
             style = TextStyle(

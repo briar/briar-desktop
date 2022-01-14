@@ -7,20 +7,20 @@ import org.briarproject.bramble.api.crypto.DecryptionException
 import org.briarproject.bramble.api.crypto.DecryptionResult.INVALID_PASSWORD
 import org.briarproject.bramble.api.crypto.DecryptionResult.KEY_STRENGTHENER_ERROR
 import org.briarproject.bramble.api.lifecycle.LifecycleManager.LifecycleState
-import org.briarproject.briar.desktop.login.LoginViewHolder.State.COMPACTING
-import org.briarproject.briar.desktop.login.LoginViewHolder.State.MIGRATING
-import org.briarproject.briar.desktop.login.LoginViewHolder.State.SIGNED_OUT
-import org.briarproject.briar.desktop.login.LoginViewHolder.State.STARTED
-import org.briarproject.briar.desktop.login.LoginViewHolder.State.STARTING
+import org.briarproject.briar.desktop.login.LoginSubViewModel.State.COMPACTING
+import org.briarproject.briar.desktop.login.LoginSubViewModel.State.MIGRATING
+import org.briarproject.briar.desktop.login.LoginSubViewModel.State.SIGNED_OUT
+import org.briarproject.briar.desktop.login.LoginSubViewModel.State.STARTED
+import org.briarproject.briar.desktop.login.LoginSubViewModel.State.STARTING
 import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.viewmodel.asState
 
-class LoginViewHolder(
+class LoginSubViewModel(
     private val viewModel: StartupViewModel,
     private val accountManager: AccountManager,
     private val briarExecutors: BriarExecutors,
     initialLifecycleState: LifecycleState,
-) : StartupViewModel.ViewHolder {
+) : StartupViewModel.SubViewModel {
 
     enum class State {
         SIGNED_OUT, STARTING, MIGRATING, COMPACTING, STARTED
