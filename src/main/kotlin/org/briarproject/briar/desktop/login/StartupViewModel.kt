@@ -30,6 +30,7 @@ import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.bramble.api.lifecycle.LifecycleManager.StartResult.ALREADY_RUNNING
 import org.briarproject.bramble.api.lifecycle.LifecycleManager.StartResult.SUCCESS
 import org.briarproject.bramble.api.lifecycle.event.LifecycleEvent
+import org.briarproject.briar.desktop.expiration.ExpirationUtils.isExpired
 import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.viewmodel.EventListenerDbViewModel
 import org.briarproject.briar.desktop.viewmodel.asState
@@ -60,8 +61,9 @@ constructor(
     private val _currentSubViewModel = mutableStateOf(decideSubViewModel())
     val currentSubViewModel = _currentSubViewModel.asState()
 
-    private fun decideSubViewModel() =
-        if (accountManager.accountExists()) makeLogin()
+    private fun decideSubViewModel(): SubViewModel =
+        if (isExpired()) makeError(ErrorSubViewModel.ExpirationError)
+        else if (accountManager.accountExists()) makeLogin()
         else makeRegistration()
 
     private fun makeLogin() = LoginSubViewModel(

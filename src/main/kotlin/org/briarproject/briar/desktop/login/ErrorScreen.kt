@@ -56,9 +56,12 @@ import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 
 fun main() = preview {
-    var error: ErrorSubViewModel.Error by remember { mutableStateOf(RegistrationSubViewModel.RegistrationError) }
+    var error: ErrorSubViewModel.Error by remember { mutableStateOf(ErrorSubViewModel.ExpirationError) }
 
     Row(horizontalArrangement = spacedBy(8.dp)) {
+        Button(onClick = { error = ErrorSubViewModel.ExpirationError }) {
+            Text("Expiration")
+        }
         Button(onClick = { error = RegistrationSubViewModel.RegistrationError }) {
             Text("Registration")
         }
@@ -100,6 +103,7 @@ fun ErrorScreen(
         Text(i18n("sorry"), style = MaterialTheme.typography.h5)
 
         val text = when (error) {
+            is ErrorSubViewModel.ExpirationError -> i18n("startup.failed.expired")
             is RegistrationSubViewModel.RegistrationError -> i18n("startup.failed.registration")
             is StartupViewModel.StartingError -> {
                 when (error.error) {

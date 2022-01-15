@@ -24,4 +24,6 @@ class ErrorSubViewModel(
     val onBackButton: () -> Unit,
 ) : StartupViewModel.SubViewModel {
     sealed interface Error
+
+    object ExpirationError : Error
 }

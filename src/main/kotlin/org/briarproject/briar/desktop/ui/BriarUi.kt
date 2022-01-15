@@ -18,12 +18,15 @@
 
 package org.briarproject.briar.desktop.ui
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.window.FrameWindowScope
 import androidx.compose.ui.window.Window
@@ -35,6 +38,7 @@ import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.bramble.api.lifecycle.LifecycleManager.LifecycleState.RUNNING
 import org.briarproject.bramble.api.lifecycle.event.LifecycleEvent
 import org.briarproject.briar.desktop.DesktopFeatureFlags
+import org.briarproject.briar.desktop.expiration.ExpirationBanner
 import org.briarproject.briar.desktop.login.StartupScreen
 import org.briarproject.briar.desktop.settings.SettingsViewModel
 import org.briarproject.briar.desktop.theme.BriarTheme
@@ -114,9 +118,12 @@ constructor(
             ) {
                 val settingsViewModel: SettingsViewModel = viewModel()
                 BriarTheme(isDarkTheme = settingsViewModel.isDarkMode.value) {
-                    when (screenState) {
-                        STARTUP -> StartupScreen()
-                        MAIN -> MainScreen(settingsViewModel)
+                    Column(Modifier.fillMaxSize()) {
+                        ExpirationBanner(onExpired = { screenState = STARTUP })
+                        when (screenState) {
+                            STARTUP -> StartupScreen()
+                            MAIN -> MainScreen(settingsViewModel)
+                        }
                     }
                 }
             }
