@@ -33,6 +33,7 @@ import androidx.compose.material.icons.filled.ChromeReaderMode
 import androidx.compose.material.icons.filled.Contacts
 import androidx.compose.material.icons.filled.Forum
 import androidx.compose.material.icons.filled.Group
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.WifiTethering
 import androidx.compose.runtime.Composable
@@ -44,6 +45,7 @@ import org.briarproject.bramble.api.identity.LocalAuthor
 import org.briarproject.briar.desktop.contact.ProfileCircle
 import org.briarproject.briar.desktop.theme.sidebarSurface
 import org.briarproject.briar.desktop.ui.UiMode
+import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.getDesktopFeatureFlags
 
 val SIDEBAR_WIDTH = 56.dp
@@ -53,6 +55,7 @@ fun BriarSidebar(
     account: LocalAuthor?,
     uiMode: UiMode,
     setUiMode: (UiMode) -> Unit,
+    showAbout: () -> Unit,
 ) {
     val displayButton = @Composable { selectedMode: UiMode, mode: UiMode, icon: ImageVector ->
         BriarSidebarButton(
@@ -94,6 +97,12 @@ fun BriarSidebar(
             for ((mode, icon) in items) {
                 displayButton(uiMode, mode, icon)
             }
+            BriarSidebarButton(
+                selected = false,
+                onClick = showAbout,
+                icon = Icons.Filled.Info,
+                contentDescription = i18n("access.about_briar_desktop")
+            )
         }
     }
 }
