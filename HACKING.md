@@ -65,7 +65,7 @@ In IntelliJ, right click the root of the project tree and select
 "briar-desktop" and confirm "OK".
 
 This applies the copyright profile configured in
-`Settings → Editor → Copyright Profiles`
+`Settings → Editor → Copyright → Copyright Profiles`
 in the scope which is configured in
 `Settings → Appearance & Behavior → Scopes`.
 
