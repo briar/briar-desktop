@@ -16,14 +16,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.briarproject.briar.desktop.ui
+package org.briarproject.briar.desktop.dialogs
 
-import androidx.compose.ui.unit.dp
-
-object Constants {
-    val HEADER_SIZE = 56.dp
-    val COLUMN_WIDTH = 275.dp
-    val STARTUP_FIELDS_WIDTH = 400.dp
-    val PARAGRAPH_WIDTH = 540.dp
-    val DIALOG_WIDTH = 400.dp
+enum class DialogType {
+    ERROR,
+    WARNING
 }

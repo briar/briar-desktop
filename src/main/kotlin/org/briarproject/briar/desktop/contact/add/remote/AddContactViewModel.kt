@@ -48,18 +48,44 @@ constructor(
         private val LOG = KotlinLogging.logger {}
     }
 
+    sealed interface AddContactError
+
+    data class OwnLinkError(val link: String) : AddContactError
+    data class RemoteInvalidError(val link: String) : AddContactError
+    data class AliasInvalidError(val link: String, val alias: String) : AddContactError
+    data class LinkInvalidError(val link: String) : AddContactError
+    data class PublicKeyInvalidError(val link: String) : AddContactError
+
+    data class ErrorContactAlreadyExists(val link: String, val existingName: String, val alias: String) :
+        AddContactError
+
+    data class ErrorPendingAlreadyExists(val link: String, val existingAlias: String, val alias: String) :
+        AddContactError
+
     override fun onInit() {
         super.onInit()
         fetchHandshakeLink()
     }
 
+    private val _visible = mutableStateOf(false)
     private val _alias = mutableStateOf("")
     private val _remoteHandshakeLink = mutableStateOf("")
     private val _handshakeLink = mutableStateOf("")
+    private val _error = mutableStateOf<AddContactError?>(null)
 
+    val visible = _visible.asState()
     val alias = _alias.asState()
     val remoteHandshakeLink = _remoteHandshakeLink.asState()
     val handshakeLink = _handshakeLink.asState()
+    val error = _error.asState()
+
+    fun showDialog() {
+        _visible.value = true
+    }
+
+    fun dismissDialog() {
+        _visible.value = false
+    }
 
     fun setAddContactAlias(alias: String) {
         _alias.value = alias
@@ -80,13 +106,17 @@ constructor(
         addPendingContact(link, alias)
     }
 
+    fun clearError() {
+        _error.value = null
+    }
+
     private fun addPendingContact(link: String, alias: String) {
         // ignore preceding and trailing whitespace
         val matcher = HandshakeLinkConstants.LINK_REGEX.matcher(link.trim())
         // check if the link is well-formed
         if (!matcher.matches()) {
             LOG.warn { "Remote handshake link is invalid" }
-            // TODO: show message to user
+            _error.value = RemoteInvalidError(link)
             return
         }
         // compare with own link
@@ -94,25 +124,30 @@ constructor(
         val withSchema = "briar://$withoutSchema"
         if (_handshakeLink.value == withSchema) {
             LOG.warn { "Please enter contact's link, not your own" }
-            // TODO: show warning to user
+            _error.value = OwnLinkError(link)
             return
         }
 
         if (aliasIsInvalid(alias)) {
             LOG.warn { "Alias is invalid" }
-            // TODO: show message to user
+            _error.value = AliasInvalidError(link, alias)
             return
         }
 
         runOnDbThreadWithTransaction(false) { txn ->
             try {
                 contactManager.addPendingContact(txn, link, alias)
+                txn.attach {
+                    _visible.value = false
+                    _alias.value = ""
+                    _remoteHandshakeLink.value = ""
+                }
             } catch (e: FormatException) {
-                LOG.warn(e) { "Link is invalid" }
-                // TODO: show error to user
+                LOG.warn { "Link is invalid: $link" }
+                _error.value = LinkInvalidError(link)
             } catch (e: GeneralSecurityException) {
-                LOG.warn(e) { "Public key is invalid" }
-                // TODO: show error to user
+                LOG.warn { "Public key is invalid: $link" }
+                _error.value = PublicKeyInvalidError(link)
             }
             /*
             TODO: Warn user that the following two errors might be an attack
@@ -122,11 +157,11 @@ constructor(
 
             */
             catch (e: ContactExistsException) {
-                LOG.warn(e) { "Contact already exists" }
-                // TODO: show error to user
+                LOG.warn { "Contact already exists: $link" }
+                _error.value = ErrorContactAlreadyExists(link, e.remoteAuthor.name, alias)
             } catch (e: PendingContactExistsException) {
-                LOG.warn(e) { "Pending Contact already exists" }
-                // TODO: show error to user
+                LOG.warn { "Pending contact already exists: $link" }
+                _error.value = ErrorPendingAlreadyExists(link, e.pendingContact.alias, alias)
             }
         }
     }

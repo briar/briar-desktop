@@ -37,10 +37,6 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -51,6 +47,7 @@ import org.briarproject.briar.desktop.contact.ContactListViewModel
 import org.briarproject.briar.desktop.contact.PendingContactIdWrapper
 import org.briarproject.briar.desktop.contact.RealContactIdWrapper
 import org.briarproject.briar.desktop.contact.add.remote.AddContactDialog
+import org.briarproject.briar.desktop.contact.add.remote.AddContactViewModel
 import org.briarproject.briar.desktop.ui.BriarLogo
 import org.briarproject.briar.desktop.ui.Constants.PARAGRAPH_WIDTH
 import org.briarproject.briar.desktop.ui.VerticalDivider
@@ -60,12 +57,12 @@ import org.briarproject.briar.desktop.viewmodel.viewModel
 @Composable
 fun PrivateMessageScreen(
     viewModel: ContactListViewModel = viewModel(),
+    addContactViewModel: AddContactViewModel = viewModel(),
 ) {
-    var isContactDialogVisible by remember { mutableStateOf(false) }
-    if (isContactDialogVisible) AddContactDialog(onClose = { isContactDialogVisible = false })
+    AddContactDialog()
 
     if (viewModel.noContactsYet.value) {
-        NoContactsYet(onContactAdd = { isContactDialogVisible = true })
+        NoContactsYet(onContactAdd = { addContactViewModel.showDialog() })
         return
     }
 
@@ -76,7 +73,7 @@ fun PrivateMessageScreen(
             viewModel::selectContact,
             viewModel.filterBy.value,
             viewModel::setFilterBy,
-            onContactAdd = { isContactDialogVisible = true }
+            onContactAdd = { addContactViewModel.showDialog() }
         )
         VerticalDivider()
         Column(modifier = Modifier.weight(1f).fillMaxHeight()) {

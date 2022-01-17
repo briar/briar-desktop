@@ -39,6 +39,7 @@ val Gray950 = Color(0xff1f1f1f)
 val materialDarkBg = Color(0xff121212)
 
 val Red500 = Color(0xffdb3b21)
+val Orange500 = Color(0xfffc9403)
 
 val Blue400 = Color(0xff418cd8)
 val Blue500 = Color(0xff1f78d1) // todo: unused in Android
