@@ -16,6 +16,7 @@ import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.bramble.api.lifecycle.LifecycleManager.LifecycleState.RUNNING
 import org.briarproject.bramble.api.lifecycle.event.LifecycleEvent
 import org.briarproject.briar.desktop.DesktopFeatureFlags
+import org.briarproject.briar.desktop.error.ErrorManager
 import org.briarproject.briar.desktop.login.StartupScreen
 import org.briarproject.briar.desktop.settings.SettingsViewModel
 import org.briarproject.briar.desktop.theme.BriarTheme
@@ -54,6 +55,7 @@ constructor(
     private val lifecycleManager: LifecycleManager,
     private val eventBus: EventBus,
     private val viewModelProvider: ViewModelProvider,
+    private val errorManager: ErrorManager,
     private val featureFlags: FeatureFlags,
     private val desktopFeatureFlags: DesktopFeatureFlags,
 ) : BriarUi, EventListener {
@@ -96,7 +98,7 @@ constructor(
                 BriarTheme(isDarkTheme = settingsViewModel.isDarkMode.value) {
                     when (screenState) {
                         STARTUP -> StartupScreen()
-                        MAIN -> MainScreen(settingsViewModel)
+                        MAIN -> MainScreen(settingsViewModel, errorManager = errorManager)
                     }
                 }
             }

@@ -1,7 +1,6 @@
 package org.briarproject.briar.desktop.contact.add.remote
 
 import androidx.compose.runtime.mutableStateOf
-import mu.KotlinLogging
 import org.briarproject.bramble.api.FormatException
 import org.briarproject.bramble.api.contact.ContactManager
 import org.briarproject.bramble.api.contact.HandshakeLinkConstants
@@ -11,6 +10,10 @@ import org.briarproject.bramble.api.db.TransactionManager
 import org.briarproject.bramble.api.identity.AuthorConstants
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.bramble.util.StringUtils
+import org.briarproject.briar.desktop.error.ErrorManager
+import org.briarproject.briar.desktop.error.ErrorMessage
+import org.briarproject.briar.desktop.error.ErrorMessage.Type.ERROR
+import org.briarproject.briar.desktop.error.ErrorMessage.Type.WARNING
 import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.viewmodel.DbViewModel
 import org.briarproject.briar.desktop.viewmodel.asState
@@ -24,11 +27,8 @@ constructor(
     lifecycleManager: LifecycleManager,
     db: TransactionManager,
     private val contactManager: ContactManager,
+    private val errorManager: ErrorManager,
 ) : DbViewModel(briarExecutors, lifecycleManager, db) {
-
-    companion object {
-        private val LOG = KotlinLogging.logger {}
-    }
 
     override fun onInit() {
         super.onInit()
@@ -64,18 +64,15 @@ constructor(
 
     private fun addPendingContact(link: String, alias: String) {
         if (_handshakeLink.value == link) {
-            LOG.warn { "Please enter contact's link, not your own" }
-            // TODO: show warning to user
+            errorManager.addError(ErrorMessage(ERROR, "Please enter contact's link, not your own"))
             return
         }
         if (remoteHandshakeLinkIsInvalid(link)) {
-            LOG.warn { "Remote handshake link is invalid" }
-            // TODO: show message to user
+            errorManager.addError(ErrorMessage(ERROR, "Remote handshake link is invalid"))
             return
         }
         if (aliasIsInvalid(alias)) {
-            LOG.warn { "Alias is invalid" }
-            // TODO: show message to user
+            errorManager.addError(ErrorMessage(ERROR, "Alias is invalid"))
             return
         }
 
@@ -83,11 +80,9 @@ constructor(
             try {
                 contactManager.addPendingContact(txn, link, alias)
             } catch (e: FormatException) {
-                LOG.warn(e) { "Link is invalid" }
-                // TODO: show error to user
+                errorManager.addError(ErrorMessage(ERROR, "Link is invalid: $link"))
             } catch (e: GeneralSecurityException) {
-                LOG.warn(e) { "Public key is invalid" }
-                // TODO: show error to user
+                errorManager.addError(ErrorMessage(ERROR, "Public key is invalid: $link"))
             }
             /*
             TODO: Warn user that the following two errors might be an attack
@@ -97,11 +92,9 @@ constructor(
 
             */
             catch (e: ContactExistsException) {
-                LOG.warn(e) { "Contact already exists" }
-                // TODO: show error to user
+                errorManager.addError(ErrorMessage(WARNING, "Contact already exists: $link"))
             } catch (e: PendingContactExistsException) {
-                LOG.warn(e) { "Pending Contact already exists" }
-                // TODO: show error to user
+                errorManager.addError(ErrorMessage(WARNING, "Pending contact already exists: $link"))
             }
         }
     }
