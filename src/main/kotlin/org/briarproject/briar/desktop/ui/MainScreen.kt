@@ -25,6 +25,7 @@ fun MainScreen(
             viewModel.account.value,
             viewModel.uiMode.value,
             viewModel::setUiMode,
+            viewModel.briarExecutors,
         )
         VerticalDivider()
         when (viewModel.uiMode.value) {

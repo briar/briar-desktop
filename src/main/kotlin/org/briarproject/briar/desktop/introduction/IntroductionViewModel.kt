@@ -83,7 +83,7 @@ constructor(
         val c2 = requireNotNull(_secondContact.value)
         // It's important not to send the empty string here as briar's MessageEncoder for introduction messages throws
         // an IllegalArgumentException in that case. It is however OK to pass null in this case.
-        val msg = _introductionMessage.value.ifEmpty { null }
+        val msg = ""
 
         runOnDbThread {
             val c1 = contactManager.getContact(c1.idWrapper.contactId)

@@ -11,11 +11,14 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.BackHand
 import androidx.compose.material.icons.filled.ChromeReaderMode
 import androidx.compose.material.icons.filled.Contacts
 import androidx.compose.material.icons.filled.Forum
 import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.WaterDrop
+import androidx.compose.material.icons.filled.Whatshot
 import androidx.compose.material.icons.filled.WifiTethering
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -25,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import org.briarproject.bramble.api.identity.LocalAuthor
 import org.briarproject.briar.desktop.contact.ProfileCircle
 import org.briarproject.briar.desktop.theme.sidebarSurface
+import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.ui.UiMode
 import org.briarproject.briar.desktop.utils.getDesktopFeatureFlags
 
@@ -35,6 +39,7 @@ fun BriarSidebar(
     account: LocalAuthor?,
     uiMode: UiMode,
     setUiMode: (UiMode) -> Unit,
+    briarExecutors: BriarExecutors,
 ) {
     val displayButton = @Composable { selectedMode: UiMode, mode: UiMode, icon: ImageVector ->
         BriarSidebarButton(
@@ -64,6 +69,24 @@ fun BriarSidebar(
             for ((mode, icon) in items) {
                 displayButton(uiMode, mode, icon)
             }
+            BriarSidebarButton(
+                false,
+                { throw IllegalArgumentException("boom") },
+                Icons.Filled.WaterDrop,
+                ""
+            )
+            BriarSidebarButton(
+                false,
+                { briarExecutors.onDbThread { throw IllegalArgumentException("boom") } },
+                Icons.Filled.Whatshot,
+                ""
+            )
+            BriarSidebarButton(
+                false,
+                { briarExecutors.onUiThread { throw IllegalArgumentException("boom") } },
+                Icons.Filled.BackHand,
+                ""
+            )
         }
         Column(verticalArrangement = Arrangement.Bottom) {
             val items = buildList {
