@@ -81,12 +81,15 @@ fun ConversationRequestItemView(
     val noticeColor = if (m.isIncoming) MaterialTheme.colors.textSecondary else MaterialTheme.colors.privateMessageDate
     ConversationItemView(m, onDelete) {
         Column(Modifier.width(IntrinsicSize.Max)) {
-            Text(
-                m.text!!,
-                fontSize = 16.sp,
-                color = textColor,
-                modifier = Modifier.padding(12.dp, 8.dp).align(Alignment.Start)
-            )
+            val text = m.text
+            if (text != null) {
+                Text(
+                    text,
+                    fontSize = 16.sp,
+                    color = textColor,
+                    modifier = Modifier.padding(12.dp, 8.dp).align(Alignment.Start)
+                )
+            }
             Column(
                 Modifier.fillMaxWidth().background(noticeBackground).padding(12.dp, 8.dp)
             ) {
