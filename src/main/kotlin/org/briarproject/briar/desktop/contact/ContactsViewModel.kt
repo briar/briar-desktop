@@ -43,6 +43,10 @@ abstract class ContactsViewModel(
 
     private val _fullContactList = mutableStateListOf<BaseContactItem>()
 
+    val noContactsYet = derivedStateOf {
+        _fullContactList.isEmpty()
+    }
+
     val contactList = derivedStateOf {
         _fullContactList.filter(::filterContactItem).sortedByDescending { it.timestamp }
     }

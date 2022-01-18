@@ -46,7 +46,7 @@ fun PrivateMessageScreen(
     var isContactDialogVisible by remember { mutableStateOf(false) }
     if (isContactDialogVisible) AddContactDialog(onClose = { isContactDialogVisible = false })
 
-    if (viewModel.contactList.value.isEmpty()) {
+    if (viewModel.noContactsYet.value) {
         NoContactsYet(onContactAdd = { isContactDialogVisible = true })
         return
     }
