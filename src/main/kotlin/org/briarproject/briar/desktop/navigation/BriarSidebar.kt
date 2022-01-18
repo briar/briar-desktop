@@ -21,6 +21,7 @@ package org.briarproject.briar.desktop.navigation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -42,6 +43,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import org.briarproject.bramble.api.identity.LocalAuthor
 import org.briarproject.briar.desktop.contact.ProfileCircle
+import org.briarproject.briar.desktop.theme.TopAppBar
 import org.briarproject.briar.desktop.theme.sidebarSurface
 import org.briarproject.briar.desktop.ui.UiMode
 import org.briarproject.briar.desktop.utils.getDesktopFeatureFlags
@@ -66,11 +68,13 @@ fun BriarSidebar(
     Surface(modifier = Modifier.width(SIDEBAR_WIDTH).fillMaxHeight(), color = MaterialTheme.colors.sidebarSurface) {
         Column(verticalArrangement = Arrangement.Top) {
             // profile button
-            IconButton(
-                modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 5.dp, bottom = 4.dp),
-                onClick = {}
-            ) {
-                account?.let { ProfileCircle(size = 45.dp, it.id.bytes) }
+            Surface(color = TopAppBar, modifier = Modifier.fillMaxWidth()) {
+                IconButton(
+                    modifier = Modifier.align(Alignment.CenterHorizontally).padding(vertical = 4.dp),
+                    onClick = {}
+                ) {
+                    account?.let { ProfileCircle(size = 45.dp, it.id.bytes, true) }
+                }
             }
             val items = buildList {
                 add(Pair(UiMode.CONTACTS, Icons.Filled.Contacts))

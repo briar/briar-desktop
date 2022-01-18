@@ -28,6 +28,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
@@ -54,11 +55,11 @@ fun PreviewProfileCircle() {
  *             pass a multiple of 9 here. That helps as the image is based on a 9x9 square grid.
  */
 @Composable
-fun ProfileCircle(size: Dp, contactItem: ContactItem) {
+fun ProfileCircle(size: Dp, contactItem: ContactItem, topAppBar: Boolean = false) {
     if (contactItem.avatar == null)
-        ProfileCircle(size, contactItem.authorId.bytes)
+        ProfileCircle(size, contactItem.authorId.bytes, topAppBar)
     else
-        ProfileCircle(size, contactItem.avatar)
+        ProfileCircle(size, contactItem.avatar, topAppBar)
 }
 
 /**
@@ -68,8 +69,9 @@ fun ProfileCircle(size: Dp, contactItem: ContactItem) {
  *             of 9 here. That helps as the image is based on a 9x9 square grid.
  */
 @Composable
-fun ProfileCircle(size: Dp, input: ByteArray) {
-    Canvas(Modifier.size(size).clip(CircleShape).border(2.dp, MaterialTheme.colors.outline, CircleShape)) {
+fun ProfileCircle(size: Dp, input: ByteArray, topAppBar: Boolean = false) {
+    val outlineColor: Color = if (topAppBar) Color.White else MaterialTheme.colors.outline
+    Canvas(Modifier.size(size).clip(CircleShape).border(1.dp, outlineColor, CircleShape)) {
         Identicon(input, this.size.width, this.size.height).draw(this)
     }
 }
@@ -80,12 +82,13 @@ fun ProfileCircle(size: Dp, input: ByteArray) {
  * @param size the size of the circle.
  */
 @Composable
-fun ProfileCircle(size: Dp, avatar: ImageBitmap) {
+fun ProfileCircle(size: Dp, avatar: ImageBitmap, topAppBar: Boolean = false) {
+    val outlineColor: Color = if (topAppBar) Color.White else MaterialTheme.colors.outline
     Image(
         bitmap = avatar,
         contentDescription = null,
         contentScale = ContentScale.FillBounds,
-        modifier = Modifier.size(size).clip(CircleShape).border(2.dp, MaterialTheme.colors.outline, CircleShape),
+        modifier = Modifier.size(size).clip(CircleShape).border(1.dp, outlineColor, CircleShape),
     )
 }
 
@@ -96,7 +99,7 @@ fun ProfileCircle(size: Dp, avatar: ImageBitmap) {
  */
 @Composable
 fun ProfileCircle(size: Dp) {
-    Canvas(Modifier.size(size).clip(CircleShape).border(2.dp, MaterialTheme.colors.outline, CircleShape)) {
+    Canvas(Modifier.size(size).clip(CircleShape).border(1.dp, MaterialTheme.colors.outline, CircleShape)) {
         // TODO what to display here?
     }
 }

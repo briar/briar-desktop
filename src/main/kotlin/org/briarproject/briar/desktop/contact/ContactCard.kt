@@ -87,7 +87,7 @@ fun ContactCard(
     selected: Boolean,
     padding: PaddingValues = PaddingValues(0.dp),
 ) {
-    val bgColor = if (selected) MaterialTheme.colors.selectedCard else Night950
+    val bgColor = if (selected) MaterialTheme.colors.selectedCard else MaterialTheme.colors.surfaceVariant
     val outlineColor = MaterialTheme.colors.outline
     val briarSecondary = MaterialTheme.colors.secondary
     val briarSurfaceVar = MaterialTheme.colors.surfaceVariant
@@ -129,7 +129,7 @@ fun ContactCard(
             }
             if (contactItem is ContactItem)
                 Canvas(
-                    modifier = Modifier.padding(end = 18.dp).size(22.dp)
+                    modifier = Modifier.padding(end = 6.dp).size(22.dp)
                         .align(Alignment.CenterVertically),
                     onDraw = {
                         val size = 16.dp

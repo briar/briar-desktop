@@ -27,13 +27,14 @@ import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import org.briarproject.briar.desktop.theme.divider
 import org.briarproject.briar.desktop.ui.Constants.COLUMN_WIDTH
 
 @Composable
-fun HorizontalDivider(modifier: Modifier = Modifier) {
-    Divider(color = MaterialTheme.colors.divider, thickness = 1.dp, modifier = modifier.fillMaxWidth())
+fun HorizontalDivider(modifier: Modifier = Modifier, color: Color = MaterialTheme.colors.divider) {
+    Divider(color = color, thickness = 1.dp, modifier = modifier.fillMaxWidth())
 }
 
 @Composable

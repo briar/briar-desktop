@@ -44,7 +44,7 @@ fun MainScreen(
             viewModel.uiMode.value,
             viewModel::setUiMode,
         )
-        VerticalDivider()
+        TopAppBarDivider()
         when (viewModel.uiMode.value) {
             UiMode.CONTACTS -> PrivateMessageScreen()
             UiMode.GROUPS -> PrivateGroupScreen()

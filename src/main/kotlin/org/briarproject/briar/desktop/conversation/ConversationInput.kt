@@ -53,6 +53,7 @@ import androidx.compose.ui.res.loadImageBitmap
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.briarproject.briar.desktop.theme.conversationInputBg
 import org.briarproject.briar.desktop.ui.HorizontalDivider
 import org.briarproject.briar.desktop.ui.LocalWindowScope
 import org.briarproject.briar.desktop.utils.ImagePicker.pickImageUsingDialog
@@ -90,7 +91,6 @@ fun ConversationInput(
     onSend: () -> Unit,
 ) {
     Column {
-        HorizontalDivider()
         if (image != null) {
             Image(image, null, modifier = Modifier.heightIn(100.dp, 200.dp))
         }
@@ -104,7 +104,7 @@ fun ConversationInput(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(0.dp),
             colors = TextFieldDefaults.textFieldColors(
-                backgroundColor = MaterialTheme.colors.background,
+                backgroundColor = MaterialTheme.colors.conversationInputBg,
                 focusedIndicatorColor = MaterialTheme.colors.background,
                 unfocusedIndicatorColor = MaterialTheme.colors.background
             ),

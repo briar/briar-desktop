@@ -58,7 +58,7 @@ fun ContactList(
         backgroundColor = MaterialTheme.colors.surfaceVariant,
         topBar = {
             Column(
-                modifier = Modifier.fillMaxWidth().height(HEADER_SIZE + 1.dp),
+                modifier = Modifier.fillMaxWidth().height(HEADER_SIZE),
             ) {
                 SearchTextField(
                     filterBy,

@@ -58,6 +58,7 @@ import org.briarproject.bramble.api.sync.MessageId
 import org.briarproject.briar.desktop.theme.ChevronDown
 import org.briarproject.briar.desktop.theme.ChevronUp
 import org.briarproject.briar.desktop.theme.divider
+import org.briarproject.briar.desktop.theme.outline
 import org.briarproject.briar.desktop.ui.HorizontalDivider
 import org.briarproject.briar.desktop.ui.Loader
 import org.briarproject.briar.desktop.ui.MessageCounter
@@ -177,7 +178,7 @@ fun ConversationList(
     Box(modifier = Modifier.padding(padding).fillMaxSize()) {
         LazyColumn(
             state = scrollState,
-            modifier = Modifier.fillMaxSize().padding(end = 12.dp, top = 8.dp, bottom = 8.dp)
+            modifier = Modifier.fillMaxSize().padding(end = 12.dp)
         ) {
             itemsIndexed(messages) { idx, m ->
                 if (idx == initialFirstUnreadMessageIndex) {
@@ -240,13 +241,13 @@ fun ConversationList(
 
 @Composable
 fun UnreadMessagesMarker() = Box {
-    HorizontalDivider(Modifier.align(Alignment.Center))
+    HorizontalDivider(Modifier.align(Alignment.Center), MaterialTheme.colors.outline)
     Text(
         text = i18n("conversation.message.unread"),
         modifier = Modifier
             .align(Alignment.Center)
             .padding(8.dp)
-            .border(1.dp, MaterialTheme.colors.divider, RoundedCornerShape(16.dp))
+            .border(1.dp, MaterialTheme.colors.outline, RoundedCornerShape(16.dp))
             .background(MaterialTheme.colors.background)
             .padding(8.dp)
     )

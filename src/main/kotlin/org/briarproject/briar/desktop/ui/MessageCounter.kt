@@ -45,7 +45,7 @@ fun MessageCounter(unread: Int, modifier: Modifier = Modifier) {
             modifier = modifier
                 .height(20.dp)
                 .widthIn(min = 20.dp, max = Dp.Infinity)
-                .border(2.dp, outlineColor, CircleShape)
+                .border(1.dp, outlineColor, CircleShape)
                 .background(briarSecondary, CircleShape)
                 .padding(horizontal = 6.dp)
         ) {

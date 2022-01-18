@@ -51,8 +51,10 @@ import org.briarproject.briar.desktop.contact.ContactListViewModel
 import org.briarproject.briar.desktop.contact.PendingContactIdWrapper
 import org.briarproject.briar.desktop.contact.RealContactIdWrapper
 import org.briarproject.briar.desktop.contact.add.remote.AddContactDialog
+import org.briarproject.briar.desktop.theme.DarkDivider
 import org.briarproject.briar.desktop.ui.BriarLogo
 import org.briarproject.briar.desktop.ui.Constants.PARAGRAPH_WIDTH
+import org.briarproject.briar.desktop.ui.TopAppBarDivider
 import org.briarproject.briar.desktop.ui.VerticalDivider
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.viewmodel.viewModel
@@ -78,7 +80,7 @@ fun PrivateMessageScreen(
             viewModel::setFilterBy,
             onContactAdd = { isContactDialogVisible = true }
         )
-        VerticalDivider()
+        TopAppBarDivider(DarkDivider)
         Column(modifier = Modifier.weight(1f).fillMaxHeight()) {
             val id = viewModel.selectedContactId.value
             if (id == null) {
