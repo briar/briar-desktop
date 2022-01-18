@@ -130,17 +130,18 @@ internal class DesktopTestModule(
     }
 
     @Provides
-    internal fun provideFeatureFlags() = object : FeatureFlags {
+    internal fun provideFeatureFlags(desktopFeatureFlags: DesktopFeatureFlags) = object : FeatureFlags {
         override fun shouldEnableImageAttachments() = true
         override fun shouldEnableProfilePictures() = true
         override fun shouldEnableDisappearingMessages() = false
+        override fun shouldEnablePrivateGroupsInCore() = desktopFeatureFlags.shouldEnablePrivateGroups()
+        override fun shouldEnableForumsInCore() = desktopFeatureFlags.shouldEnableForums()
+        override fun shouldEnableBlogsInCore() = desktopFeatureFlags.shouldEnableBlogs()
     }
 
     @Provides
     @Singleton
     internal fun provideDesktopFeatureFlags() = object : DesktopFeatureFlags {
-        // TODO: once we have shouldEnableBlogsInCore() in briar core, wire them up with these here
-        // so that the value for shouldEnableBlogs() is always the same the respective core flag.
         override fun shouldEnablePrivateGroups() = false
         override fun shouldEnableForums() = false
         override fun shouldEnableBlogs() = false
