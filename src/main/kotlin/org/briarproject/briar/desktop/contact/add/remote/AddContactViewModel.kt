@@ -63,16 +63,23 @@ constructor(
     }
 
     private fun addPendingContact(link: String, alias: String) {
-        if (_handshakeLink.value == link) {
-            LOG.warn { "Please enter contact's link, not your own" }
-            // TODO: show warning to user
-            return
-        }
-        if (remoteHandshakeLinkIsInvalid(link)) {
+        // ignore preceding and trailing whitespace
+        val matcher = HandshakeLinkConstants.LINK_REGEX.matcher(link.trim())
+        // check if the link is well-formed
+        if (!matcher.matches()) {
             LOG.warn { "Remote handshake link is invalid" }
             // TODO: show message to user
             return
         }
+        // compare with own link
+        val withoutSchema = matcher.group(2)
+        val withSchema = "briar://$withoutSchema"
+        if (_handshakeLink.value == withSchema) {
+            LOG.warn { "Please enter contact's link, not your own" }
+            // TODO: show warning to user
+            return
+        }
+
         if (aliasIsInvalid(alias)) {
             LOG.warn { "Alias is invalid" }
             // TODO: show message to user
@@ -104,10 +111,6 @@ constructor(
                 // TODO: show error to user
             }
         }
-    }
-
-    private fun remoteHandshakeLinkIsInvalid(link: String): Boolean {
-        return !HandshakeLinkConstants.LINK_REGEX.matcher(link).find()
     }
 
     private fun aliasIsInvalid(alias: String): Boolean {
