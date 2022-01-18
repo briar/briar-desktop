@@ -89,7 +89,6 @@ constructor(
     }
 
     override fun stop() {
-        // TODO: check how briar is doing this
         if (lifecycleManager.lifecycleState == RUNNING) {
             lifecycleManager.stopServices()
             lifecycleManager.waitForShutdown()
