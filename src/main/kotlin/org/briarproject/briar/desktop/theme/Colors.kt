@@ -25,6 +25,7 @@ val Night500 = Color(0xff435b77)
 val Night700 = Color(0xff2e3d4f)
 val Night800 = Color(0xff212d3b)
 val Night950 = Color(0xff0e171f)
+val TopAppBar = Color(0xff242d3a)
 
 val Gray50 = Color(0xfffafafa)
 val Gray100 = Color(0xfff2f2f2)

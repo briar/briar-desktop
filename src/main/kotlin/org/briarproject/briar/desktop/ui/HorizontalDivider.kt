@@ -18,15 +18,27 @@
 
 package org.briarproject.briar.desktop.ui
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.briarproject.briar.desktop.theme.divider
+import org.briarproject.briar.desktop.ui.Constants.COLUMN_WIDTH
 
 @Composable
 fun HorizontalDivider(modifier: Modifier = Modifier) {
     Divider(color = MaterialTheme.colors.divider, thickness = 1.dp, modifier = modifier.fillMaxWidth())
+}
+
+@Composable
+fun ContactDivider() {
+    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+        Divider(color = MaterialTheme.colors.divider, thickness = 1.dp, modifier = Modifier.width(COLUMN_WIDTH - 64.dp))
+    }
 }

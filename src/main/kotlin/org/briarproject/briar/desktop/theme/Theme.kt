@@ -28,8 +28,8 @@ import androidx.compose.ui.graphics.Color
 
 val Colors.divider: Color get() = if (isLight) Gray300 else Gray800
 val Colors.outline: Color get() = if (isLight) Gray900 else Gray200
-val Colors.surfaceVariant: Color get() = if (isLight) Gray100 else Gray950
-val Colors.sidebarSurface: Color get() = if (isLight) Gray200 else Gray900
+val Colors.surfaceVariant: Color get() = if (isLight) Gray100 else Night950
+val Colors.sidebarSurface: Color get() = if (isLight) Gray200 else Night950
 val Colors.selectedCard: Color get() = if (isLight) Gray400 else Gray700
 val Colors.msgStroke: Color get() = if (isLight) Gray300 else Gray900
 val Colors.msgIn: Color get() = if (isLight) Color.White else Night700
@@ -44,10 +44,10 @@ val Colors.buttonTextPositive: Color get() = Blue400
 
 val DarkColors = darkColors(
     primary = Blue500,
-    primaryVariant = Night500,
+    primaryVariant = TopAppBar,
     secondary = Lime500,
-    background = materialDarkBg,
-    surface = materialDarkBg,
+    background = Night950,
+    surface = Night950,
     onPrimary = Color.White,
     onSecondary = Color.White,
     onBackground = Color.White,

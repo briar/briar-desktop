@@ -42,10 +42,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.briarproject.bramble.api.contact.ContactId
 import org.briarproject.bramble.api.identity.AuthorId
+import org.briarproject.briar.desktop.theme.Night950
 import org.briarproject.briar.desktop.theme.outline
 import org.briarproject.briar.desktop.theme.selectedCard
 import org.briarproject.briar.desktop.theme.surfaceVariant
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
+import org.briarproject.briar.desktop.ui.ContactDivider
 import org.briarproject.briar.desktop.ui.HorizontalDivider
 import org.briarproject.briar.desktop.ui.MessageCounter
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
@@ -85,13 +87,14 @@ fun ContactCard(
     selected: Boolean,
     padding: PaddingValues = PaddingValues(0.dp),
 ) {
-    val bgColor = if (selected) MaterialTheme.colors.selectedCard else MaterialTheme.colors.surfaceVariant
+    val bgColor = if (selected) MaterialTheme.colors.selectedCard else Night950
     val outlineColor = MaterialTheme.colors.outline
     val briarSecondary = MaterialTheme.colors.secondary
     val briarSurfaceVar = MaterialTheme.colors.surfaceVariant
 
     Card(
         modifier = Modifier.fillMaxWidth().defaultMinSize(minHeight = HEADER_SIZE).clickable(onClick = onSel),
+        elevation = 0.dp,
         shape = RoundedCornerShape(0.dp),
         backgroundColor = bgColor,
         contentColor = MaterialTheme.colors.onSurface
@@ -139,7 +142,7 @@ fun ContactCard(
                 )
         }
     }
-    HorizontalDivider()
+    ContactDivider()
 }
 
 @Composable
