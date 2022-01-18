@@ -179,27 +179,33 @@ pinpit.desktop {
                     qualifier = "ubuntu-20.04"
                     arch = "x64"
                     depends(
-                        "libc6", "libexpat1", "libgcc-s1", "libpcre3", "libuuid1", "xdg-utils",
-                        "zlib1g", "libnotify4"
+                        // determined by pinpitSuggestDebDependencies
+                        "libc6", "libexpat1", "libuuid1", "zlib1g",
+                        // manually added
+                        "xdg-utils", "libnotify4"
                     )
                 }
                 deb("UbuntuBionicX64") {
                     qualifier = "ubuntu-18.04"
                     arch = "x64"
                     depends(
-                        "libasound2", "libc6", "libexpat1", "libfontconfig1", "libfreetype6", "libgcc1",
-                        "libglib2.0-0", "libgraphite2-3", "libharfbuzz0b", "libjpeg-turbo8", "liblcms2-2",
-                        "libpcre3", "libpng16-16", "libstdc++6", "xdg-utils", "zlib1g", "libnotify4"
+                        // determined by pinpitSuggestDebDependencies
+                        "libasound2", "libbsd0", "libc6", "libexpat1", "libfontconfig1",
+                        "libfreetype6", "libgl1", "libglvnd0", "libglx0", "libpng16-16",
+                        "libx11-6", "libxau6", "libxcb1", "libxdmcp6", "libxext6",
+                        "libxi6", "libxrender1", "libxtst6", "zlib1g",
+                        // manually added
+                        "xdg-utils", "libnotify4"
                     )
                 }
                 deb("DebianBullseyeX64") {
                     qualifier = "debian-bullseye"
                     arch = "x64"
                     depends(
-                        "libasound2", "libbrotli1", "libc6", "libexpat1", "libfontconfig1", "libfreetype6",
-                        "libgcc-s1", "libglib2.0-0", "libgraphite2-3", "libharfbuzz0b", "libjpeg62-turbo",
-                        "liblcms2-2", "libpcre3", "libpng16-16", "libstdc++6", "libuuid1", "xdg-utils", "zlib1g",
-                        "libnotify4"
+                        // determined by pinpitSuggestDebDependencies
+                        "libc6", "libexpat1", "zlib1g",
+                        // manually added
+                        "xdg-utils", "libnotify4"
                     )
                 }
             }
