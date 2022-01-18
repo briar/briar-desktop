@@ -26,9 +26,10 @@ fun BriarDialog(
     content: @Composable BoxWithConstraintsScope.() -> Unit,
 ) {
     BoxWithConstraints(Modifier.fillMaxSize()) {
+        // This adds a scrim that dims the background to make the dialog stand out visually
         Box(
             modifier = Modifier.requiredSize(maxWidth, maxHeight)
-                .background(MaterialTheme.colors.onSurface.copy(alpha = 0.4f))
+                .background(MaterialTheme.colors.onSurface.copy(alpha = 0.32f))
                 .clickable(
                     // prevent visual indication
                     interactionSource = remember { MutableInteractionSource() },
