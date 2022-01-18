@@ -28,7 +28,6 @@ import org.briarproject.bramble.api.FormatException
 import org.briarproject.bramble.api.connection.ConnectionRegistry
 import org.briarproject.bramble.api.contact.ContactId
 import org.briarproject.bramble.api.contact.ContactManager
-import org.briarproject.bramble.api.contact.event.ContactRemovedEvent
 import org.briarproject.bramble.api.db.DbException
 import org.briarproject.bramble.api.db.NoSuchContactException
 import org.briarproject.bramble.api.db.Transaction
@@ -308,12 +307,6 @@ constructor(
 
     override fun eventOccurred(e: Event?) {
         when (e) {
-            is ContactRemovedEvent -> {
-                if (e.contactId == _contactId.value) {
-                    LOG.info("Contact removed")
-                    // todo: we probably don't need to react to this here as the ContactsViewModel should already handle it
-                }
-            }
             is ConversationMessageReceivedEvent<*> -> {
                 if (e.contactId == _contactId.value) {
                     LOG.info("Message received, adding")
