@@ -430,4 +430,8 @@ constructor(
     fun confirmDeletionResult() {
         _deletionResult.value = null
     }
+
+    fun deleteContact() = runOnDbThread {
+        contactManager.removeContact(_contactId.value!!)
+    }
 }

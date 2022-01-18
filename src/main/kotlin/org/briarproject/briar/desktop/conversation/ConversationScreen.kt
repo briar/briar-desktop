@@ -71,6 +71,7 @@ fun ConversationScreen(
     val (infoDrawer, setInfoDrawer) = remember { mutableStateOf(false) }
     val (contactDrawerState, setDrawerState) = remember { mutableStateOf(ContactInfoDrawerState.MakeIntro) }
     val (deleteAllMessagesDialogVisible, setDeleteAllMessagesDialog) = remember { mutableStateOf(false) }
+    val (deleteContactDialogVisible, setDeleteContactDialog) = remember { mutableStateOf(false) }
 
     BoxWithConstraints(Modifier.fillMaxSize()) {
         val animatedInfoDrawerOffsetX by animateDpAsState(if (infoDrawer) (-275).dp else 0.dp)
@@ -83,6 +84,9 @@ fun ConversationScreen(
                     },
                     onDeleteAllMessages = {
                         setDeleteAllMessagesDialog(true)
+                    },
+                    onDeleteContact = {
+                        setDeleteContactDialog(true)
                     }
                 )
             },
@@ -157,6 +161,12 @@ fun ConversationScreen(
         DeleteAllMessagesFailedDialog(
             deletionResult = viewModel.deletionResult.value,
             close = viewModel::confirmDeletionResult
+        )
+
+        DeleteContactConfirmationDialog(
+            isVisible = deleteContactDialogVisible,
+            close = { setDeleteContactDialog(false) },
+            onDelete = viewModel::deleteContact
         )
     }
 }

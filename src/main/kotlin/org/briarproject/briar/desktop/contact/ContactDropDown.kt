@@ -45,6 +45,7 @@ fun ContactDropDown(
     close: () -> Unit,
     onMakeIntroduction: () -> Unit,
     onDeleteAllMessages: () -> Unit,
+    onDeleteContact: () -> Unit,
 ) {
     val coreFeatureFlags = getCoreFeatureFlags()
     val desktopFeatureFlags = getDesktopFeatureFlags()
@@ -121,7 +122,7 @@ fun ContactDropDown(
         DropdownMenuItem(onClick = { false }, enabled = false) {
             Text(i18n("contacts.dropdown.contact.change"), fontSize = 14.sp)
         }
-        DropdownMenuItem(onClick = { false }) {
+        DropdownMenuItem(onClick = { close(); onDeleteContact() }) {
             Text(i18n("contacts.dropdown.contact.delete"), fontSize = 14.sp)
         }
     }

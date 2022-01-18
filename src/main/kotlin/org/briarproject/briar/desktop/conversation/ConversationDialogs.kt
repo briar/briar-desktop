@@ -156,3 +156,37 @@ fun DeleteAllMessagesFailedDialog(
         }
     )
 }
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun DeleteContactConfirmationDialog(
+    isVisible: Boolean,
+    close: () -> Unit,
+    onDelete: () -> Unit = {},
+    onCancel: () -> Unit = {},
+) {
+    if (!isVisible) return
+
+    AlertDialog(
+        onDismissRequest = close,
+        title = {
+            Text(
+                text = i18n("conversation.delete.contact.dialog.title"),
+                modifier = Modifier.width(IntrinsicSize.Max)
+            )
+        },
+        text = {
+            Text(i18n("conversation.delete.contact.dialog.message"))
+        },
+        dismissButton = {
+            TextButton(onClick = { close(); onDelete() }) {
+                Text(i18n("delete"))
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = { close(); onCancel() }) {
+                Text(i18n("cancel"))
+            }
+        }
+    )
+}

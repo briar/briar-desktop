@@ -56,6 +56,7 @@ fun ConversationHeader(
     contactItem: ContactItem,
     onMakeIntroduction: () -> Unit,
     onDeleteAllMessages: () -> Unit,
+    onDeleteContact: () -> Unit,
 ) {
     val (isExpanded, setExpanded) = remember { mutableStateOf(false) }
     val onlineColor =
@@ -95,7 +96,13 @@ fun ConversationHeader(
                 modifier = Modifier.align(Alignment.CenterVertically).padding(end = 16.dp)
             ) {
                 Icon(Icons.Filled.MoreVert, i18n("access.contact.menu"), modifier = Modifier.size(24.dp))
-                ContactDropDown(isExpanded, { setExpanded(false) }, onMakeIntroduction, onDeleteAllMessages)
+                ContactDropDown(
+                    isExpanded,
+                    { setExpanded(false) },
+                    onMakeIntroduction,
+                    onDeleteAllMessages,
+                    onDeleteContact
+                )
             }
         }
         HorizontalDivider(modifier = Modifier.align(Alignment.BottomCenter))
