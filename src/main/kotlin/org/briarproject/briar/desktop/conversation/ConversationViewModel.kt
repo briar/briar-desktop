@@ -126,8 +126,10 @@ constructor(
         val text = _newMessage.value
         val image = _newMessageImage.value
 
+        val trimmed = text.trim()
+
         // don't send empty or blank messages
-        if (text.isBlank() && image == null) return
+        if (trimmed.isBlank() && image == null) return
 
         _newMessage.value = ""
         _newMessageImage.value = null
@@ -154,7 +156,7 @@ constructor(
             runOnDbThreadWithTransaction(false) { txn ->
                 try {
                     val start = LogUtils.now()
-                    val m = createMessage(txn, contactId, groupId!!, text, headers)
+                    val m = createMessage(txn, contactId, groupId, trimmed, headers)
                     messagingManager.addLocalMessage(txn, m)
                     LOG.logDuration("Storing message", start)
 
