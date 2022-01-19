@@ -39,9 +39,11 @@ import org.briarproject.bramble.api.lifecycle.LifecycleManager.LifecycleState.RU
 import org.briarproject.bramble.api.lifecycle.event.LifecycleEvent
 import org.briarproject.briar.desktop.DesktopFeatureFlags
 import org.briarproject.briar.desktop.expiration.ExpirationBanner
+import org.briarproject.briar.desktop.login.ErrorScreen
 import org.briarproject.briar.desktop.login.StartupScreen
 import org.briarproject.briar.desktop.settings.SettingsViewModel
 import org.briarproject.briar.desktop.theme.BriarTheme
+import org.briarproject.briar.desktop.ui.Screen.EXPIRED
 import org.briarproject.briar.desktop.ui.Screen.MAIN
 import org.briarproject.briar.desktop.ui.Screen.STARTUP
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
@@ -54,7 +56,8 @@ import javax.inject.Singleton
 
 enum class Screen {
     STARTUP,
-    MAIN
+    MAIN,
+    EXPIRED,
 }
 
 interface BriarUi {
@@ -119,10 +122,11 @@ constructor(
                 val settingsViewModel: SettingsViewModel = viewModel()
                 BriarTheme(isDarkTheme = settingsViewModel.isDarkMode.value) {
                     Column(Modifier.fillMaxSize()) {
-                        ExpirationBanner(onExpired = { screenState = STARTUP })
+                        ExpirationBanner { screenState = EXPIRED; stop() }
                         when (screenState) {
                             STARTUP -> StartupScreen()
                             MAIN -> MainScreen(settingsViewModel)
+                            EXPIRED -> ErrorScreen(i18n("startup.failed.expired"))
                         }
                     }
                 }

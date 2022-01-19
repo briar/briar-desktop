@@ -1,12 +1,55 @@
+/*
+ * Briar Desktop
+ * Copyright (C) 2021-2022 The Briar Project
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package org.briarproject.briar.desktop.expiration
 
+import kotlinx.coroutines.delay
 import org.briarproject.briar.desktop.BuildData
 import java.time.Instant
-import java.time.temporal.ChronoUnit
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.milliseconds
 
 object ExpirationUtils {
 
-    fun getDaysLeft() = 90 - ChronoUnit.DAYS.between(Instant.ofEpochMilli(BuildData.GIT_TIME), Instant.now()).toInt()
+    private val EXPIRE_AFTER = BuildData.GIT_TIME + 91.days.inWholeMilliseconds
+    private val CHECK_INTERVAL = 1.hours.inWholeMilliseconds
 
-    fun isExpired() = getDaysLeft() <= 0
+    // for testing uncomment the following instead
+    // private val EXPIRE_AFTER = Instant.now().toEpochMilli() + 10.seconds.inWholeMilliseconds
+    // private val CHECK_INTERVAL = 1.seconds.inWholeMilliseconds
+
+    private fun getMillisLeft() = (EXPIRE_AFTER - Instant.now().toEpochMilli()).milliseconds
+
+    private fun getDaysLeft() = getMillisLeft().inWholeDays.toInt()
+
+    private fun isExpired() = getMillisLeft() <= 0.milliseconds
+
+    suspend fun periodicallyCheckIfExpired(
+        reportDaysLeft: (Int) -> Unit,
+        onExpired: () -> Unit,
+    ) {
+        while (true) {
+            if (isExpired()) {
+                onExpired()
+                break
+            } else reportDaysLeft(getDaysLeft())
+            delay(CHECK_INTERVAL)
+        }
+    }
 }

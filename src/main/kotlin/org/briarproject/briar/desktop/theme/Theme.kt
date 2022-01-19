@@ -48,11 +48,12 @@ val DarkColors = darkColors(
     secondary = Lime500,
     background = materialDarkBg,
     surface = materialDarkBg,
+    error = briarError,
     onPrimary = Color.White,
     onSecondary = Color.White,
     onBackground = Color.White,
     onSurface = Color.White,
-    error = briarError
+    onError = Color.White,
 )
 val LightColors = lightColors(
     primary = Blue500,
@@ -60,11 +61,12 @@ val LightColors = lightColors(
     secondary = Lime300,
     background = Color.White,
     surface = Color.White,
+    error = briarError,
     onPrimary = Color.White,
     onSecondary = Color.Black,
     onBackground = Color.Black,
     onSurface = Color.Black,
-    error = briarError
+    onError = Color.White,
 )
 
 @Composable

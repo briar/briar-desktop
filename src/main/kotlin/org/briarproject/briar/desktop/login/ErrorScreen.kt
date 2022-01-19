@@ -56,12 +56,9 @@ import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 
 fun main() = preview {
-    var error: ErrorSubViewModel.Error by remember { mutableStateOf(ErrorSubViewModel.ExpirationError) }
+    var error: ErrorSubViewModel.Error by remember { mutableStateOf(RegistrationSubViewModel.RegistrationError) }
 
     Row(horizontalArrangement = spacedBy(8.dp)) {
-        Button(onClick = { error = ErrorSubViewModel.ExpirationError }) {
-            Text("Expiration")
-        }
         Button(onClick = { error = RegistrationSubViewModel.RegistrationError }) {
             Text("Registration")
         }
@@ -82,10 +79,34 @@ fun ErrorScreen(viewHolder: ErrorSubViewModel) =
 @Composable
 fun ErrorScreen(
     error: ErrorSubViewModel.Error,
-    onBackButton: () -> Unit,
+    onBackButton: (() -> Unit)?,
+) {
+    val text = when (error) {
+        is RegistrationSubViewModel.RegistrationError -> i18n("startup.failed.registration")
+        is StartupViewModel.StartingError -> {
+            when (error.error) {
+                CLOCK_ERROR -> i18n("startup.failed.clock_error")
+                DB_ERROR -> i18n("startup.failed.db_error")
+                DATA_TOO_OLD_ERROR -> i18n("startup.failed.data_too_old_error")
+                DATA_TOO_NEW_ERROR -> i18n("startup.failed.data_too_new_error")
+                SERVICE_ERROR -> i18n("startup.failed.service_error")
+                else -> ""
+            }
+        }
+    }
+
+    ErrorScreen(text, onBackButton)
+}
+
+@Composable
+fun ErrorScreen(
+    text: String,
+    onBackButton: (() -> Unit)? = null,
 ) = Surface {
-    IconButton(onClick = onBackButton) {
-        Icon(Icons.Filled.ArrowBack, i18n("back"))
+    if (onBackButton != null) {
+        IconButton(onClick = onBackButton) {
+            Icon(Icons.Filled.ArrowBack, i18n("back"))
+        }
     }
 
     Column(
@@ -101,21 +122,6 @@ fun ErrorScreen(
         )
 
         Text(i18n("sorry"), style = MaterialTheme.typography.h5)
-
-        val text = when (error) {
-            is ErrorSubViewModel.ExpirationError -> i18n("startup.failed.expired")
-            is RegistrationSubViewModel.RegistrationError -> i18n("startup.failed.registration")
-            is StartupViewModel.StartingError -> {
-                when (error.error) {
-                    CLOCK_ERROR -> i18n("startup.failed.clock_error")
-                    DB_ERROR -> i18n("startup.failed.db_error")
-                    DATA_TOO_OLD_ERROR -> i18n("startup.failed.data_too_old_error")
-                    DATA_TOO_NEW_ERROR -> i18n("startup.failed.data_too_new_error")
-                    SERVICE_ERROR -> i18n("startup.failed.service_error")
-                    else -> ""
-                }
-            }
-        }
         Text(
             text = text,
             style = MaterialTheme.typography.body1,
