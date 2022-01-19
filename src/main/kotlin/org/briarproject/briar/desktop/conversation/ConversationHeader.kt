@@ -30,6 +30,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
@@ -45,6 +46,8 @@ import androidx.compose.ui.unit.sp
 import org.briarproject.briar.desktop.contact.ContactDropDown
 import org.briarproject.briar.desktop.contact.ContactItem
 import org.briarproject.briar.desktop.contact.ProfileCircle
+import org.briarproject.briar.desktop.theme.TopAppBar
+import org.briarproject.briar.desktop.theme.onTopAppBar
 import org.briarproject.briar.desktop.theme.outline
 import org.briarproject.briar.desktop.theme.surfaceVariant
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
@@ -63,48 +66,50 @@ fun ConversationHeader(
         if (contactItem.isConnected) MaterialTheme.colors.secondary else MaterialTheme.colors.surfaceVariant
     val outlineColor = MaterialTheme.colors.outline
 
-    Box(modifier = Modifier.fillMaxWidth().height(HEADER_SIZE + 1.dp)) {
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth().align(Alignment.Center)
-        ) {
-            Row(modifier = Modifier.fillMaxHeight().padding(start = 8.dp).weight(1f, fill = false)) {
-                Box(modifier = Modifier.align(Alignment.CenterVertically)) {
-                    ProfileCircle(36.dp, contactItem)
-                    Canvas(
-                        modifier = Modifier,
-                        onDraw = {
-                            val size = 10.dp.toPx()
-                            withTransform({ translate(left = 30f, top = 30f) }) {
-                                drawCircle(color = outlineColor, radius = (size + 2.dp.toPx()) / 2f)
-                                drawCircle(color = onlineColor, radius = size / 2f)
+    Surface(color = TopAppBar, contentColor = MaterialTheme.colors.onTopAppBar) {
+        Box(modifier = Modifier.fillMaxWidth().height(HEADER_SIZE + 1.dp)) {
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth().align(Alignment.Center)
+            ) {
+                Row(modifier = Modifier.fillMaxHeight().padding(start = 8.dp).weight(1f, fill = false)) {
+                    Box(modifier = Modifier.align(Alignment.CenterVertically)) {
+                        ProfileCircle(36.dp, contactItem)
+                        Canvas(
+                            modifier = Modifier,
+                            onDraw = {
+                                val size = 10.dp.toPx()
+                                withTransform({ translate(left = 30f, top = 30f) }) {
+                                    drawCircle(color = outlineColor, radius = (size + 2.dp.toPx()) / 2f)
+                                    drawCircle(color = onlineColor, radius = size / 2f)
+                                }
                             }
-                        }
+                        )
+                    }
+                    Text(
+                        contactItem.displayName,
+                        modifier = Modifier.align(Alignment.CenterVertically).padding(start = 12.dp)
+                            .weight(1f, fill = false),
+                        maxLines = 2,
+                        overflow = Ellipsis,
+                        fontSize = 20.sp
                     )
                 }
-                Text(
-                    contactItem.displayName,
-                    modifier = Modifier.align(Alignment.CenterVertically).padding(start = 12.dp)
-                        .weight(1f, fill = false),
-                    maxLines = 2,
-                    overflow = Ellipsis,
-                    fontSize = 20.sp
-                )
+                IconButton(
+                    onClick = { setExpanded(!isExpanded) },
+                    modifier = Modifier.align(Alignment.CenterVertically).padding(end = 16.dp)
+                ) {
+                    Icon(Icons.Filled.MoreVert, i18n("access.contact.menu"), modifier = Modifier.size(24.dp))
+                    ContactDropDown(
+                        isExpanded,
+                        { setExpanded(false) },
+                        onMakeIntroduction,
+                        onDeleteAllMessages,
+                        onDeleteContact
+                    )
+                }
             }
-            IconButton(
-                onClick = { setExpanded(!isExpanded) },
-                modifier = Modifier.align(Alignment.CenterVertically).padding(end = 16.dp)
-            ) {
-                Icon(Icons.Filled.MoreVert, i18n("access.contact.menu"), modifier = Modifier.size(24.dp))
-                ContactDropDown(
-                    isExpanded,
-                    { setExpanded(false) },
-                    onMakeIntroduction,
-                    onDeleteAllMessages,
-                    onDeleteContact
-                )
-            }
+            HorizontalDivider(modifier = Modifier.align(Alignment.BottomCenter))
         }
-        HorizontalDivider(modifier = Modifier.align(Alignment.BottomCenter))
     }
 }
