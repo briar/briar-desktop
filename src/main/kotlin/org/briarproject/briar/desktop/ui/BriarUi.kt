@@ -24,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
@@ -119,15 +120,19 @@ constructor(
                 LocalCoreFeatureFlags provides featureFlags,
                 LocalDesktopFeatureFlags provides desktopFeatureFlags
             ) {
+                var showAbout by remember { mutableStateOf(false) }
                 val settingsViewModel: SettingsViewModel = viewModel()
                 BriarTheme(isDarkTheme = settingsViewModel.isDarkMode.value) {
                     Column(Modifier.fillMaxSize()) {
                         ExpirationBanner { screenState = EXPIRED; stop() }
                         when (screenState) {
                             STARTUP -> StartupScreen()
-                            MAIN -> MainScreen(settingsViewModel)
+                            MAIN -> MainScreen(settingsViewModel, showAbout = { showAbout = true })
                             EXPIRED -> ErrorScreen(i18n("startup.failed.expired"))
                         }
+                    }
+                    if (showAbout) {
+                        AboutDialog(onClose = { showAbout = false })
                     }
                 }
             }

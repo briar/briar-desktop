@@ -20,10 +20,6 @@ package org.briarproject.briar.desktop.ui
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import org.briarproject.briar.desktop.conversation.PrivateMessageScreen
 import org.briarproject.briar.desktop.navigation.BriarSidebar
 import org.briarproject.briar.desktop.navigation.SidebarViewModel
@@ -41,15 +37,14 @@ import org.briarproject.briar.desktop.viewmodel.viewModel
 fun MainScreen(
     settingsViewModel: SettingsViewModel,
     viewModel: SidebarViewModel = viewModel(),
+    showAbout: () -> Unit,
 ) {
-    var showAbout by remember { mutableStateOf(false) }
-
     Row {
         BriarSidebar(
             viewModel.account.value,
             viewModel.uiMode.value,
             viewModel::setUiMode,
-            { showAbout = true },
+            showAbout = showAbout,
         )
         VerticalDivider()
         when (viewModel.uiMode.value) {
@@ -58,9 +53,5 @@ fun MainScreen(
             UiMode.SETTINGS -> SettingsScreen(settingsViewModel)
             else -> UiPlaceholder()
         }
-    }
-
-    if (showAbout) {
-        AboutDialog(onClose = { showAbout = false })
     }
 }
