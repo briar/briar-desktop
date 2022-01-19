@@ -71,15 +71,15 @@ fun main() = preview(
     "error type" to PreviewUtils.Values(
         0,
         listOf(
-            OwnLinkError(link),
-            RemoteInvalidError(link),
-            AliasInvalidError(link, ""),
-            LinkInvalidError(link),
-            PublicKeyInvalidError(link),
-            ErrorContactAlreadyExists(link, "David", "chuck"),
-            ErrorPendingAlreadyExists(link, "Frank", "chuck"),
+            OwnLinkError::class.simpleName!!,
+            RemoteInvalidError::class.simpleName!!,
+            AliasInvalidError::class.simpleName!!,
+            LinkInvalidError::class.simpleName!!,
+            PublicKeyInvalidError::class.simpleName!!,
+            ErrorContactAlreadyExists::class.simpleName!!,
+            ErrorPendingAlreadyExists::class.simpleName!!,
         )
-    ) { error -> error.javaClass.simpleName },
+    ),
 ) {
     val localLink = getStringParameter("local link")
     AddContactDialog(
@@ -91,9 +91,24 @@ fun main() = preview(
         setAddContactAlias = { alias -> setStringParameter("alias", alias) },
         handshakeLink = localLink,
         onSubmitAddContactDialog = { setBooleanParameter("error visible", true) },
-        error = if (getBooleanParameter("error visible")) getGenericParameter("error type") else null,
+        error = if (getBooleanParameter("error visible")) mapErrors(getStringParameter("error type")) else null,
         onErrorDialogDismissed = { setBooleanParameter("error visible", false) },
     )
+}
+
+fun PreviewUtils.PreviewScope.mapErrors(name: String?): AddContactError? = when (name) {
+    OwnLinkError::class.simpleName!! -> OwnLinkError(link)
+    RemoteInvalidError::class.simpleName!! -> RemoteInvalidError(link)
+    AliasInvalidError::class.simpleName!! -> AliasInvalidError(link, "")
+    LinkInvalidError::class.simpleName!! -> LinkInvalidError(link)
+    PublicKeyInvalidError::class.simpleName!! -> PublicKeyInvalidError(link)
+    ErrorContactAlreadyExists::class.simpleName!! -> ErrorContactAlreadyExists(
+        link, "David", getStringParameter("alias")
+    )
+    ErrorPendingAlreadyExists::class.simpleName!! -> ErrorPendingAlreadyExists(
+        link, "Frank", getStringParameter("alias")
+    )
+    else -> null
 }
 
 @Composable

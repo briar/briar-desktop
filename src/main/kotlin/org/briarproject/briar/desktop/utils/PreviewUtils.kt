@@ -65,7 +65,7 @@ object PreviewUtils {
 
         val parameters = mutableMapOf<String, MutableState<Any>>()
 
-        inline fun <reified T> getDatatype(name: String): T {
+        private inline fun <reified T> getDatatype(name: String): T {
             val state = parameters[name] ?: throw IllegalArgumentException("No parameter found with name '$name'")
             if (state.value !is T) throw IllegalArgumentException("Parameter '$name' is not of type ${T::class.simpleName}")
             return state.value as T
@@ -96,8 +96,6 @@ object PreviewUtils {
         fun getFloatParameter(name: String) = getDatatype<Float>(name)
 
         fun setFloatParameter(name: String, value: Float) = setDatatype(name, value)
-
-        inline fun <reified T : Any> getGenericParameter(name: String) = getDatatype<T>(name)
 
         fun getRandomId() = random.nextBytes(UniqueId.LENGTH)
 
@@ -162,18 +160,18 @@ object PreviewUtils {
         }
 
     @Composable
-    private fun <T> PreviewScope.addDropDownParameter(
+    private fun PreviewScope.addDropDownParameter(
         name: String,
-        initial: Values<T>,
+        initial: Values,
     ) {
         var expanded by remember { mutableStateOf(false) }
         val items = initial.values
         val initialValue = items[initial.initial]
         var selectedIndex by remember { mutableStateOf(initial.initial) }
-        addParameter(name, initialValue!!) { value ->
+        addParameter(name, initialValue) { value ->
             Box(modifier = Modifier.fillMaxSize().wrapContentSize(Alignment.TopStart)) {
                 Text(
-                    initial.toString(items[selectedIndex]),
+                    items[selectedIndex],
                     modifier = Modifier.fillMaxWidth().clickable(onClick = { expanded = true })
                 )
                 DropdownMenu(
@@ -186,10 +184,10 @@ object PreviewUtils {
                             onClick = {
                                 selectedIndex = index
                                 expanded = false
-                                value.value = items[index]!!
+                                value.value = items[index]
                             }
                         ) {
-                            Text(text = initial.toString(s))
+                            Text(text = s)
                         }
                     }
                 }
@@ -222,7 +220,7 @@ object PreviewUtils {
                                 is Long -> scope.addLongParameter(name, initial)
                                 is Float -> scope.addFloatParameter(name, initial)
                                 is FloatSlider -> scope.addFloatSliderParameter(name, initial)
-                                is Values<*> -> scope.addDropDownParameter(name, initial)
+                                is Values -> scope.addDropDownParameter(name, initial)
                                 else -> throw IllegalArgumentException("Type ${initial::class.simpleName} is not supported for previewing.")
                             }
                         }
@@ -246,9 +244,8 @@ object PreviewUtils {
         val max: Float,
     )
 
-    data class Values<T>(
+    data class Values(
         val initial: Int,
-        val values: List<T>,
-        val toString: (T) -> String,
+        val values: List<String>,
     )
 }
