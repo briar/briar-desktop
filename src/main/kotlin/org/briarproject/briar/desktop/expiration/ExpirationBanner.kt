@@ -78,10 +78,10 @@ fun ExpirationBanner(
         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
         Icon(Icons.Filled.Warning, i18n("warning"), Modifier.size(40.dp))
-        var text = "${i18nP("expiration.banner.part1.nozero", daysLeft)} ${i18n("expiration.banner.part2")}"
-        if (daysLeft == 0) {
-            text = "${i18n("expiration.banner.part1.zero")} ${i18n("expiration.banner.part2")}"
-        }
+        val text = if (daysLeft == 0)
+            "${i18n("expiration.banner.part1.zero")} ${i18n("expiration.banner.part2")}"
+        else
+            "${i18nP("expiration.banner.part1.nozero", daysLeft)} ${i18n("expiration.banner.part2")}"
         Text(
             text = text,
             style = MaterialTheme.typography.body2
