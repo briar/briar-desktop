@@ -56,6 +56,7 @@ import org.briarproject.briar.api.messaging.MessagingManager
 import org.briarproject.briar.api.messaging.PrivateMessage
 import org.briarproject.briar.api.messaging.PrivateMessageFactory
 import org.briarproject.briar.api.messaging.PrivateMessageHeader
+import org.briarproject.briar.desktop.DesktopFeatureFlags
 import org.briarproject.briar.desktop.attachment.media.ImageCompressor
 import org.briarproject.briar.desktop.contact.ContactItem
 import org.briarproject.briar.desktop.conversation.ConversationRequestItem.RequestType.INTRODUCTION
@@ -88,6 +89,7 @@ constructor(
     db: TransactionManager,
     private val attachmentReader: AttachmentReader,
     private val imageCompressor: ImageCompressor,
+    private val desktopFeatureFlags: DesktopFeatureFlags,
     private val eventBus: EventBus,
 ) : EventListenerDbViewModel(briarExecutors, lifecycleManager, db, eventBus) {
 
@@ -185,7 +187,13 @@ constructor(
                         m.autoDeleteTimer
                     )
                     val visitor =
-                        ConversationVisitor(contactItem.value!!.name, messagingManager, attachmentReader, txn)
+                        ConversationVisitor(
+                            contactItem.value!!.name,
+                            messagingManager,
+                            attachmentReader,
+                            desktopFeatureFlags,
+                            txn
+                        )
                     val msg = h.accept(visitor)!!
                     txn.attach { addMessage(msg) }
                 } catch (e: UnexpectedTimerException) {
@@ -290,7 +298,8 @@ constructor(
             // Sort headers by timestamp in *ascending* order
             val sorted = headers.sortedBy { it.timestamp }
             start = LogUtils.now()
-            val visitor = ConversationVisitor(contact.name, messagingManager, attachmentReader, txn)
+            val visitor =
+                ConversationVisitor(contact.name, messagingManager, attachmentReader, desktopFeatureFlags, txn)
             val messages = sorted.map { h -> h.accept(visitor)!! }
             LOG.logDuration("Loading messages", start)
             txn.attach {
@@ -314,7 +323,13 @@ constructor(
                     // insert at start of list according to descending sort order
                     runOnDbThreadWithTransaction(true) { txn ->
                         val visitor =
-                            ConversationVisitor(contactItem.value!!.name, messagingManager, attachmentReader, txn)
+                            ConversationVisitor(
+                                contactItem.value!!.name,
+                                messagingManager,
+                                attachmentReader,
+                                desktopFeatureFlags,
+                                txn
+                            )
                         val msg = h.accept(visitor)!!
                         txn.attach { addMessage(msg) }
                     }

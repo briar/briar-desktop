@@ -35,6 +35,7 @@ import org.briarproject.briar.api.messaging.MessagingManager
 import org.briarproject.briar.api.messaging.PrivateMessageHeader
 import org.briarproject.briar.api.privategroup.invitation.GroupInvitationRequest
 import org.briarproject.briar.api.privategroup.invitation.GroupInvitationResponse
+import org.briarproject.briar.desktop.DesktopFeatureFlags
 import org.briarproject.briar.desktop.utils.ImageUtils
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nF
@@ -44,6 +45,7 @@ internal class ConversationVisitor(
     private val contactName: String,
     private val messagingManager: MessagingManager,
     private val attachmentReader: AttachmentReader,
+    private val desktopFeatureFlags: DesktopFeatureFlags,
     private val txn: Transaction,
 ) : ConversationMessageVisitor<ConversationItem?> {
 
@@ -87,8 +89,7 @@ internal class ConversationVisitor(
             )
         else {
             val notice = i18nF("blog.invitation.received", contactName, r.name)
-            // todo: add proper check for feature support
-            if (false)
+            if (desktopFeatureFlags.shouldEnableBlogs())
                 ConversationRequestItem(
                     notice,
                     ConversationRequestItem.RequestType.BLOG, r
@@ -131,8 +132,7 @@ internal class ConversationVisitor(
             )
         else {
             val notice = i18nF("forum.invitation.received", contactName, r.name)
-            // todo: add proper check for feature support
-            if (false)
+            if (desktopFeatureFlags.shouldEnableForums())
                 ConversationRequestItem(
                     notice,
                     ConversationRequestItem.RequestType.FORUM, r
@@ -175,8 +175,7 @@ internal class ConversationVisitor(
             )
         else {
             val notice = i18nF("group.invitation.received", contactName, r.name)
-            // todo: add proper check for feature support
-            if (false)
+            if (desktopFeatureFlags.shouldEnablePrivateGroups())
                 ConversationRequestItem(
                     notice,
                     ConversationRequestItem.RequestType.GROUP, r
