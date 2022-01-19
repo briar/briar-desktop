@@ -58,8 +58,10 @@ plugins {
     id("org.briarproject.briar.desktop.build-data-gradle-plugin")
 }
 
+val versionCode = "0.1.0"
+val buildType = if (project.hasProperty("buildType")) project.properties["buildType"] else "snapshot"
 group = "app.briar.desktop"
-version = "0.1-nightly"
+version = "$versionCode-$buildType"
 
 allprojects {
     repositories {
@@ -120,7 +122,6 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Msi, TargetFormat.Exe, TargetFormat.Deb, TargetFormat.Rpm)
             packageName = "Briar"
-            packageVersion = "0.0.1"
             description = "Secure messaging, anywhere"
             vendor = "The Briar Project"
             copyright = "2021-2022 The Briar Project"
@@ -132,6 +133,12 @@ compose.desktop {
             modules("java.naming")
             linux {
                 packageName = "briar-desktop"
+                // Explicitly specifying the debian revision '-1' doesn't seem to work, it gets always appended.
+                // I think we're fine having revision '-1' as it will only be used to break ties when the upstream
+                // version is the same for two packages.
+                debPackageVersion = "$versionCode-$buildType"
+                // rpm versions may not contain hyphens, so use underscore
+                rpmPackageVersion = "${versionCode}_$buildType"
                 iconFile.set(project.file("src/main/resources/images/logo_circle.png"))
                 debMaintainer = "contact@briarproject.org"
                 appCategory = "comm"
@@ -140,6 +147,8 @@ compose.desktop {
             windows {
                 iconFile.set(project.file("src/main/resources/images/logo_circle.ico"))
                 upgradeUuid = "cc8b40f7-f190-4cea-bfec-ceb9ef85df09"
+                // Windows doesn't support things like 'nightly' or 'release'. Only numeric versions are acceptable
+                packageVersion = versionCode
             }
         }
     }
