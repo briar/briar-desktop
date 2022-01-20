@@ -43,10 +43,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.briarproject.briar.desktop.contact.add.remote.AddContactViewModel.AddContactError
 import org.briarproject.briar.desktop.contact.add.remote.AddContactViewModel.AliasInvalidError
-import org.briarproject.briar.desktop.contact.add.remote.AddContactViewModel.ErrorContactAlreadyExists
-import org.briarproject.briar.desktop.contact.add.remote.AddContactViewModel.ErrorPendingAlreadyExists
+import org.briarproject.briar.desktop.contact.add.remote.AddContactViewModel.ContactAlreadyExistsError
 import org.briarproject.briar.desktop.contact.add.remote.AddContactViewModel.LinkInvalidError
 import org.briarproject.briar.desktop.contact.add.remote.AddContactViewModel.OwnLinkError
+import org.briarproject.briar.desktop.contact.add.remote.AddContactViewModel.PendingAlreadyExistsError
 import org.briarproject.briar.desktop.contact.add.remote.AddContactViewModel.PublicKeyInvalidError
 import org.briarproject.briar.desktop.contact.add.remote.AddContactViewModel.RemoteInvalidError
 import org.briarproject.briar.desktop.dialogs.DialogType.ERROR
@@ -68,7 +68,7 @@ fun main() = preview(
     "local link" to link,
     "alias" to "Alice",
     "error visible" to false,
-    "error type" to PreviewUtils.Values(
+    "error type" to PreviewUtils.DropDownValues(
         0,
         listOf(
             OwnLinkError::class.simpleName!!,
@@ -76,8 +76,8 @@ fun main() = preview(
             AliasInvalidError::class.simpleName!!,
             LinkInvalidError::class.simpleName!!,
             PublicKeyInvalidError::class.simpleName!!,
-            ErrorContactAlreadyExists::class.simpleName!!,
-            ErrorPendingAlreadyExists::class.simpleName!!,
+            ContactAlreadyExistsError::class.simpleName!!,
+            PendingAlreadyExistsError::class.simpleName!!,
         )
     ),
 ) {
@@ -96,16 +96,16 @@ fun main() = preview(
     )
 }
 
-fun PreviewUtils.PreviewScope.mapErrors(name: String?): AddContactError? = when (name) {
+private fun PreviewUtils.PreviewScope.mapErrors(name: String?): AddContactError? = when (name) {
     OwnLinkError::class.simpleName!! -> OwnLinkError(link)
     RemoteInvalidError::class.simpleName!! -> RemoteInvalidError(link)
     AliasInvalidError::class.simpleName!! -> AliasInvalidError(link, "")
     LinkInvalidError::class.simpleName!! -> LinkInvalidError(link)
     PublicKeyInvalidError::class.simpleName!! -> PublicKeyInvalidError(link)
-    ErrorContactAlreadyExists::class.simpleName!! -> ErrorContactAlreadyExists(
+    ContactAlreadyExistsError::class.simpleName!! -> ContactAlreadyExistsError(
         link, "David", getStringParameter("alias")
     )
-    ErrorPendingAlreadyExists::class.simpleName!! -> ErrorPendingAlreadyExists(
+    PendingAlreadyExistsError::class.simpleName!! -> PendingAlreadyExistsError(
         link, "Frank", getStringParameter("alias")
     )
     else -> null
@@ -248,12 +248,12 @@ fun errorMessage(error: AddContactError) = when (error) {
         ERROR, i18n("error"),
         i18nF("introduction.error.public_key_invalid", error.link)
     )
-    is ErrorContactAlreadyExists -> {
+    is ContactAlreadyExistsError -> {
         val intro = i18nF("introduction.error.contact_already_exists", error.existingName)
         var explanation = i18nF("introduction.error.duplicate_contact_explainer", error.existingName, error.alias)
         Triple(WARNING, i18n("introduction.error.adding_failed"), (intro + "\n\n" + explanation))
     }
-    is ErrorPendingAlreadyExists -> {
+    is PendingAlreadyExistsError -> {
         val intro = i18nF("introduction.error.pending_contact_already_exists", error.existingAlias)
         var explanation = i18nF("introduction.error.duplicate_contact_explainer", error.existingAlias, error.alias)
         Triple(WARNING, i18n("introduction.error.adding_failed"), (intro + "\n\n" + explanation))

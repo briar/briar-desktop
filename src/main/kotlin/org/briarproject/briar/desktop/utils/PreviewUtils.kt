@@ -162,7 +162,7 @@ object PreviewUtils {
     @Composable
     private fun PreviewScope.addDropDownParameter(
         name: String,
-        initial: Values,
+        initial: DropDownValues,
     ) {
         var expanded by remember { mutableStateOf(false) }
         val items = initial.values
@@ -220,7 +220,7 @@ object PreviewUtils {
                                 is Long -> scope.addLongParameter(name, initial)
                                 is Float -> scope.addFloatParameter(name, initial)
                                 is FloatSlider -> scope.addFloatSliderParameter(name, initial)
-                                is Values -> scope.addDropDownParameter(name, initial)
+                                is DropDownValues -> scope.addDropDownParameter(name, initial)
                                 else -> throw IllegalArgumentException("Type ${initial::class.simpleName} is not supported for previewing.")
                             }
                         }
@@ -244,7 +244,7 @@ object PreviewUtils {
         val max: Float,
     )
 
-    data class Values(
+    data class DropDownValues(
         val initial: Int,
         val values: List<String>,
     )

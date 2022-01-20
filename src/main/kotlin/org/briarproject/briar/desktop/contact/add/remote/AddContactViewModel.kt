@@ -56,10 +56,10 @@ constructor(
     data class LinkInvalidError(val link: String) : AddContactError
     data class PublicKeyInvalidError(val link: String) : AddContactError
 
-    data class ErrorContactAlreadyExists(val link: String, val existingName: String, val alias: String) :
+    data class ContactAlreadyExistsError(val link: String, val existingName: String, val alias: String) :
         AddContactError
 
-    data class ErrorPendingAlreadyExists(val link: String, val existingAlias: String, val alias: String) :
+    data class PendingAlreadyExistsError(val link: String, val existingAlias: String, val alias: String) :
         AddContactError
 
     override fun onInit() {
@@ -150,18 +150,15 @@ constructor(
                 _error.value = PublicKeyInvalidError(link)
             }
             /*
-            TODO: Warn user that the following two errors might be an attack
-
-             Use `e.pendingContact.id.bytes` and `e.pendingContact.alias` to implement the following logic:
-             https://code.briarproject.org/briar/briar-gtk/-/merge_requests/97
-
+            TODO: Improve warnings about potential attacks implemented here.
+             See https://code.briarproject.org/briar/briar-desktop/-/issues/240
             */
             catch (e: ContactExistsException) {
                 LOG.warn { "Contact already exists: $link" }
-                _error.value = ErrorContactAlreadyExists(link, e.remoteAuthor.name, alias)
+                _error.value = ContactAlreadyExistsError(link, e.remoteAuthor.name, alias)
             } catch (e: PendingContactExistsException) {
                 LOG.warn { "Pending contact already exists: $link" }
-                _error.value = ErrorPendingAlreadyExists(link, e.pendingContact.alias, alias)
+                _error.value = PendingAlreadyExistsError(link, e.pendingContact.alias, alias)
             }
         }
     }
