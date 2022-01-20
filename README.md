@@ -23,11 +23,19 @@ and execute it from the command-line with
 `java -jar briar-desktop.jar`.
 Note that you need at least version 11 of the Java Runtime Environment.
 
-### Self-contained Debian package
+### Self-contained .deb
 
-For Debian based Linux distributions, a
-[self-contained .deb package](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop.deb?job=build_deb)
-is available that ships its own JRE.
+For Debian- and Ubuntu-based Linux distributions, a set of .deb files is available.
+Depending on which version of Debian/Ubuntu your OS is based on,
+you can choose the right .deb file:
+* [Ubuntu 20.04](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop-ubuntu-20.04.deb?job=b_20_ubuntu_deb)
+* [Debian stable (bullseye)](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop-debian-bullseye.deb?job=b_bullseye_deb)
+* [Ubuntu 18.04](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop-ubuntu-18.04.deb?job=b_18_ubuntu_deb)
+
+Here are some examples of popular distributions and their respective .deb file:
+* Ubuntu 20.04 and compatible: Linux Mint 20.X (Ulyana, Ulyssa, Uma, Una), elementaryOS 6.X (Odin, Jólnir), Trisquel 10 (Nabia)
+* Debian stable (bullseye) and compatible: MX Linux MX-21
+* Ubuntu 18.04 and compatible: Linux Mint 19.X (Tara, Tessa, Tina, Tricia), elementaryOS 5.X (Juno, Hera), Trisquel 9 (Etiona)
 
 ## Developers
 
