@@ -18,7 +18,7 @@ once Briar is available for Debian and on Flathub.org.
 ### Self-contained Java .jar
 
 The simplest way is to
-[download the nightly briar-desktop.jar](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop.jar?job=build_jar)
+[download the nightly briar-desktop.jar](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop.jar?job=b_jar)
 and execute it from the command-line with
 `java -jar briar-desktop.jar`.
 Note that you need at least version 11 of the Java Runtime Environment.
