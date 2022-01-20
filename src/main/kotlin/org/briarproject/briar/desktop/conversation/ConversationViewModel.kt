@@ -175,7 +175,7 @@ constructor(
             runOnDbThreadWithTransaction(false) { txn ->
                 try {
                     val start = LogUtils.now()
-                    val m = createMessage(txn, contactId, groupId, trimmed, headers)
+                    val m = createMessage(txn, contactId, groupId, trimmed.ifBlank { null }, headers)
                     messagingManager.addLocalMessage(txn, m)
                     LOG.logDuration("Storing message", start)
 
@@ -252,7 +252,7 @@ constructor(
         txn: Transaction,
         contactId: ContactId,
         groupId: GroupId,
-        text: String,
+        text: String?,
         headers: List<AttachmentHeader>,
     ): PrivateMessage {
         val timestamp = conversationManager.getTimestampForOutgoingMessage(txn, contactId)
