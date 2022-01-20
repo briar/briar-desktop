@@ -47,9 +47,11 @@ import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 
 @Composable
 fun RegistrationScreen(
+    onShowAbout: () -> Unit,
     viewHolder: RegistrationSubViewModel,
 ) = StartupScreenScaffold(
     title = i18n("startup.title.registration"),
+    onShowAbout = onShowAbout,
     showBackButton = viewHolder.showBackButton.value,
     onBackButton = viewHolder::goBack
 ) {

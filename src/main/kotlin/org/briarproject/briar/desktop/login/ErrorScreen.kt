@@ -19,6 +19,7 @@
 package org.briarproject.briar.desktop.login
 
 import androidx.compose.foundation.layout.Arrangement.spacedBy
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -34,11 +35,13 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Error
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -69,16 +72,19 @@ fun main() = preview {
         }
     }
 
-    ErrorScreen(error) {}
+    ErrorScreen(error, {}) {}
 }
 
 @Composable
-fun ErrorScreen(viewHolder: ErrorSubViewModel) =
-    ErrorScreen(viewHolder.error, viewHolder.onBackButton)
+fun ErrorScreen(
+    onShowAbout: () -> Unit,
+    viewHolder: ErrorSubViewModel
+) = ErrorScreen(viewHolder.error, onShowAbout, viewHolder.onBackButton)
 
 @Composable
 fun ErrorScreen(
     error: ErrorSubViewModel.Error,
+    onShowAbout: () -> Unit,
     onBackButton: (() -> Unit)?,
 ) {
     val text = when (error) {
@@ -95,37 +101,47 @@ fun ErrorScreen(
         }
     }
 
-    ErrorScreen(text, onBackButton)
+    ErrorScreen(text, onShowAbout, onBackButton)
 }
 
 @Composable
 fun ErrorScreen(
     text: String,
+    onShowAbout: () -> Unit,
     onBackButton: (() -> Unit)? = null,
 ) = Surface {
-    if (onBackButton != null) {
-        IconButton(onClick = onBackButton) {
-            Icon(Icons.Filled.ArrowBack, i18n("back"))
+    Box {
+        Column(
+            modifier = Modifier.fillMaxSize().padding(32.dp),
+            horizontalAlignment = CenterHorizontally,
+            verticalArrangement = spacedBy(32.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Error,
+                contentDescription = i18n("error"),
+                modifier = Modifier.size(128.dp),
+                tint = Red500
+            )
+
+            Text(i18n("sorry"), style = MaterialTheme.typography.h5)
+            Text(
+                text = text,
+                style = MaterialTheme.typography.body1,
+                modifier = Modifier.widthIn(max = STARTUP_FIELDS_WIDTH)
+            )
         }
-    }
 
-    Column(
-        modifier = Modifier.fillMaxSize().padding(32.dp),
-        horizontalAlignment = CenterHorizontally,
-        verticalArrangement = spacedBy(32.dp)
-    ) {
-        Icon(
-            imageVector = Icons.Filled.Error,
-            contentDescription = i18n("error"),
-            modifier = Modifier.size(128.dp),
-            tint = Red500
-        )
+        if (onBackButton != null) {
+            IconButton(onClick = onBackButton) {
+                Icon(Icons.Filled.ArrowBack, i18n("back"))
+            }
+        }
 
-        Text(i18n("sorry"), style = MaterialTheme.typography.h5)
-        Text(
-            text = text,
-            style = MaterialTheme.typography.body1,
-            modifier = Modifier.widthIn(max = STARTUP_FIELDS_WIDTH)
-        )
+        IconButton(
+            onClick = onShowAbout,
+            modifier = Modifier.align(Alignment.BottomStart)
+        ) {
+            Icon(Icons.Filled.Info, i18n("access.about_briar_desktop"))
+        }
     }
 }

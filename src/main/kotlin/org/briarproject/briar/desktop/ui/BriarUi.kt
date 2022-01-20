@@ -126,9 +126,9 @@ constructor(
                     Column(Modifier.fillMaxSize()) {
                         ExpirationBanner { screenState = EXPIRED; stop() }
                         when (screenState) {
-                            STARTUP -> StartupScreen()
+                            STARTUP -> StartupScreen(onShowAbout = { showAbout = true })
                             MAIN -> MainScreen(settingsViewModel, showAbout = { showAbout = true })
-                            EXPIRED -> ErrorScreen(i18n("startup.failed.expired"))
+                            EXPIRED -> ErrorScreen(i18n("startup.failed.expired"), onShowAbout = { showAbout = true })
                         }
                     }
                     if (showAbout) {

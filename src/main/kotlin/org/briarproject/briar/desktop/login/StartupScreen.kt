@@ -19,6 +19,7 @@
 package org.briarproject.briar.desktop.login
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -31,7 +32,9 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
@@ -42,12 +45,13 @@ import org.briarproject.briar.desktop.viewmodel.viewModel
 
 @Composable
 fun StartupScreen(
+    onShowAbout: () -> Unit,
     viewModel: StartupViewModel = viewModel(),
 ) {
     when (val holder = viewModel.currentSubViewModel.value) {
-        is LoginSubViewModel -> LoginScreen(holder)
-        is RegistrationSubViewModel -> RegistrationScreen(holder)
-        is ErrorSubViewModel -> ErrorScreen(holder)
+        is LoginSubViewModel -> LoginScreen(onShowAbout, holder)
+        is RegistrationSubViewModel -> RegistrationScreen(onShowAbout, holder)
+        is ErrorSubViewModel -> ErrorScreen(onShowAbout, holder)
     }
 }
 
@@ -56,20 +60,33 @@ fun StartupScreenScaffold(
     title: String,
     showBackButton: Boolean = false,
     onBackButton: () -> Unit = {},
+    onShowAbout: () -> Unit = {},
     content: @Composable () -> Unit
 ) = Surface {
-    if (showBackButton) {
-        IconButton(onClick = onBackButton) {
-            Icon(Icons.Filled.ArrowBack, i18n("back"))
+    Box {
+        Column(
+            modifier = Modifier.padding(16.dp).fillMaxSize(),
+            horizontalAlignment = CenterHorizontally
+        ) {
+            HeaderLine(title)
+            content()
         }
-    }
 
-    Column(
-        modifier = Modifier.padding(16.dp).fillMaxSize(),
-        horizontalAlignment = CenterHorizontally
-    ) {
-        HeaderLine(title)
-        content()
+        if (showBackButton) {
+            IconButton(
+                onClick = onBackButton,
+                modifier = Modifier.align(Alignment.TopStart)
+            ) {
+                Icon(Icons.Filled.ArrowBack, i18n("back"))
+            }
+        }
+
+        IconButton(
+            onClick = onShowAbout,
+            modifier = Modifier.align(Alignment.BottomStart)
+        ) {
+            Icon(Icons.Filled.Info, i18n("access.about_briar_desktop"))
+        }
     }
 }
 

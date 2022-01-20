@@ -47,8 +47,12 @@ import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun LoginScreen(
+    onShowAbout: () -> Unit,
     viewHolder: LoginSubViewModel,
-) = StartupScreenScaffold(i18n("startup.title.login")) {
+) = StartupScreenScaffold(
+    title = i18n("startup.title.login"),
+    onShowAbout = onShowAbout,
+) {
     when (viewHolder.state.value) {
         SIGNED_OUT ->
             FormScaffold(
