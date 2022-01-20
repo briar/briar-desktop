@@ -27,7 +27,7 @@ class ImageCompressorTest {
     private val compressor = ImageCompressorImpl()
 
     @Test
-    fun `can compress voronoi image`() {
+    fun `can compress voronoi diagram`() {
         // load image
         val input = Thread.currentThread().contextClassLoader.getResourceAsStream("images/voronoi1.png")
         val image = input.use {
@@ -64,5 +64,4 @@ class ImageCompressorTest {
         }
         println("image size: ${reloaded.width}x${reloaded.height}")
     }
-
 }
