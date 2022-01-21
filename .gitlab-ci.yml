@@ -11,6 +11,9 @@ variables:
 before_script:
   - set -e
   - export GRADLE_USER_HOME=$PWD/.gradle
+  # make sure the CI doesn't run in detached state so that we can
+  # extract the branch name during build
+  - git checkout "$CI_COMMIT_REF_NAME"
 
 after_script:
   # these file change every time and should not be cached
