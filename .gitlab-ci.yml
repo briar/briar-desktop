@@ -11,6 +11,7 @@ variables:
 before_script:
   - set -e
   - export GRADLE_USER_HOME=$PWD/.gradle
+  - git checkout "$CI_COMMIT_REF_NAME"
 
 after_script:
   # these file change every time and should not be cached
@@ -23,11 +24,11 @@ cache:
     - .gradle/wrapper
     - .gradle/caches
 
-ktlint:
+debug_git:
   stage: test
   script:
-    - git submodule update
-    - ./gradlew --no-daemon :check
+    - git status
+    - git branch
   rules:
     - if: '$CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS'
       when: never # avoids duplicate jobs for branch and MR
