@@ -26,17 +26,27 @@ val conversations = conversations {
         outgoing {
             text = "Hi, Bob"
             read = true
-            date = "2020-12-24 20:10:15"
+            date = "2022-01-21 10:10:15"
         }
         incoming {
             text = "What's up?"
             read = true
-            date = "2020-12-24 20:11:05"
+            date = "2022-01-21 10:11:05"
         }
         outgoing {
-            text = "Nothing much, lately"
-            read = false
-            date = "2020-12-24 20:12:34"
+            text = "Nothing much, lately. Have you seen the new Briar Desktop release?"
+            read = true
+            date = "2022-01-21 10:12:34"
+        }
+        incoming {
+            text = "Oh, wow. I have to check it out! \uD83E\uDD2F"
+            read = true
+            date = "2022-01-21 10:13:05"
+        }
+        outgoing {
+            images = listOf("images/do-it-now.png")
+            read = true
+            date = "2022-01-21 10:13:15"
         }
     }
     conversation {

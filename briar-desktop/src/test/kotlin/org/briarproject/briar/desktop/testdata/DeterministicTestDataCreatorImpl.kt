@@ -355,7 +355,7 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
     private fun createPrivateMessage(
         contactId: ContactId,
         groupId: GroupId,
-        text: String,
+        text: String?,
         images: List<String>,
         timestamp: Long,
         local: Boolean,

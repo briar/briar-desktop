@@ -63,7 +63,7 @@ var formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
 @ConversationsDsl
 class MessageBuilder(private val direction: Direction) {
 
-    var text: String = ""
+    var text: String? = null
     var images: List<String> = emptyList()
     var read: Boolean = false
 

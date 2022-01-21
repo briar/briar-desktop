@@ -22,7 +22,8 @@ import kotlinx.coroutines.delay
 import org.briarproject.bramble.api.plugin.LanTcpConstants
 
 /**
- * Launches Briar Desktop with UI set up for taking a screenshot for the README file.
+ * Launches Briar Desktop with UI set up for taking a screenshot for the README file
+ * or the website.
  * This includes faking connections to two contacts to make them appear as online.
  */
 fun main() = RunWithTemporaryAccount {
