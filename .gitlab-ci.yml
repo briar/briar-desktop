@@ -3,6 +3,7 @@ image: briar/ci-image-android:latest
 stages:
   - test
   - build
+  - releasebuild
 
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
@@ -91,3 +92,57 @@ b_18_ubuntu_deb:
     expire_in: 2 days
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
+
+rb_jar:
+  stage: releasebuild
+  script:
+    - ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-11-openjdk-amd64 --no-daemon kaptKotlin
+    - ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-17-openjdk-amd64 --no-daemon -PbuildType=beta -x kaptKotlin packageUberJarForCurrentOS
+    - mv build/compose/jars/Briar-*.jar ./briar-desktop.jar
+  artifacts:
+    paths:
+      - briar-desktop.jar
+    expire_in: 2 days
+  only:
+    - tags
+
+rb_bullseye_deb:
+  stage: releasebuild
+  script:
+    - ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-11-openjdk-amd64 --no-daemon kaptKotlin
+    - ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-17-openjdk-amd64 --no-daemon -PbuildType=beta -x kaptKotlin packageDeb
+    - mv build/compose/binaries/main/deb/*.deb ./briar-desktop-debian-bullseye.deb
+  artifacts:
+    paths:
+      - briar-desktop-debian-bullseye.deb
+    expire_in: 2 days
+  only:
+    - tags
+
+rb_20_ubuntu_deb:
+  image: briar/ci-image-android:ubuntu-20
+  stage: releasebuild
+  script:
+    - ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-11-openjdk-amd64 --no-daemon kaptKotlin
+    - ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-17-openjdk-amd64 --no-daemon -PbuildType=beta -x kaptKotlin packageDeb
+    - mv build/compose/binaries/main/deb/*.deb ./briar-desktop-ubuntu-20.04.deb
+  artifacts:
+    paths:
+      - briar-desktop-ubuntu-20.04.deb
+    expire_in: 2 days
+  only:
+    - tags
+
+rb_18_ubuntu_deb:
+  image: briar/ci-image-android:ubuntu-18
+  stage: releasebuild
+  script:
+    - ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-11-openjdk-amd64 --no-daemon kaptKotlin
+    - ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-17-openjdk-amd64 --no-daemon -PbuildType=beta -x kaptKotlin packageDeb
+    - mv build/compose/binaries/main/deb/*.deb ./briar-desktop-ubuntu-18.04.deb
+  artifacts:
+    paths:
+      - briar-desktop-ubuntu-18.04.deb
+    expire_in: 2 days
+  only:
+    - tags
