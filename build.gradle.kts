@@ -120,7 +120,7 @@ compose.desktop {
     application {
         mainClass = "org.briarproject.briar.desktop.MainKt"
         nativeDistributions {
-            targetFormats(TargetFormat.Msi, TargetFormat.Exe, TargetFormat.Deb, TargetFormat.Rpm)
+            targetFormats(TargetFormat.Msi, TargetFormat.Exe, TargetFormat.Deb, TargetFormat.Rpm, TargetFormat.Dmg)
             packageName = "Briar"
             description = "Secure messaging, anywhere"
             vendor = "The Briar Project"
@@ -149,6 +149,9 @@ compose.desktop {
                 upgradeUuid = "cc8b40f7-f190-4cea-bfec-ceb9ef85df09"
                 // Windows doesn't support things like 'nightly' or 'release'. Only numeric versions are acceptable
                 packageVersion = versionCode
+            }
+            macOS {
+                packageVersion = "1.1.0"
             }
         }
     }
