@@ -75,7 +75,8 @@ fun ConversationHeader(
                         modifier = Modifier,
                         onDraw = {
                             val size = 10.dp.toPx()
-                            withTransform({ translate(left = 30f, top = 30f) }) {
+                            val (tx, ty) = 30.dp.toPx() to 30.dp.toPx()
+                            withTransform({ translate(left = tx, top = ty) }) {
                                 drawCircle(color = outlineColor, radius = (size + 2.dp.toPx()) / 2f)
                                 drawCircle(color = onlineColor, radius = size / 2f)
                             }
