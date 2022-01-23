@@ -152,6 +152,7 @@ compose.desktop {
             }
             macOS {
                 packageVersion = "1.1.0"
+                iconFile.set(project.file("assets/briar.icns"))
             }
         }
     }
