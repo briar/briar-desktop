@@ -1,0 +1,10 @@
+Source: briar-desktop
+Maintainer: The Briar Project <contact@briarproject.org>
+Section: comm
+Priority: optional
+
+Package: briar-desktop
+Architecture: amd64
+Depends: libc6, libexpat1, libgcc-s1, libpcre3, libuuid1, xdg-utils, zlib1g
+Description: Secure messaging, anywhere
+
