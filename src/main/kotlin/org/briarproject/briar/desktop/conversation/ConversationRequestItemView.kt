@@ -27,9 +27,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.ButtonType.NEGATIVE
+import androidx.compose.material.ButtonType.POSITIVE
+import androidx.compose.material.DialogButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,8 +43,6 @@ import org.briarproject.bramble.api.sync.GroupId
 import org.briarproject.bramble.api.sync.MessageId
 import org.briarproject.briar.api.client.SessionId
 import org.briarproject.briar.desktop.conversation.ConversationRequestItem.RequestType.INTRODUCTION
-import org.briarproject.briar.desktop.theme.buttonTextNegative
-import org.briarproject.briar.desktop.theme.buttonTextPositive
 import org.briarproject.briar.desktop.theme.noticeIn
 import org.briarproject.briar.desktop.theme.noticeOut
 import org.briarproject.briar.desktop.theme.privateMessageDate
@@ -122,28 +122,10 @@ fun ConversationRequestItemView(
 
                 Row(modifier = Modifier.align(statusAlignment)) {
                     if (!m.answered) {
-                        TextButton({ onResponse(false) }) {
-                            Text(
-                                i18n("decline").uppercase(),
-                                fontSize = 16.sp,
-                                color = MaterialTheme.colors.buttonTextNegative
-                            )
-                        }
-                        TextButton({ onResponse(true) }) {
-                            Text(
-                                i18n("accept").uppercase(),
-                                fontSize = 16.sp,
-                                color = MaterialTheme.colors.buttonTextPositive
-                            )
-                        }
+                        DialogButton(onClick = { onResponse(false) }, text = i18n("decline"), type = NEGATIVE)
+                        DialogButton(onClick = { onResponse(false) }, text = i18n("accept"), type = POSITIVE)
                     } else if (m.canBeOpened) {
-                        TextButton(onOpenRequestedShareable) {
-                            Text(
-                                i18n("open").uppercase(),
-                                fontSize = 16.sp,
-                                color = MaterialTheme.colors.buttonTextPositive
-                            )
-                        }
+                        DialogButton(onClick = onOpenRequestedShareable, text = i18n("open"), type = POSITIVE)
                     } else {
                         Spacer(Modifier.height(8.dp))
                     }

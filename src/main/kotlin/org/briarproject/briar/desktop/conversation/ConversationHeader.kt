@@ -56,6 +56,7 @@ fun ConversationHeader(
     contactItem: ContactItem,
     onMakeIntroduction: () -> Unit,
     onDeleteAllMessages: () -> Unit,
+    onChangeAlias: () -> Unit,
     onDeleteContact: () -> Unit,
 ) {
     val (isExpanded, setExpanded) = remember { mutableStateOf(false) }
@@ -101,6 +102,7 @@ fun ConversationHeader(
                     { setExpanded(false) },
                     onMakeIntroduction,
                     onDeleteAllMessages,
+                    onChangeAlias,
                     onDeleteContact
                 )
             }

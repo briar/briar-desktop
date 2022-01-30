@@ -26,12 +26,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.AlertDialog
-import androidx.compose.material.Button
+import androidx.compose.material.ButtonType.NEGATIVE
+import androidx.compose.material.ButtonType.POSITIVE
+import androidx.compose.material.DialogButton
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Error
@@ -154,14 +154,14 @@ fun AddContactDialog(
             Column(modifier = Modifier.fillMaxWidth()) {
                 Row(Modifier.fillMaxWidth().padding(vertical = 16.dp)) {
                     Text(
-                        text = "Add Contact at a Distance",
+                        text = i18n("conversation.add.contact.dialog.title"),
                         fontSize = 24.sp,
                         modifier = Modifier.align(Alignment.CenterVertically)
                     )
                 }
                 Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
                     Text(
-                        "Contact's Link",
+                        i18n("conversation.add.contact.dialog.contact_link"),
                         Modifier.width(128.dp).align(Alignment.CenterVertically),
                     )
                     TextField(
@@ -172,7 +172,7 @@ fun AddContactDialog(
                 }
                 Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
                     Text(
-                        "Contact's Name",
+                        i18n("conversation.add.contact.dialog.contact_name"),
                         Modifier.width(128.dp).align(Alignment.CenterVertically),
                     )
                     TextField(
@@ -183,7 +183,7 @@ fun AddContactDialog(
                 }
                 Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
                     Text(
-                        "Your Link",
+                        i18n("conversation.add.contact.dialog.own_link"),
                         modifier = Modifier.width(128.dp).align(Alignment.CenterVertically),
                     )
                     TextField(
@@ -194,22 +194,8 @@ fun AddContactDialog(
                 }
             }
         },
-        confirmButton = {
-            Button(
-                onClick = {
-                    onSubmitAddContactDialog()
-                }
-            ) {
-                Text("Add")
-            }
-        },
-        dismissButton = {
-            TextButton(
-                onClick = onClose
-            ) {
-                Text("Cancel", color = MaterialTheme.colors.onSurface)
-            }
-        },
+        confirmButton = { DialogButton(onClick = onSubmitAddContactDialog, text = i18n("add"), type = POSITIVE) },
+        dismissButton = { DialogButton(onClick = onClose, text = i18n("cancel"), type = NEGATIVE) },
     )
     if (error != null) {
         val (type, title, message) = errorMessage(error)
@@ -219,11 +205,7 @@ fun AddContactDialog(
         }
         AlertDialog(
             onDismissRequest = onErrorDialogDismissed,
-            confirmButton = {
-                TextButton(onErrorDialogDismissed) {
-                    Text(i18n("ok"))
-                }
-            },
+            confirmButton = { DialogButton(onClick = onErrorDialogDismissed, text = i18n("ok"), type = POSITIVE) },
             modifier = Modifier.widthIn(min = DIALOG_WIDTH),
             title = {
                 Row(

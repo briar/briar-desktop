@@ -21,9 +21,11 @@ package org.briarproject.briar.desktop.contact
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
+import androidx.compose.material.MenuDefaults
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowRight
@@ -34,6 +36,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.getCoreFeatureFlags
@@ -45,6 +48,7 @@ fun ContactDropDown(
     close: () -> Unit,
     onMakeIntroduction: () -> Unit,
     onDeleteAllMessages: () -> Unit,
+    onChangeAlias: () -> Unit,
     onDeleteContact: () -> Unit,
 ) {
     val coreFeatureFlags = getCoreFeatureFlags()
@@ -116,13 +120,14 @@ fun ContactDropDown(
         expanded = contactMode,
         onDismissRequest = { contactMode = false },
     ) {
-        DropdownMenuItem(onClick = { false }) {
-            Text(i18n("contacts.dropdown.contact.title"), fontSize = 12.sp)
-        }
-        DropdownMenuItem(onClick = { false }, enabled = false) {
+        Text(
+            i18n("contacts.dropdown.contact.title"), fontSize = 12.sp,
+            modifier = Modifier.padding(MenuDefaults.DropdownMenuItemContentPadding).padding(vertical = 8.dp)
+        )
+        DropdownMenuItem(onClick = { contactMode = false; onChangeAlias() }) {
             Text(i18n("contacts.dropdown.contact.change"), fontSize = 14.sp)
         }
-        DropdownMenuItem(onClick = { close(); onDeleteContact() }) {
+        DropdownMenuItem(onClick = { contactMode = false; onDeleteContact() }) {
             Text(i18n("contacts.dropdown.contact.delete"), fontSize = 14.sp)
         }
     }

@@ -70,6 +70,7 @@ fun ConversationScreen(
     val (infoDrawer, setInfoDrawer) = remember { mutableStateOf(false) }
     val (contactDrawerState, setDrawerState) = remember { mutableStateOf(ContactInfoDrawerState.MakeIntro) }
     val (deleteAllMessagesDialogVisible, setDeleteAllMessagesDialog) = remember { mutableStateOf(false) }
+    val (changeAliasDialogVisible, setChangeAliasDialog) = remember { mutableStateOf(false) }
     val (deleteContactDialogVisible, setDeleteContactDialog) = remember { mutableStateOf(false) }
 
     BoxWithConstraints(Modifier.fillMaxSize()) {
@@ -83,6 +84,9 @@ fun ConversationScreen(
                     },
                     onDeleteAllMessages = {
                         setDeleteAllMessagesDialog(true)
+                    },
+                    onChangeAlias = {
+                        setChangeAliasDialog(true)
                     },
                     onDeleteContact = {
                         setDeleteContactDialog(true)
@@ -157,6 +161,15 @@ fun ConversationScreen(
         DeleteAllMessagesFailedDialog(
             deletionResult = viewModel.deletionResult.value,
             close = viewModel::confirmDeletionResult
+        )
+
+        ChangeAliasDialog(
+            isVisible = changeAliasDialogVisible,
+            close = { setChangeAliasDialog(false) },
+            onConfirm = viewModel::changeAlias,
+            onCancel = viewModel::resetAlias,
+            alias = viewModel.newAlias.value,
+            setAlias = viewModel::setNewAlias,
         )
 
         DeleteContactConfirmationDialog(

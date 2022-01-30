@@ -118,6 +118,10 @@ constructor(
 
     val deletionResult = _deletionResult.asState()
 
+    // for update alias dialog
+    private val _newAlias = mutableStateOf("")
+    val newAlias = _newAlias.asState()
+
     fun setContactId(id: ContactId) {
         if (_contactId.value == id)
             return
@@ -141,6 +145,10 @@ constructor(
 
     fun setNewMessageImage(image: ImageBitmap?) {
         _newMessageImage.value = image
+    }
+
+    fun setNewAlias(alias: String) {
+        _newAlias.value = alias
     }
 
     fun sendMessage() {
@@ -278,7 +286,10 @@ constructor(
                 loadAvatar(authorManager, attachmentReader, txn, contact),
             )
             LOG.logDuration("Loading contact", start)
-            txn.attach { _contactItem.value = contactItem }
+            txn.attach {
+                _contactItem.value = contactItem
+                _newAlias.value = contactItem.alias ?: ""
+            }
             return contactItem
         } catch (e: NoSuchContactException) {
             // todo: handle this properly
@@ -439,6 +450,19 @@ constructor(
 
     fun confirmDeletionResult() {
         _deletionResult.value = null
+    }
+
+    fun changeAlias() = runOnDbThread {
+        val newAlias = _newAlias.value.ifBlank { null }
+        if (_contactId.value != null && contactItem.value != null) {
+            contactManager.setContactAlias(_contactId.value!!, newAlias)
+            _contactItem.value = contactItem.value!!.updateAlias(newAlias)
+        }
+    }
+
+    fun resetAlias() {
+        println(contactItem.value)
+        _newAlias.value = contactItem.value?.alias ?: ""
     }
 
     fun deleteContact() = runOnDbThread {
