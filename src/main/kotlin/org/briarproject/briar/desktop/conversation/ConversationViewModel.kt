@@ -461,7 +461,6 @@ constructor(
     }
 
     fun resetAlias() {
-        println(contactItem.value)
         _newAlias.value = contactItem.value?.alias ?: ""
     }
 
