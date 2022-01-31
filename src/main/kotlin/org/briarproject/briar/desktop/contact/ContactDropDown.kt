@@ -25,9 +25,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
-import androidx.compose.material.MenuDefaults
+import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowRight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -120,10 +121,16 @@ fun ContactDropDown(
         expanded = contactMode,
         onDismissRequest = { contactMode = false },
     ) {
-        Text(
-            i18n("contacts.dropdown.contact.title"), fontSize = 12.sp,
-            modifier = Modifier.padding(MenuDefaults.DropdownMenuItemContentPadding).padding(vertical = 8.dp)
-        )
+        Row {
+            IconButton(onClick = { }) {
+                Icon(Icons.Filled.ArrowBack, i18n("back"))
+            }
+            Text(
+                i18n("contacts.dropdown.contact.title"), fontSize = 12.sp,
+                modifier = Modifier.padding(vertical = 8.dp)
+                    .align(Alignment.CenterVertically)
+            )
+        }
         DropdownMenuItem(onClick = { contactMode = false; onChangeAlias() }) {
             Text(i18n("contacts.dropdown.contact.change"), fontSize = 14.sp)
         }
