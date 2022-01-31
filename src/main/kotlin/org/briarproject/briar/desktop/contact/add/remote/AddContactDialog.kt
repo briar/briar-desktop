@@ -26,8 +26,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.AlertDialog
-import androidx.compose.material.ButtonType.NEGATIVE
-import androidx.compose.material.ButtonType.POSITIVE
+import androidx.compose.material.ButtonType.NEUTRAL
 import androidx.compose.material.DialogButton
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
@@ -194,8 +193,8 @@ fun AddContactDialog(
                 }
             }
         },
-        confirmButton = { DialogButton(onClick = onSubmitAddContactDialog, text = i18n("add"), type = POSITIVE) },
-        dismissButton = { DialogButton(onClick = onClose, text = i18n("cancel"), type = NEGATIVE) },
+        confirmButton = { DialogButton(onClick = onSubmitAddContactDialog, text = i18n("add"), type = NEUTRAL) },
+        dismissButton = { DialogButton(onClick = onClose, text = i18n("cancel"), type = NEUTRAL) },
     )
     if (error != null) {
         val (type, title, message) = errorMessage(error)
@@ -205,7 +204,7 @@ fun AddContactDialog(
         }
         AlertDialog(
             onDismissRequest = onErrorDialogDismissed,
-            confirmButton = { DialogButton(onClick = onErrorDialogDismissed, text = i18n("ok"), type = POSITIVE) },
+            confirmButton = { DialogButton(onClick = onErrorDialogDismissed, text = i18n("ok"), type = NEUTRAL) },
             modifier = Modifier.widthIn(min = DIALOG_WIDTH),
             title = {
                 Row(

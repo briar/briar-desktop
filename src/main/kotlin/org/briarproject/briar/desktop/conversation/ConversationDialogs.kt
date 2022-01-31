@@ -20,12 +20,14 @@ package org.briarproject.briar.desktop.conversation
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
-import androidx.compose.material.ButtonType.NEGATIVE
-import androidx.compose.material.ButtonType.POSITIVE
+import androidx.compose.material.ButtonType.DESTRUCTIVE
+import androidx.compose.material.ButtonType.NEUTRAL
 import androidx.compose.material.DialogButton
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
@@ -113,8 +115,8 @@ fun DeleteAllMessagesConfirmationDialog(
         text = {
             Text(i18n("conversation.delete.all.dialog.message"))
         },
-        dismissButton = { DialogButton(onClick = { close(); onCancel() }, text = i18n("cancel"), type = NEGATIVE) },
-        confirmButton = { DialogButton(onClick = { close(); onDelete() }, text = i18n("delete"), type = POSITIVE) },
+        dismissButton = { DialogButton(onClick = { close(); onCancel() }, text = i18n("cancel"), type = NEUTRAL) },
+        confirmButton = { DialogButton(onClick = { close(); onDelete() }, text = i18n("delete"), type = DESTRUCTIVE) },
     )
 }
 
@@ -160,7 +162,7 @@ fun DeleteAllMessagesFailedDialog(
         text = {
             Text(message)
         },
-        confirmButton = { DialogButton(onClick = close, text = i18n("ok"), type = POSITIVE) },
+        confirmButton = { DialogButton(onClick = close, text = i18n("ok"), type = NEUTRAL) },
     )
 }
 
@@ -185,10 +187,13 @@ fun ChangeAliasDialog(
             )
         },
         text = {
-            TextField(alias, setAlias)
+            Column {
+                Spacer(modifier = Modifier.height(80.dp))
+                TextField(alias, setAlias)
+            }
         },
-        dismissButton = { DialogButton(onClick = { close(); onCancel() }, text = i18n("cancel"), type = NEGATIVE) },
-        confirmButton = { DialogButton(onClick = { close(); onConfirm() }, text = i18n("change"), type = POSITIVE) },
+        dismissButton = { DialogButton(onClick = { close(); onCancel() }, text = i18n("cancel"), type = NEUTRAL) },
+        confirmButton = { DialogButton(onClick = { close(); onConfirm() }, text = i18n("change"), type = NEUTRAL) },
     )
 }
 
@@ -213,7 +218,7 @@ fun DeleteContactConfirmationDialog(
         text = {
             Text(i18n("conversation.delete.contact.dialog.message"))
         },
-        dismissButton = { DialogButton(onClick = { close(); onCancel() }, text = i18n("cancel"), type = NEGATIVE) },
-        confirmButton = { DialogButton(onClick = { close(); onDelete() }, text = i18n("delete"), type = POSITIVE) },
+        dismissButton = { DialogButton(onClick = { close(); onCancel() }, text = i18n("cancel"), type = NEUTRAL) },
+        confirmButton = { DialogButton(onClick = { close(); onDelete() }, text = i18n("delete"), type = DESTRUCTIVE) },
     )
 }

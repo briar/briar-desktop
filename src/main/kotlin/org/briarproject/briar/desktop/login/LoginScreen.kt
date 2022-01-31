@@ -22,8 +22,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.AlertDialog
-import androidx.compose.material.ButtonType.NEGATIVE
-import androidx.compose.material.ButtonType.POSITIVE
+import androidx.compose.material.ButtonType.DESTRUCTIVE
+import androidx.compose.material.ButtonType.NEUTRAL
 import androidx.compose.material.DialogButton
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.OutlinedTextField
@@ -91,7 +91,7 @@ fun LoginScreen(
                 DialogButton(
                     onClick = viewHolder::closeDecryptionFailedDialog,
                     text = i18n("ok"),
-                    type = POSITIVE
+                    type = NEUTRAL
                 )
             },
         )
@@ -133,10 +133,10 @@ fun LoginForm(
             title = { Text(i18n("startup.password_forgotten.title")) },
             text = { Text(i18n("startup.password_forgotten.text")) },
             dismissButton = {
-                DialogButton(onClick = closeDialog, text = i18n("cancel"), type = NEGATIVE)
+                DialogButton(onClick = closeDialog, text = i18n("cancel"), type = NEUTRAL)
             },
             confirmButton = {
-                DialogButton(onClick = { deleteAccount(); closeDialog() }, text = i18n("delete"), type = POSITIVE)
+                DialogButton(onClick = { deleteAccount(); closeDialog() }, text = i18n("delete"), type = DESTRUCTIVE)
             },
             modifier = Modifier.width(500.dp)
         )

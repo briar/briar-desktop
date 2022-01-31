@@ -25,8 +25,8 @@ import org.briarproject.briar.desktop.theme.buttonTextPositive
 import java.util.Locale
 
 enum class ButtonType {
-    POSITIVE,
-    NEGATIVE,
+    NEUTRAL,
+    DESTRUCTIVE,
 }
 
 @Composable
@@ -40,8 +40,8 @@ fun DialogButton(
             text.uppercase(Locale.getDefault()),
             fontSize = 16.sp,
             color = when (type) {
-                ButtonType.POSITIVE -> MaterialTheme.colors.buttonTextPositive
-                ButtonType.NEGATIVE -> MaterialTheme.colors.buttonTextNegative
+                ButtonType.NEUTRAL -> MaterialTheme.colors.buttonTextPositive
+                ButtonType.DESTRUCTIVE -> MaterialTheme.colors.buttonTextNegative
             },
         )
     }

@@ -27,8 +27,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.ButtonType.NEGATIVE
-import androidx.compose.material.ButtonType.POSITIVE
+import androidx.compose.material.ButtonType.DESTRUCTIVE
+import androidx.compose.material.ButtonType.NEUTRAL
 import androidx.compose.material.DialogButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -122,10 +122,10 @@ fun ConversationRequestItemView(
 
                 Row(modifier = Modifier.align(statusAlignment)) {
                     if (!m.answered) {
-                        DialogButton(onClick = { onResponse(false) }, text = i18n("decline"), type = NEGATIVE)
-                        DialogButton(onClick = { onResponse(false) }, text = i18n("accept"), type = POSITIVE)
+                        DialogButton(onClick = { onResponse(false) }, text = i18n("decline"), type = DESTRUCTIVE)
+                        DialogButton(onClick = { onResponse(false) }, text = i18n("accept"), type = NEUTRAL)
                     } else if (m.canBeOpened) {
-                        DialogButton(onClick = onOpenRequestedShareable, text = i18n("open"), type = POSITIVE)
+                        DialogButton(onClick = onOpenRequestedShareable, text = i18n("open"), type = NEUTRAL)
                     } else {
                         Spacer(Modifier.height(8.dp))
                     }
