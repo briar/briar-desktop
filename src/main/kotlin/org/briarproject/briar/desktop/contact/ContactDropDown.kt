@@ -21,6 +21,7 @@ package org.briarproject.briar.desktop.contact
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
@@ -129,7 +130,7 @@ fun ContactDropDown(
     ) {
         Row {
             IconButton(onClick = { setState(State.MAIN) }) {
-                Icon(Icons.Filled.ArrowBack, i18n("back"))
+                Icon(Icons.Filled.ArrowBack, i18n("back"), modifier = Modifier.height(16.dp))
             }
             Text(
                 i18n("contacts.dropdown.contact.title"), fontSize = 12.sp,
