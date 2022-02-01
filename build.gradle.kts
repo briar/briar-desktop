@@ -34,6 +34,7 @@ buildscript {
         classpath("com.android.tools.build:gradle:4.1.3")
         classpath("ru.vyarus:gradle-animalsniffer-plugin:1.5.3")
         classpath(files("briar/libs/gradle-witness.jar"))
+        classpath("com.guardsquare:proguard-gradle:7.2.0")
     }
 
     // keep version here in sync when updating briar
@@ -114,6 +115,19 @@ tasks.withType<org.gradle.jvm.tasks.Jar> {
 tasks.jar {
     exclude("META-INF/BC1024KE.RSA", "META-INF/BC1024KE.SF", "META-INF/BC1024KE.DSA")
     exclude("META-INF/BC2048KE.RSA", "META-INF/BC2048KE.SF", "META-INF/BC2048KE.DSA")
+}
+
+tasks.register<proguard.gradle.ProGuardTask>("minify") {
+    val packageUberJarForCurrentOS by tasks.getting
+    dependsOn(packageUberJarForCurrentOS)
+    val files = packageUberJarForCurrentOS.outputs.files
+    injars(files)
+    outjars(files.map { file -> File(file.parentFile, "${file.nameWithoutExtension}.min.jar") })
+
+    val library = if (System.getProperty("java.version").startsWith("1.")) "lib/rt.jar" else "jmods"
+    libraryjars("${System.getProperty("java.home")}/$library")
+
+    configuration("proguard-rules.pro")
 }
 
 compose.desktop {
