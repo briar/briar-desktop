@@ -59,7 +59,7 @@ fun ConversationHeader(
     onChangeAlias: () -> Unit,
     onDeleteContact: () -> Unit,
 ) {
-    val (isExpanded, setExpanded) = remember { mutableStateOf(false) }
+    val (menuState, setMenuState) = remember { mutableStateOf(ContactDropDown.State.CLOSED) }
     val onlineColor =
         if (contactItem.isConnected) MaterialTheme.colors.secondary else MaterialTheme.colors.surfaceVariant
     val outlineColor = MaterialTheme.colors.outline
@@ -93,13 +93,13 @@ fun ConversationHeader(
                 )
             }
             IconButton(
-                onClick = { setExpanded(!isExpanded) },
+                onClick = { setMenuState(ContactDropDown.State.MAIN) },
                 modifier = Modifier.align(Alignment.CenterVertically).padding(end = 16.dp)
             ) {
                 Icon(Icons.Filled.MoreVert, i18n("access.contact.menu"), modifier = Modifier.size(24.dp))
                 ContactDropDown(
-                    isExpanded,
-                    { setExpanded(false) },
+                    menuState,
+                    setMenuState,
                     onMakeIntroduction,
                     onDeleteAllMessages,
                     onChangeAlias,

@@ -31,22 +31,28 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowRight
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.briarproject.briar.desktop.contact.ContactDropDown.State
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.getCoreFeatureFlags
 import org.briarproject.briar.desktop.utils.getDesktopFeatureFlags
 
+class ContactDropDown {
+    enum class State {
+        CLOSED,
+        MAIN,
+        CONTACT,
+        CONNECTION,
+    }
+}
+
 @Composable
 fun ContactDropDown(
-    expanded: Boolean,
-    close: () -> Unit,
+    state: State,
+    setState: (State) -> Unit,
     onMakeIntroduction: () -> Unit,
     onDeleteAllMessages: () -> Unit,
     onChangeAlias: () -> Unit,
@@ -55,10 +61,10 @@ fun ContactDropDown(
     val coreFeatureFlags = getCoreFeatureFlags()
     val desktopFeatureFlags = getDesktopFeatureFlags()
 
-    var connectionMode by remember { mutableStateOf(false) }
-    var contactMode by remember { mutableStateOf(false) }
+    val close = { setState(State.CLOSED) }
+
     DropdownMenu(
-        expanded = expanded,
+        expanded = state == State.MAIN,
         onDismissRequest = close,
     ) {
         DropdownMenuItem(onClick = { close(); onMakeIntroduction() }) {
@@ -73,7 +79,7 @@ fun ContactDropDown(
             Text(i18n("contacts.dropdown.delete.all"), fontSize = 14.sp)
         }
         if (desktopFeatureFlags.shouldEnableTransportSettings()) {
-            DropdownMenuItem(onClick = { connectionMode = true; close() }) {
+            DropdownMenuItem(onClick = { setState(State.CONNECTION) }) {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     Text(
                         i18n("contacts.dropdown.connections"),
@@ -88,7 +94,7 @@ fun ContactDropDown(
                 }
             }
         }
-        DropdownMenuItem(onClick = { contactMode = true; close() }) {
+        DropdownMenuItem(onClick = { setState(State.CONTACT) }) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Text(
                     i18n("contacts.dropdown.contact"),
@@ -104,25 +110,25 @@ fun ContactDropDown(
         }
     }
     DropdownMenu(
-        expanded = connectionMode,
-        onDismissRequest = { connectionMode = false },
+        expanded = state == State.CONNECTION,
+        onDismissRequest = close,
     ) {
-        DropdownMenuItem(onClick = { false }) {
+        DropdownMenuItem(onClick = { }) {
             Text(i18n("contacts.dropdown.connections.title"), fontSize = 12.sp)
         }
-        DropdownMenuItem(onClick = { false }) {
+        DropdownMenuItem(onClick = { }) {
             Text(i18n("contacts.dropdown.connections.bluetooth"), fontSize = 14.sp)
         }
-        DropdownMenuItem(onClick = { false }) {
+        DropdownMenuItem(onClick = { }) {
             Text(i18n("contacts.dropdown.connections.removable"), fontSize = 14.sp)
         }
     }
     DropdownMenu(
-        expanded = contactMode,
-        onDismissRequest = { contactMode = false },
+        expanded = state == State.CONTACT,
+        onDismissRequest = close,
     ) {
         Row {
-            IconButton(onClick = { }) {
+            IconButton(onClick = { setState(State.MAIN) }) {
                 Icon(Icons.Filled.ArrowBack, i18n("back"))
             }
             Text(
@@ -131,10 +137,10 @@ fun ContactDropDown(
                     .align(Alignment.CenterVertically)
             )
         }
-        DropdownMenuItem(onClick = { contactMode = false; onChangeAlias() }) {
+        DropdownMenuItem(onClick = { close(); onChangeAlias() }) {
             Text(i18n("contacts.dropdown.contact.change"), fontSize = 14.sp)
         }
-        DropdownMenuItem(onClick = { contactMode = false; onDeleteContact() }) {
+        DropdownMenuItem(onClick = { close(); onDeleteContact() }) {
             Text(i18n("contacts.dropdown.contact.delete"), fontSize = 14.sp)
         }
     }
