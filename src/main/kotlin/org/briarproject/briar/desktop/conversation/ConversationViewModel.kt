@@ -188,7 +188,7 @@ constructor(
                     )
                     val visitor =
                         ConversationVisitor(
-                            contactItem.value!!.name,
+                            contactItem.value!!.displayName,
                             messagingManager,
                             attachmentReader,
                             desktopFeatureFlags,
@@ -299,7 +299,7 @@ constructor(
             val sorted = headers.sortedBy { it.timestamp }
             start = LogUtils.now()
             val visitor =
-                ConversationVisitor(contact.name, messagingManager, attachmentReader, desktopFeatureFlags, txn)
+                ConversationVisitor(contact.displayName, messagingManager, attachmentReader, desktopFeatureFlags, txn)
             val messages = sorted.map { h -> h.accept(visitor)!! }
             LOG.logDuration("Loading messages", start)
             txn.attach {
@@ -324,7 +324,7 @@ constructor(
                     runOnDbThreadWithTransaction(true) { txn ->
                         val visitor =
                             ConversationVisitor(
-                                contactItem.value!!.name,
+                                contactItem.value!!.displayName,
                                 messagingManager,
                                 attachmentReader,
                                 desktopFeatureFlags,

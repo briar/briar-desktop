@@ -28,7 +28,7 @@ import kotlin.math.max
 data class ContactItem(
     override val idWrapper: RealContactIdWrapper,
     val authorId: AuthorId,
-    val name: String,
+    private val name: String,
     val alias: String?,
     val isConnected: Boolean,
     val isEmpty: Boolean,

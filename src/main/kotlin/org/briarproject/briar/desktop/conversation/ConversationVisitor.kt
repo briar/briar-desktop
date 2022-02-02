@@ -68,7 +68,7 @@ internal class ConversationVisitor(
         val item = ConversationMessageItem(h)
         item.attachments = buildList {
             for (header in h.attachmentHeaders) {
-                ImageUtils.loadImage(txn, attachmentReader, header)?.also {
+                ImageUtils.loadImage(txn, attachmentReader, header).also {
                     add(AttachmentItem(it))
                 }
             }
