@@ -229,7 +229,7 @@ fun ConversationList(
         }
     }
 
-    onMessageAddedToBottom.react { type ->
+    onMessageAddedToBottom.reactInCoroutine { type ->
         // scroll to bottom for new *outgoing* message or if scroll position was at last message before
         if (type == ConversationViewModel.MessageAddedType.OUTGOING || scrollState.isScrolledToPenultimate()) {
             scope.launch {

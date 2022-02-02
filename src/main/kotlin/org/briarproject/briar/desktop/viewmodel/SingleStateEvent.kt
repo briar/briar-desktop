@@ -44,18 +44,32 @@ class SingleStateEvent<T : Any> {
         state.value = value
     }
 
+    fun reactAndReset(block: (T) -> Unit) {
+        val value = state.value
+        if (value != null) {
+            state.value = null
+            block(value)
+        }
+    }
+
     /**
-     * React to every new value of type [T] emitted through this event.
+     * React to every new value of type [T] emitted through this event,
+     * by directly reading the state in the calling function.
+     * This can be used to invalidate a composable function.
      * Make sure to not react to the same event on multiple places.
      */
     @Composable
-    fun react(block: (T) -> Unit) {
+    inline fun react(noinline block: (T) -> Unit) = reactAndReset(block)
+
+    /**
+     * React to every new value of type [T] emitted through this event
+     * inside a LaunchedEffect.
+     * Make sure to not react to the same event on multiple places.
+     */
+    @Composable
+    fun reactInCoroutine(block: (T) -> Unit) {
         LaunchedEffect(state.value) {
-            val value = state.value
-            if (value != null) {
-                block(value)
-                state.value = null
-            }
+            reactAndReset(block)
         }
     }
 }

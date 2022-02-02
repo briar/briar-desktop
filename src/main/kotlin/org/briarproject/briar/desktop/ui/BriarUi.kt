@@ -18,6 +18,7 @@
 
 package org.briarproject.briar.desktop.ui
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -45,6 +46,9 @@ import org.briarproject.briar.desktop.DesktopFeatureFlags
 import org.briarproject.briar.desktop.expiration.ExpirationBanner
 import org.briarproject.briar.desktop.login.ErrorScreen
 import org.briarproject.briar.desktop.login.StartupScreen
+import org.briarproject.briar.desktop.settings.Settings
+import org.briarproject.briar.desktop.settings.Settings.Theme.AUTO
+import org.briarproject.briar.desktop.settings.Settings.Theme.DARK
 import org.briarproject.briar.desktop.settings.SettingsViewModel
 import org.briarproject.briar.desktop.theme.BriarTheme
 import org.briarproject.briar.desktop.ui.Screen.EXPIRED
@@ -85,6 +89,7 @@ constructor(
     private val lifecycleManager: LifecycleManager,
     private val eventBus: EventBus,
     private val viewModelProvider: ViewModelProvider,
+    private val settings: Settings,
     private val featureFlags: FeatureFlags,
     private val desktopFeatureFlags: DesktopFeatureFlags,
 ) : BriarUi, EventListener {
@@ -110,6 +115,9 @@ constructor(
     @OptIn(ExperimentalComposeUiApi::class)
     @Composable
     override fun start(onClose: () -> Unit) {
+        // invalidate whole application window in case the theme or language setting is changed
+        settings.invalidateScreen.react {}
+
         val title = i18n("main.title")
         val platformLocalization = object : PlatformLocalization {
             override val copy = i18n("copy")
@@ -133,7 +141,9 @@ constructor(
             ) {
                 var showAbout by remember { mutableStateOf(false) }
                 val settingsViewModel: SettingsViewModel = viewModel()
-                BriarTheme(isDarkTheme = settingsViewModel.isDarkMode.value) {
+                val isDarkTheme = settings.theme == DARK ||
+                    (settings.theme == AUTO && isSystemInDarkTheme())
+                BriarTheme(isDarkTheme) {
                     Column(Modifier.fillMaxSize()) {
                         ExpirationBanner { screenState = EXPIRED; stop() }
                         when (screenState) {
