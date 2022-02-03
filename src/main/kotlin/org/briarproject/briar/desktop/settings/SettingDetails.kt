@@ -27,9 +27,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedExposedDropDownMenu
 import androidx.compose.material.Surface
-import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -49,9 +50,14 @@ fun SettingDetails(viewModel: SettingsViewModel) {
                 // TODO: Change this to `settings.display.title` once more categories are implemented
                 SettingDetail(i18n("settings.title")) {
                     DetailItem {
-                        Text(i18n("settings.display.theme"))
-                        val isDarkMode = viewModel.isDarkMode.value
-                        Switch(checked = isDarkMode, onCheckedChange = { viewModel.toggleTheme() })
+                        Text(i18n("settings.display.theme.title"))
+
+                        OutlinedExposedDropDownMenu(
+                            values = viewModel.themesList.map { i18n("settings.display.theme.${it.name.lowercase()}") },
+                            selectedIndex = viewModel.selectedTheme.value.ordinal,
+                            onChange = { viewModel.selectTheme(viewModel.themesList[it]) },
+                            modifier = Modifier.widthIn(min = 200.dp)
+                        )
                     }
                 }
             }

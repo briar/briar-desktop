@@ -19,8 +19,6 @@
 package org.briarproject.briar.desktop.settings
 
 import androidx.compose.runtime.mutableStateOf
-import org.briarproject.briar.desktop.settings.Settings.Theme.DARK
-import org.briarproject.briar.desktop.settings.Settings.Theme.LIGHT
 import org.briarproject.briar.desktop.viewmodel.ViewModel
 import org.briarproject.briar.desktop.viewmodel.asState
 import javax.inject.Inject
@@ -42,15 +40,17 @@ constructor(
     private val _selectedSetting = mutableStateOf(SettingCategory.DISPLAY)
     val selectedSetting = _selectedSetting.asState()
 
-    private val _isDarkMode = mutableStateOf(settings.theme == DARK)
-    val isDarkMode = _isDarkMode.asState()
+    val themesList = Settings.Theme.values()
+
+    private val _selectedTheme = mutableStateOf(settings.theme)
+    val selectedTheme = _selectedTheme.asState()
 
     fun selectSetting(selectedOption: SettingCategory) {
         _selectedSetting.value = selectedOption
     }
 
-    fun toggleTheme() { // todo: set theme instead
-        settings.theme = if (settings.theme == DARK) LIGHT else DARK
-        _isDarkMode.value = settings.theme == DARK
+    fun selectTheme(theme: Settings.Theme) {
+        settings.theme = theme
+        _selectedTheme.value = theme
     }
 }
