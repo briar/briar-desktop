@@ -84,6 +84,7 @@ dependencies {
 
     implementation("com.github.ajalt.clikt:clikt:3.4.0")
     implementation("com.ibm.icu:icu4j:70.1")
+    implementation("net.java.dev.jna:jna:5.5.0")
 
     implementation(project(path = ":briar-core", configuration = "default"))
     implementation(project(path = ":bramble-java", configuration = "default"))
