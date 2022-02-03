@@ -119,7 +119,7 @@ tasks.jar {
 
 compose.desktop {
     application {
-        mainClass = "org.briarproject.briar.desktop.MainKt"
+        mainClass = "org.briarproject.briar.desktop.TestNativeNotifications"
         nativeDistributions {
             targetFormats(TargetFormat.Msi, TargetFormat.Exe, TargetFormat.Deb, TargetFormat.Rpm)
             packageName = "Briar"
