@@ -43,8 +43,8 @@ b_jar:
   stage: build
   script:
     - ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-11-openjdk-amd64 --no-daemon kaptKotlin
-    - ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-17-openjdk-amd64 --no-daemon -PbuildType=nightly -x kaptKotlin packageUberJarForCurrentOS
-    - mv build/compose/jars/Briar-*.jar ./briar-desktop.jar
+    - ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-17-openjdk-amd64 --no-daemon -PbuildType=nightly -x kaptKotlin minify
+    - mv build/compose/jars/Briar-*.min.jar ./briar-desktop.jar
   artifacts:
     paths:
       - briar-desktop.jar
@@ -100,8 +100,8 @@ rb_jar:
   stage: releasebuild
   script:
     - ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-11-openjdk-amd64 --no-daemon kaptKotlin
-    - ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-17-openjdk-amd64 --no-daemon -PbuildType=beta -x kaptKotlin packageUberJarForCurrentOS
-    - mv build/compose/jars/Briar-*.jar ./briar-desktop.jar
+    - ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-17-openjdk-amd64 --no-daemon -PbuildType=beta -x kaptKotlin minify
+    - mv build/compose/jars/Briar-*.min.jar ./briar-desktop.jar
   artifacts:
     paths:
       - briar-desktop.jar
