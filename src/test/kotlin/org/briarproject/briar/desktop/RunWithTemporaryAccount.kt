@@ -84,7 +84,7 @@ internal class RunWithTemporaryAccount(
         customization(app)
 
         application {
-            app.getBriarUi().start {
+            app.getBriarUi().start(this) {
                 app.getBriarUi().stop()
                 exitApplication()
             }

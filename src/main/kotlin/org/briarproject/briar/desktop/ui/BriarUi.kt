@@ -29,6 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.window.ApplicationScope
 import androidx.compose.ui.window.FrameWindowScope
 import androidx.compose.ui.window.Window
 import org.briarproject.bramble.api.FeatureFlags
@@ -64,7 +65,7 @@ enum class Screen {
 interface BriarUi {
 
     @Composable
-    fun start(onClose: () -> Unit)
+    fun start(applicationScope: ApplicationScope, onClose: () -> Unit)
 
     fun stop()
 }
@@ -105,9 +106,10 @@ constructor(
     }
 
     @Composable
-    override fun start(onClose: () -> Unit) {
+    override fun start(applicationScope: ApplicationScope, onClose: () -> Unit) {
         val title = i18n("main.title")
         eventBus.addListener(this)
+        applicationScope.BriarTray()
         Window(
             title = title,
             onCloseRequest = onClose,

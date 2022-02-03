@@ -111,7 +111,7 @@ private class Main : CliktCommand(
         BriarCoreEagerSingletons.Helper.injectEagerSingletons(app)
 
         application {
-            app.getBriarUi().start {
+            app.getBriarUi().start(this) {
                 app.getBriarUi().stop()
                 exitApplication()
             }

@@ -95,7 +95,7 @@ internal class RunWithMultipleTemporaryAccounts(
 
     @Composable
     fun start(app: BriarDesktopTestApp, applicationScope: ApplicationScope) {
-        app.getBriarUi().start {
+        app.getBriarUi().start(applicationScope) {
             apps.forEach {
                 it.getBriarUi().stop()
             }
