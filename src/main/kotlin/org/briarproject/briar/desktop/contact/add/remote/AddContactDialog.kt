@@ -171,7 +171,7 @@ fun AddContactDialog(
                 }
                 Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
                     Text(
-                        i18n("conversation.add.contact.dialog.contact_name"),
+                        "Contact's name",
                         Modifier.width(128.dp).align(Alignment.CenterVertically),
                     )
                     TextField(
@@ -182,7 +182,7 @@ fun AddContactDialog(
                 }
                 Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
                     Text(
-                        i18n("conversation.add.contact.dialog.own_link"),
+                        "Your link",
                         modifier = Modifier.width(128.dp).align(Alignment.CenterVertically),
                     )
                     TextField(
