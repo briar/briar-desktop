@@ -18,11 +18,9 @@
 
 package org.briarproject.briar.desktop.conversation
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
@@ -183,12 +181,12 @@ fun ChangeAliasDialog(
         title = {
             Text(
                 text = i18n("conversation.change.alias.dialog.title"),
-                modifier = Modifier.width(IntrinsicSize.Max).padding(vertical = 16.dp)
+                modifier = Modifier.width(IntrinsicSize.Max)
             )
         },
         text = {
-            Column {
-                Spacer(modifier = Modifier.height(80.dp))
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text(i18n("conversation.change.alias.dialog.description"))
                 TextField(alias, setAlias)
             }
         },
