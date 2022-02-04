@@ -18,13 +18,17 @@
 
 package org.briarproject.briar.desktop.settings
 
+import org.briarproject.briar.desktop.settings.Settings.Language
+import org.briarproject.briar.desktop.settings.Settings.Language.DEFAULT
 import org.briarproject.briar.desktop.settings.Settings.Theme
 import org.briarproject.briar.desktop.settings.Settings.Theme.AUTO
+import org.briarproject.briar.desktop.utils.InternationalizationUtils
 import org.briarproject.briar.desktop.viewmodel.SingleStateEvent
 import java.util.prefs.Preferences
 import javax.inject.Inject
 
 const val PREF_THEME = "theme"
+const val PREF_LANG = "language"
 
 class SettingsImpl @Inject internal constructor() : Settings {
 
@@ -40,4 +44,21 @@ class SettingsImpl @Inject internal constructor() : Settings {
             prefs.flush() // write preferences to disk
             invalidateScreen.emit(Unit)
         }
+
+    override var language: Language
+        get() = Language.valueOf(prefs.get(PREF_LANG, DEFAULT.name))
+        set(value) {
+            prefs.put(PREF_LANG, value.name)
+            prefs.flush() // write preferences to disk
+            updateLocale(value)
+            invalidateScreen.emit(Unit)
+        }
+
+    init {
+        updateLocale(language)
+    }
+
+    private fun updateLocale(language: Language) {
+        InternationalizationUtils.locale = language.locale
+    }
 }

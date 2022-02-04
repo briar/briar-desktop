@@ -36,6 +36,12 @@ object InternationalizationUtils {
     private val LOG = KotlinLogging.logger {}
 
     /**
+     * The current [Locale] to be used for translations.
+     * Will be set during startup according to the user settings.
+     */
+    var locale: Locale = Locale.getDefault()
+
+    /**
      * Returns the translated text of the string identified with `key`
      */
     fun i18n(key: String): String =
@@ -57,10 +63,10 @@ object InternationalizationUtils {
     fun i18nP(key: String, amount: Int): String =
         try {
             val pattern: String = i18n(key)
-            val messageFormat = MessageFormat(pattern, Locale.getDefault())
+            val messageFormat = MessageFormat(pattern, locale)
             messageFormat.format(arrayOf(amount))
         } catch (e: IllegalArgumentException) {
-            LOG.w { "Pattern does not match arguments for resource '$key' and locale '${Locale.getDefault()}" }
+            LOG.w { "Pattern does not match arguments for resource '$key' and locale '$locale" }
             ""
         }
 
@@ -79,8 +85,10 @@ object InternationalizationUtils {
     /**
      * Returns the resource bundle used for i18n at Briar Desktop
      */
-    private fun createResourceBundle(): ResourceBundle {
-        val locale = Locale.getDefault()
-        return ResourceBundle.getBundle("strings.BriarDesktop", locale)
-    }
+    private fun createResourceBundle() =
+        ResourceBundle.getBundle(
+            "strings.BriarDesktop",
+            if (locale.toLanguageTag() == "en") Locale.ROOT // NON-NLS
+            else locale
+        )
 }

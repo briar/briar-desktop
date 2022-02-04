@@ -41,9 +41,13 @@ constructor(
     val selectedSetting = _selectedSetting.asState()
 
     val themesList = Settings.Theme.values()
+    val languageList = Settings.Language.values()
 
     private val _selectedTheme = mutableStateOf(settings.theme)
     val selectedTheme = _selectedTheme.asState()
+
+    private val _selectedLanguage = mutableStateOf(settings.language)
+    val selectedLanguage = _selectedLanguage.asState()
 
     fun selectSetting(selectedOption: SettingCategory) {
         _selectedSetting.value = selectedOption
@@ -52,5 +56,10 @@ constructor(
     fun selectTheme(theme: Settings.Theme) {
         settings.theme = theme
         _selectedTheme.value = theme
+    }
+
+    fun selectLanguage(language: Settings.Language) {
+        settings.language = language
+        _selectedLanguage.value = language
     }
 }

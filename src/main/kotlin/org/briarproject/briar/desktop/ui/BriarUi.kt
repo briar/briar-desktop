@@ -115,9 +115,6 @@ constructor(
     @OptIn(ExperimentalComposeUiApi::class)
     @Composable
     override fun start(onClose: () -> Unit) {
-        // invalidate whole application window in case the theme or language setting is changed
-        settings.invalidateScreen.react {}
-
         val title = i18n("main.title")
         val platformLocalization = object : PlatformLocalization {
             override val copy = i18n("copy")
@@ -139,6 +136,12 @@ constructor(
                 LocalDesktopFeatureFlags provides desktopFeatureFlags,
                 LocalLocalization provides platformLocalization,
             ) {
+                // invalidate whole application window in case the theme or language setting is changed
+                settings.invalidateScreen.react {
+                    window.title = i18n("main.title")
+                    return@CompositionLocalProvider
+                }
+
                 var showAbout by remember { mutableStateOf(false) }
                 val settingsViewModel: SettingsViewModel = viewModel()
                 val isDarkTheme = settings.theme == DARK ||

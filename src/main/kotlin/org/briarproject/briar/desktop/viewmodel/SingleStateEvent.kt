@@ -35,7 +35,10 @@ import androidx.compose.runtime.mutableStateOf
  * only use this class if you are sure that you actually need it.
  */
 class SingleStateEvent<T : Any> {
-    private var state = mutableStateOf<T?>(null)
+    /**
+     * Internal representation of state. Please don't use this directly!
+     */
+    var state = mutableStateOf<T?>(null)
 
     /**
      * Emit a new value of type [T] for this event.
@@ -44,22 +47,19 @@ class SingleStateEvent<T : Any> {
         state.value = value
     }
 
-    fun reactAndReset(block: (T) -> Unit) {
-        val value = state.value
-        if (value != null) {
-            state.value = null
-            block(value)
-        }
-    }
-
     /**
      * React to every new value of type [T] emitted through this event,
      * by directly reading the state in the calling function.
      * This can be used to invalidate a composable function.
      * Make sure to not react to the same event on multiple places.
      */
-    @Composable
-    inline fun react(noinline block: (T) -> Unit) = reactAndReset(block)
+    inline fun react(block: (T) -> Unit) {
+        val value = state.value
+        if (value != null) {
+            state.value = null
+            block.invoke(value)
+        }
+    }
 
     /**
      * React to every new value of type [T] emitted through this event
@@ -69,7 +69,7 @@ class SingleStateEvent<T : Any> {
     @Composable
     fun reactInCoroutine(block: (T) -> Unit) {
         LaunchedEffect(state.value) {
-            reactAndReset(block)
+            react(block)
         }
     }
 }

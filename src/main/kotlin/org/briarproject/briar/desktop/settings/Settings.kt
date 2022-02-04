@@ -19,12 +19,27 @@
 package org.briarproject.briar.desktop.settings
 
 import org.briarproject.briar.desktop.viewmodel.SingleStateEvent
+import java.util.Locale
 
 interface Settings {
 
     enum class Theme { AUTO, LIGHT, DARK }
 
+    enum class Language {
+        // special handling
+        DEFAULT, EN,
+
+        // languages as present in resources
+        AR, BG, DE, ES, FA, GL, HU, IS, IT, LT, PL, RO, RU, SK, SQ, SV, TR, ZH_CN;
+
+        val locale: Locale
+            get() = if (this == DEFAULT)
+                Locale.getDefault()
+            else Locale.forLanguageTag(this.name.replace('_', '-'))
+    }
+
     var theme: Theme
+    var language: Language
 
     val invalidateScreen: SingleStateEvent<Unit>
 }

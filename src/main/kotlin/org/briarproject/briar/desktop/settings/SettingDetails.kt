@@ -37,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
+import org.briarproject.briar.desktop.utils.InternationalizationUtils
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 
 @Composable
@@ -56,6 +57,20 @@ fun SettingDetails(viewModel: SettingsViewModel) {
                             values = viewModel.themesList.map { i18n("settings.display.theme.${it.name.lowercase()}") },
                             selectedIndex = viewModel.selectedTheme.value.ordinal,
                             onChange = { viewModel.selectTheme(viewModel.themesList[it]) },
+                            modifier = Modifier.widthIn(min = 200.dp)
+                        )
+                    }
+
+                    DetailItem {
+                        Text(i18n("settings.display.language.title"))
+
+                        OutlinedExposedDropDownMenu(
+                            values = viewModel.languageList.map {
+                                if (it == Settings.Language.DEFAULT) i18n("settings.display.language.auto")
+                                else it.locale.getDisplayLanguage(InternationalizationUtils.locale)
+                            },
+                            selectedIndex = viewModel.selectedLanguage.value.ordinal,
+                            onChange = { viewModel.selectLanguage(viewModel.languageList[it]) },
                             modifier = Modifier.widthIn(min = 200.dp)
                         )
                     }
