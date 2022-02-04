@@ -185,7 +185,7 @@ fun ConversationItemView(
             ContextMenuArea(
                 items = {
                     listOf(
-                        ContextMenuItem(i18n("delete")) { onDelete(item.id) }
+                        ContextMenuItem(i18n("conversation.delete.single")) { onDelete(item.id) }
                     )
                 }
             ) {
