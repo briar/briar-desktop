@@ -27,6 +27,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.ButtonType.DESTRUCTIVE
 import androidx.compose.material.ButtonType.NEUTRAL
 import androidx.compose.material.DialogButton
@@ -102,12 +103,14 @@ fun ConversationRequestItemView(
         Column(Modifier.width(IntrinsicSize.Max)) {
             val text = m.text
             if (text != null) {
-                Text(
-                    text,
-                    fontSize = 16.sp,
-                    color = textColor,
-                    modifier = Modifier.padding(12.dp, 8.dp).align(Alignment.Start)
-                )
+                SelectionContainer {
+                    Text(
+                        text,
+                        fontSize = 16.sp,
+                        color = textColor,
+                        modifier = Modifier.padding(12.dp, 8.dp).align(Alignment.Start)
+                    )
+                }
             }
             Column(
                 Modifier.fillMaxWidth().background(noticeBackground).padding(12.dp, 8.dp)

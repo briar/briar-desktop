@@ -19,11 +19,14 @@
 package org.briarproject.briar.desktop.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.text.selection.LocalTextSelectionColors
+import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.Colors
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
 
 val Colors.divider: Color get() = if (isLight) Gray300 else Gray800
@@ -77,8 +80,14 @@ fun BriarTheme(
 ) {
     val myColors = colors ?: if (isDarkTheme) DarkColors else LightColors
 
-    MaterialTheme(
-        colors = myColors,
-        content = content,
-    )
+    MaterialTheme(myColors) {
+        val customTextSelectionColors = TextSelectionColors(
+            handleColor = MaterialTheme.colors.secondary,
+            backgroundColor = MaterialTheme.colors.secondary.copy(alpha = 0.4f)
+        )
+
+        CompositionLocalProvider(LocalTextSelectionColors provides customTextSelectionColors) {
+            content()
+        }
+    }
 }

@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -84,12 +85,14 @@ fun ConversationNoticeItemView(
     ConversationItemView(m, onDelete) {
         Column(Modifier.width(IntrinsicSize.Max)) {
             if (text != null) {
-                Text(
-                    text,
-                    fontSize = 16.sp,
-                    color = textColor,
-                    modifier = Modifier.padding(12.dp, 8.dp).align(Alignment.Start)
-                )
+                SelectionContainer {
+                    Text(
+                        text,
+                        fontSize = 16.sp,
+                        color = textColor,
+                        modifier = Modifier.padding(12.dp, 8.dp).align(Alignment.Start)
+                    )
+                }
             }
             Column(
                 Modifier.fillMaxWidth().background(noticeBackground).padding(12.dp, 8.dp)

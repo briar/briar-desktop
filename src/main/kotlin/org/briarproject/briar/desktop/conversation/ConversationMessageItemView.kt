@@ -21,6 +21,7 @@ package org.briarproject.briar.desktop.conversation
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -78,12 +79,14 @@ fun ConversationMessageItemView(
                 }
             }
             if (m.text != null) {
-                Text(
-                    m.text!!,
-                    fontSize = 16.sp,
-                    color = textColor,
-                    modifier = Modifier.align(Alignment.Start).padding(bottom = 8.dp)
-                )
+                SelectionContainer {
+                    Text(
+                        m.text!!,
+                        fontSize = 16.sp,
+                        color = textColor,
+                        modifier = Modifier.align(Alignment.Start).padding(bottom = 8.dp)
+                    )
+                }
             }
             ConversationItemStatusView(m)
         }
