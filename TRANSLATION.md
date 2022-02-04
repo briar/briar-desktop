@@ -13,6 +13,10 @@ _This section is of interest only for developers of Briar Desktop_.
 
 To update translations locally, first install `transifex-client`. You can then pull updates with `tx pull -a`.
 
+If that command added a language that was previously not supported,
+you have to manually insert the language code in [Settings.kt](./src/main/kotlin/org/briarproject/briar/desktop/settings/Settings.kt)
+for it to be shown in the language selection.
+
 The Localization Lab has some instructions and advice for
 developers, too, at https://www.localizationlab.org/roles-guidelines#developer.
 
@@ -25,13 +29,8 @@ This is how updating translations in Briar Desktop works:
 
 Translations only happen on Transifex. You might want to make your changes through Transifex by joining the respective language teams.
 
-To test Briar Desktop in your language, add the following entry to the
-_finish-args_ list in _app.briar.desktop.json_ when building Briar Desktop with
-flatpak-builder:
-
-```
---env=LC_ALL=de_DE.utf8
-```
+To test Briar Desktop in your language,
+you can simply change the respective setting in the settings screen.
 
 There's also a section in [HACKING.md](./HACKING.md#testing-different-locales)
 dedicated to testing of different locales in order to try out translations.
