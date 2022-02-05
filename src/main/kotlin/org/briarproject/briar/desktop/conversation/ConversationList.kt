@@ -29,6 +29,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListLayoutInfo
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -61,6 +62,7 @@ import org.briarproject.briar.desktop.theme.divider
 import org.briarproject.briar.desktop.ui.HorizontalDivider
 import org.briarproject.briar.desktop.ui.Loader
 import org.briarproject.briar.desktop.ui.MessageCounter
+import org.briarproject.briar.desktop.ui.isWindowFocused
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 import org.briarproject.briar.desktop.utils.replaceIfIndexed
@@ -104,7 +106,8 @@ fun main() = preview(
         derivedStateOf {
             ConversationViewModel.UnreadMessagesInfo(
                 amount = messages.count { !it.isRead },
-                firstIndex = messages.indexOfFirst { !it.isRead }
+                firstIndex = messages.indexOfFirst { !it.isRead },
+                lastIndex = messages.indexOfLast { !it.isRead }
             )
         }
     }
@@ -175,6 +178,8 @@ fun ConversationList(
         else 0
     )
 
+    val focused = isWindowFocused()
+
     Box(modifier = Modifier.padding(padding).fillMaxSize()) {
         LazyColumn(
             state = scrollState,
@@ -203,15 +208,34 @@ fun ConversationList(
 
         if (currentUnreadMessagesInfo.amount > 0) {
             val delayUntilMarkedAsRead = 500L
-            LaunchedEffect(currentUnreadMessagesInfo, scrollState.firstVisibleItemIndex) {
+            if (focused) {
+                // if Briar Desktop currently has focus,
                 // mark all messages visible on the screen for more than [delayUntilMarkedAsRead] milliseconds as read
-                delay(delayUntilMarkedAsRead)
-                markMessagesRead(scrollState.layoutInfo.visibleItemsInfo.map { it.index })
+                LaunchedEffect(
+                    currentUnreadMessagesInfo,
+                    scrollState.firstVisibleItemIndex,
+                    scrollState.firstVisibleItemScrollOffset
+                ) {
+                    delay(delayUntilMarkedAsRead)
+                    markMessagesRead(scrollState.layoutInfo.reallyVisibleItemsInfo.map { it.index })
+                }
             }
-            val showUnreadButton by produceState(false) {
-                // never show FAB before all messages currently visible are marked as read
-                delay(delayUntilMarkedAsRead + 100)
-                value = true
+
+            // show unread message FAB only if some unread messages are currently not on screen
+            val showUnreadButton by produceState(
+                initialValue = false,
+                currentUnreadMessagesInfo,
+                scrollState.firstVisibleItemIndex
+            ) {
+                val firstIndex = scrollState.firstReallyVisibleItemIndex
+                val lastIndex = scrollState.lastReallyVisibleItemIndex
+                val newValue = firstIndex != -1 && lastIndex != -1 && (
+                    currentUnreadMessagesInfo.firstIndex < firstIndex ||
+                        currentUnreadMessagesInfo.lastIndex > lastIndex
+                    )
+                // wait some time before showing FAB first to allow for currently shown messages to be marked read
+                if (!this.value && newValue) delay(delayUntilMarkedAsRead + 250L)
+                this.value = newValue
             }
 
             if (showUnreadButton) {
@@ -230,8 +254,8 @@ fun ConversationList(
     }
 
     onMessageAddedToBottom.reactInCoroutine { type ->
-        // scroll to bottom for new *outgoing* message or if scroll position was at last message before
-        if (type == ConversationViewModel.MessageAddedType.OUTGOING || scrollState.isScrolledToPenultimate()) {
+        // scroll to bottom for new *outgoing* message or if Briar Desktop currently has focus and scroll position was at last message before
+        if (type == ConversationViewModel.MessageAddedType.OUTGOING || (focused && scrollState.isScrolledToPenultimate())) {
             scope.launch {
                 scrollState.animateScrollToItem(messages.lastIndex)
             }
@@ -277,3 +301,12 @@ fun LazyListState.isScrolledToPenultimate(): Boolean {
     return last.index == layoutInfo.totalItemsCount - 1 &&
         last.offset == layoutInfo.viewportEndOffset
 }
+
+val LazyListState.lastVisibleItemIndex get() = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1
+
+val LazyListLayoutInfo.reallyVisibleItemsInfo get() = visibleItemsInfo.filter {
+    it.offset <= viewportEndOffset - 50 && it.offset + it.size >= viewportStartOffset + 50
+}
+
+val LazyListState.firstReallyVisibleItemIndex get() = layoutInfo.reallyVisibleItemsInfo.firstOrNull()?.index ?: -1
+val LazyListState.lastReallyVisibleItemIndex get() = layoutInfo.reallyVisibleItemsInfo.lastOrNull()?.index ?: -1

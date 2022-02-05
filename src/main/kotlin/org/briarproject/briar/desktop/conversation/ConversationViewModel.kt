@@ -226,13 +226,15 @@ constructor(
     val currentUnreadMessagesInfo = derivedStateOf {
         UnreadMessagesInfo(
             amount = _messages.count { !it.isRead },
-            firstIndex = _messages.indexOfFirst { !it.isRead }
+            firstIndex = _messages.indexOfFirst { !it.isRead },
+            lastIndex = _messages.indexOfLast { !it.isRead }
         )
     }
 
     data class UnreadMessagesInfo(
         val amount: Int,
-        val firstIndex: Int
+        val firstIndex: Int,
+        val lastIndex: Int
     )
 
     val onMessageAddedToBottom = SingleStateEvent<MessageAddedType>()

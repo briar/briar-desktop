@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -58,6 +59,8 @@ import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.viewmodel.ViewModelProvider
 import org.briarproject.briar.desktop.viewmodel.viewModel
 import java.awt.Dimension
+import java.awt.event.WindowEvent
+import java.awt.event.WindowFocusListener
 import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -123,14 +126,35 @@ constructor(
             override val selectAll = i18n("select_all")
         }
         eventBus.addListener(this)
+        val focusState = remember { WindowFocusState() }
+
         Window(
             title = title,
             onCloseRequest = onClose,
             icon = painterResource("images/logo_circle.svg") // NON-NLS
         ) {
+            DisposableEffect(Unit) {
+                val focusListener = object : WindowFocusListener {
+                    override fun windowGainedFocus(e: WindowEvent?) {
+                        focusState.focused = true
+                    }
+
+                    override fun windowLostFocus(e: WindowEvent?) {
+                        focusState.focused = false
+                    }
+                }
+
+                window.addWindowFocusListener(focusListener)
+
+                onDispose {
+                    window.removeWindowFocusListener(focusListener)
+                }
+            }
+
             window.minimumSize = Dimension(800, 600)
             CompositionLocalProvider(
                 LocalWindowScope provides this,
+                LocalWindowFocusState provides focusState,
                 LocalViewModelProvider provides viewModelProvider,
                 LocalCoreFeatureFlags provides featureFlags,
                 LocalDesktopFeatureFlags provides desktopFeatureFlags,
