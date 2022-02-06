@@ -18,28 +18,61 @@
 
 package org.briarproject.briar.desktop.contact.add.remote
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.TooltipArea
+import androidx.compose.foundation.TooltipPlacement
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.AlertDialog
-import androidx.compose.material.ButtonType.NEUTRAL
-import androidx.compose.material.DialogButton
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Scaffold
+import androidx.compose.material.ScaffoldState
+import androidx.compose.material.SnackbarDuration
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.material.TextField
+import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.ContentPaste
 import androidx.compose.material.icons.filled.Error
+import androidx.compose.material.icons.filled.NorthEast
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.SouthWest
 import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.platform.ClipboardManager
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.WindowPosition
+import androidx.compose.ui.window.rememberDialogState
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import org.briarproject.briar.desktop.contact.add.remote.AddContactViewModel.AddContactError
 import org.briarproject.briar.desktop.contact.add.remote.AddContactViewModel.AliasInvalidError
 import org.briarproject.briar.desktop.contact.add.remote.AddContactViewModel.ContactAlreadyExistsError
@@ -52,15 +85,15 @@ import org.briarproject.briar.desktop.dialogs.DialogType.ERROR
 import org.briarproject.briar.desktop.dialogs.DialogType.WARNING
 import org.briarproject.briar.desktop.theme.Orange500
 import org.briarproject.briar.desktop.theme.Red500
+import org.briarproject.briar.desktop.theme.surfaceVariant
 import org.briarproject.briar.desktop.ui.Constants.DIALOG_WIDTH
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nF
 import org.briarproject.briar.desktop.utils.PreviewUtils
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 import org.briarproject.briar.desktop.viewmodel.viewModel
-import org.jetbrains.annotations.NonNls
 
-@NonNls
+@Suppress("HardCodedStringLiteral")
 const val link = "briar://ady23gvb2r76afe5zhxh5kvnh4b22zrcnxibn63tfknrdcwrw7zrs"
 
 @Suppress("HardCodedStringLiteral")
@@ -130,7 +163,7 @@ fun AddContactDialog(
     viewModel::clearError,
 )
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun AddContactDialog(
     onClose: () -> Unit,
@@ -147,81 +180,254 @@ fun AddContactDialog(
     if (!visible) {
         return
     }
+    Dialog(
+        title = i18n("contact.add.title_dialog"),
+        onCloseRequest = onClose,
+        state = rememberDialogState(
+            position = WindowPosition(Alignment.Center),
+            size = DpSize(width = 496.dp, height = 504.dp)
+        ),
+    ) {
+        val clipboardManager = LocalClipboardManager.current
+        val scaffoldState = rememberScaffoldState()
+        val coroutineScope = rememberCoroutineScope()
+        Surface {
+            Scaffold(
+                modifier = Modifier.padding(horizontal = 24.dp).padding(top = 24.dp, bottom = 12.dp),
+                topBar = {
+                    Box(Modifier.fillMaxWidth()) {
+                        Text(
+                            i18n("contact.add.remote.title"),
+                            style = MaterialTheme.typography.h6,
+                            modifier = Modifier.padding(bottom = 12.dp)
+                        )
+                    }
+                },
+                bottomBar = {
+                    Box(Modifier.fillMaxWidth()) {
+                        Row(Modifier.align(Alignment.CenterEnd)) {
+                            TextButton(
+                                onClose,
+                                colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colors.error)
+                            ) {
+                                Text(i18n("cancel"))
+                            }
+                            Button(onSubmitAddContactDialog, modifier = Modifier.padding(start = 8.dp)) {
+                                Text(i18n("add"))
+                            }
+                        }
+                    }
+                },
+                scaffoldState = scaffoldState,
+                content = {
+                    Column(Modifier.fillMaxSize()) {
+                        if (error != null) {
+                            AddContactErrorDialog(error, onErrorDialogDismissed)
+                        }
+                        OwnLink(
+                            handshakeLink,
+                            clipboardManager,
+                            coroutineScope,
+                            scaffoldState
+                        )
+                        ContactLink(
+                            remoteHandshakeLink,
+                            setRemoteHandshakeLink,
+                            clipboardManager,
+                            coroutineScope,
+                            scaffoldState,
+                        )
+                        Alias(alias, setAddContactAlias)
+                    }
+                }
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun AddContactErrorDialog(error: AddContactError, onErrorDialogDismissed: () -> Unit) {
+    val (type, title, message) = errorMessage(error)
+    val (icon, color) = when (type) {
+        WARNING -> Icons.Filled.Warning to Orange500
+        ERROR -> Icons.Filled.Error to Red500
+    }
     AlertDialog(
-        onDismissRequest = onClose,
-        text = {
-            Column(modifier = Modifier.fillMaxWidth()) {
-                Row(Modifier.fillMaxWidth().padding(vertical = 16.dp)) {
-                    Text(
-                        text = i18n("conversation.add.contact.dialog.title"),
-                        fontSize = 24.sp,
-                        modifier = Modifier.align(Alignment.CenterVertically)
-                    )
-                }
-                Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
-                    Text(
-                        i18n("conversation.add.contact.dialog.contact_link"),
-                        Modifier.width(128.dp).align(Alignment.CenterVertically),
-                    )
-                    TextField(
-                        remoteHandshakeLink,
-                        setRemoteHandshakeLink,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-                Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
-                    Text(
-                        "Contact's name",
-                        Modifier.width(128.dp).align(Alignment.CenterVertically),
-                    )
-                    TextField(
-                        alias,
-                        setAddContactAlias,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-                Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
-                    Text(
-                        "Your link",
-                        modifier = Modifier.width(128.dp).align(Alignment.CenterVertically),
-                    )
-                    TextField(
-                        handshakeLink,
-                        onValueChange = {},
-                        modifier = Modifier.fillMaxWidth()
+        onDismissRequest = onErrorDialogDismissed,
+        confirmButton = {
+            TextButton(onErrorDialogDismissed) {
+                Text(i18n("ok"))
+            }
+        },
+        modifier = Modifier.widthIn(min = DIALOG_WIDTH),
+        title = {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = title,
+                    tint = color
+                )
+                Text(title)
+            }
+        },
+        text = { Text(message) }
+    )
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun OwnLink(
+    handshakeLink: String,
+    clipboardManager: ClipboardManager,
+    coroutineScope: CoroutineScope,
+    scaffoldState: ScaffoldState
+) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Icon(Icons.Filled.NorthEast, "contact.add.remote.outgoing_arrow")
+        Text(
+            i18n("contact.add.remote.your_link"),
+            Modifier.padding(8.dp),
+            fontSize = 14.sp,
+        )
+    }
+    Box(
+        Modifier.fillMaxWidth()
+            .background(MaterialTheme.colors.surfaceVariant, RoundedCornerShape(4.dp))
+            .clickable {
+                clipboardManager.setText(AnnotatedString(handshakeLink))
+                coroutineScope.launch {
+                    scaffoldState.snackbarHostState.showSnackbar(
+                        message = i18n("contact.add.remote.link_copied_toast"),
+                        duration = SnackbarDuration.Short,
                     )
                 }
             }
-        },
-        confirmButton = { DialogButton(onClick = onSubmitAddContactDialog, text = i18n("add"), type = NEUTRAL) },
-        dismissButton = { DialogButton(onClick = onClose, text = i18n("cancel"), type = NEUTRAL) },
-    )
-    if (error != null) {
-        val (type, title, message) = errorMessage(error)
-        val (icon, color) = when (type) {
-            WARNING -> Icons.Filled.Warning to Orange500
-            ERROR -> Icons.Filled.Error to Red500
-        }
-        AlertDialog(
-            onDismissRequest = onErrorDialogDismissed,
-            confirmButton = { DialogButton(onClick = onErrorDialogDismissed, text = i18n("ok"), type = NEUTRAL) },
-            modifier = Modifier.widthIn(min = DIALOG_WIDTH),
-            title = {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Text(
+            handshakeLink,
+            style = TextStyle(
+                fontSize = 12.sp,
+                fontFamily = FontFamily.Monospace,
+                letterSpacing = (-0.5).sp
+            ),
+            modifier = Modifier.padding(
+                start = 16.dp,
+                end = 36.dp,
+                top = 8.dp,
+                bottom = 16.dp
+            ),
+        )
+        TooltipArea(
+            tooltip = {
+                Surface(
+                    modifier = Modifier.shadow(4.dp),
+                    shape = RoundedCornerShape(4.dp),
                 ) {
-                    Icon(
-                        imageVector = icon,
-                        contentDescription = title,
-                        tint = color
+                    Text(
+                        text = i18n("contact.add.remote.copy_tooltip"),
+                        modifier = Modifier.padding(8.dp)
                     )
-                    Text(title)
                 }
             },
-            text = { Text(message) }
+            modifier = Modifier.align(Alignment.CenterEnd),
+            delayMillis = 200,
+            tooltipPlacement = TooltipPlacement.ComponentRect(
+                alignment = Alignment.BottomCenter,
+            )
+        ) {
+            Icon(Icons.Filled.ContentCopy, "contact.add.remote.contact_link", modifier = Modifier.padding(8.dp))
+        }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun ContactLink(
+    remoteHandshakeLink: String,
+    setRemoteHandshakeLink: (String) -> Unit,
+    clipboardManager: ClipboardManager,
+    coroutineScope: CoroutineScope,
+    scaffoldState: ScaffoldState,
+) {
+    Row(Modifier.padding(top = 16.dp), verticalAlignment = Alignment.CenterVertically) {
+        Icon(Icons.Filled.SouthWest, "contact.add.remote.incoming_arrow")
+        Text(
+            i18n("contact.add.remote.contact_link"),
+            Modifier.padding(horizontal = 8.dp),
+            fontSize = 14.sp,
         )
     }
+    OutlinedTextField(
+        remoteHandshakeLink,
+        setRemoteHandshakeLink,
+        label = { Text(i18n("contact.add.remote.contact_link_hint")) },
+        modifier = Modifier.fillMaxWidth(),
+        textStyle = TextStyle(
+            fontSize = 12.sp,
+            fontFamily = FontFamily.Monospace,
+            letterSpacing = (-0.5).sp
+        ),
+        trailingIcon = {
+            TooltipArea(
+                tooltip = {
+                    Surface(
+                        modifier = Modifier.shadow(4.dp),
+                        shape = RoundedCornerShape(4.dp),
+                    ) {
+                        Text(
+                            text = i18n("contact.add.remote.paste_tooltip"),
+                            modifier = Modifier.padding(8.dp),
+                            color = MaterialTheme.colors.onSurface
+                        )
+                    }
+                },
+                modifier = Modifier.padding(start = 30.dp),
+                delayMillis = 200,
+                tooltipPlacement = TooltipPlacement.ComponentRect(
+                    alignment = Alignment.BottomCenter,
+                )
+            ) {
+                IconButton({
+                    setRemoteHandshakeLink(clipboardManager.getText().toString())
+                    coroutineScope.launch {
+                        scaffoldState.snackbarHostState.showSnackbar(
+                            message = i18n("contact.add.remote.link_pasted_toast"),
+                            duration = SnackbarDuration.Short,
+                        )
+                    }
+                }) {
+                    Icon(
+                        Icons.Filled.ContentPaste,
+                        "contact.add.remote.paste_tooltip",
+                        tint = MaterialTheme.colors.onSurface
+                    )
+                }
+            }
+        }
+    )
+}
+
+@Composable
+fun Alias(alias: String, setAddContactAlias: (String) -> Unit) {
+    Row(Modifier.padding(top = 16.dp), verticalAlignment = Alignment.CenterVertically) {
+        Icon(Icons.Filled.Person, "contact.add.remote.choose_nickname")
+        Text(
+            i18n("contact.add.remote.nickname_intro"),
+            Modifier.padding(horizontal = 8.dp),
+            fontSize = 14.sp,
+        )
+    }
+    OutlinedTextField(
+        alias,
+        setAddContactAlias,
+        label = { Text(i18n("contact.add.remote.choose_nickname")) },
+        modifier = Modifier.fillMaxWidth(),
+        maxLines = 1,
+    )
 }
 
 fun errorMessage(error: AddContactError) = when (error) {
@@ -235,12 +441,12 @@ fun errorMessage(error: AddContactError) = when (error) {
     )
     is ContactAlreadyExistsError -> {
         val intro = i18nF("introduction.error.contact_already_exists", error.existingName)
-        var explanation = i18nF("introduction.error.duplicate_contact_explainer", error.existingName, error.alias)
+        val explanation = i18nF("introduction.error.duplicate_contact_explainer", error.existingName, error.alias)
         Triple(WARNING, i18n("introduction.error.adding_failed"), (intro + "\n\n" + explanation))
     }
     is PendingAlreadyExistsError -> {
         val intro = i18nF("introduction.error.pending_contact_already_exists", error.existingAlias)
-        var explanation = i18nF("introduction.error.duplicate_contact_explainer", error.existingAlias, error.alias)
+        val explanation = i18nF("introduction.error.duplicate_contact_explainer", error.existingAlias, error.alias)
         Triple(WARNING, i18n("introduction.error.adding_failed"), (intro + "\n\n" + explanation))
     }
 }
