@@ -85,7 +85,7 @@ val robotoMedium = FontFamily(
     Font(resource = "fonts/Roboto-Medium.ttf"),
 )
 
-val spacing = 0.3.sp;
+val spacing = 0.3.sp
 
 val briarTypography = Typography(
     defaultFontFamily = robotoRegular,
