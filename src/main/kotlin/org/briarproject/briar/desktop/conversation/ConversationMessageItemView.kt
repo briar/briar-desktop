@@ -35,6 +35,7 @@ import org.briarproject.briar.desktop.theme.textPrimary
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 import java.time.Instant
 
+@Suppress("HardCodedStringLiteral")
 fun main() = preview(
     "text" to "This is a long long long message that spans over several lines.\n\nIt ends here.",
     "time" to Instant.now().toEpochMilli(),

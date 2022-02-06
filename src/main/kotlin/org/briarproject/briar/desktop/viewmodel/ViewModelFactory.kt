@@ -44,7 +44,7 @@ constructor(
                 }
             }
         }
-        requireNotNull(creator) { "unknown model class $modelClass" }
+        requireNotNull(creator) { "unknown model class $modelClass" } // NON-NLS
         return creator.get() as VM
     }
 }

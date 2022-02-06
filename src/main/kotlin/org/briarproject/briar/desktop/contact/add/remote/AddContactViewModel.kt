@@ -30,6 +30,7 @@ import org.briarproject.bramble.api.identity.AuthorConstants
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.bramble.util.StringUtils
 import org.briarproject.briar.desktop.threading.BriarExecutors
+import org.briarproject.briar.desktop.utils.KLoggerUtils.w
 import org.briarproject.briar.desktop.viewmodel.DbViewModel
 import org.briarproject.briar.desktop.viewmodel.asState
 import java.security.GeneralSecurityException
@@ -115,21 +116,21 @@ constructor(
         val matcher = HandshakeLinkConstants.LINK_REGEX.matcher(link.trim())
         // check if the link is well-formed
         if (!matcher.matches()) {
-            LOG.warn { "Remote handshake link is invalid" }
+            LOG.w { "Remote handshake link is invalid" }
             _error.value = RemoteInvalidError(link)
             return
         }
         // compare with own link
         val withoutSchema = matcher.group(2)
-        val withSchema = "briar://$withoutSchema"
+        val withSchema = "briar://$withoutSchema" // NON-NLS
         if (_handshakeLink.value == withSchema) {
-            LOG.warn { "Please enter contact's link, not your own" }
+            LOG.w { "Please enter contact's link, not your own" }
             _error.value = OwnLinkError(link)
             return
         }
 
         if (aliasIsInvalid(alias)) {
-            LOG.warn { "Alias is invalid" }
+            LOG.w { "Alias is invalid" }
             _error.value = AliasInvalidError(link, alias)
             return
         }
@@ -143,10 +144,10 @@ constructor(
                     _remoteHandshakeLink.value = ""
                 }
             } catch (e: FormatException) {
-                LOG.warn { "Link is invalid: $link" }
+                LOG.w { "Link is invalid: $link" }
                 _error.value = LinkInvalidError(link)
             } catch (e: GeneralSecurityException) {
-                LOG.warn { "Public key is invalid: $link" }
+                LOG.w { "Public key is invalid: $link" }
                 _error.value = PublicKeyInvalidError(link)
             }
             /*
@@ -154,10 +155,10 @@ constructor(
              See https://code.briarproject.org/briar/briar-desktop/-/issues/240
             */
             catch (e: ContactExistsException) {
-                LOG.warn { "Contact already exists: $link" }
+                LOG.w { "Contact already exists: $link" }
                 _error.value = ContactAlreadyExistsError(link, e.remoteAuthor.name, alias)
             } catch (e: PendingContactExistsException) {
-                LOG.warn { "Pending contact already exists: $link" }
+                LOG.w { "Pending contact already exists: $link" }
                 _error.value = PendingAlreadyExistsError(link, e.pendingContact.alias, alias)
             }
         }

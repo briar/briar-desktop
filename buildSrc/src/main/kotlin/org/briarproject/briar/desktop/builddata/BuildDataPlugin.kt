@@ -26,7 +26,7 @@ import org.gradle.api.plugins.JavaPluginExtension
 class BuildDataPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         val logger = project.logger
-        logger.info("applying version access plugin")
+        logger.info("applying version access plugin") // NON-NLS
 
         val extension = project.extensions.create(
             "buildData", BuildDataPluginExtension::class.java
@@ -38,7 +38,8 @@ class BuildDataPlugin : Plugin<Project> {
         project.tasks.findByName("compileJava")!!.dependsOn(task)
         val pathBuildDir = project.buildDir.toPath()
         val source = Util.getSourceDir(pathBuildDir)
-        val sourceSets = project.extensions.getByType(JavaPluginExtension::class.java).sourceSets.findByName("main")
+        val sourceSets =
+            project.extensions.getByType(JavaPluginExtension::class.java).sourceSets.findByName("main") // NON-NLS
         sourceSets!!.java { sourceSet: SourceDirectorySet -> sourceSet.srcDir(source) }
     }
 }

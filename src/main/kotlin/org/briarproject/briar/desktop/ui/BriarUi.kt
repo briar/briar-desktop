@@ -111,7 +111,7 @@ constructor(
         Window(
             title = title,
             onCloseRequest = onClose,
-            icon = painterResource("images/logo_circle.svg")
+            icon = painterResource("images/logo_circle.svg") // NON-NLS
         ) {
             window.minimumSize = Dimension(800, 600)
             CompositionLocalProvider(

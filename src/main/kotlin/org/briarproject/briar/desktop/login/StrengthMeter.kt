@@ -39,6 +39,7 @@ val YELLOW = Color(255, 255, 0)
 val LIME = Color(180, 255, 0)
 val GREEN = Color(0, 255, 0)
 
+@Suppress("HardCodedStringLiteral")
 fun main() = preview(
     "strength" to PreviewUtils.FloatSlider(0f, 0f, 1f)
 ) {

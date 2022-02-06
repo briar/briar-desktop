@@ -67,6 +67,7 @@ import org.briarproject.briar.desktop.utils.replaceIfIndexed
 import org.briarproject.briar.desktop.viewmodel.SingleStateEvent
 import java.time.Instant
 
+@Suppress("HardCodedStringLiteral")
 fun main() = preview(
     "num_messages" to 20,
     "first_unread_index" to 5

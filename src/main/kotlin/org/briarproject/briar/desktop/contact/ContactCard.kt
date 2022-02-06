@@ -53,6 +53,7 @@ import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 import org.briarproject.briar.desktop.utils.TimeUtils.getFormattedTimestamp
 import java.time.Instant
 
+@Suppress("HardCodedStringLiteral")
 fun main() = preview(
     "name" to "Paul",
     "alias" to "UI Master",

@@ -28,7 +28,9 @@ import org.briarproject.bramble.api.plugin.TorConstants.DEFAULT_CONTROL_PORT
 import org.briarproject.bramble.api.plugin.TorConstants.DEFAULT_SOCKS_PORT
 import org.briarproject.briar.BriarCoreEagerSingletons
 import org.briarproject.briar.desktop.TestUtils.getDataDir
+import org.briarproject.briar.desktop.utils.KLoggerUtils.i
 import org.briarproject.briar.desktop.utils.LogUtils
+import org.jetbrains.annotations.NonNls
 import java.util.logging.Level.ALL
 
 internal class RunWithMultipleTemporaryAccounts(
@@ -63,7 +65,7 @@ internal class RunWithMultipleTemporaryAccounts(
 
     private fun app(name: String, socksPort: Int, controlPort: Int): BriarDesktopTestApp {
         val dataDir = getDataDir()
-        LOG.info("Using data directory '$dataDir'")
+        LOG.i { "Using data directory '$dataDir'" }
 
         val app =
             DaggerBriarDesktopTestApp.builder().desktopTestModule(
@@ -71,7 +73,7 @@ internal class RunWithMultipleTemporaryAccounts(
             ).build()
 
         app.getShutdownManager().addShutdownHook {
-            LOG.info("deleting temporary account at $dataDir")
+            LOG.i { "deleting temporary account at $dataDir" }
             org.apache.commons.io.FileUtils.deleteDirectory(dataDir.toFile())
         }
 
@@ -83,6 +85,7 @@ internal class RunWithMultipleTemporaryAccounts(
         val lifecycleManager = app.getLifecycleManager()
         val accountManager = app.getAccountManager()
 
+        @NonNls
         val password = "verySecret123!"
         accountManager.createAccount(name, password)
 

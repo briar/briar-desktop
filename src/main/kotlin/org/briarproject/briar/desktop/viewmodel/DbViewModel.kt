@@ -24,6 +24,7 @@ import org.briarproject.bramble.api.db.Transaction
 import org.briarproject.bramble.api.db.TransactionManager
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.briar.desktop.threading.BriarExecutors
+import org.briarproject.briar.desktop.utils.KLoggerUtils.w
 
 abstract class DbViewModel(
     private val briarExecutors: BriarExecutors,
@@ -46,10 +47,10 @@ abstract class DbViewModel(
             lifecycleManager.waitForDatabase()
             task()
         } catch (e: InterruptedException) {
-            LOG.warn("Interrupted while waiting for database")
+            LOG.w { "Interrupted while waiting for database" }
             Thread.currentThread().interrupt()
         } catch (e: Exception) {
-            LOG.warn(e) { "Unhandled exception in database executor" }
+            LOG.w(e) { "Unhandled exception in database executor" }
         }
     }
 
@@ -73,10 +74,10 @@ abstract class DbViewModel(
                 db.endTransaction(txn)
             }
         } catch (e: InterruptedException) {
-            LOG.warn("Interrupted while waiting for database")
+            LOG.w { "Interrupted while waiting for database" }
             Thread.currentThread().interrupt()
         } catch (e: Exception) {
-            LOG.warn(e) { "Unhandled exception in database executor" }
+            LOG.w(e) { "Unhandled exception in database executor" }
         }
     }
 }

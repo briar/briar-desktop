@@ -37,6 +37,7 @@ import org.briarproject.briar.api.conversation.DeletionResult
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 
+@Suppress("HardCodedStringLiteral")
 fun main() = preview(
     "introduction_pending" to false,
     "invitation_pending" to false,

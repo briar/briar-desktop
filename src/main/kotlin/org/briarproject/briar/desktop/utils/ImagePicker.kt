@@ -22,6 +22,8 @@ import androidx.compose.ui.awt.ComposeWindow
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.res.loadImageBitmap
 import mu.KotlinLogging
+import org.briarproject.briar.desktop.utils.KLoggerUtils.d
+import org.briarproject.briar.desktop.utils.KLoggerUtils.w
 import java.io.FileInputStream
 
 object ImagePicker {
@@ -45,7 +47,7 @@ object ImagePicker {
         dialog.isVisible = true
         val files = dialog.files
         val file = if (files == null || files.isEmpty()) null else files[0]
-        LOG.debug { "Loading image from file '$file'" }
+        LOG.d { "Loading image from file '$file'" }
         if (file == null) {
             updateImage(null)
         } else {
@@ -54,7 +56,7 @@ object ImagePicker {
                     loadImageBitmap(it)
                 }
             } catch (e: Throwable) {
-                LOG.warn(e) { "Error while loading image" }
+                LOG.w(e) { "Error while loading image" }
                 null
             }
             updateImage(image)

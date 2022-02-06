@@ -38,6 +38,7 @@ import org.briarproject.briar.api.conversation.ConversationManager
 import org.briarproject.briar.api.identity.AuthorManager
 import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.utils.ImageUtils.loadAvatar
+import org.briarproject.briar.desktop.utils.KLoggerUtils.i
 import org.briarproject.briar.desktop.utils.clearAndAddAll
 import org.briarproject.briar.desktop.utils.removeFirst
 import org.briarproject.briar.desktop.utils.replaceFirst
@@ -98,25 +99,25 @@ abstract class ContactsViewModel(
     override fun eventOccurred(e: Event?) {
         when (e) {
             is ContactAddedEvent -> {
-                LOG.info("Contact added, reloading")
+                LOG.i { "Contact added, reloading" }
                 loadContacts()
             }
             is PendingContactAddedEvent -> {
-                LOG.info("Pending contact added, reloading")
+                LOG.i { "Pending contact added, reloading" }
                 loadContacts()
             }
             is ContactConnectedEvent -> {
-                LOG.info("Contact connected, update state")
+                LOG.i { "Contact connected, update state" }
                 updateItem(e.contactId) {
                     it.updateIsConnected(true)
                 }
             }
             is ContactDisconnectedEvent -> {
-                LOG.info("Contact disconnected, update state")
+                LOG.i { "Contact disconnected, update state" }
                 updateItem(e.contactId) { it.updateIsConnected(false) }
             }
             is ContactRemovedEvent -> {
-                LOG.info("Contact removed, removing item")
+                LOG.i { "Contact removed, removing item" }
                 removeItem(e.contactId)
             }
         }

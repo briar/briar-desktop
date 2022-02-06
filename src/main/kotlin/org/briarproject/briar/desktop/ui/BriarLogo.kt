@@ -27,4 +27,7 @@ import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 
 @Composable
 fun BriarLogo(modifier: Modifier = Modifier.fillMaxWidth()) =
-    Image(painterResource("images/logo_circle.svg"), i18n("access.logo"), modifier)
+    Image(
+        painterResource("images/logo_circle.svg"), // NON-NLS
+        i18n("access.logo"), modifier
+    )

@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="briar-desktop-kotlin-main" pattern="file[briar-desktop.main]:kotlin//*" />
+</component>

@@ -24,7 +24,9 @@ import mu.KotlinLogging
 import org.briarproject.bramble.BrambleCoreEagerSingletons
 import org.briarproject.briar.BriarCoreEagerSingletons
 import org.briarproject.briar.desktop.TestUtils.getDataDir
+import org.briarproject.briar.desktop.utils.KLoggerUtils.i
 import org.briarproject.briar.desktop.utils.LogUtils
+import org.jetbrains.annotations.NonNls
 import java.nio.file.Files
 import java.nio.file.attribute.PosixFilePermissions
 import java.util.logging.Level.ALL
@@ -45,9 +47,10 @@ internal class RunWithTemporaryAccount(
         LogUtils.setupLogging(ALL)
 
         val dataDir = getDataDir()
-        LOG.info { "Using data directory '$dataDir'" }
+        LOG.i { "Using data directory '$dataDir'" }
 
         if (makeDirUnwritable) {
+            @NonNls
             val permissions = PosixFilePermissions.fromString("r--r--r--")
             Files.setPosixFilePermissions(dataDir, permissions)
         }
@@ -58,7 +61,7 @@ internal class RunWithTemporaryAccount(
             ).build()
 
         app.getShutdownManager().addShutdownHook {
-            LOG.info { "deleting temporary account at $dataDir" }
+            LOG.i { "deleting temporary account at $dataDir" }
             org.apache.commons.io.FileUtils.deleteDirectory(dataDir.toFile())
         }
 
@@ -71,6 +74,7 @@ internal class RunWithTemporaryAccount(
         val accountManager = app.getAccountManager()
 
         if (createAccount) {
+            @NonNls
             val password = "verySecret123!"
             accountManager.createAccount("alice", password)
 

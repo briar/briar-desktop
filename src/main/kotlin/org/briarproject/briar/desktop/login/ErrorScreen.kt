@@ -58,6 +58,7 @@ import org.briarproject.briar.desktop.ui.Constants.STARTUP_FIELDS_WIDTH
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 
+@Suppress("HardCodedStringLiteral")
 fun main() = preview {
     var error: ErrorSubViewModel.Error by remember { mutableStateOf(RegistrationSubViewModel.RegistrationError) }
 

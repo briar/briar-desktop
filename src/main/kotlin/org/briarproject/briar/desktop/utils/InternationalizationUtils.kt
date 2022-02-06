@@ -20,6 +20,7 @@ package org.briarproject.briar.desktop.utils
 
 import com.ibm.icu.text.MessageFormat
 import mu.KotlinLogging
+import org.briarproject.briar.desktop.utils.KLoggerUtils.w
 import java.util.Locale
 import java.util.MissingResourceException
 import java.util.ResourceBundle
@@ -42,7 +43,7 @@ object InternationalizationUtils {
             val resourceBundle = createResourceBundle()
             resourceBundle.getString(key)
         } catch (e: MissingResourceException) {
-            LOG.warn { "Missing string resource for key '$key'" }
+            LOG.w { "Missing string resource for key '$key'" }
             ""
         }
 
@@ -59,7 +60,7 @@ object InternationalizationUtils {
             val messageFormat = MessageFormat(pattern, Locale.getDefault())
             messageFormat.format(arrayOf(amount))
         } catch (e: IllegalArgumentException) {
-            LOG.warn { "Pattern does not match arguments for resource '$key' and locale '${Locale.getDefault()}" }
+            LOG.w { "Pattern does not match arguments for resource '$key' and locale '${Locale.getDefault()}" }
             ""
         }
 
@@ -71,7 +72,7 @@ object InternationalizationUtils {
             val pattern: String = i18n(key)
             java.text.MessageFormat.format(pattern, *params)
         } catch (e: IllegalArgumentException) {
-            LOG.warn { "Pattern does not match arguments for resource '$key'" }
+            LOG.w { "Pattern does not match arguments for resource '$key'" }
             ""
         }
 

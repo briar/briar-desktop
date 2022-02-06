@@ -62,7 +62,9 @@ import org.briarproject.briar.desktop.contact.ContactItem
 import org.briarproject.briar.desktop.conversation.ConversationRequestItem.RequestType.INTRODUCTION
 import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.utils.ImageUtils.loadAvatar
+import org.briarproject.briar.desktop.utils.KLoggerUtils.i
 import org.briarproject.briar.desktop.utils.KLoggerUtils.logDuration
+import org.briarproject.briar.desktop.utils.KLoggerUtils.w
 import org.briarproject.briar.desktop.utils.addAfterLast
 import org.briarproject.briar.desktop.utils.clearAndAddAll
 import org.briarproject.briar.desktop.utils.replaceIf
@@ -198,10 +200,10 @@ constructor(
                     txn.attach { addMessage(msg) }
                 } catch (e: UnexpectedTimerException) {
                     // todo: handle this properly
-                    LOG.warn(e) {}
+                    LOG.w(e) {}
                 } catch (e: DbException) {
                     // todo: handle this properly
-                    LOG.warn(e) {}
+                    LOG.w(e) {}
                 }
             }
         }
@@ -280,7 +282,7 @@ constructor(
             return contactItem
         } catch (e: NoSuchContactException) {
             // todo: handle this properly
-            LOG.warn(e) {}
+            LOG.w(e) {}
             throw e
         }
     }
@@ -308,7 +310,7 @@ constructor(
             }
         } catch (e: NoSuchContactException) {
             // todo: handle this properly
-            LOG.warn(e) {}
+            LOG.w(e) {}
         } finally {
             _loadingMessages.value = false
         }
@@ -318,7 +320,7 @@ constructor(
         when (e) {
             is ConversationMessageReceivedEvent<*> -> {
                 if (e.contactId == _contactId.value) {
-                    LOG.info("Message received, adding")
+                    LOG.i { "Message received, adding" }
                     val h = e.messageHeader
                     // insert at start of list according to descending sort order
                     runOnDbThreadWithTransaction(true) { txn ->
@@ -337,32 +339,32 @@ constructor(
             }
             is MessagesSentEvent -> {
                 if (e.contactId == _contactId.value) {
-                    LOG.info("Messages sent")
+                    LOG.i { "Messages sent" }
                     markMessages(e.messageIds, sent = true, seen = false)
                 }
             }
             is MessagesAckedEvent -> {
                 if (e.contactId == _contactId.value) {
-                    LOG.info("Messages acked")
+                    LOG.i { "Messages acked" }
                     markMessages(e.messageIds, sent = true, seen = true)
                 }
             }
             is ConversationMessagesDeletedEvent -> {
                 if (e.contactId == _contactId.value) {
-                    LOG.info("Messages auto-deleted")
+                    LOG.i { "Messages auto-deleted" }
                     val messages = HashSet(e.messageIds)
                     _messages.removeIf { messages.contains(it.id) }
                 }
             }
             is ContactConnectedEvent -> {
                 if (e.contactId == _contactId.value) {
-                    LOG.info("Contact connected")
+                    LOG.i { "Contact connected" }
                     _contactItem.value = _contactItem.value!!.updateIsConnected(true)
                 }
             }
             is ContactDisconnectedEvent -> {
                 if (e.contactId == _contactId.value) {
-                    LOG.info("Contact disconnected")
+                    LOG.i { "Contact disconnected" }
                     _contactItem.value = _contactItem.value!!.updateIsConnected(false)
                 }
             }

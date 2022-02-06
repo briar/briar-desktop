@@ -58,6 +58,8 @@ import org.briarproject.briar.api.privategroup.PrivateGroupManager
 import org.briarproject.briar.api.test.TestAvatarCreator
 import org.briarproject.briar.desktop.GroupCountHelper
 import org.briarproject.briar.desktop.attachment.media.ImageCompressor
+import org.briarproject.briar.desktop.utils.KLoggerUtils.i
+import org.briarproject.briar.desktop.utils.KLoggerUtils.w
 import java.io.IOException
 import java.io.InputStream
 import java.time.LocalDateTime
@@ -118,7 +120,7 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
                     numPrivateGroupPosts
                 )
             } catch (e: DbException) {
-                LOG.warn(e) { }
+                LOG.w(e) { }
             }
         }
     }
@@ -185,7 +187,7 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
             contactId
         }
         if (random.nextInt(100) + 1 <= avatarPercent) addAvatar(contactId)
-        LOG.info { "Added contact ${remote.name} with transport properties: $props" }
+        LOG.i { "Added contact ${remote.name} with transport properties: $props" }
         localAuthors[contactId] = remote
         return contactId
     }
@@ -292,7 +294,7 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
         val `is`: InputStream = try {
             testAvatarCreator.avatarInputStream
         } catch (e: IOException) {
-            LOG.warn(e) {}
+            LOG.w(e) {}
             return
         } ?: return
         val m: Message = try {
@@ -332,7 +334,7 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
                 createPrivateMessage(contactId, groupId, person.messages[k])
             }
         }
-        LOG.info { "Created $numPrivateMsgs private messages per contact." }
+        LOG.i { "Created $numPrivateMsgs private messages per contact." }
     }
 
     @Throws(DbException::class)
@@ -413,7 +415,7 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
             }
             privateGroups.add(privateGroup)
         }
-        LOG.info { "Created ${min(numPrivateGroups, GROUP_NAMES.size)} private groups." }
+        LOG.i { "Created ${min(numPrivateGroups, GROUP_NAMES.size)} private groups." }
         return privateGroups
     }
 

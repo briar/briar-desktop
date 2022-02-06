@@ -39,6 +39,7 @@ import org.briarproject.briar.desktop.DesktopFeatureFlags
 import org.briarproject.briar.desktop.utils.ImageUtils
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nF
+import org.briarproject.briar.desktop.utils.KLoggerUtils.w
 import org.briarproject.briar.desktop.utils.UiUtils.getContactDisplayName
 
 internal class ConversationVisitor(
@@ -58,7 +59,7 @@ internal class ConversationVisitor(
         try {
             return messagingManager.getMessageText(txn, m)
         } catch (e: DbException) {
-            LOG.warn(e) {}
+            LOG.w(e) {}
         }
         return null
     }
@@ -76,7 +77,7 @@ internal class ConversationVisitor(
         if (h.hasText()) {
             item.text = loadMessageText(txn, h.id)
         } else {
-            LOG.warn { "private message without text" }
+            LOG.w { "private message without text" }
         }
         return item
     }

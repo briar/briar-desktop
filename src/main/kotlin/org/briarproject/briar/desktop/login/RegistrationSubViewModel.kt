@@ -29,6 +29,8 @@ import org.briarproject.briar.desktop.login.RegistrationSubViewModel.State.CREAT
 import org.briarproject.briar.desktop.login.RegistrationSubViewModel.State.INSERT_NICKNAME
 import org.briarproject.briar.desktop.login.RegistrationSubViewModel.State.INSERT_PASSWORD
 import org.briarproject.briar.desktop.threading.BriarExecutors
+import org.briarproject.briar.desktop.utils.KLoggerUtils.i
+import org.briarproject.briar.desktop.utils.KLoggerUtils.w
 import org.briarproject.briar.desktop.viewmodel.asState
 
 class RegistrationSubViewModel(
@@ -116,10 +118,10 @@ class RegistrationSubViewModel(
         _state.value = CREATING
         briarExecutors.onIoThread {
             if (accountManager.createAccount(_nickname.value, _password.value)) {
-                LOG.info { "Created account" }
+                LOG.i { "Created account" }
                 viewModel.startBriarCore()
             } else {
-                LOG.warn { "Failed to create account" }
+                LOG.w { "Failed to create account" }
                 viewModel.showError(RegistrationError)
             }
         }

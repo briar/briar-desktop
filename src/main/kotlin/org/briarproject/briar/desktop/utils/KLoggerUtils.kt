@@ -20,11 +20,53 @@ package org.briarproject.briar.desktop.utils
 
 import mu.KLogger
 import org.briarproject.bramble.util.LogUtils
+import org.jetbrains.annotations.NonNls
 
 object KLoggerUtils {
 
+    @NonNls
     fun KLogger.logDuration(task: String, start: Long) {
         val duration = LogUtils.now() - start
-        debug { "$task took $duration ms" }
+        d { "$task took $duration ms" }
+    }
+
+    fun KLogger.t(@NonNls msg: () -> Any?) {
+        trace(msg)
+    }
+
+    fun KLogger.d(@NonNls msg: () -> Any?) {
+        debug(msg)
+    }
+
+    fun KLogger.i(@NonNls msg: () -> Any?) {
+        info(msg)
+    }
+
+    fun KLogger.w(@NonNls msg: () -> Any?) {
+        warn(msg)
+    }
+
+    fun KLogger.e(@NonNls msg: () -> Any?) {
+        error(msg)
+    }
+
+    fun KLogger.t(t: Throwable?, @NonNls msg: () -> Any?) {
+        trace(t, msg)
+    }
+
+    fun KLogger.d(t: Throwable?, @NonNls msg: () -> Any?) {
+        trace(t, msg)
+    }
+
+    fun KLogger.i(t: Throwable?, @NonNls msg: () -> Any?) {
+        trace(t, msg)
+    }
+
+    fun KLogger.w(t: Throwable?, @NonNls msg: () -> Any?) {
+        trace(t, msg)
+    }
+
+    fun KLogger.e(t: Throwable?, @NonNls msg: () -> Any?) {
+        trace(t, msg)
     }
 }

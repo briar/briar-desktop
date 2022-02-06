@@ -59,9 +59,12 @@ import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nF
 import org.briarproject.briar.desktop.utils.PreviewUtils
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 import org.briarproject.briar.desktop.viewmodel.viewModel
+import org.jetbrains.annotations.NonNls
 
+@NonNls
 const val link = "briar://ady23gvb2r76afe5zhxh5kvnh4b22zrcnxibn63tfknrdcwrw7zrs"
 
+@Suppress("HardCodedStringLiteral")
 fun main() = preview(
     "visible" to true,
     "remote link" to "",
@@ -96,6 +99,7 @@ fun main() = preview(
     )
 }
 
+@Suppress("HardCodedStringLiteral")
 private fun PreviewUtils.PreviewScope.mapErrors(name: String?): AddContactError? = when (name) {
     OwnLinkError::class.simpleName!! -> OwnLinkError(link)
     RemoteInvalidError::class.simpleName!! -> RemoteInvalidError(link)

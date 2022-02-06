@@ -31,6 +31,8 @@ import org.briarproject.bramble.api.lifecycle.LifecycleManager.StartResult.ALREA
 import org.briarproject.bramble.api.lifecycle.LifecycleManager.StartResult.SUCCESS
 import org.briarproject.bramble.api.lifecycle.event.LifecycleEvent
 import org.briarproject.briar.desktop.threading.BriarExecutors
+import org.briarproject.briar.desktop.utils.KLoggerUtils.i
+import org.briarproject.briar.desktop.utils.KLoggerUtils.w
 import org.briarproject.briar.desktop.viewmodel.EventListenerDbViewModel
 import org.briarproject.briar.desktop.viewmodel.asState
 import javax.inject.Inject
@@ -98,9 +100,9 @@ constructor(
         val result = lifecycleManager.startServices(dbKey)
         when (result) {
             SUCCESS -> lifecycleManager.waitForStartup()
-            ALREADY_RUNNING -> LOG.info { "Already running" }
+            ALREADY_RUNNING -> LOG.i { "Already running" }
             else -> {
-                LOG.warn { "Startup failed: $result" }
+                LOG.w { "Startup failed: $result" }
                 showError(StartingError(result))
             }
         }

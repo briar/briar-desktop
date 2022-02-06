@@ -44,6 +44,7 @@ import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nP
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 
+@Suppress("HardCodedStringLiteral")
 fun main() = preview {
     Column {
         ExpirationBanner {}

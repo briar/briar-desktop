@@ -36,6 +36,7 @@ import org.briarproject.briar.api.identity.AuthorManager
 import org.briarproject.briar.desktop.conversation.ConversationMessagesReadEvent
 import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.utils.ImageUtils
+import org.briarproject.briar.desktop.utils.KLoggerUtils.i
 import org.briarproject.briar.desktop.viewmodel.asState
 import javax.inject.Inject
 
@@ -104,18 +105,18 @@ constructor(
         super.eventOccurred(e)
         when (e) {
             is ConversationMessageTrackedEvent -> {
-                LOG.info { "Conversation message tracked, updating item" }
+                LOG.i { "Conversation message tracked, updating item" }
                 updateItem(e.contactId) { it.updateTimestampAndUnread(e.timestamp, e.read) }
             }
             is ContactAliasChangedEvent -> {
                 updateItem(e.contactId) { it.updateAlias(e.alias) }
             }
             is ConversationMessagesReadEvent -> {
-                LOG.info("${e.count} conversation messages read, updating item")
+                LOG.i { "${e.count} conversation messages read, updating item" }
                 updateItem(e.contactId) { it.updateFromMessagesRead(e.count) }
             }
             is AvatarUpdatedEvent -> {
-                LOG.info("received avatar update: ${e.attachmentHeader}")
+                LOG.i { "received avatar update: ${e.attachmentHeader}" }
                 if (e.attachmentHeader == null) {
                     updateItem(e.contactId) { it.updateAvatar(null) }
                 } else {

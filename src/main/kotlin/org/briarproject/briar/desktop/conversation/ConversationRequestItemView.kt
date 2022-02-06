@@ -52,6 +52,7 @@ import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 import java.time.Instant
 
+@Suppress("HardCodedStringLiteral")
 fun main() = preview(
     "canBeOpened" to false,
     "answered" to false,

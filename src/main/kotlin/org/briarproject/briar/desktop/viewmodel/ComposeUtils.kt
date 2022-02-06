@@ -47,7 +47,7 @@ import kotlin.reflect.KClass
 inline fun <reified VM : ViewModel> viewModel(
     key: String? = null,
     viewModelProvider: ViewModelProvider = checkNotNull(LocalViewModelProvider.current) {
-        "No ViewModelProvider was provided via LocalViewModelProvider"
+        "No ViewModelProvider was provided via LocalViewModelProvider" // NON-NLS
     }
 ): VM = viewModel(VM::class, key, viewModelProvider)
 
@@ -70,7 +70,7 @@ fun <VM : ViewModel> viewModel(
     modelClass: KClass<VM>,
     key: String? = null,
     viewModelProvider: ViewModelProvider = checkNotNull(LocalViewModelProvider.current) {
-        "No ViewModelProvider was provided via LocalViewModelProvider"
+        "No ViewModelProvider was provided via LocalViewModelProvider" // NON-NLS
     }
 ): VM {
     val viewModel = viewModelProvider.get(modelClass, key)

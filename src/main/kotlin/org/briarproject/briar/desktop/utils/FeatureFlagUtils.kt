@@ -24,10 +24,10 @@ import org.briarproject.briar.desktop.ui.LocalDesktopFeatureFlags
 
 @Composable
 fun getCoreFeatureFlags() = checkNotNull(LocalCoreFeatureFlags.current) {
-    "No FeatureFlags was provided via LocalCoreFeatureFlags"
+    "No FeatureFlags was provided via LocalCoreFeatureFlags" // NON-NLS
 }
 
 @Composable
 fun getDesktopFeatureFlags() = checkNotNull(LocalDesktopFeatureFlags.current) {
-    "No DesktopFeatureFlags was provided via LocalDesktopFeatureFlags"
+    "No DesktopFeatureFlags was provided via LocalDesktopFeatureFlags" // NON-NLS
 }

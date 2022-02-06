@@ -20,6 +20,7 @@ package org.briarproject.briar.desktop.attachment.media
 
 import mu.KotlinLogging
 import org.briarproject.briar.api.attachment.MediaConstants.MAX_IMAGE_SIZE
+import org.briarproject.briar.desktop.utils.KLoggerUtils.i
 import java.awt.geom.AffineTransform
 import java.awt.image.AffineTransformOp
 import java.awt.image.BufferedImage
@@ -77,7 +78,7 @@ class ImageCompressorImpl @Inject internal constructor() : ImageCompressor {
 
             jpgWriter.dispose()
             if (out.size() <= MAX_IMAGE_SIZE) {
-                LOG.info { "Compressed image to ${out.size()} bytes, quality $quality" }
+                LOG.i { "Compressed image to ${out.size()} bytes, quality $quality" }
                 return ByteArrayInputStream(out.toByteArray())
             }
             out.reset()

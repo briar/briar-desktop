@@ -30,6 +30,7 @@ import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
+@Suppress("HardCodedStringLiteral")
 fun main() = preview(
     "visible" to true,
 ) {
@@ -52,14 +53,14 @@ fun AboutDialog(
 
     // rows displayed in table
     val lines = listOf(
-        i18n("about.copyright") to "The Briar Project",
-        i18n("about.license") to "GNU Affero General Public License v3",
+        i18n("about.copyright") to "The Briar Project", // NON-NLS
+        i18n("about.license") to "GNU Affero General Public License v3", // NON-NLS
         i18n("about.version") to BuildData.VERSION,
-        "Git branch" to BuildData.GIT_BRANCH,
-        "Git hash" to BuildData.GIT_HASH,
-        "Commit time" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(buildTime),
+        "Git branch" to BuildData.GIT_BRANCH, // NON-NLS
+        "Git hash" to BuildData.GIT_HASH, // NON-NLS
+        "Commit time" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(buildTime), // NON-NLS
         i18n("about.website") to "https://briarproject.org",
-        i18n("about.contact") to "desktop@briarproject.org",
+        i18n("about.contact") to "desktop@briarproject.org", // NON-NLS
     )
 
     BriarDialog(onClose = onClose) {

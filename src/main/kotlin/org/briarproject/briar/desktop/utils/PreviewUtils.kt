@@ -201,6 +201,7 @@ object PreviewUtils {
      * They can be retrieved as [State] using [PreviewScope.getStringParameter] or similar functions
      * and used inside the composable [content].
      */
+    @Suppress("HardCodedStringLiteral")
     fun preview(
         vararg parameters: Pair<String, Any>,
         content: @Composable PreviewScope.() -> Unit

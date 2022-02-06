@@ -43,6 +43,7 @@ import org.briarproject.briar.desktop.theme.textSecondary
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 import java.time.Instant
 
+@Suppress("HardCodedStringLiteral")
 fun main() = preview(
     "notice" to "Text of notice message.",
     "text" to "This is a long long long message that spans over several lines.\n\nIt ends here.",

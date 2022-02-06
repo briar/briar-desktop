@@ -59,6 +59,7 @@ import org.briarproject.briar.desktop.utils.ImagePicker.pickImageUsingDialog
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 
+@Suppress("HardCodedStringLiteral")
 @OptIn(ExperimentalMaterialApi::class, ExperimentalComposeUiApi::class)
 fun main() = preview {
     val bitmap = ResourceLoader.Default.load("images/logo_circle.png").use {
