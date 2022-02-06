@@ -51,7 +51,7 @@ fun MessageCounter(unread: Int, modifier: Modifier = Modifier) {
         ) {
             Text(
                 modifier = Modifier.align(Alignment.Center),
-                fontSize = 8.sp,
+                fontSize = 10.sp,
                 textAlign = TextAlign.Center,
                 text = unread.toString(),
                 maxLines = 1

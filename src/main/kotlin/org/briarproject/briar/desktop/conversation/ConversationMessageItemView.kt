@@ -29,7 +29,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import org.briarproject.bramble.api.sync.GroupId
 import org.briarproject.bramble.api.sync.MessageId
 import org.briarproject.briar.desktop.theme.textPrimary
@@ -82,7 +81,7 @@ fun ConversationMessageItemView(
                 SelectionContainer {
                     Text(
                         m.text!!,
-                        fontSize = 16.sp,
+                        style = MaterialTheme.typography.body1,
                         color = textColor,
                         modifier = Modifier.align(Alignment.Start).padding(bottom = 8.dp)
                     )

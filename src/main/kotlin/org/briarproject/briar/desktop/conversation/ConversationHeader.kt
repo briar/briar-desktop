@@ -89,7 +89,7 @@ fun ConversationHeader(
                         .weight(1f, fill = false),
                     maxLines = 2,
                     overflow = Ellipsis,
-                    fontSize = 20.sp
+                    style = MaterialTheme.typography.h2
                 )
             }
             IconButton(

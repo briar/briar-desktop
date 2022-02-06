@@ -148,7 +148,7 @@ fun RealContactInfo(contactItem: ContactItem, modifier: Modifier = Modifier) {
     Column(modifier = modifier.padding(start = 12.dp)) {
         Text(
             contactItem.displayName,
-            fontSize = 14.sp,
+            style = MaterialTheme.typography.body1,
             maxLines = 3,
             overflow = Ellipsis,
             modifier = Modifier.align(Alignment.Start).padding(bottom = 2.dp)
@@ -157,7 +157,7 @@ fun RealContactInfo(contactItem: ContactItem, modifier: Modifier = Modifier) {
             if (contactItem.isEmpty) i18n("contacts.card.nothing") else getFormattedTimestamp(
                 contactItem.timestamp
             ),
-            fontSize = 10.sp,
+            fontSize = 12.sp,
             modifier = Modifier.align(Alignment.Start)
         )
     }
@@ -168,7 +168,7 @@ fun PendingContactInfo(contactItem: PendingContactItem, modifier: Modifier = Mod
     Column(modifier = modifier.padding(start = 12.dp)) {
         Text(
             contactItem.displayName,
-            fontSize = 14.sp,
+            style = MaterialTheme.typography.body1,
             maxLines = 3,
             overflow = Ellipsis,
             modifier = Modifier.align(Alignment.Start).padding(bottom = 2.dp)

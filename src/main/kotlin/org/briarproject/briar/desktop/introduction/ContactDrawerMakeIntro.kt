@@ -30,6 +30,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
@@ -68,14 +69,14 @@ fun ContactDrawerMakeIntro(
                 Row(Modifier.fillMaxWidth().height(HEADER_SIZE)) {
                     IconButton(
                         onClick = { closeInfoDrawer(false) },
-                        Modifier.padding(horizontal = 11.dp).size(32.dp).align(Alignment.CenterVertically)
+                        Modifier.padding(start = 16.dp).size(32.dp).align(Alignment.CenterVertically)
                     ) {
                         Icon(Icons.Filled.Close, i18n("access.introduction.close"))
                     }
                     Text(
                         text = i18nF("introduction.title_first", contactItem.displayName),
-                        modifier = Modifier.align(Alignment.CenterVertically),
-                        fontSize = 16.sp,
+                        modifier = Modifier.align(Alignment.CenterVertically).padding(start = 16.dp),
+                        style = MaterialTheme.typography.body2,
                     )
                 }
                 HorizontalDivider()
