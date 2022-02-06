@@ -21,15 +21,12 @@ package org.briarproject.briar.desktop.contact
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowLeft
 import androidx.compose.material.icons.filled.ArrowRight
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -128,15 +125,19 @@ fun ContactDropDown(
         expanded = state == State.CONTACT,
         onDismissRequest = close,
     ) {
-        Row {
-            IconButton(onClick = { setState(State.MAIN) }) {
-                Icon(Icons.Filled.ArrowBack, i18n("back"), modifier = Modifier.height(16.dp))
+        DropdownMenuItem(onClick = { setState(State.MAIN) }) {
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Icon(
+                    Icons.Filled.ArrowLeft,
+                    i18n("back"),
+                    modifier = Modifier.align(Alignment.CenterVertically)
+                )
+                Text(
+                    i18n("contacts.dropdown.contact"),
+                    fontSize = 14.sp,
+                    modifier = Modifier.align(Alignment.CenterVertically)
+                )
             }
-            Text(
-                i18n("contacts.dropdown.contact.title"), fontSize = 12.sp,
-                modifier = Modifier.padding(vertical = 8.dp)
-                    .align(Alignment.CenterVertically)
-            )
         }
         DropdownMenuItem(onClick = { close(); onChangeAlias() }) {
             Text(i18n("contacts.dropdown.contact.change"), fontSize = 14.sp)
