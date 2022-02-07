@@ -16,6 +16,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import io.gitlab.arturbosch.detekt.Detekt
+import io.gitlab.arturbosch.detekt.DetektCreateBaselineTask
 import org.jetbrains.compose.compose
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.compose.jetbrainsCompose
@@ -56,6 +58,7 @@ plugins {
     id("idea")
     id("org.jlleitschuh.gradle.ktlint") version "10.1.0"
     id("org.briarproject.briar.desktop.build-data-gradle-plugin")
+    id("io.gitlab.arturbosch.detekt") version ("1.19.0")
 }
 
 val versionCode = "0.1.0"
@@ -152,4 +155,28 @@ compose.desktop {
             }
         }
     }
+}
+
+detekt {
+    buildUponDefaultConfig = true // preconfigure defaults
+    allRules = false // activate all available (even unstable) rules.
+    config =
+        files("$projectDir/detekt/detekt.yml") // point to your custom config defining rules to run, overwriting default behavior
+    // baseline = file("$projectDir/detekt/baseline.xml") // a way of suppressing issues before introducing detekt
+}
+
+tasks.withType<Detekt>().configureEach {
+    reports {
+        html.required.set(true) // observe findings in your browser with structure and code snippets
+        xml.required.set(true) // checkstyle like format mainly for integrations like Jenkins
+        txt.required.set(true) // similar to the console output, contains issue signature to manually edit baseline files
+        sarif.required.set(true) // standardized SARIF format (https://sarifweb.azurewebsites.net/) to support integrations with Github Code Scanning
+    }
+}
+
+tasks.withType<Detekt>().configureEach {
+    jvmTarget = "1.8"
+}
+tasks.withType<DetektCreateBaselineTask>().configureEach {
+    jvmTarget = "1.8"
 }
