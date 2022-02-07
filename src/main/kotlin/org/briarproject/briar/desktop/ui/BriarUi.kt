@@ -31,18 +31,22 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.toAwtImage
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalLocalization
 import androidx.compose.ui.platform.PlatformLocalization
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.window.FrameWindowScope
 import androidx.compose.ui.window.Window
 import org.briarproject.bramble.api.FeatureFlags
-import org.briarproject.bramble.api.event.Event
 import org.briarproject.bramble.api.event.EventBus
 import org.briarproject.bramble.api.event.EventListener
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.bramble.api.lifecycle.LifecycleManager.LifecycleState.RUNNING
 import org.briarproject.bramble.api.lifecycle.event.LifecycleEvent
+import org.briarproject.briar.api.conversation.event.ConversationMessageReceivedEvent
 import org.briarproject.briar.desktop.DesktopFeatureFlags
 import org.briarproject.briar.desktop.expiration.ExpirationBanner
 import org.briarproject.briar.desktop.login.ErrorScreen
@@ -95,24 +99,18 @@ constructor(
     private val unencryptedSettings: UnencryptedSettings,
     private val featureFlags: FeatureFlags,
     private val desktopFeatureFlags: DesktopFeatureFlags,
-) : BriarUi, EventListener {
+) : BriarUi {
 
     private var screenState by mutableStateOf(
         if (lifecycleManager.lifecycleState == RUNNING) MAIN
         else STARTUP
     )
 
-    override fun eventOccurred(e: Event?) {
-        if (e is LifecycleEvent && e.lifecycleState == RUNNING)
-            screenState = MAIN
-    }
-
     override fun stop() {
         if (lifecycleManager.lifecycleState == RUNNING) {
             lifecycleManager.stopServices()
             lifecycleManager.waitForShutdown()
         }
-        eventBus.removeListener(this)
     }
 
     @OptIn(ExperimentalComposeUiApi::class)
@@ -125,18 +123,32 @@ constructor(
             override val paste = i18n("paste")
             override val selectAll = i18n("select_all")
         }
-        eventBus.addListener(this)
         val focusState = remember { WindowFocusState() }
 
         Window(
             title = title,
             onCloseRequest = onClose,
-            icon = painterResource("images/logo_circle.svg") // NON-NLS
         ) {
+            // changing the icon in the Composable itself automatically brings the window to front
+            // see https://github.com/JetBrains/compose-jb/issues/1861
+            // therefore the icon is set here on the AWT Window
+            val iconNormal = painterResource("images/logo_circle.svg") // NON-NLS
+                .toAwtImage(LocalDensity.current, LocalLayoutDirection.current, Size(32f, 32f))
+            val iconBadge = painterResource("images/logo_circle_badge.svg") // NON-NLS
+                .toAwtImage(LocalDensity.current, LocalLayoutDirection.current, Size(32f, 32f))
+
             DisposableEffect(Unit) {
+                val eventListener = EventListener { e ->
+                    if (e is LifecycleEvent && e.lifecycleState == RUNNING)
+                        screenState = MAIN
+                    if (e is ConversationMessageReceivedEvent<*> && !focusState.focused) {
+                        window.iconImage = iconBadge
+                    }
+                }
                 val focusListener = object : WindowFocusListener {
                     override fun windowGainedFocus(e: WindowEvent?) {
                         focusState.focused = true
+                        window.iconImage = iconNormal
                     }
 
                     override fun windowLostFocus(e: WindowEvent?) {
@@ -144,9 +156,11 @@ constructor(
                     }
                 }
 
+                eventBus.addListener(eventListener)
                 window.addWindowFocusListener(focusListener)
 
                 onDispose {
+                    eventBus.removeListener(eventListener)
                     window.removeWindowFocusListener(focusListener)
                 }
             }
