@@ -27,11 +27,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -130,7 +130,7 @@ fun ContactDrawerMakeIntro(
                     )
                 }
                 Row(Modifier.padding(8.dp).weight(1f, true)) {
-                    TextButton(
+                    Button(
                         onClick = {
                             viewModel.makeIntroduction()
                             closeInfoDrawer(true)
