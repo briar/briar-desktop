@@ -104,7 +104,7 @@ fun ContactDrawerMakeIntro(
                     )
                 }
                 Row(Modifier.fillMaxWidth().padding(12.dp), horizontalArrangement = Arrangement.SpaceAround) {
-                    Column(Modifier.align(Alignment.CenterVertically)) {
+                    Column(Modifier.align(Alignment.Top).weight(1f)) {
                         ProfileCircle(36.dp, viewModel.firstContact.value!!)
                         Text(
                             text = viewModel.firstContact.value!!.displayName,
@@ -113,7 +113,7 @@ fun ContactDrawerMakeIntro(
                         )
                     }
                     Icon(Icons.Filled.SwapHoriz, i18n("access.swap"), modifier = Modifier.size(48.dp))
-                    Column(Modifier.align(Alignment.CenterVertically)) {
+                    Column(Modifier.align(Alignment.Top).weight(1f)) {
                         ProfileCircle(36.dp, viewModel.secondContact.value!!)
                         Text(
                             text = viewModel.secondContact.value!!.displayName,
