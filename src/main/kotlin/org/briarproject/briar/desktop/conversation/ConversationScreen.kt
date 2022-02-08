@@ -30,7 +30,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
@@ -132,10 +131,7 @@ fun ConversationScreen(
             Column(
                 modifier = Modifier.fillMaxHeight().width(COLUMN_WIDTH)
                     .offset(maxWidth + animatedInfoDrawerOffsetX)
-                    .background(
-                        MaterialTheme.colors.surfaceVariant,
-                        RoundedCornerShape(topStart = 10.dp, bottomStart = 10.dp)
-                    )
+                    .background(MaterialTheme.colors.surfaceVariant)
             ) {
                 ContactInfoDrawer(
                     contactItem,
