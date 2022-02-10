@@ -93,6 +93,7 @@ constructor(
     )
 
     override fun eventOccurred(e: Event?) {
+        // TODO: depending on the event, we could show native notifications here
         if (e is LifecycleEvent && e.lifecycleState == RUNNING)
             screenState = MAIN
     }
