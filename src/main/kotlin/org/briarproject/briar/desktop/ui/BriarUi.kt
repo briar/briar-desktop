@@ -38,6 +38,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalLocalization
 import androidx.compose.ui.platform.PlatformLocalization
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.window.FrameWindowScope
 import androidx.compose.ui.window.Window
 import org.briarproject.bramble.api.FeatureFlags
@@ -173,6 +174,7 @@ constructor(
                 LocalCoreFeatureFlags provides featureFlags,
                 LocalDesktopFeatureFlags provides desktopFeatureFlags,
                 LocalLocalization provides platformLocalization,
+                LocalLayoutDirection provides LayoutDirection.Rtl
             ) {
                 // invalidate whole application window in case the theme or language setting is changed
                 unencryptedSettings.invalidateScreen.react {
