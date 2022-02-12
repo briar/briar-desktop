@@ -32,6 +32,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
@@ -56,15 +57,20 @@ import androidx.compose.material.icons.filled.SouthWest
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -92,6 +98,7 @@ import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nF
 import org.briarproject.briar.desktop.utils.PreviewUtils
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 import org.briarproject.briar.desktop.viewmodel.viewModel
+import java.awt.Dimension
 
 @Suppress("HardCodedStringLiteral")
 const val link = "briar://ady23gvb2r76afe5zhxh5kvnh4b22zrcnxibn63tfknrdcwrw7zrs"
@@ -185,12 +192,14 @@ fun AddContactDialog(
         onCloseRequest = onClose,
         state = rememberDialogState(
             position = WindowPosition(Alignment.Center),
-            size = DpSize(width = 496.dp, height = 504.dp)
+            size = DpSize(width = 560.dp, height = 520.dp),
         ),
     ) {
+        window.minimumSize = Dimension(360, 512)
         val clipboardManager = LocalClipboardManager.current
         val scaffoldState = rememberScaffoldState()
         val coroutineScope = rememberCoroutineScope()
+        val aliasFocusRequester = remember { FocusRequester() }
         Surface {
             Scaffold(
                 modifier = Modifier.padding(horizontal = 24.dp).padding(top = 24.dp, bottom = 12.dp),
@@ -200,6 +209,34 @@ fun AddContactDialog(
                             i18n("contact.add.remote.title"),
                             style = MaterialTheme.typography.h6,
                             modifier = Modifier.padding(bottom = 12.dp)
+                        )
+                    }
+                },
+                scaffoldState = scaffoldState,
+                content = {
+                    Column(Modifier.fillMaxSize()) {
+                        if (error != null) {
+                            AddContactErrorDialog(error, onErrorDialogDismissed)
+                        }
+                        OwnLink(
+                            handshakeLink,
+                            clipboardManager,
+                            coroutineScope,
+                            scaffoldState,
+                        )
+                        ContactLink(
+                            remoteHandshakeLink,
+                            setRemoteHandshakeLink,
+                            clipboardManager,
+                            coroutineScope,
+                            scaffoldState,
+                            aliasFocusRequester,
+                        )
+                        Alias(
+                            alias,
+                            setAddContactAlias,
+                            aliasFocusRequester,
+                            onSubmitAddContactDialog,
                         )
                     }
                 },
@@ -218,28 +255,6 @@ fun AddContactDialog(
                         }
                     }
                 },
-                scaffoldState = scaffoldState,
-                content = {
-                    Column(Modifier.fillMaxSize()) {
-                        if (error != null) {
-                            AddContactErrorDialog(error, onErrorDialogDismissed)
-                        }
-                        OwnLink(
-                            handshakeLink,
-                            clipboardManager,
-                            coroutineScope,
-                            scaffoldState
-                        )
-                        ContactLink(
-                            remoteHandshakeLink,
-                            setRemoteHandshakeLink,
-                            clipboardManager,
-                            coroutineScope,
-                            scaffoldState,
-                        )
-                        Alias(alias, setAddContactAlias)
-                    }
-                }
             )
         }
     }
@@ -317,7 +332,7 @@ fun OwnLink(
             modifier = Modifier.padding(
                 start = 16.dp,
                 end = 36.dp,
-                top = 8.dp,
+                top = 16.dp,
                 bottom = 16.dp
             ),
         )
@@ -352,6 +367,7 @@ fun ContactLink(
     clipboardManager: ClipboardManager,
     coroutineScope: CoroutineScope,
     scaffoldState: ScaffoldState,
+    aliasFocusRequester: FocusRequester,
 ) {
     Row(Modifier.padding(top = 16.dp), verticalAlignment = Alignment.CenterVertically) {
         Icon(Icons.Filled.SouthWest, "contact.add.remote.incoming_arrow")
@@ -366,10 +382,13 @@ fun ContactLink(
         setRemoteHandshakeLink,
         label = { Text(i18n("contact.add.remote.contact_link_hint")) },
         modifier = Modifier.fillMaxWidth(),
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Next),
+        singleLine = true,
+        onEnter = { aliasFocusRequester.requestFocus() },
         textStyle = TextStyle(
             fontSize = 12.sp,
             fontFamily = FontFamily.Monospace,
-            letterSpacing = (-0.5).sp
+            letterSpacing = (-0.5).sp,
         ),
         trailingIcon = {
             TooltipArea(
@@ -381,7 +400,7 @@ fun ContactLink(
                         Text(
                             text = i18n("contact.add.remote.paste_tooltip"),
                             modifier = Modifier.padding(8.dp),
-                            color = MaterialTheme.colors.onSurface
+                            color = MaterialTheme.colors.onSurface,
                         )
                     }
                 },
@@ -392,12 +411,23 @@ fun ContactLink(
                 )
             ) {
                 IconButton({
-                    setRemoteHandshakeLink(clipboardManager.getText().toString())
-                    coroutineScope.launch {
-                        scaffoldState.snackbarHostState.showSnackbar(
-                            message = i18n("contact.add.remote.link_pasted_toast"),
-                            duration = SnackbarDuration.Short,
-                        )
+                    val clipboardText = clipboardManager.getText().toString()
+                    if (clipboardText.isNotEmpty()) {
+                        setRemoteHandshakeLink(clipboardManager.getText().toString())
+                        coroutineScope.launch {
+                            scaffoldState.snackbarHostState.showSnackbar(
+                                message = i18n("contact.add.remote.link_pasted_toast"),
+                                duration = SnackbarDuration.Short,
+                            )
+                        }
+                        aliasFocusRequester.requestFocus()
+                    } else {
+                        coroutineScope.launch {
+                            scaffoldState.snackbarHostState.showSnackbar(
+                                message = i18n("contact.add.remote.paste_error_toast"),
+                                duration = SnackbarDuration.Short,
+                            )
+                        }
                     }
                 }) {
                     Icon(
@@ -412,8 +442,13 @@ fun ContactLink(
 }
 
 @Composable
-fun Alias(alias: String, setAddContactAlias: (String) -> Unit) {
-    Row(Modifier.padding(top = 16.dp), verticalAlignment = Alignment.CenterVertically) {
+fun Alias(
+    alias: String,
+    setAddContactAlias: (String) -> Unit,
+    aliasFocusRequester: FocusRequester,
+    onSubmitAddContactDialog: () -> Unit
+) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
         Icon(Icons.Filled.Person, "contact.add.remote.choose_nickname")
         Text(
             i18n("contact.add.remote.nickname_intro"),
@@ -425,8 +460,10 @@ fun Alias(alias: String, setAddContactAlias: (String) -> Unit) {
         alias,
         setAddContactAlias,
         label = { Text(i18n("contact.add.remote.choose_nickname")) },
-        modifier = Modifier.fillMaxWidth(),
-        maxLines = 1,
+        modifier = Modifier.fillMaxWidth().focusRequester(aliasFocusRequester),
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+        singleLine = true,
+        onEnter = onSubmitAddContactDialog,
     )
 }
 
