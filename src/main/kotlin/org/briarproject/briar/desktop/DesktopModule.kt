@@ -52,8 +52,8 @@ import org.briarproject.bramble.util.OsUtils.isMac
 import org.briarproject.briar.attachment.AttachmentModule
 import org.briarproject.briar.desktop.attachment.media.ImageCompressor
 import org.briarproject.briar.desktop.attachment.media.ImageCompressorImpl
-import org.briarproject.briar.desktop.settings.Settings
-import org.briarproject.briar.desktop.settings.SettingsImpl
+import org.briarproject.briar.desktop.settings.UnencryptedSettings
+import org.briarproject.briar.desktop.settings.UnencryptedSettingsImpl
 import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.threading.BriarExecutorsImpl
 import org.briarproject.briar.desktop.threading.UiExecutor
@@ -104,7 +104,7 @@ internal class DesktopModule(
 
     @Provides
     @Singleton
-    fun provideSettings(settings: SettingsImpl): Settings = settings
+    fun provideUnencryptedSettings(settings: UnencryptedSettingsImpl): UnencryptedSettings = settings
 
     @Provides
     @Singleton

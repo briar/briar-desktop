@@ -35,31 +35,31 @@ enum class SettingCategory {
 class SettingsViewModel
 @Inject
 constructor(
-    private val settings: Settings,
+    private val unencryptedSettings: UnencryptedSettings,
 ) : ViewModel {
     private val _selectedSetting = mutableStateOf(SettingCategory.DISPLAY)
     val selectedSetting = _selectedSetting.asState()
 
-    val themesList = Settings.Theme.values()
-    val languageList = Settings.Language.values()
+    val themesList = UnencryptedSettings.Theme.values()
+    val languageList = UnencryptedSettings.Language.values()
 
-    private val _selectedTheme = mutableStateOf(settings.theme)
+    private val _selectedTheme = mutableStateOf(unencryptedSettings.theme)
     val selectedTheme = _selectedTheme.asState()
 
-    private val _selectedLanguage = mutableStateOf(settings.language)
+    private val _selectedLanguage = mutableStateOf(unencryptedSettings.language)
     val selectedLanguage = _selectedLanguage.asState()
 
     fun selectSetting(selectedOption: SettingCategory) {
         _selectedSetting.value = selectedOption
     }
 
-    fun selectTheme(theme: Settings.Theme) {
-        settings.theme = theme
+    fun selectTheme(theme: UnencryptedSettings.Theme) {
+        unencryptedSettings.theme = theme
         _selectedTheme.value = theme
     }
 
-    fun selectLanguage(language: Settings.Language) {
-        settings.language = language
+    fun selectLanguage(language: UnencryptedSettings.Language) {
+        unencryptedSettings.language = language
         _selectedLanguage.value = language
     }
 }

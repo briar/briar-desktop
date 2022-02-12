@@ -37,7 +37,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
-import org.briarproject.briar.desktop.utils.InternationalizationUtils
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 
 @Composable
@@ -66,8 +65,8 @@ fun SettingDetails(viewModel: SettingsViewModel) {
 
                         OutlinedExposedDropDownMenu(
                             values = viewModel.languageList.map {
-                                if (it == Settings.Language.DEFAULT) i18n("settings.display.language.auto")
-                                else it.locale.getDisplayLanguage(InternationalizationUtils.locale)
+                                if (it == UnencryptedSettings.Language.DEFAULT) i18n("settings.display.language.auto")
+                                else it.locale.getDisplayLanguage(it.locale)
                             },
                             selectedIndex = viewModel.selectedLanguage.value.ordinal,
                             onChange = { viewModel.selectLanguage(viewModel.languageList[it]) },

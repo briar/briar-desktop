@@ -46,10 +46,10 @@ import org.briarproject.briar.desktop.DesktopFeatureFlags
 import org.briarproject.briar.desktop.expiration.ExpirationBanner
 import org.briarproject.briar.desktop.login.ErrorScreen
 import org.briarproject.briar.desktop.login.StartupScreen
-import org.briarproject.briar.desktop.settings.Settings
-import org.briarproject.briar.desktop.settings.Settings.Theme.AUTO
-import org.briarproject.briar.desktop.settings.Settings.Theme.DARK
 import org.briarproject.briar.desktop.settings.SettingsViewModel
+import org.briarproject.briar.desktop.settings.UnencryptedSettings
+import org.briarproject.briar.desktop.settings.UnencryptedSettings.Theme.AUTO
+import org.briarproject.briar.desktop.settings.UnencryptedSettings.Theme.DARK
 import org.briarproject.briar.desktop.theme.BriarTheme
 import org.briarproject.briar.desktop.ui.Screen.EXPIRED
 import org.briarproject.briar.desktop.ui.Screen.MAIN
@@ -89,7 +89,7 @@ constructor(
     private val lifecycleManager: LifecycleManager,
     private val eventBus: EventBus,
     private val viewModelProvider: ViewModelProvider,
-    private val settings: Settings,
+    private val unencryptedSettings: UnencryptedSettings,
     private val featureFlags: FeatureFlags,
     private val desktopFeatureFlags: DesktopFeatureFlags,
 ) : BriarUi, EventListener {
@@ -137,15 +137,15 @@ constructor(
                 LocalLocalization provides platformLocalization,
             ) {
                 // invalidate whole application window in case the theme or language setting is changed
-                settings.invalidateScreen.react {
+                unencryptedSettings.invalidateScreen.react {
                     window.title = i18n("main.title")
                     return@CompositionLocalProvider
                 }
 
                 var showAbout by remember { mutableStateOf(false) }
                 val settingsViewModel: SettingsViewModel = viewModel()
-                val isDarkTheme = settings.theme == DARK ||
-                    (settings.theme == AUTO && isSystemInDarkTheme())
+                val isDarkTheme = unencryptedSettings.theme == DARK ||
+                    (unencryptedSettings.theme == AUTO && isSystemInDarkTheme())
                 BriarTheme(isDarkTheme) {
                     Column(Modifier.fillMaxSize()) {
                         ExpirationBanner { screenState = EXPIRED; stop() }

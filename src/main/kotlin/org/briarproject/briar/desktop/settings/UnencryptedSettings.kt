@@ -21,7 +21,7 @@ package org.briarproject.briar.desktop.settings
 import org.briarproject.briar.desktop.viewmodel.SingleStateEvent
 import java.util.Locale
 
-interface Settings {
+interface UnencryptedSettings {
 
     enum class Theme { AUTO, LIGHT, DARK }
 

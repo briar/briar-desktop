@@ -18,10 +18,10 @@
 
 package org.briarproject.briar.desktop.settings
 
-import org.briarproject.briar.desktop.settings.Settings.Language
-import org.briarproject.briar.desktop.settings.Settings.Language.DEFAULT
-import org.briarproject.briar.desktop.settings.Settings.Theme
-import org.briarproject.briar.desktop.settings.Settings.Theme.AUTO
+import org.briarproject.briar.desktop.settings.UnencryptedSettings.Language
+import org.briarproject.briar.desktop.settings.UnencryptedSettings.Language.DEFAULT
+import org.briarproject.briar.desktop.settings.UnencryptedSettings.Theme
+import org.briarproject.briar.desktop.settings.UnencryptedSettings.Theme.AUTO
 import org.briarproject.briar.desktop.utils.InternationalizationUtils
 import org.briarproject.briar.desktop.viewmodel.SingleStateEvent
 import java.util.prefs.Preferences
@@ -30,7 +30,7 @@ import javax.inject.Inject
 const val PREF_THEME = "theme"
 const val PREF_LANG = "language"
 
-class SettingsImpl @Inject internal constructor() : Settings {
+class UnencryptedSettingsImpl @Inject internal constructor() : UnencryptedSettings {
 
     // used for unencrypted settings, namely theme and language
     private val prefs = Preferences.userNodeForPackage(this::class.java)
