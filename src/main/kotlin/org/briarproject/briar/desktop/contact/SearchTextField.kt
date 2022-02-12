@@ -26,6 +26,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
@@ -35,7 +36,6 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.briarproject.briar.desktop.theme.robotoRegular
@@ -47,7 +47,11 @@ fun SearchTextField(searchValue: String, onValueChange: (String) -> Unit, onCont
         value = searchValue,
         onValueChange = onValueChange,
         singleLine = true,
-        textStyle = TextStyle(fontSize = 16.sp, fontFamily = robotoRegular, color = MaterialTheme.colors.onSurface),
+        textStyle = LocalTextStyle.current.copy(
+            fontSize = 16.sp,
+            fontFamily = robotoRegular,
+            color = MaterialTheme.colors.onSurface
+        ),
         placeholder = { Text(i18n("contacts.search.title")) },
         shape = RoundedCornerShape(0.dp),
         leadingIcon = {
