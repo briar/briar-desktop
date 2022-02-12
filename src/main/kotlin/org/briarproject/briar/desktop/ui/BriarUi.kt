@@ -27,7 +27,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLocalization
+import androidx.compose.ui.platform.PlatformLocalization
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.window.FrameWindowScope
 import androidx.compose.ui.window.Window
@@ -104,9 +107,16 @@ constructor(
         eventBus.removeListener(this)
     }
 
+    @OptIn(ExperimentalComposeUiApi::class)
     @Composable
     override fun start(onClose: () -> Unit) {
         val title = i18n("main.title")
+        val platformLocalization = object : PlatformLocalization {
+            override val copy = i18n("copy")
+            override val cut = i18n("cut")
+            override val paste = i18n("paste")
+            override val selectAll = i18n("select_all")
+        }
         eventBus.addListener(this)
         Window(
             title = title,
@@ -118,7 +128,8 @@ constructor(
                 LocalWindowScope provides this,
                 LocalViewModelProvider provides viewModelProvider,
                 LocalCoreFeatureFlags provides featureFlags,
-                LocalDesktopFeatureFlags provides desktopFeatureFlags
+                LocalDesktopFeatureFlags provides desktopFeatureFlags,
+                LocalLocalization provides platformLocalization,
             ) {
                 var showAbout by remember { mutableStateOf(false) }
                 val settingsViewModel: SettingsViewModel = viewModel()
