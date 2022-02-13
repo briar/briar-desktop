@@ -316,7 +316,7 @@ fun OwnLink(
                 clipboardManager.setText(AnnotatedString(handshakeLink))
                 coroutineScope.launch {
                     scaffoldState.snackbarHostState.showSnackbar(
-                        message = i18n("contact.add.remote.link_copied_toast"),
+                        message = i18n("contact.add.remote.link_copied_snackbar"),
                         duration = SnackbarDuration.Short,
                     )
                 }
@@ -416,7 +416,7 @@ fun ContactLink(
                         setRemoteHandshakeLink(clipboardManager.getText().toString())
                         coroutineScope.launch {
                             scaffoldState.snackbarHostState.showSnackbar(
-                                message = i18n("contact.add.remote.link_pasted_toast"),
+                                message = i18n("contact.add.remote.link_pasted_snackbar"),
                                 duration = SnackbarDuration.Short,
                             )
                         }
@@ -424,7 +424,7 @@ fun ContactLink(
                     } else {
                         coroutineScope.launch {
                             scaffoldState.snackbarHostState.showSnackbar(
-                                message = i18n("contact.add.remote.paste_error_toast"),
+                                message = i18n("contact.add.remote.paste_error_snackbar"),
                                 duration = SnackbarDuration.Short,
                             )
                         }
@@ -468,22 +468,22 @@ fun Alias(
 }
 
 fun errorMessage(error: AddContactError) = when (error) {
-    is OwnLinkError -> Triple(ERROR, i18n("error"), i18n("introduction.error.own_link"))
-    is RemoteInvalidError -> Triple(ERROR, i18n("error"), i18n("introduction.error.remote_invalid"))
-    is AliasInvalidError -> Triple(ERROR, i18n("error"), i18n("introduction.error.alias_invalid"))
-    is LinkInvalidError -> Triple(ERROR, i18n("error"), i18nF("introduction.error.link_invalid", error.link))
+    is OwnLinkError -> Triple(ERROR, i18n("error"), i18n("contact.add.error.own_link"))
+    is RemoteInvalidError -> Triple(ERROR, i18n("error"), i18n("contact.add.error.remote_invalid"))
+    is AliasInvalidError -> Triple(ERROR, i18n("error"), i18n("contact.add.error.alias_invalid"))
+    is LinkInvalidError -> Triple(ERROR, i18n("error"), i18nF("contact.add.error.link_invalid", error.link))
     is PublicKeyInvalidError -> Triple(
         ERROR, i18n("error"),
-        i18nF("introduction.error.public_key_invalid", error.link)
+        i18nF("contact.add.error.public_key_invalid", error.link)
     )
     is ContactAlreadyExistsError -> {
-        val intro = i18nF("introduction.error.contact_already_exists", error.existingName)
-        val explanation = i18nF("introduction.error.duplicate_contact_explainer", error.existingName, error.alias)
-        Triple(WARNING, i18n("introduction.error.adding_failed"), (intro + "\n\n" + explanation))
+        val intro = i18nF("contact.add.error.contact_already_exists", error.existingName)
+        val explanation = i18nF("contact.add.error.duplicate_contact_explainer", error.existingName, error.alias)
+        Triple(WARNING, i18n("contact.add.error.adding_failed"), (intro + "\n\n" + explanation))
     }
     is PendingAlreadyExistsError -> {
-        val intro = i18nF("introduction.error.pending_contact_already_exists", error.existingAlias)
-        val explanation = i18nF("introduction.error.duplicate_contact_explainer", error.existingAlias, error.alias)
-        Triple(WARNING, i18n("introduction.error.adding_failed"), (intro + "\n\n" + explanation))
+        val intro = i18nF("contact.add.error.pending_contact_already_exists", error.existingAlias)
+        val explanation = i18nF("contact.add.error.duplicate_contact_explainer", error.existingAlias, error.alias)
+        Triple(WARNING, i18n("contact.add.error.adding_failed"), (intro + "\n\n" + explanation))
     }
 }
