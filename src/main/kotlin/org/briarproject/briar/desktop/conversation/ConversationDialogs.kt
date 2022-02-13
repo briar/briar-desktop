@@ -177,7 +177,7 @@ fun ChangeAliasDialog(
     if (!isVisible) return
 
     AlertDialog(
-        onDismissRequest = { close; onCancel() },
+        onDismissRequest = { close(); onCancel() },
         title = {
             Text(
                 text = i18n("conversation.change.alias.dialog.title"),
