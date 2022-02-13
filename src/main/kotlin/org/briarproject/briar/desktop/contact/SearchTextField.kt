@@ -37,8 +37,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import org.briarproject.briar.desktop.theme.robotoRegular
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 
 @Composable
@@ -48,8 +46,6 @@ fun SearchTextField(searchValue: String, onValueChange: (String) -> Unit, onCont
         onValueChange = onValueChange,
         singleLine = true,
         textStyle = LocalTextStyle.current.copy(
-            fontSize = 16.sp,
-            fontFamily = robotoRegular,
             color = MaterialTheme.colors.onSurface
         ),
         placeholder = { Text(i18n("contacts.search.title")) },
