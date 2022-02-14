@@ -57,7 +57,8 @@ b_bullseye_deb:
   script:
     - ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-11-openjdk-amd64 --no-daemon kaptKotlin
     - ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-17-openjdk-amd64 --no-daemon -PbuildType=nightly -x kaptKotlin packageDeb
-    - mv build/compose/binaries/main/deb/*.deb ./briar-desktop-debian-bullseye.deb
+    - utils/finalize-deb.sh
+    - mv build/compose/binaries/main/deb/briar-desktop.deb ./briar-desktop-debian-bullseye.deb
   artifacts:
     paths:
       - briar-desktop-debian-bullseye.deb
@@ -71,7 +72,8 @@ b_20_ubuntu_deb:
   script:
     - ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-11-openjdk-amd64 --no-daemon kaptKotlin
     - ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-17-openjdk-amd64 --no-daemon -PbuildType=nightly -x kaptKotlin packageDeb
-    - mv build/compose/binaries/main/deb/*.deb ./briar-desktop-ubuntu-20.04.deb
+    - utils/finalize-deb.sh
+    - mv build/compose/binaries/main/deb/briar-desktop.deb ./briar-desktop-ubuntu-20.04.deb
   artifacts:
     paths:
       - briar-desktop-ubuntu-20.04.deb
@@ -85,7 +87,8 @@ b_18_ubuntu_deb:
   script:
     - ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-11-openjdk-amd64 --no-daemon kaptKotlin
     - ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-17-openjdk-amd64 --no-daemon -PbuildType=nightly -x kaptKotlin packageDeb
-    - mv build/compose/binaries/main/deb/*.deb ./briar-desktop-ubuntu-18.04.deb
+    - utils/finalize-deb.sh
+    - mv build/compose/binaries/main/deb/briar-desktop.deb ./briar-desktop-ubuntu-18.04.deb
   artifacts:
     paths:
       - briar-desktop-ubuntu-18.04.deb
@@ -111,7 +114,8 @@ rb_bullseye_deb:
   script:
     - ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-11-openjdk-amd64 --no-daemon kaptKotlin
     - ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-17-openjdk-amd64 --no-daemon -PbuildType=beta -x kaptKotlin packageDeb
-    - mv build/compose/binaries/main/deb/*.deb ./briar-desktop-debian-bullseye.deb
+    - utils/finalize-deb.sh
+    - mv build/compose/binaries/main/deb/briar-desktop.deb ./briar-desktop-debian-bullseye.deb
   artifacts:
     paths:
       - briar-desktop-debian-bullseye.deb
@@ -125,7 +129,8 @@ rb_20_ubuntu_deb:
   script:
     - ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-11-openjdk-amd64 --no-daemon kaptKotlin
     - ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-17-openjdk-amd64 --no-daemon -PbuildType=beta -x kaptKotlin packageDeb
-    - mv build/compose/binaries/main/deb/*.deb ./briar-desktop-ubuntu-20.04.deb
+    - utils/finalize-deb.sh
+    - mv build/compose/binaries/main/deb/briar-desktop.deb ./briar-desktop-ubuntu-20.04.deb
   artifacts:
     paths:
       - briar-desktop-ubuntu-20.04.deb
@@ -139,7 +144,8 @@ rb_18_ubuntu_deb:
   script:
     - ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-11-openjdk-amd64 --no-daemon kaptKotlin
     - ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-17-openjdk-amd64 --no-daemon -PbuildType=beta -x kaptKotlin packageDeb
-    - mv build/compose/binaries/main/deb/*.deb ./briar-desktop-ubuntu-18.04.deb
+    - utils/finalize-deb.sh
+    - mv build/compose/binaries/main/deb/briar-desktop.deb ./briar-desktop-ubuntu-18.04.deb
   artifacts:
     paths:
       - briar-desktop-ubuntu-18.04.deb

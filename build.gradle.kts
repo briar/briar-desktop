@@ -126,6 +126,7 @@ compose.desktop {
             vendor = "The Briar Project"
             copyright = "2021-2022 The Briar Project"
             licenseFile.set(project.file("LICENSE.txt"))
+            appResourcesRootDir.set(project.layout.projectDirectory.dir("src/appResources"))
             // As described at https://github.com/JetBrains/compose-jb/tree/master/tutorials/Native_distributions_and_local_execution#configuring-included-jdk-modules
             // the Gradle plugin does not automatically determine necessary JDK modules to ship
             // so that we need to define required modules here:

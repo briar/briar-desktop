@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>org.briarproject.Briar</id>
+  <metadata_license>CC-BY-4.0</metadata_license>
+  <project_license>AGPL-3.0-only</project_license>
+
+  <name>Briar</name>
+  <summary>Secure messaging, anywhere</summary>
+
+  <description>
+    <p>
+      Briar is a messaging app designed for activists, journalists, and anyone
+      else who needs a safe, easy and robust way to communicate. Unlike
+      traditional messaging apps, Briar doesn't rely on a central server -
+      messages are synchronized directly between the users' devices. If the
+      internet's down, Briar can sync via Bluetooth or Wi-Fi, keeping the
+      information flowing in a crisis. If the internet's up, Briar can sync via
+      the Tor network, protecting users and their relationships from
+      surveillance.
+    </p>
+  </description>
+
+  <launchable type="desktop-id">org.briarproject.Briar.desktop</launchable>
+
+  <url type="homepage">https://code.briarproject.org/briar/briar-desktop</url>
+  <url type="bugtracker">https://code.briarproject.org/briar/briar-desktop/-/issues</url>
+  <url type="faq">https://code.briarproject.org/briar/briar-desktop/blob/main/README.md#faq</url>
+  <url type="help">https://briarproject.org/manual/</url>
+  <url type="translate">https://www.transifex.com/otf/briar/</url>
+  <url type="donation">https://liberapay.com/Briar/donate</url>
+  <project_group>Briar</project_group>
+  <developer_name>The Briar Project</developer_name>
+  <update_contact>desktop@briarproject.org</update_contact>
+  
+  <content_rating type="oars-1.1">
+    <content_attribute id="social-chat">intense</content_attribute>
+  </content_rating>
+
+  <provides>
+    <binary>briar-desktop</binary>
+  </provides>
+
+  <custom>
+    <value key="Purism::form_factor">workstation</value>
+  </custom>
+
+  <releases>
+    <release version="0.2.0" date="2022-02-22">
+      <description>
+        <p>
+          See the changelog for more information on this release.
+        </p>
+      </description>
+      <url>https://code.briarproject.org/briar/briar-desktop/-/wikis/Changelog#anchor-020</url>
+    </release>
+  </releases>
+
+</component>
