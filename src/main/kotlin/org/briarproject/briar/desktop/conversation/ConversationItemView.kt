@@ -44,7 +44,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import org.briarproject.bramble.api.sync.GroupId
 import org.briarproject.bramble.api.sync.MessageId
 import org.briarproject.briar.api.client.SessionId
@@ -211,7 +210,7 @@ fun ColumnScope.ConversationItemStatusView(item: ConversationItem, rowModifier: 
     Row(rowModifier.align(statusAlignment)) {
         Text(
             text = getFormattedTimestamp(item.time),
-            fontSize = 12.sp,
+            style = MaterialTheme.typography.caption,
             color = statusColor,
         )
         if (!item.isIncoming) {

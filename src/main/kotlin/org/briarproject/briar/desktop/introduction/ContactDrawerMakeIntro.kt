@@ -43,7 +43,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import org.briarproject.briar.desktop.contact.ContactCard
 import org.briarproject.briar.desktop.contact.ContactItem
 import org.briarproject.briar.desktop.contact.ProfileCircle
@@ -101,7 +100,7 @@ fun ContactDrawerMakeIntro(
                     Text(
                         text = i18n("introduction.title_second"),
                         modifier = Modifier.align(Alignment.CenterVertically),
-                        fontSize = 16.sp,
+                        style = MaterialTheme.typography.body1,
                     )
                 }
                 Row(Modifier.fillMaxWidth().padding(12.dp), horizontalArrangement = Arrangement.SpaceAround) {
@@ -110,7 +109,7 @@ fun ContactDrawerMakeIntro(
                         Text(
                             text = viewModel.firstContact.value!!.displayName,
                             modifier = Modifier.padding(top = 4.dp),
-                            fontSize = 16.sp
+                            style = MaterialTheme.typography.body1,
                         )
                     }
                     Icon(Icons.Filled.SwapHoriz, i18n("access.swap"), modifier = Modifier.size(48.dp))
@@ -119,7 +118,7 @@ fun ContactDrawerMakeIntro(
                         Text(
                             text = viewModel.secondContact.value!!.displayName,
                             modifier = Modifier.padding(top = 4.dp),
-                            fontSize = 16.sp
+                            style = MaterialTheme.typography.body1,
                         )
                     }
                 }

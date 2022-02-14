@@ -33,7 +33,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import org.briarproject.briar.desktop.theme.outline
 
 @Composable
@@ -51,7 +50,7 @@ fun MessageCounter(unread: Int, modifier: Modifier = Modifier) {
         ) {
             Text(
                 modifier = Modifier.align(Alignment.Center),
-                fontSize = 10.sp,
+                fontSize = MaterialTheme.typography.overline.fontSize,
                 textAlign = TextAlign.Center,
                 text = unread.toString(),
                 maxLines = 1

@@ -95,13 +95,13 @@ val briarTypography = Typography(
     h4 = TextStyle(letterSpacing = spacing, fontFamily = robotoMedium, fontSize = 16.sp),
     h5 = TextStyle(letterSpacing = spacing, fontFamily = robotoMedium, fontSize = 14.sp),
     h6 = TextStyle(letterSpacing = spacing, fontFamily = robotoMedium, fontSize = 12.sp),
-    subtitle1 = TextStyle(letterSpacing = spacing, fontSize = 16.sp),
-    subtitle2 = TextStyle(letterSpacing = spacing, fontSize = 14.sp),
+    subtitle1 = TextStyle(letterSpacing = spacing, fontSize = 12.sp),
+    subtitle2 = TextStyle(letterSpacing = spacing, fontSize = 10.sp),
     body1 = TextStyle(letterSpacing = spacing, fontSize = 16.sp),
     body2 = TextStyle(letterSpacing = spacing, fontSize = 14.sp),
-    button = TextStyle(letterSpacing = spacing),
-    caption = TextStyle(letterSpacing = spacing),
-    overline = TextStyle(letterSpacing = spacing),
+    button = TextStyle(letterSpacing = spacing, fontSize = 16.sp),
+    caption = TextStyle(letterSpacing = spacing, fontSize = 12.sp),
+    overline = TextStyle(letterSpacing = spacing, fontSize = 10.sp),
 )
 
 @Composable

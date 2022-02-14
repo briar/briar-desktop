@@ -39,7 +39,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import org.briarproject.bramble.api.contact.ContactId
 import org.briarproject.bramble.api.identity.AuthorId
 import org.briarproject.briar.desktop.theme.outline
@@ -157,7 +156,7 @@ fun RealContactInfo(contactItem: ContactItem, modifier: Modifier = Modifier) {
             if (contactItem.isEmpty) i18n("contacts.card.nothing") else getFormattedTimestamp(
                 contactItem.timestamp
             ),
-            fontSize = 12.sp,
+            style = MaterialTheme.typography.caption,
             modifier = Modifier.align(Alignment.Start)
         )
     }
@@ -175,8 +174,8 @@ fun PendingContactInfo(contactItem: PendingContactItem, modifier: Modifier = Mod
         )
         Text(
             getFormattedTimestamp(contactItem.timestamp),
-            fontSize = 10.sp,
-            modifier = Modifier.align(Alignment.Start)
+            modifier = Modifier.align(Alignment.Start),
+            style = MaterialTheme.typography.caption,
         )
     }
 }

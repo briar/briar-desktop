@@ -99,7 +99,7 @@ fun ConversationInput(
             onEnter = onSend,
             maxLines = 10,
             textStyle = MaterialTheme.typography.body1,
-            placeholder = { Text(i18n("conversation.message.new")) },
+            placeholder = { Text(i18n("conversation.message.new"), style = MaterialTheme.typography.body1) },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(0.dp),
             colors = TextFieldDefaults.textFieldColors(

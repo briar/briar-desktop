@@ -48,7 +48,7 @@ fun SearchTextField(searchValue: String, onValueChange: (String) -> Unit, onCont
         textStyle = LocalTextStyle.current.copy(
             color = MaterialTheme.colors.onSurface
         ),
-        placeholder = { Text(i18n("contacts.search.title")) },
+        placeholder = { Text(i18n("contacts.search.title"), style = MaterialTheme.typography.body1) },
         shape = RoundedCornerShape(0.dp),
         leadingIcon = {
             val padding = Modifier.padding(top = 8.dp, bottom = 8.dp, start = 12.dp)
