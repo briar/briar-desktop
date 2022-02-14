@@ -22,13 +22,21 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.InitialFocusState.AFTER_FIRST_FOCUSSED
 import androidx.compose.material.InitialFocusState.AFTER_FOCUS_LOST_ONCE
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
@@ -38,6 +46,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import org.briarproject.briar.desktop.login.RegistrationSubViewModel.State.CREATED
 import org.briarproject.briar.desktop.login.RegistrationSubViewModel.State.CREATING
@@ -132,6 +141,8 @@ fun PasswordForm(
 ) {
     val initialFocusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
+    var isPasswordVisible by remember { mutableStateOf(false) }
+    var isPasswordConfirmationVisible by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier.fillMaxWidth().requiredHeight(24.dp),
@@ -148,10 +159,27 @@ fun PasswordForm(
         isError = passwordTooWeakError,
         showErrorWhen = AFTER_FOCUS_LOST_ONCE,
         errorMessage = i18n("startup.error.password_too_weak"),
-        visualTransformation = PasswordVisualTransformation(),
+        visualTransformation = if (!isPasswordVisible) PasswordVisualTransformation() else VisualTransformation.None,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Next),
         modifier = Modifier.fillMaxWidth().focusRequester(initialFocusRequester),
-        onEnter = { focusManager.moveFocus(FocusDirection.Next) }
+        onEnter = { focusManager.moveFocus(FocusDirection.Next) },
+        trailingIcon = {
+            ShowHidePasswordIcon(
+                isVisible = isPasswordVisible,
+                toggleIsVisible = {
+                    isPasswordVisible = !isPasswordVisible
+                },
+            )
+        },
+        errorIcon = {
+            // trailing icon is hidden in error state
+            ShowHidePasswordIcon(
+                isVisible = isPasswordVisible,
+                toggleIsVisible = {
+                    isPasswordVisible = !isPasswordVisible
+                },
+            )
+        },
     )
     OutlinedTextField(
         value = passwordConfirmation,
@@ -161,13 +189,52 @@ fun PasswordForm(
         isError = passwordsDontMatchError,
         showErrorWhen = AFTER_FIRST_FOCUSSED,
         errorMessage = i18n("startup.error.passwords_not_match"),
-        visualTransformation = PasswordVisualTransformation(),
+        visualTransformation = if (!isPasswordConfirmationVisible) PasswordVisualTransformation() else VisualTransformation.None,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
         modifier = Modifier.fillMaxWidth(),
         onEnter = onEnter,
+        trailingIcon = {
+            ShowHidePasswordIcon(
+                isVisible = isPasswordConfirmationVisible,
+                toggleIsVisible = {
+                    isPasswordConfirmationVisible = !isPasswordConfirmationVisible
+                },
+            )
+        },
+        errorIcon = {
+            // trailing icon is hidden in error state
+            ShowHidePasswordIcon(
+                isVisible = isPasswordConfirmationVisible,
+                toggleIsVisible = {
+                    isPasswordConfirmationVisible = !isPasswordConfirmationVisible
+                },
+            )
+        }
     )
 
     LaunchedEffect(Unit) {
         initialFocusRequester.requestFocus()
+    }
+}
+
+@Composable
+private fun ShowHidePasswordIcon(
+    isVisible: Boolean,
+    toggleIsVisible: () -> Unit,
+) {
+    IconButton(
+        onClick = toggleIsVisible
+    ) {
+        if (isVisible) {
+            Icon(
+                imageVector = Icons.Filled.Visibility,
+                contentDescription = i18n("startup.field.password.show"),
+            )
+        } else {
+            Icon(
+                imageVector = Icons.Filled.VisibilityOff,
+                contentDescription = i18n("startup.field.password.hide"),
+            )
+        }
     }
 }
