@@ -126,7 +126,12 @@ fun ContactDrawerMakeIntro(
                     TextField(
                         value = viewModel.introductionMessage.value,
                         onValueChange = viewModel::setIntroductionMessage,
-                        placeholder = { Text(text = i18n("introduction.message")) },
+                        placeholder = {
+                            Text(
+                                text = i18n("introduction.message"),
+                                style = MaterialTheme.typography.body1,
+                            )
+                        },
                     )
                 }
                 Row(Modifier.padding(8.dp).weight(1f, true)) {
