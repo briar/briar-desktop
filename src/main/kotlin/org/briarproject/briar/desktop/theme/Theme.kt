@@ -97,10 +97,10 @@ val briarTypography = Typography(
     h6 = TextStyle(letterSpacing = spacing, fontFamily = robotoMedium, fontSize = 12.sp),
     subtitle1 = TextStyle(letterSpacing = spacing, fontSize = 12.sp),
     subtitle2 = TextStyle(letterSpacing = spacing, fontSize = 10.sp),
-    body1 = TextStyle(letterSpacing = spacing, fontSize = 16.sp),
+    body1 = TextStyle(letterSpacing = spacing, fontSize = 14.sp),
     body2 = TextStyle(letterSpacing = spacing, fontSize = 14.sp),
-    button = TextStyle(letterSpacing = spacing, fontSize = 16.sp),
-    caption = TextStyle(letterSpacing = spacing, fontSize = 12.sp),
+    button = TextStyle(letterSpacing = spacing, fontSize = 14.sp),
+    caption = TextStyle(letterSpacing = spacing, fontSize = 10.sp),
     overline = TextStyle(letterSpacing = spacing, fontSize = 10.sp),
 )
 
