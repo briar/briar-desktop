@@ -19,18 +19,21 @@
 package org.briarproject.briar.desktop.contact
 
 import org.briarproject.bramble.api.contact.PendingContact
+import org.briarproject.bramble.api.contact.PendingContactState
 
 data class PendingContactItem(
     override val idWrapper: PendingContactIdWrapper,
     val alias: String,
-    override val timestamp: Long
+    override val timestamp: Long,
+    val state: PendingContactState,
 ) : BaseContactItem {
 
     override val displayName = alias
 
-    constructor(contact: PendingContact) : this(
+    constructor(contact: PendingContact, state: PendingContactState) : this(
         idWrapper = PendingContactIdWrapper(contact.id),
         alias = contact.alias,
-        timestamp = contact.timestamp
+        timestamp = contact.timestamp,
+        state = state,
     )
 }

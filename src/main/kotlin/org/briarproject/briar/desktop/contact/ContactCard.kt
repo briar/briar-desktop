@@ -32,8 +32,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -74,7 +78,7 @@ fun main() = preview(
             timestamp = getLongParameter("timestamp"),
             avatar = null,
         ),
-        {}, getBooleanParameter("selected")
+        {}, getBooleanParameter("selected"), {}
     )
 }
 
@@ -83,12 +87,10 @@ fun ContactCard(
     contactItem: BaseContactItem,
     onSel: () -> Unit,
     selected: Boolean,
+    onRemovePending: () -> Unit,
     padding: PaddingValues = PaddingValues(0.dp),
 ) {
     val bgColor = if (selected) MaterialTheme.colors.selectedCard else MaterialTheme.colors.surfaceVariant
-    val outlineColor = MaterialTheme.colors.outline
-    val briarSecondary = MaterialTheme.colors.secondary
-    val briarSurfaceVar = MaterialTheme.colors.surfaceVariant
 
     Card(
         modifier = Modifier.fillMaxWidth().defaultMinSize(minHeight = HEADER_SIZE).clickable(onClick = onSel),
@@ -96,54 +98,79 @@ fun ContactCard(
         backgroundColor = bgColor,
         contentColor = MaterialTheme.colors.onSurface
     ) {
-        Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.padding(padding)) {
-            Row(
-                modifier = Modifier.align(Alignment.CenterVertically).padding(horizontal = 16.dp)
-                    .weight(1f, fill = false)
-            ) {
-                when (contactItem) {
-                    is ContactItem -> {
-                        Box(modifier = Modifier.align(Alignment.CenterVertically)) {
-                            ProfileCircle(36.dp, contactItem)
-                            MessageCounter(
-                                unread = contactItem.unread,
-                                modifier = Modifier.align(Alignment.TopEnd).offset(6.dp, (-6).dp)
-                            )
-                        }
-                        RealContactInfo(
-                            contactItem = contactItem,
-                            modifier = Modifier.align(Alignment.CenterVertically)
-                        )
-                    }
-                    is PendingContactItem -> {
-                        ProfileCircle(36.dp)
-                        PendingContactInfo(
-                            contactItem = contactItem,
-                            modifier = Modifier.align(Alignment.CenterVertically)
-                        )
-                    }
-                }
+        when (contactItem) {
+            is ContactItem -> {
+                RealContactRow(contactItem, padding)
             }
-            if (contactItem is ContactItem)
-                Canvas(
-                    modifier = Modifier.padding(end = 18.dp).size(22.dp)
-                        .align(Alignment.CenterVertically),
-                    onDraw = {
-                        val size = 16.dp
-                        drawCircle(color = outlineColor, radius = size.toPx() / 2f)
-                        drawCircle(
-                            color = if (contactItem.isConnected) briarSecondary else briarSurfaceVar,
-                            radius = (size - 2.dp).toPx() / 2f
-                        )
-                    }
-                )
+            is PendingContactItem -> {
+                PendingContactRow(contactItem, onRemovePending, padding)
+            }
         }
     }
     HorizontalDivider()
 }
 
 @Composable
-fun RealContactInfo(contactItem: ContactItem, modifier: Modifier = Modifier) {
+private fun RealContactRow(contactItem: ContactItem, padding: PaddingValues) {
+    val outlineColor = MaterialTheme.colors.outline
+    val briarSecondary = MaterialTheme.colors.secondary
+    val briarSurfaceVar = MaterialTheme.colors.surfaceVariant
+
+    Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.padding(padding)) {
+        Row(
+            modifier = Modifier.align(Alignment.CenterVertically).padding(horizontal = 16.dp)
+                .weight(1f, fill = false)
+        ) {
+            Box(modifier = Modifier.align(Alignment.CenterVertically)) {
+                ProfileCircle(36.dp, contactItem)
+                MessageCounter(
+                    unread = contactItem.unread,
+                    modifier = Modifier.align(Alignment.TopEnd).offset(6.dp, (-6).dp)
+                )
+            }
+            RealContactInfo(
+                contactItem = contactItem,
+                modifier = Modifier.align(Alignment.CenterVertically)
+            )
+        }
+        Canvas(
+            modifier = Modifier.padding(end = 18.dp).size(22.dp).align(Alignment.CenterVertically),
+            onDraw = {
+                val size = 16.dp
+                drawCircle(color = outlineColor, radius = size.toPx() / 2f)
+                drawCircle(
+                    color = if (contactItem.isConnected) briarSecondary else briarSurfaceVar,
+                    radius = (size - 2.dp).toPx() / 2f
+                )
+            }
+        )
+    }
+}
+
+@Composable
+private fun PendingContactRow(contactItem: PendingContactItem, onRemove: () -> Unit, padding: PaddingValues) {
+    Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.padding(padding)) {
+        Row(
+            modifier = Modifier.align(Alignment.CenterVertically).padding(horizontal = 16.dp)
+                .weight(1f, fill = false)
+        ) {
+            ProfileCircle(36.dp)
+            PendingContactInfo(
+                contactItem = contactItem,
+                modifier = Modifier.align(Alignment.CenterVertically)
+            )
+        }
+        IconButton(
+            onClick = onRemove,
+            modifier = Modifier.padding(end = 4.dp).align(Alignment.CenterVertically),
+        ) {
+            Icon(Icons.Filled.Delete, i18n("access.contacts.pending.remove"))
+        }
+    }
+}
+
+@Composable
+private fun RealContactInfo(contactItem: ContactItem, modifier: Modifier = Modifier) {
     Column(modifier = modifier.padding(start = 12.dp)) {
         Text(
             contactItem.displayName,
@@ -163,7 +190,7 @@ fun RealContactInfo(contactItem: ContactItem, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun PendingContactInfo(contactItem: PendingContactItem, modifier: Modifier = Modifier) {
+private fun PendingContactInfo(contactItem: PendingContactItem, modifier: Modifier = Modifier) {
     Column(modifier = modifier.padding(start = 12.dp)) {
         Text(
             contactItem.displayName,

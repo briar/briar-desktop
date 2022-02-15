@@ -47,6 +47,7 @@ fun ContactList(
     contactList: List<BaseContactItem>,
     isSelected: (BaseContactItem) -> Boolean,
     selectContact: (BaseContactItem) -> Unit,
+    removePendingContact: (PendingContactItem) -> Unit,
     filterBy: String,
     setFilterBy: (String) -> Unit,
     onContactAdd: () -> Unit,
@@ -73,9 +74,10 @@ fun ContactList(
                     items(contactList) { contactItem ->
                         ContactCard(
                             contactItem,
-                            { selectContact(contactItem) },
-                            isSelected(contactItem),
-                            PaddingValues(end = 12.dp)
+                            onSel = { selectContact(contactItem) },
+                            selected = isSelected(contactItem),
+                            onRemovePending = { if (contactItem is PendingContactItem) removePendingContact(contactItem) },
+                            padding = PaddingValues(end = 12.dp),
                         )
                     }
                 }

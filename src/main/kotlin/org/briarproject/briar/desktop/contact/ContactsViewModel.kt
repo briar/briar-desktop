@@ -24,6 +24,7 @@ import mu.KotlinLogging
 import org.briarproject.bramble.api.connection.ConnectionRegistry
 import org.briarproject.bramble.api.contact.ContactId
 import org.briarproject.bramble.api.contact.ContactManager
+import org.briarproject.bramble.api.contact.PendingContactId
 import org.briarproject.bramble.api.contact.event.ContactAddedEvent
 import org.briarproject.bramble.api.contact.event.ContactRemovedEvent
 import org.briarproject.bramble.api.contact.event.PendingContactAddedEvent
@@ -77,7 +78,7 @@ abstract class ContactsViewModel(
         runOnDbThreadWithTransaction(true) { txn ->
             contactList.addAll(
                 contactManager.getPendingContacts(txn).map { contact ->
-                    PendingContactItem(contact.first)
+                    PendingContactItem(contact.first, contact.second)
                 }
             )
             contactList.addAll(
@@ -132,6 +133,12 @@ abstract class ContactsViewModel(
 
     protected open fun removeItem(contactId: ContactId) {
         _fullContactList.removeFirst<BaseContactItem, ContactItem> {
+            it.idWrapper.contactId == contactId
+        }
+    }
+
+    protected open fun removeItem(contactId: PendingContactId) {
+        _fullContactList.removeFirst<BaseContactItem, PendingContactItem> {
             it.idWrapper.contactId == contactId
         }
     }

@@ -42,6 +42,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import org.briarproject.briar.desktop.contact.ConfirmRemovePendingContactDialog
 import org.briarproject.briar.desktop.contact.ContactList
 import org.briarproject.briar.desktop.contact.ContactListViewModel
 import org.briarproject.briar.desktop.contact.PendingContactIdWrapper
@@ -61,6 +62,12 @@ fun PrivateMessageScreen(
 ) {
     AddContactDialog()
 
+    ConfirmRemovePendingContactDialog(
+        viewModel.removePendingContactDialogVisible.value,
+        close = viewModel::dismissRemovePendingContactDialog,
+        onRemove = viewModel::confirmRemovingPendingContact,
+    )
+
     if (viewModel.noContactsYet.value) {
         NoContactsYet(onContactAdd = { addContactViewModel.showDialog() })
         return
@@ -71,6 +78,7 @@ fun PrivateMessageScreen(
             viewModel.contactList.value,
             viewModel::isSelected,
             viewModel::selectContact,
+            viewModel::removePendingContact,
             viewModel.filterBy.value,
             viewModel::setFilterBy,
             onContactAdd = { addContactViewModel.showDialog() }
