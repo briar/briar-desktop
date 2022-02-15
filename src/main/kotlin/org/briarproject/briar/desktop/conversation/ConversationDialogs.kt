@@ -131,8 +131,7 @@ fun DeleteAllMessagesFailedDialog(
     val message = buildList {
         when {
             // get failures the user cannot immediately resolve
-            deletionResult.hasIntroductionSessionInProgress() &&
-                    deletionResult.hasInvitationSessionInProgress() ->
+            deletionResult.hasIntroductionSessionInProgress() && deletionResult.hasInvitationSessionInProgress() ->
                 add(i18n("conversation.delete.failed.dialog.message.ongoing_both"))
             deletionResult.hasIntroductionSessionInProgress() ->
                 add(i18n("conversation.delete.failed.dialog.message.ongoing_introductions"))
@@ -141,8 +140,7 @@ fun DeleteAllMessagesFailedDialog(
         }
         when {
             // add problems the user can resolve
-            deletionResult.hasNotAllIntroductionSelected() &&
-                    deletionResult.hasNotAllInvitationSelected() ->
+            deletionResult.hasNotAllIntroductionSelected() && deletionResult.hasNotAllInvitationSelected() ->
                 add(i18n("conversation.delete.failed.dialog.message.not_all_selected_both"))
             deletionResult.hasNotAllIntroductionSelected() ->
                 add(i18n("conversation.delete.failed.dialog.message.not_all_selected_introductions"))
