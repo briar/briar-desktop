@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowLeft
@@ -32,7 +33,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import org.briarproject.briar.desktop.contact.ContactDropDown.State
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.getCoreFeatureFlags
@@ -66,22 +66,22 @@ fun ContactDropDown(
         onDismissRequest = close,
     ) {
         DropdownMenuItem(onClick = { close(); onMakeIntroduction() }) {
-            Text(i18n("contacts.dropdown.introduction"), fontSize = 14.sp)
+            Text(i18n("contacts.dropdown.introduction"), style = MaterialTheme.typography.body2)
         }
         if (coreFeatureFlags.shouldEnableDisappearingMessages()) {
             DropdownMenuItem(onClick = {}) {
-                Text(i18n("contacts.dropdown.disappearing"), fontSize = 14.sp)
+                Text(i18n("contacts.dropdown.disappearing"), style = MaterialTheme.typography.body2)
             }
         }
         DropdownMenuItem(onClick = { close(); onDeleteAllMessages() }) {
-            Text(i18n("contacts.dropdown.delete.all"), fontSize = 14.sp)
+            Text(i18n("contacts.dropdown.delete.all"), style = MaterialTheme.typography.body2)
         }
         if (desktopFeatureFlags.shouldEnableTransportSettings()) {
             DropdownMenuItem(onClick = { setState(State.CONNECTION) }) {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     Text(
                         i18n("contacts.dropdown.connections"),
-                        fontSize = 14.sp,
+                        style = MaterialTheme.typography.h6,
                         modifier = Modifier.align(Alignment.CenterVertically)
                     )
                     Icon(
@@ -96,7 +96,7 @@ fun ContactDropDown(
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Text(
                     i18n("contacts.dropdown.contact"),
-                    fontSize = 14.sp,
+                    style = MaterialTheme.typography.h6,
                     modifier = Modifier.align(Alignment.CenterVertically)
                 )
                 Icon(
@@ -112,13 +112,13 @@ fun ContactDropDown(
         onDismissRequest = close,
     ) {
         DropdownMenuItem(onClick = { }) {
-            Text(i18n("contacts.dropdown.connections.title"), fontSize = 12.sp)
+            Text(i18n("contacts.dropdown.connections.title"), style = MaterialTheme.typography.h6)
         }
         DropdownMenuItem(onClick = { }) {
-            Text(i18n("contacts.dropdown.connections.bluetooth"), fontSize = 14.sp)
+            Text(i18n("contacts.dropdown.connections.bluetooth"), style = MaterialTheme.typography.body2)
         }
         DropdownMenuItem(onClick = { }) {
-            Text(i18n("contacts.dropdown.connections.removable"), fontSize = 14.sp)
+            Text(i18n("contacts.dropdown.connections.removable"), style = MaterialTheme.typography.body2)
         }
     }
     DropdownMenu(
@@ -134,16 +134,16 @@ fun ContactDropDown(
                 )
                 Text(
                     i18n("contacts.dropdown.contact"),
-                    fontSize = 14.sp,
+                    style = MaterialTheme.typography.h6,
                     modifier = Modifier.align(Alignment.CenterVertically)
                 )
             }
         }
         DropdownMenuItem(onClick = { close(); onChangeAlias() }) {
-            Text(i18n("contacts.dropdown.contact.change"), fontSize = 14.sp)
+            Text(i18n("contacts.dropdown.contact.change"), style = MaterialTheme.typography.body2)
         }
         DropdownMenuItem(onClick = { close(); onDeleteContact() }) {
-            Text(i18n("contacts.dropdown.contact.delete"), fontSize = 14.sp)
+            Text(i18n("contacts.dropdown.contact.delete"), style = MaterialTheme.typography.body2)
         }
     }
 }

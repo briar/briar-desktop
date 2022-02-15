@@ -134,12 +134,12 @@ fun Explainer(headline: String, text: String, content: @Composable () -> Unit = 
             BriarLogo(modifier = Modifier.size(200.dp))
             Text(
                 text = headline,
-                modifier = Modifier.padding(top = 15.dp, bottom = 5.dp),
-                style = MaterialTheme.typography.h5
+                modifier = Modifier.padding(top = 16.dp, bottom = 4.dp),
+                style = MaterialTheme.typography.h3
             )
             Text(
                 text = text,
-                modifier = Modifier.padding(top = 5.dp, bottom = 15.dp).widthIn(max = PARAGRAPH_WIDTH),
+                modifier = Modifier.padding(top = 4.dp, bottom = 16.dp).widthIn(max = PARAGRAPH_WIDTH),
                 style = MaterialTheme.typography.body2.copy(textAlign = TextAlign.Center)
             )
             content()

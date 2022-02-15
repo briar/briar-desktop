@@ -51,7 +51,7 @@ fun SearchTextField(searchValue: String, onValueChange: (String) -> Unit, onCont
         placeholder = { Text(i18n("contacts.search.title"), style = MaterialTheme.typography.body1) },
         shape = RoundedCornerShape(0.dp),
         leadingIcon = {
-            val padding = Modifier.padding(top = 8.dp, bottom = 8.dp, start = 12.dp)
+            val padding = Modifier.padding(top = 8.dp, bottom = 8.dp, start = 32.dp, end = 4.dp)
             Icon(Icons.Filled.Search, i18n("access.contacts.search"), padding)
         },
         trailingIcon = {

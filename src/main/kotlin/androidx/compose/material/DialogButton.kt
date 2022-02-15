@@ -19,7 +19,6 @@
 package androidx.compose.material
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.unit.sp
 import org.briarproject.briar.desktop.theme.buttonTextNegative
 import org.briarproject.briar.desktop.theme.buttonTextPositive
 import java.util.Locale
@@ -38,7 +37,7 @@ fun DialogButton(
     TextButton(onClick = onClick) {
         Text(
             text.uppercase(Locale.getDefault()),
-            fontSize = 16.sp,
+            style = MaterialTheme.typography.button,
             color = when (type) {
                 ButtonType.NEUTRAL -> MaterialTheme.colors.buttonTextPositive
                 ButtonType.DESTRUCTIVE -> MaterialTheme.colors.buttonTextNegative

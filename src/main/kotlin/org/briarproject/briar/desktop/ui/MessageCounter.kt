@@ -50,7 +50,7 @@ fun MessageCounter(unread: Int, modifier: Modifier = Modifier) {
         ) {
             Text(
                 modifier = Modifier.align(Alignment.Center),
-                fontSize = MaterialTheme.typography.overline.fontSize,
+                style = MaterialTheme.typography.overline,
                 textAlign = TextAlign.Center,
                 text = unread.toString(),
                 maxLines = 1

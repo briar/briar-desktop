@@ -33,9 +33,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import org.briarproject.bramble.api.sync.GroupId
 import org.briarproject.bramble.api.sync.MessageId
+import org.briarproject.briar.desktop.theme.BriarTheme
 import org.briarproject.briar.desktop.theme.noticeIn
 import org.briarproject.briar.desktop.theme.noticeOut
 import org.briarproject.briar.desktop.theme.privateMessageDate
@@ -54,20 +54,22 @@ fun main() = preview(
     "isSent" to false,
     "isSeen" to true,
 ) {
-    ConversationNoticeItemView(
-        ConversationNoticeItem(
-            notice = getStringParameter("notice"),
-            text = getStringParameter("text"),
-            id = MessageId(getRandomIdPersistent()),
-            groupId = GroupId(getRandomIdPersistent()),
-            time = getLongParameter("time"),
-            autoDeleteTimer = 0,
-            isIncoming = getBooleanParameter("isIncoming"),
-            isRead = getBooleanParameter("isRead"),
-            isSent = getBooleanParameter("isSent"),
-            isSeen = getBooleanParameter("isSeen"),
+    BriarTheme {
+        ConversationNoticeItemView(
+            ConversationNoticeItem(
+                notice = getStringParameter("notice"),
+                text = getStringParameter("text"),
+                id = MessageId(getRandomIdPersistent()),
+                groupId = GroupId(getRandomIdPersistent()),
+                time = getLongParameter("time"),
+                autoDeleteTimer = 0,
+                isIncoming = getBooleanParameter("isIncoming"),
+                isRead = getBooleanParameter("isRead"),
+                isSent = getBooleanParameter("isSent"),
+                isSeen = getBooleanParameter("isSeen"),
+            )
         )
-    )
+    }
 }
 
 /**
@@ -88,7 +90,7 @@ fun ConversationNoticeItemView(
                 SelectionContainer {
                     Text(
                         text,
-                        fontSize = 16.sp,
+                        style = MaterialTheme.typography.body1,
                         color = textColor,
                         modifier = Modifier.padding(12.dp, 8.dp).align(Alignment.Start)
                     )
@@ -99,7 +101,7 @@ fun ConversationNoticeItemView(
             ) {
                 Text(
                     text = m.notice,
-                    fontSize = 14.sp,
+                    style = MaterialTheme.typography.body2,
                     fontStyle = FontStyle.Italic,
                     color = noticeColor,
                     modifier = Modifier.align(Alignment.Start).padding(bottom = 8.dp)
