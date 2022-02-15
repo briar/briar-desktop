@@ -84,8 +84,9 @@ fun ContactDrawerMakeIntro(
                         if (contactItem is ContactItem)
                             ContactCard(
                                 contactItem,
-                                { viewModel.setSecondContact(contactItem) },
-                                false
+                                onSel = { viewModel.setSecondContact(contactItem) },
+                                selected = false,
+                                onRemovePending = {}
                             )
                     }
                 }

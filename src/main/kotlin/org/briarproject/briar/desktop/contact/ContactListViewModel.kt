@@ -23,6 +23,8 @@ import androidx.compose.runtime.mutableStateOf
 import mu.KotlinLogging
 import org.briarproject.bramble.api.connection.ConnectionRegistry
 import org.briarproject.bramble.api.contact.ContactManager
+import org.briarproject.bramble.api.contact.PendingContactId
+import org.briarproject.bramble.api.contact.PendingContactState
 import org.briarproject.bramble.api.contact.event.ContactAliasChangedEvent
 import org.briarproject.bramble.api.db.TransactionManager
 import org.briarproject.bramble.api.event.Event
@@ -75,6 +77,7 @@ constructor(
 
     private val _filterBy = mutableStateOf("")
     private val _selectedContactId = mutableStateOf<ContactIdWrapper?>(null)
+    private val _contactIdToBeRemoved = mutableStateOf<PendingContactId?>(null)
 
     val filterBy = _filterBy.asState()
     val selectedContactId = derivedStateOf {
@@ -87,12 +90,43 @@ constructor(
             null
         }
     }
+    val removePendingContactDialogVisible = derivedStateOf { _contactIdToBeRemoved.value != null }
 
     fun selectContact(contactItem: BaseContactItem) {
         _selectedContactId.value = contactItem.idWrapper
     }
 
     fun isSelected(contactItem: BaseContactItem) = _selectedContactId.value == contactItem.idWrapper
+
+    fun removePendingContact(contactItem: PendingContactItem) {
+        if (contactItem.state == PendingContactState.FAILED) {
+            // no need to show warning dialog for failed pending contacts
+            removePendingContact(contactItem.idWrapper.contactId)
+        } else {
+            // show warning dialog
+            _contactIdToBeRemoved.value = contactItem.idWrapper.contactId
+        }
+    }
+
+    fun confirmRemovingPendingContact() {
+        _contactIdToBeRemoved.value?.let { id ->
+            removePendingContact(id)
+        }
+    }
+
+    fun dismissRemovePendingContactDialog() {
+        _contactIdToBeRemoved.value = null
+    }
+
+    private fun removePendingContact(contactId: PendingContactId) {
+        runOnDbThreadWithTransaction(false) { txn ->
+            contactManager.removePendingContact(txn, contactId)
+            _contactIdToBeRemoved.value = null
+            txn.attach {
+                removeItem(contactId)
+            }
+        }
+    }
 
     override fun filterContactItem(contactItem: BaseContactItem) =
         contactItem.displayName.contains(_filterBy.value, ignoreCase = true)
