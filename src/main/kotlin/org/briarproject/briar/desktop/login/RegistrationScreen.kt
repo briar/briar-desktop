@@ -26,6 +26,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.InitialFocusState.AFTER_FIRST_FOCUSSED
 import androidx.compose.material.InitialFocusState.AFTER_FOCUS_LOST_ONCE
+import androidx.compose.material.OutlinedPasswordTextField
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -141,8 +142,6 @@ fun PasswordForm(
 ) {
     val initialFocusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
-    var isPasswordVisible by remember { mutableStateOf(false) }
-    var isPasswordConfirmationVisible by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier.fillMaxWidth().requiredHeight(24.dp),
@@ -151,7 +150,7 @@ fun PasswordForm(
         if (password.isNotEmpty())
             StrengthMeter(passwordStrength, Modifier.fillMaxWidth())
     }
-    OutlinedTextField(
+    OutlinedPasswordTextField(
         value = password,
         onValueChange = setPassword,
         label = { Text(i18n("startup.field.password")) },
@@ -159,29 +158,11 @@ fun PasswordForm(
         isError = passwordTooWeakError,
         showErrorWhen = AFTER_FOCUS_LOST_ONCE,
         errorMessage = i18n("startup.error.password_too_weak"),
-        visualTransformation = if (!isPasswordVisible) PasswordVisualTransformation() else VisualTransformation.None,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Next),
         modifier = Modifier.fillMaxWidth().focusRequester(initialFocusRequester),
         onEnter = { focusManager.moveFocus(FocusDirection.Next) },
-        trailingIcon = {
-            ShowHidePasswordIcon(
-                isVisible = isPasswordVisible,
-                toggleIsVisible = {
-                    isPasswordVisible = !isPasswordVisible
-                },
-            )
-        },
-        errorIcon = {
-            // trailing icon is hidden in error state
-            ShowHidePasswordIcon(
-                isVisible = isPasswordVisible,
-                toggleIsVisible = {
-                    isPasswordVisible = !isPasswordVisible
-                },
-            )
-        },
     )
-    OutlinedTextField(
+    OutlinedPasswordTextField(
         value = passwordConfirmation,
         onValueChange = setPasswordConfirmation,
         label = { Text(i18n("startup.field.password_confirmation")) },
@@ -189,27 +170,9 @@ fun PasswordForm(
         isError = passwordsDontMatchError,
         showErrorWhen = AFTER_FIRST_FOCUSSED,
         errorMessage = i18n("startup.error.passwords_not_match"),
-        visualTransformation = if (!isPasswordConfirmationVisible) PasswordVisualTransformation() else VisualTransformation.None,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
         modifier = Modifier.fillMaxWidth(),
         onEnter = onEnter,
-        trailingIcon = {
-            ShowHidePasswordIcon(
-                isVisible = isPasswordConfirmationVisible,
-                toggleIsVisible = {
-                    isPasswordConfirmationVisible = !isPasswordConfirmationVisible
-                },
-            )
-        },
-        errorIcon = {
-            // trailing icon is hidden in error state
-            ShowHidePasswordIcon(
-                isVisible = isPasswordConfirmationVisible,
-                toggleIsVisible = {
-                    isPasswordConfirmationVisible = !isPasswordConfirmationVisible
-                },
-            )
-        }
     )
 
     LaunchedEffect(Unit) {
