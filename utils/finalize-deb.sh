@@ -7,21 +7,16 @@ set -ex
 
 DIR=$(dirname $0)
 REPO="$DIR/.."
-OUTPUT="$REPO/deb"
 
 cd "$REPO/build/compose/binaries/main/deb"
 
-mkdir tmp
-cd tmp
+cp ./briar-desktop_*.deb briar-desktop.original.deb
 
-# Unpack control.tar.xz to tmp directory
-ar p ../*.deb control.tar.xz | tar -xJ
-ar d ../*.deb control.tar.xz
-
-# Replace preinst, postinst, prerm scripts
-#TODO
-
-# Repackage briar-desktop.deb
-cp ../*.deb ../briar-desktop.deb
-tar cfJ control.tar.xz ./*[!z]
-ar r ../briar-desktop.deb control.tar.xz
+fakeroot sh -c '
+  mkdir tmp
+  dpkg-deb -R briar-desktop.original.deb tmp
+  cp ../../../../../src/packagingResources/linux/postinst tmp/DEBIAN/postinst
+  cp ../../../../../src/packagingResources/linux/preinst tmp/DEBIAN/preinst
+  cp ../../../../../src/packagingResources/linux/prerm tmp/DEBIAN/prerm
+  dpkg-deb -b tmp briar-desktop.deb
+'
