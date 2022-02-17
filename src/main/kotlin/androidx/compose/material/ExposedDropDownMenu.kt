@@ -58,6 +58,7 @@ import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 // Taken from https://stackoverflow.com/a/69042850 and slightly adapted to follow Material theming
 // See https://github.com/JetBrains/compose-jb/issues/1673 as tracking issue
 
+@Suppress("HardCodedStringLiteral")
 fun main() = preview {
     val values = (0..5).map { "Test $it" }
     var selected by remember { mutableStateOf(-1) }
@@ -196,7 +197,7 @@ private fun ExposedDropDownMenuImpl(
                 }
                 Icon(
                     imageVector = Icons.Filled.ArrowDropDown,
-                    contentDescription = "Change",
+                    contentDescription = "Change", // NON-NLS since this will be replaced by a toolkit native version at some point
                     tint = trailingIconColor,
                     modifier = Modifier
                         .align(Alignment.CenterEnd)

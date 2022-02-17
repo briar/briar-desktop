@@ -27,8 +27,8 @@ import org.briarproject.briar.desktop.viewmodel.SingleStateEvent
 import java.util.prefs.Preferences
 import javax.inject.Inject
 
-const val PREF_THEME = "theme"
-const val PREF_LANG = "language"
+const val PREF_THEME = "theme" // NON-NLS
+const val PREF_LANG = "language" // NON-NLS
 
 class UnencryptedSettingsImpl @Inject internal constructor() : UnencryptedSettings {
 
@@ -40,6 +40,8 @@ class UnencryptedSettingsImpl @Inject internal constructor() : UnencryptedSettin
     override var theme: Theme
         get() = Theme.valueOf(prefs.get(PREF_THEME, AUTO.name))
         set(value) {
+            if (theme == value) return
+
             prefs.put(PREF_THEME, value.name)
             prefs.flush() // write preferences to disk
             invalidateScreen.emit(Unit)
@@ -48,6 +50,8 @@ class UnencryptedSettingsImpl @Inject internal constructor() : UnencryptedSettin
     override var language: Language
         get() = Language.valueOf(prefs.get(PREF_LANG, DEFAULT.name))
         set(value) {
+            if (language == value) return
+
             prefs.put(PREF_LANG, value.name)
             prefs.flush() // write preferences to disk
             updateLocale(value)

@@ -30,12 +30,12 @@ interface UnencryptedSettings {
         DEFAULT, EN,
 
         // languages as present in resources
-        AR, BG, DE, ES, FA, GL, HU, IS, IT, LT, PL, RO, RU, SK, SQ, SV, TR, ZH_CN;
+        AR, BG, DE, ES, FA, FR, GL, HE, HU, IS, IT, JA, KO, LT, MY, NL, PL, PT_BR, RO, RU, SK, SQ, SV, TR, ZH_CN;
 
         val locale: Locale
             get() = if (this == DEFAULT)
                 Locale.getDefault()
-            else Locale.forLanguageTag(this.name.replace('_', '-'))
+            else Locale.forLanguageTag(name.replace('_', '-'))
     }
 
     var theme: Theme

@@ -14,7 +14,7 @@ _This section is of interest only for developers of Briar Desktop_.
 To update translations locally, first install `transifex-client`. You can then pull updates with `tx pull -a`.
 
 If that command added a language that was previously not supported,
-you have to manually insert the language code in [Settings.kt](./src/main/kotlin/org/briarproject/briar/desktop/settings/Settings.kt)
+you have to manually insert the language code in [UnencryptedSettings.kt](./src/main/kotlin/org/briarproject/briar/desktop/settings/UnencryptedSettings.kt)
 for it to be shown in the language selection.
 
 The Localization Lab has some instructions and advice for
