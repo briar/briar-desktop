@@ -29,6 +29,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedButton
 import androidx.compose.material.OutlinedExposedDropDownMenu
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -72,6 +73,14 @@ fun SettingDetails(viewModel: SettingsViewModel) {
                             onChange = { viewModel.selectLanguage(viewModel.languageList[it]) },
                             modifier = Modifier.widthIn(min = 200.dp)
                         )
+                    }
+
+                    DetailItem {
+                        Text(i18n("settings.security.title"))
+
+                        OutlinedButton(onClick = viewModel::showChangePasswordDialog) {
+                            Text(i18n("settings.security.password.change"))
+                        }
                     }
                 }
             }

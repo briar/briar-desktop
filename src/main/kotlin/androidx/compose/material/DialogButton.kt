@@ -33,15 +33,21 @@ fun DialogButton(
     onClick: () -> Unit,
     text: String,
     type: ButtonType,
+    enabled: Boolean = true,
 ) {
-    TextButton(onClick = onClick) {
+    TextButton(
+        onClick = onClick,
+        enabled = enabled,
+        colors = ButtonDefaults.textButtonColors(
+            contentColor = when (type) {
+                ButtonType.NEUTRAL -> MaterialTheme.colors.buttonTextPositive
+                ButtonType.DESTRUCTIVE -> MaterialTheme.colors.buttonTextNegative
+            }
+        )
+    ) {
         Text(
             text.uppercase(InternationalizationUtils.locale),
             style = MaterialTheme.typography.button,
-            color = when (type) {
-                ButtonType.NEUTRAL -> MaterialTheme.colors.buttonTextPositive
-                ButtonType.DESTRUCTIVE -> MaterialTheme.colors.buttonTextNegative
-            },
         )
     }
 }

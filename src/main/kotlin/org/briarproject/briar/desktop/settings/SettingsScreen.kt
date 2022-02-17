@@ -25,6 +25,12 @@ import androidx.compose.ui.Modifier
 
 @Composable
 fun SettingsScreen(viewModel: SettingsViewModel) {
+    ChangePasswordDialog(
+        viewModel.changePasswordDialogVisible.value,
+        close = viewModel::dismissChangePasswordDialog,
+        viewHolder = viewModel.changePasswordSubViewModel,
+    )
+
     Row(Modifier.fillMaxSize()) {
         /* TODO: Currently commented out because there are settings in just a single category
         SettingOptionsList(

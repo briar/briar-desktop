@@ -19,6 +19,8 @@
 package org.briarproject.briar.desktop.settings
 
 import androidx.compose.runtime.mutableStateOf
+import org.briarproject.bramble.api.account.AccountManager
+import org.briarproject.bramble.api.crypto.PasswordStrengthEstimator
 import org.briarproject.briar.desktop.viewmodel.ViewModel
 import org.briarproject.briar.desktop.viewmodel.asState
 import javax.inject.Inject
@@ -36,6 +38,8 @@ class SettingsViewModel
 @Inject
 constructor(
     private val unencryptedSettings: UnencryptedSettings,
+    private val accountManager: AccountManager,
+    private val passwordStrengthEstimator: PasswordStrengthEstimator,
 ) : ViewModel {
     private val _selectedSetting = mutableStateOf(SettingCategory.DISPLAY)
     val selectedSetting = _selectedSetting.asState()
@@ -49,6 +53,11 @@ constructor(
     private val _selectedLanguage = mutableStateOf(unencryptedSettings.language)
     val selectedLanguage = _selectedLanguage.asState()
 
+    private val _changePasswordDialogVisible = mutableStateOf(false)
+    val changePasswordDialogVisible = _changePasswordDialogVisible.asState()
+
+    val changePasswordSubViewModel = ChangePasswordSubViewModel(accountManager, passwordStrengthEstimator)
+
     fun selectSetting(selectedOption: SettingCategory) {
         _selectedSetting.value = selectedOption
     }
@@ -61,5 +70,13 @@ constructor(
     fun selectLanguage(language: UnencryptedSettings.Language) {
         unencryptedSettings.language = language
         _selectedLanguage.value = language
+    }
+
+    fun showChangePasswordDialog() {
+        _changePasswordDialogVisible.value = true
+    }
+
+    fun dismissChangePasswordDialog() {
+        _changePasswordDialogVisible.value = false
     }
 }
