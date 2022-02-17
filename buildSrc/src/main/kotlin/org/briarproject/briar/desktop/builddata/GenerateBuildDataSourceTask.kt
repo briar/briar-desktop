@@ -20,7 +20,9 @@ package org.briarproject.briar.desktop.builddata
 
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.lib.Constants
+import org.eclipse.jgit.lib.Ref
 import org.eclipse.jgit.revwalk.RevCommit
+import org.eclipse.jgit.submodule.SubmoduleWalk
 import org.gradle.api.GradleScriptException
 import org.gradle.api.tasks.TaskAction
 import java.io.ByteArrayInputStream
@@ -48,11 +50,16 @@ open class GenerateBuildDataSourceTask : AbstractBuildDataTask() {
         // Get version from Gradle project information
         val version = project.version.toString()
 
-        // Get Git hash, last commit time and current branch using JGit.
-        // First, open git repository
+        // Get Git hashes, last commit time, current branch and briar-core tag using JGit.
+        // First, open main git repository
         val dir = project.projectDir
         val git = Git.open(dir)
         val repository = git.repository
+
+        // Find and open core repository
+        val repositoryCore = SubmoduleWalk.getSubmoduleRepository(repository, "briar")
+        val dirBriar = repositoryCore.directory
+        val gitBriar = Git.open(dirBriar)
 
         // Get head ref and it's name => current hash
         val head = repository.resolve(Constants.HEAD)
@@ -76,6 +83,14 @@ open class GenerateBuildDataSourceTask : AbstractBuildDataTask() {
             gitBranch = fullBranch.substring(prefix.length)
         }
 
+        // Get head ref and it's name => current core hash
+        val coreHead = repositoryCore.resolve(Constants.HEAD)
+        val coreGitHash = coreHead.name
+
+        // Get latest core tag
+        val coreReleaseTag = getLastReleaseTag(gitBriar)
+        val coreVersion = coreReleaseTag.name.substring("refs/tags/release-".length)
+
         // Generate output file
         checkNotNull(packageName) { "Please specify 'packageName'." }
         val parts = packageName.split("\\.".toRegex()).toTypedArray()
@@ -89,7 +104,8 @@ open class GenerateBuildDataSourceTask : AbstractBuildDataTask() {
         val file = path.resolve("$className.kt")
         val content = createSource(
             packageName, className, version,
-            commitTime, gitHash, gitBranch
+            commitTime, gitHash, gitBranch,
+            coreGitHash, coreVersion
         )
         val input: InputStream = ByteArrayInputStream(
             content.toByteArray(StandardCharsets.UTF_8)
@@ -106,6 +122,12 @@ open class GenerateBuildDataSourceTask : AbstractBuildDataTask() {
         return iterator.next()
     }
 
+    private fun getLastReleaseTag(git: Git): Ref {
+        val tags = git.tagList().call()
+        val releases = tags.filter { tag -> tag.name.startsWith("refs/tags/release-") }
+        return releases[releases.size - 1]
+    }
+
     private fun createSource(
         packageName: String,
         className: String,
@@ -113,6 +135,8 @@ open class GenerateBuildDataSourceTask : AbstractBuildDataTask() {
         gitTime: Long,
         gitHash: String,
         gitBranch: String,
+        coreGitHash: String,
+        coreVersion: String,
     ) = FileBuilder().apply {
         line("// this file is generated, do not edit")
         line("package $packageName")
@@ -122,6 +146,8 @@ open class GenerateBuildDataSourceTask : AbstractBuildDataTask() {
         line("    val GIT_TIME = ${gitTime}L")
         line("    val GIT_HASH = \"$gitHash\"")
         line("    val GIT_BRANCH = \"$gitBranch\"")
+        line("    val CORE_HASH = \"$coreGitHash\"")
+        line("    val CORE_VERSION = \"$coreVersion\"")
         line("}")
     }.toString()
 }
