@@ -56,6 +56,7 @@ fun AboutDialog(
         i18n("about.copyright") to "The Briar Project", // NON-NLS
         i18n("about.license") to "GNU Affero General Public License v3", // NON-NLS
         i18n("about.version") to BuildData.VERSION,
+        i18n("about.version.core") to BuildData.CORE_VERSION,
         "Git branch" to BuildData.GIT_BRANCH, // NON-NLS
         "Git hash" to BuildData.GIT_HASH, // NON-NLS
         "Commit time" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(buildTime), // NON-NLS
