@@ -5,25 +5,33 @@
 
 A desktop program for [Briar](https://briar.app), bringing secure messaging to your desktop and mobile devices.
 
-**Note that Briar Desktop is still in a very early prototype stage and not yet functional.**
+![Screenshot showing private chat with a test contact 'Polonius', containing a text by Shakespeare](/utils/screenshots/briar-desktop-1.png)
 
 ## Installation
 
-We plan to distribute Briar for Debian (and related distributions) as _.deb_ and
-via [Flathub.org](https://flathub.org) as flatpak, but until now, there are
-only semi-official installation methods available. You might want to use them now
-for not having to wait, but please note that those installation methods will be deprecated
-once Briar is available for Debian and on Flathub.org.
+We plan to ship Briar as Flatpak and in Debian (and related distributions) as _.deb_,
+but until now, there are only semi-official installation methods available. You might want to use them now
+in order to not having to wait, but please note that those installation methods will be deprecated
+once Briar is officially available.
 
-### Self-contained Java .jar
+### Beta releases
+
+From Briar's website you can download different binaries:
+[briarproject.org/download-briar-desktop](https://briarproject.org/download-briar-desktop/)
+
+### Nightly builds
+
+Each night a new build is compiled by Briar's GitLab CI.
+
+#### Self-contained Java .jar
 
 The simplest way is to
 [download the nightly briar-desktop.jar](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop.jar?job=b_jar)
 and execute it from the command-line with
 `java -jar briar-desktop.jar`.
-Note that you need at least version 11 of the Java Runtime Environment.
+Note that you need at least version 17 of the Java Runtime Environment.
 
-### Self-contained .deb
+#### Self-contained .deb
 
 For Debian- and Ubuntu-based Linux distributions, a set of .deb files is available.
 Depending on which version of Debian/Ubuntu your OS is based on,
@@ -100,13 +108,6 @@ See [TRANSLATION.md](./TRANSLATION.md) for more information.
 
 See [HACKING.md](./HACKING.md) for useful information when trying to work
 with the source code.
-
-## Maintenance
-
-From time to time, translations and Flatpak's dependencies should be
-updated. The former can be done with
-`tools/update-translations.sh`, the latter using
-[flatpak-builder-tools](https://github.com/flatpak/flatpak-builder-tools).
 
 ## Design Goals
 
