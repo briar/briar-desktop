@@ -48,10 +48,10 @@ import org.briarproject.briar.desktop.contact.ContactItem
 import org.briarproject.briar.desktop.contact.ProfileCircle
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
 import org.briarproject.briar.desktop.ui.HorizontalDivider
+import org.briarproject.briar.desktop.utils.InternationalizationUtils
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nF
 import org.briarproject.briar.desktop.viewmodel.viewModel
-import java.util.Locale
 
 @Composable
 fun ContactDrawerMakeIntro(
@@ -143,7 +143,7 @@ fun ContactDrawerMakeIntro(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         val text = i18n("introduction.introduce")
-                        Text(text.uppercase(Locale.getDefault()))
+                        Text(text.uppercase(InternationalizationUtils.locale))
                     }
                 }
             }

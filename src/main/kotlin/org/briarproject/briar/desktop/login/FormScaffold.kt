@@ -30,7 +30,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import org.briarproject.briar.desktop.ui.Constants.STARTUP_FIELDS_WIDTH
-import java.util.Locale
+import org.briarproject.briar.desktop.utils.InternationalizationUtils
 
 @Composable
 fun FormScaffold(
@@ -55,6 +55,6 @@ fun FormScaffold(
     content()
     Spacer(Modifier.weight(1.0f))
     Button(onClick = buttonClick, enabled = buttonEnabled, modifier = Modifier.fillMaxWidth()) {
-        Text(buttonText.uppercase(Locale.getDefault()))
+        Text(buttonText.uppercase(InternationalizationUtils.locale))
     }
 }

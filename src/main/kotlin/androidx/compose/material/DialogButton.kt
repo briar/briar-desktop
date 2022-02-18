@@ -21,7 +21,7 @@ package androidx.compose.material
 import androidx.compose.runtime.Composable
 import org.briarproject.briar.desktop.theme.buttonTextNegative
 import org.briarproject.briar.desktop.theme.buttonTextPositive
-import java.util.Locale
+import org.briarproject.briar.desktop.utils.InternationalizationUtils
 
 enum class ButtonType {
     NEUTRAL,
@@ -36,7 +36,7 @@ fun DialogButton(
 ) {
     TextButton(onClick = onClick) {
         Text(
-            text.uppercase(Locale.getDefault()),
+            text.uppercase(InternationalizationUtils.locale),
             style = MaterialTheme.typography.button,
             color = when (type) {
                 ButtonType.NEUTRAL -> MaterialTheme.colors.buttonTextPositive
