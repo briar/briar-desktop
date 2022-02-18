@@ -31,6 +31,14 @@
   <project_group>Briar</project_group>
   <developer_name>The Briar Project</developer_name>
   <update_contact>desktop@briarproject.org</update_contact>
+
+  <screenshots>
+    <screenshot type="default">
+      <caption>A private chat with a test contact 'Polonius', containing a text by Shakespeare</caption>
+      <image type="source">https://code.briarproject.org/briar/briar-desktop/-/raw/main/utils/screenshots/briar-desktop-1.png</image>
+    </screenshot>
+  </screenshots>
+
   
   <content_rating type="oars-1.1">
     <content_attribute id="social-chat">intense</content_attribute>
