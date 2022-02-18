@@ -34,11 +34,15 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.PointerIconDefaults
+import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.unit.dp
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun SearchTextField(searchValue: String, onValueChange: (String) -> Unit, onContactAdd: () -> Unit) {
     TextField(
@@ -58,7 +62,7 @@ fun SearchTextField(searchValue: String, onValueChange: (String) -> Unit, onCont
             IconButton(
                 onClick = onContactAdd,
                 modifier = Modifier.padding(end = 10.dp).size(32.dp)
-                    .background(MaterialTheme.colors.primary, CircleShape)
+                    .background(MaterialTheme.colors.primary, CircleShape).pointerHoverIcon(PointerIconDefaults.Default)
             ) {
                 Icon(
                     Icons.Filled.PersonAdd,

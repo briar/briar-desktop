@@ -48,6 +48,8 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.input.pointer.PointerIconDefaults
+import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.res.ResourceLoader
 import androidx.compose.ui.res.loadImageBitmap
 import androidx.compose.ui.unit.dp
@@ -80,6 +82,7 @@ fun main() = preview {
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun ConversationInput(
     text: String,
@@ -118,7 +121,8 @@ fun ConversationInput(
                         }
                     },
                     Modifier.padding(4.dp).size(32.dp)
-                        .background(MaterialTheme.colors.primary, CircleShape),
+                        .background(MaterialTheme.colors.primary, CircleShape)
+                        .pointerHoverIcon(PointerIconDefaults.Default),
                 ) {
                     if (image == null) {
                         Icon(Icons.Filled.Add, i18n("access.attachment_add"), Modifier.size(24.dp), Color.White)
@@ -129,7 +133,7 @@ fun ConversationInput(
             },
             trailingIcon = {
                 IconButton(
-                    onClick = onSend, modifier = Modifier.padding(4.dp).size(32.dp),
+                    onClick = onSend, modifier = Modifier.padding(4.dp).size(32.dp).pointerHoverIcon(PointerIconDefaults.Default),
                 ) {
                     Icon(
                         Icons.Filled.Send,

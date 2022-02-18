@@ -60,10 +60,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.input.pointer.PointerIconDefaults
+import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
@@ -359,7 +362,7 @@ fun OwnLink(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalComposeUiApi::class)
 @Composable
 fun ContactLink(
     remoteHandshakeLink: String,
@@ -410,26 +413,29 @@ fun ContactLink(
                     alignment = Alignment.BottomCenter,
                 )
             ) {
-                IconButton({
-                    val clipboardText = clipboardManager.getText().toString()
-                    if (clipboardText.isNotEmpty()) {
-                        setRemoteHandshakeLink(clipboardManager.getText().toString())
-                        coroutineScope.launch {
-                            scaffoldState.snackbarHostState.showSnackbar(
-                                message = i18n("contact.add.remote.link_pasted_snackbar"),
-                                duration = SnackbarDuration.Short,
-                            )
+                IconButton(
+                    {
+                        val clipboardText = clipboardManager.getText().toString()
+                        if (clipboardText.isNotEmpty()) {
+                            setRemoteHandshakeLink(clipboardManager.getText().toString())
+                            coroutineScope.launch {
+                                scaffoldState.snackbarHostState.showSnackbar(
+                                    message = i18n("contact.add.remote.link_pasted_snackbar"),
+                                    duration = SnackbarDuration.Short,
+                                )
+                            }
+                            aliasFocusRequester.requestFocus()
+                        } else {
+                            coroutineScope.launch {
+                                scaffoldState.snackbarHostState.showSnackbar(
+                                    message = i18n("contact.add.remote.paste_error_snackbar"),
+                                    duration = SnackbarDuration.Short,
+                                )
+                            }
                         }
-                        aliasFocusRequester.requestFocus()
-                    } else {
-                        coroutineScope.launch {
-                            scaffoldState.snackbarHostState.showSnackbar(
-                                message = i18n("contact.add.remote.paste_error_snackbar"),
-                                duration = SnackbarDuration.Short,
-                            )
-                        }
-                    }
-                }) {
+                    },
+                    Modifier.pointerHoverIcon(PointerIconDefaults.Default)
+                ) {
                     Icon(
                         Icons.Filled.ContentPaste,
                         "contact.add.remote.paste_tooltip",
