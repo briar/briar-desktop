@@ -23,11 +23,16 @@ import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.Colors
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Typography
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.platform.Font
+import androidx.compose.ui.unit.sp
 
 val Colors.divider: Color get() = if (isLight) Gray300 else Gray800
 val Colors.outline: Color get() = if (isLight) Gray900 else Gray200
@@ -72,6 +77,33 @@ val LightColors = lightColors(
     onError = Color.White,
 )
 
+val robotoRegular = FontFamily(
+    Font(resource = "fonts/Roboto-Regular.ttf"),
+)
+
+val robotoMedium = FontFamily(
+    Font(resource = "fonts/Roboto-Medium.ttf"),
+)
+
+val spacing = 0.3.sp
+
+val briarTypography = Typography(
+    defaultFontFamily = robotoRegular,
+    h1 = TextStyle(letterSpacing = spacing, fontFamily = robotoMedium, fontSize = 36.sp),
+    h2 = TextStyle(letterSpacing = spacing, fontFamily = robotoMedium, fontSize = 24.sp),
+    h3 = TextStyle(letterSpacing = spacing, fontFamily = robotoMedium, fontSize = 20.sp),
+    h4 = TextStyle(letterSpacing = spacing, fontFamily = robotoMedium, fontSize = 18.sp),
+    h5 = TextStyle(letterSpacing = spacing, fontFamily = robotoMedium, fontSize = 16.sp),
+    h6 = TextStyle(letterSpacing = spacing, fontFamily = robotoMedium, fontSize = 14.sp),
+    subtitle1 = TextStyle(letterSpacing = spacing, fontSize = 12.sp),
+    subtitle2 = TextStyle(letterSpacing = spacing, fontSize = 10.sp),
+    body1 = TextStyle(letterSpacing = spacing, fontSize = 14.sp),
+    body2 = TextStyle(letterSpacing = spacing, fontSize = 14.sp),
+    button = TextStyle(letterSpacing = spacing, fontSize = 14.sp),
+    caption = TextStyle(letterSpacing = spacing, fontSize = 10.sp),
+    overline = TextStyle(letterSpacing = spacing, fontSize = 10.sp),
+)
+
 @Composable
 fun BriarTheme(
     isDarkTheme: Boolean = isSystemInDarkTheme(),
@@ -80,7 +112,10 @@ fun BriarTheme(
 ) {
     val myColors = colors ?: if (isDarkTheme) DarkColors else LightColors
 
-    MaterialTheme(myColors) {
+    MaterialTheme(
+        colors = myColors,
+        typography = briarTypography,
+    ) {
         val customTextSelectionColors = TextSelectionColors(
             handleColor = MaterialTheme.colors.secondary,
             backgroundColor = MaterialTheme.colors.secondary.copy(alpha = 0.4f)

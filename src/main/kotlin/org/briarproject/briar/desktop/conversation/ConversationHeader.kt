@@ -41,7 +41,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import org.briarproject.briar.desktop.contact.ContactDropDown
 import org.briarproject.briar.desktop.contact.ContactItem
 import org.briarproject.briar.desktop.contact.ProfileCircle
@@ -89,7 +88,7 @@ fun ConversationHeader(
                         .weight(1f, fill = false),
                     maxLines = 2,
                     overflow = Ellipsis,
-                    fontSize = 20.sp
+                    style = MaterialTheme.typography.h2
                 )
             }
             IconButton(

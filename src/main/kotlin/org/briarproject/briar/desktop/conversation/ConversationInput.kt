@@ -50,9 +50,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.res.ResourceLoader
 import androidx.compose.ui.res.loadImageBitmap
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import org.briarproject.briar.desktop.ui.HorizontalDivider
 import org.briarproject.briar.desktop.ui.LocalWindowScope
 import org.briarproject.briar.desktop.utils.ImagePicker.pickImageUsingDialog
@@ -100,8 +98,8 @@ fun ConversationInput(
             onValueChange = updateText,
             onEnter = onSend,
             maxLines = 10,
-            textStyle = TextStyle(fontSize = 16.sp, lineHeight = 16.sp),
-            placeholder = { Text(i18n("conversation.message.new")) },
+            textStyle = MaterialTheme.typography.body1,
+            placeholder = { Text(i18n("conversation.message.new"), style = MaterialTheme.typography.body1) },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(0.dp),
             colors = TextFieldDefaults.textFieldColors(

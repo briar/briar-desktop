@@ -28,6 +28,7 @@ import androidx.compose.material.ButtonType.DESTRUCTIVE
 import androidx.compose.material.ButtonType.NEUTRAL
 import androidx.compose.material.DialogButton
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
@@ -107,7 +108,8 @@ fun DeleteAllMessagesConfirmationDialog(
         title = {
             Text(
                 text = i18n("conversation.delete.all.dialog.title"),
-                modifier = Modifier.width(IntrinsicSize.Max)
+                modifier = Modifier.width(IntrinsicSize.Max),
+                style = MaterialTheme.typography.h6
             )
         },
         text = {
@@ -129,8 +131,7 @@ fun DeleteAllMessagesFailedDialog(
     val message = buildList {
         when {
             // get failures the user cannot immediately resolve
-            deletionResult.hasIntroductionSessionInProgress() &&
-                deletionResult.hasInvitationSessionInProgress() ->
+            deletionResult.hasIntroductionSessionInProgress() && deletionResult.hasInvitationSessionInProgress() ->
                 add(i18n("conversation.delete.failed.dialog.message.ongoing_both"))
             deletionResult.hasIntroductionSessionInProgress() ->
                 add(i18n("conversation.delete.failed.dialog.message.ongoing_introductions"))
@@ -139,8 +140,7 @@ fun DeleteAllMessagesFailedDialog(
         }
         when {
             // add problems the user can resolve
-            deletionResult.hasNotAllIntroductionSelected() &&
-                deletionResult.hasNotAllInvitationSelected() ->
+            deletionResult.hasNotAllIntroductionSelected() && deletionResult.hasNotAllInvitationSelected() ->
                 add(i18n("conversation.delete.failed.dialog.message.not_all_selected_both"))
             deletionResult.hasNotAllIntroductionSelected() ->
                 add(i18n("conversation.delete.failed.dialog.message.not_all_selected_introductions"))
@@ -154,7 +154,8 @@ fun DeleteAllMessagesFailedDialog(
         title = {
             Text(
                 text = i18n("conversation.delete.failed.dialog.title"),
-                modifier = Modifier.width(IntrinsicSize.Max)
+                modifier = Modifier.width(IntrinsicSize.Max),
+                style = MaterialTheme.typography.h6,
             )
         },
         text = {
@@ -181,7 +182,8 @@ fun ChangeAliasDialog(
         title = {
             Text(
                 text = i18n("conversation.change.alias.dialog.title"),
-                modifier = Modifier.width(IntrinsicSize.Max)
+                modifier = Modifier.width(IntrinsicSize.Max),
+                style = MaterialTheme.typography.h6,
             )
         },
         text = {
@@ -210,7 +212,8 @@ fun DeleteContactConfirmationDialog(
         title = {
             Text(
                 text = i18n("conversation.delete.contact.dialog.title"),
-                modifier = Modifier.width(IntrinsicSize.Max)
+                modifier = Modifier.width(IntrinsicSize.Max),
+                style = MaterialTheme.typography.h6,
             )
         },
         text = {

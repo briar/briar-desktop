@@ -39,7 +39,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import org.briarproject.bramble.api.sync.GroupId
 import org.briarproject.bramble.api.sync.MessageId
 import org.briarproject.briar.api.client.SessionId
@@ -106,7 +105,7 @@ fun ConversationRequestItemView(
                 SelectionContainer {
                     Text(
                         text,
-                        fontSize = 16.sp,
+                        style = MaterialTheme.typography.body1,
                         color = textColor,
                         modifier = Modifier.padding(12.dp, 8.dp).align(Alignment.Start)
                     )
@@ -117,7 +116,7 @@ fun ConversationRequestItemView(
             ) {
                 Text(
                     text = m.notice,
-                    fontSize = 14.sp,
+                    style = MaterialTheme.typography.body2,
                     fontStyle = FontStyle.Italic,
                     color = noticeColor,
                     modifier = Modifier.align(Alignment.Start),
