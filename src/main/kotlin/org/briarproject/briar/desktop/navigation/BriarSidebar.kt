@@ -19,6 +19,7 @@
 package org.briarproject.briar.desktop.navigation
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
@@ -69,9 +70,8 @@ fun BriarSidebar(
     Surface(modifier = Modifier.width(SIDEBAR_WIDTH).fillMaxHeight(), color = MaterialTheme.colors.sidebarSurface) {
         Column(verticalArrangement = Arrangement.Top) {
             // profile button
-            IconButton(
-                modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 5.dp, bottom = 4.dp),
-                onClick = {}
+            Box(
+                modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 5.dp, bottom = 4.dp)
             ) {
                 account?.let { ProfileCircle(size = 45.dp, it.id.bytes) }
             }
