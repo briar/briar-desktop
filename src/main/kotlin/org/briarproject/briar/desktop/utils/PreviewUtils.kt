@@ -33,7 +33,6 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Slider
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -53,8 +52,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.singleWindowApplication
 import org.briarproject.bramble.api.UniqueId
-import org.briarproject.briar.desktop.theme.DarkColors
-import org.briarproject.briar.desktop.theme.LightColors
+import org.briarproject.briar.desktop.theme.BriarTheme
 import org.briarproject.briar.desktop.ui.LocalWindowScope
 import kotlin.random.Random
 
@@ -227,7 +225,7 @@ object PreviewUtils {
                         }
                     }
 
-                    MaterialTheme(colors = if (scope.getBooleanParameter("darkTheme")) DarkColors else LightColors) {
+                    BriarTheme(isDarkTheme = scope.getBooleanParameter("darkTheme")) {
                         Surface(Modifier.fillMaxSize(1f)) {
                             Column(Modifier.padding(10.dp)) {
                                 content(scope)
