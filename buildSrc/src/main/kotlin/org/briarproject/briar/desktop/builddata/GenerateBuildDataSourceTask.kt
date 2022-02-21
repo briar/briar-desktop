@@ -118,6 +118,7 @@ open class GenerateBuildDataSourceTask : AbstractBuildDataTask() {
         val dir = project.projectDir
         val git = Git.open(dir)
         val repository = git.repository
+        val status = git.status().call()
 
         // Find and open core repository
         val repositoryCore = SubmoduleWalk.getSubmoduleRepository(repository, "briar")
@@ -126,7 +127,7 @@ open class GenerateBuildDataSourceTask : AbstractBuildDataTask() {
 
         // Get head ref and it's name => current hash
         val head = repository.resolve(Constants.HEAD)
-        val gitHash = head.name
+        val gitHash = head.name + if (status.hasUncommittedChanges()) "-dirty" else ""
 
         // Get latest commit and its commit time
         val first: RevCommit = try {
