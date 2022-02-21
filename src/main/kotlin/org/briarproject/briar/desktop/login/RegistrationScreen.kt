@@ -22,21 +22,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.InitialFocusState.AFTER_FIRST_FOCUSSED
 import androidx.compose.material.InitialFocusState.AFTER_FOCUS_LOST_ONCE
 import androidx.compose.material.OutlinedPasswordTextField
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
@@ -174,27 +167,5 @@ fun PasswordForm(
 
     LaunchedEffect(Unit) {
         initialFocusRequester.requestFocus()
-    }
-}
-
-@Composable
-private fun ShowHidePasswordIcon(
-    isVisible: Boolean,
-    toggleIsVisible: () -> Unit,
-) {
-    IconButton(
-        onClick = toggleIsVisible
-    ) {
-        if (isVisible) {
-            Icon(
-                imageVector = Icons.Filled.Visibility,
-                contentDescription = i18n("startup.field.password.show"),
-            )
-        } else {
-            Icon(
-                imageVector = Icons.Filled.VisibilityOff,
-                contentDescription = i18n("startup.field.password.hide"),
-            )
-        }
     }
 }

@@ -50,7 +50,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.briarproject.briar.desktop.utils.InternationalizationUtils
+import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 
 /**
  * Material Design outlined text field with extended support for error and helper messages,
@@ -234,13 +234,13 @@ private fun ShowHidePasswordIcon(
     ) {
         if (isVisible) {
             Icon(
-                imageVector = Icons.Filled.Visibility,
-                contentDescription = InternationalizationUtils.i18n("startup.field.password.show"),
+                imageVector = Icons.Filled.VisibilityOff,
+                contentDescription = i18n("access.password.show"),
             )
         } else {
             Icon(
-                imageVector = Icons.Filled.VisibilityOff,
-                contentDescription = InternationalizationUtils.i18n("startup.field.password.hide"),
+                imageVector = Icons.Filled.Visibility,
+                contentDescription = i18n("access.password.hide"),
             )
         }
     }
