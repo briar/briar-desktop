@@ -18,11 +18,9 @@
 
 package org.briarproject.briar.desktop.settings
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.AlertDialog
@@ -38,7 +36,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
@@ -46,10 +43,9 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.unit.dp
 import org.briarproject.bramble.api.crypto.DecryptionResult
 import org.briarproject.bramble.api.crypto.DecryptionResult.INVALID_PASSWORD
-import org.briarproject.briar.desktop.login.StrengthMeter
+import org.briarproject.briar.desktop.login.PasswordForm
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 import java.lang.Float.min
@@ -162,17 +158,17 @@ fun ChangePasswordDialog(
         },
         text = {
             PasswordForm(
-                oldPassword,
-                setOldPassword,
-                password,
-                setPassword,
-                passwordConfirmation,
-                setPasswordConfirmation,
-                passwordStrength,
-                passwordTooWeakError,
-                passwordsDontMatchError,
-                onSubmit,
-                submitError,
+                oldPassword = oldPassword,
+                setOldPassword = setOldPassword,
+                password = password,
+                setPassword = setPassword,
+                passwordConfirmation = passwordConfirmation,
+                setPasswordConfirmation = setPasswordConfirmation,
+                passwordStrength = passwordStrength,
+                passwordTooWeakError = passwordTooWeakError,
+                passwordsDontMatchError = passwordsDontMatchError,
+                onSubmit = onSubmit,
+                submitError = submitError,
             )
         },
         dismissButton = {
@@ -205,7 +201,7 @@ fun PasswordForm(
     passwordTooWeakError: Boolean,
     passwordsDontMatchError: Boolean,
     onSubmit: () -> Unit,
-    onSubmitError: DecryptionResult?,
+    submitError: DecryptionResult?,
 ) {
     val initialFocusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
@@ -216,43 +212,25 @@ fun PasswordForm(
             onValueChange = setOldPassword,
             label = { Text(i18n("settings.security.password.current")) },
             singleLine = true,
-            isError = onSubmitError == INVALID_PASSWORD,
+            isError = submitError == INVALID_PASSWORD,
             showErrorWhen = InitialFocusState.FROM_START,
             errorMessage = i18n("startup.error.password_wrong"),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Next),
             modifier = Modifier.fillMaxWidth().focusRequester(initialFocusRequester),
             onEnter = { focusManager.moveFocus(FocusDirection.Next) },
         )
-        Box(
-            modifier = Modifier.fillMaxWidth().requiredHeight(24.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            if (password.isNotEmpty())
-                StrengthMeter(passwordStrength, Modifier.fillMaxWidth())
-        }
-        OutlinedPasswordTextField(
-            value = password,
-            onValueChange = setPassword,
-            label = { Text(i18n("settings.security.password.choose")) },
-            singleLine = true,
-            isError = passwordTooWeakError,
-            showErrorWhen = InitialFocusState.AFTER_FOCUS_LOST_ONCE,
-            errorMessage = i18n("startup.error.password_too_weak"),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Next),
-            modifier = Modifier.fillMaxWidth(),
-            onEnter = { focusManager.moveFocus(FocusDirection.Next) },
-        )
-        OutlinedPasswordTextField(
-            value = passwordConfirmation,
-            onValueChange = setPasswordConfirmation,
-            label = { Text(i18n("settings.security.password.confirm")) },
-            singleLine = true,
-            isError = passwordsDontMatchError,
-            showErrorWhen = InitialFocusState.AFTER_FIRST_FOCUSSED,
-            errorMessage = i18n("startup.error.passwords_not_match"),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
-            modifier = Modifier.fillMaxWidth(),
-            onEnter = onSubmit,
+        PasswordForm(
+            focusManager = focusManager,
+            keyLabelPassword = "settings.security.password.choose",
+            keyLabelPasswordConfirmation = "settings.security.password.confirm",
+            password = password,
+            setPassword = setPassword,
+            passwordConfirmation = passwordConfirmation,
+            setPasswordConfirmation = setPasswordConfirmation,
+            passwordStrength = passwordStrength,
+            passwordTooWeakError = passwordTooWeakError,
+            passwordsDontMatchError = passwordsDontMatchError,
+            onSubmit = onSubmit,
         )
     }
 

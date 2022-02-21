@@ -33,6 +33,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
@@ -64,10 +65,10 @@ fun RegistrationScreen(
                 buttonEnabled = viewHolder.buttonEnabled.value
             ) {
                 NicknameForm(
-                    viewHolder.nickname.value,
-                    viewHolder::setNickname,
-                    viewHolder.nicknameTooLongError.value,
-                    viewHolder::goToPassword
+                    nickname = viewHolder.nickname.value,
+                    setNickname = viewHolder::setNickname,
+                    nicknameTooLongError = viewHolder.nicknameTooLongError.value,
+                    onSubmit = viewHolder::goToPassword
                 )
             }
         INSERT_PASSWORD ->
@@ -77,16 +78,26 @@ fun RegistrationScreen(
                 buttonClick = viewHolder::signUp,
                 buttonEnabled = viewHolder.buttonEnabled.value
             ) {
+                val initialFocusRequester = remember { FocusRequester() }
+                val focusManager = LocalFocusManager.current
                 PasswordForm(
-                    viewHolder.password.value,
-                    viewHolder::setPassword,
-                    viewHolder.passwordConfirmation.value,
-                    viewHolder::setPasswordConfirmation,
-                    viewHolder.passwordStrength.value,
-                    viewHolder.passwordTooWeakError.value,
-                    viewHolder.passwordMatchError.value,
-                    viewHolder::signUp
+                    focusManager = focusManager,
+                    focusRequester = initialFocusRequester,
+                    keyLabelPassword = "startup.field.password",
+                    keyLabelPasswordConfirmation = "startup.field.password_confirmation",
+                    password = viewHolder.password.value,
+                    setPassword = viewHolder::setPassword,
+                    passwordConfirmation = viewHolder.passwordConfirmation.value,
+                    setPasswordConfirmation = viewHolder::setPasswordConfirmation,
+                    passwordStrength = viewHolder.passwordStrength.value,
+                    passwordTooWeakError = viewHolder.passwordTooWeakError.value,
+                    passwordsDontMatchError = viewHolder.passwordMatchError.value,
+                    onSubmit = viewHolder::signUp
                 )
+
+                LaunchedEffect(Unit) {
+                    initialFocusRequester.requestFocus()
+                }
             }
         CREATING -> LoadingView(i18n("startup.database.creating"))
         CREATED -> {} // case handled by BriarUi
@@ -98,7 +109,7 @@ fun NicknameForm(
     nickname: String,
     setNickname: (String) -> Unit,
     nicknameTooLongError: Boolean,
-    onEnter: () -> Unit,
+    onSubmit: () -> Unit,
 ) {
     val initialFocusRequester = remember { FocusRequester() }
 
@@ -111,7 +122,7 @@ fun NicknameForm(
         errorMessage = i18n("startup.error.name_too_long"),
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
         modifier = Modifier.fillMaxWidth().focusRequester(initialFocusRequester),
-        onEnter = onEnter
+        onEnter = onSubmit
     )
 
     LaunchedEffect(Unit) {
@@ -119,8 +130,17 @@ fun NicknameForm(
     }
 }
 
+/**
+ * This is used here in the RegistrationScreen but also on [org.briarproject.briar.desktop.settings.ChangePasswordDialog].
+ *
+ * You can pass an optional [focusRequester] if the first of both password fields should request focus using a modifier.
+ */
 @Composable
 fun PasswordForm(
+    focusManager: FocusManager,
+    focusRequester: FocusRequester? = null,
+    keyLabelPassword: String,
+    keyLabelPasswordConfirmation: String,
     password: String,
     setPassword: (String) -> Unit,
     passwordConfirmation: String,
@@ -128,11 +148,8 @@ fun PasswordForm(
     passwordStrength: Float,
     passwordTooWeakError: Boolean,
     passwordsDontMatchError: Boolean,
-    onEnter: () -> Unit,
+    onSubmit: () -> Unit,
 ) {
-    val initialFocusRequester = remember { FocusRequester() }
-    val focusManager = LocalFocusManager.current
-
     Box(
         modifier = Modifier.fillMaxWidth().requiredHeight(24.dp),
         contentAlignment = Center
@@ -143,29 +160,27 @@ fun PasswordForm(
     OutlinedPasswordTextField(
         value = password,
         onValueChange = setPassword,
-        label = { Text(i18n("startup.field.password")) },
+        label = { Text(i18n(keyLabelPassword)) },
         singleLine = true,
         isError = passwordTooWeakError,
         showErrorWhen = AFTER_FOCUS_LOST_ONCE,
         errorMessage = i18n("startup.error.password_too_weak"),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Next),
-        modifier = Modifier.fillMaxWidth().focusRequester(initialFocusRequester),
+        modifier = Modifier.fillMaxWidth().apply {
+            if (focusRequester != null) focusRequester(focusRequester)
+        },
         onEnter = { focusManager.moveFocus(FocusDirection.Next) },
     )
     OutlinedPasswordTextField(
         value = passwordConfirmation,
         onValueChange = setPasswordConfirmation,
-        label = { Text(i18n("startup.field.password_confirmation")) },
+        label = { Text(i18n(keyLabelPasswordConfirmation)) },
         singleLine = true,
         isError = passwordsDontMatchError,
         showErrorWhen = AFTER_FIRST_FOCUSSED,
         errorMessage = i18n("startup.error.passwords_not_match"),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
         modifier = Modifier.fillMaxWidth(),
-        onEnter = onEnter,
+        onEnter = onSubmit,
     )
-
-    LaunchedEffect(Unit) {
-        initialFocusRequester.requestFocus()
-    }
 }
