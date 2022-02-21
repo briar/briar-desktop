@@ -27,6 +27,9 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.InitialFocusState.AFTER_FIRST_FOCUSSED
 import androidx.compose.material.InitialFocusState.AFTER_FOCUS_LOST_ONCE
 import androidx.compose.material.InitialFocusState.FROM_START
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -43,9 +46,11 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 
 /**
  * Material Design outlined text field with extended support for error and helper messages,
@@ -142,3 +147,101 @@ fun OutlinedTextField(
 }
 
 enum class InitialFocusState { FROM_START, AFTER_FIRST_FOCUSSED, AFTER_FOCUS_LOST_ONCE }
+
+/**
+ * Material Design outlined text field with support for error and helper messages,
+ * as well as for handling the Enter key. The difference with [OutlinedTextField] is
+ * that it shows the visibility icons instead of error icons in the error state.
+ * All parameters not specified here are the same as on the original [OutlinedTextField].
+ *
+ * @param visualTransformation Visual transformation is only applied when password is hidden
+ */
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+fun OutlinedPasswordTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    onEnter: () -> Unit = {},
+    enabled: Boolean = true,
+    readOnly: Boolean = false,
+    textStyle: TextStyle = LocalTextStyle.current,
+    label: @Composable (() -> Unit)? = null,
+    placeholder: @Composable (() -> Unit)? = null,
+    leadingIcon: @Composable (() -> Unit)? = null,
+    helperMessage: String? = null,
+    errorMessage: String? = null,
+    isError: Boolean = false,
+    showErrorWhen: InitialFocusState = FROM_START,
+    visualTransformation: VisualTransformation = PasswordVisualTransformation(),
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    singleLine: Boolean = false,
+    maxLines: Int = Int.MAX_VALUE,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+    shape: Shape = MaterialTheme.shapes.small,
+    colors: TextFieldColors = TextFieldDefaults.outlinedTextFieldColors()
+) {
+    var isPasswordVisible by remember { mutableStateOf(false) }
+
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        modifier = modifier,
+        onEnter = onEnter,
+        enabled = enabled,
+        readOnly = readOnly,
+        textStyle = textStyle,
+        label = label,
+        placeholder = placeholder,
+        leadingIcon = leadingIcon,
+        trailingIcon = {
+            ShowHidePasswordIcon(
+                isVisible = isPasswordVisible,
+                toggleIsVisible = {
+                    isPasswordVisible = !isPasswordVisible
+                },
+            )
+        },
+        errorIcon = {
+            ShowHidePasswordIcon(
+                isVisible = isPasswordVisible,
+                toggleIsVisible = {
+                    isPasswordVisible = !isPasswordVisible
+                },
+            )
+        },
+        helperMessage = helperMessage,
+        errorMessage = errorMessage,
+        isError = isError,
+        showErrorWhen = showErrorWhen,
+        visualTransformation = if (!isPasswordVisible) visualTransformation else VisualTransformation.None,
+        keyboardOptions = keyboardOptions,
+        singleLine = singleLine,
+        maxLines = maxLines,
+        interactionSource = interactionSource,
+        shape = shape,
+        colors = colors,
+    )
+}
+
+@Composable
+private fun ShowHidePasswordIcon(
+    isVisible: Boolean,
+    toggleIsVisible: () -> Unit,
+) {
+    IconButton(
+        onClick = toggleIsVisible
+    ) {
+        if (isVisible) {
+            Icon(
+                imageVector = Icons.Filled.VisibilityOff,
+                contentDescription = i18n("access.password.show"),
+            )
+        } else {
+            Icon(
+                imageVector = Icons.Filled.Visibility,
+                contentDescription = i18n("access.password.hide"),
+            )
+        }
+    }
+}

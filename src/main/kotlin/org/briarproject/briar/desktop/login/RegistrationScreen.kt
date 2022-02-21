@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.InitialFocusState.AFTER_FIRST_FOCUSSED
 import androidx.compose.material.InitialFocusState.AFTER_FOCUS_LOST_ONCE
+import androidx.compose.material.OutlinedPasswordTextField
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -37,7 +38,6 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import org.briarproject.briar.desktop.login.RegistrationSubViewModel.State.CREATED
 import org.briarproject.briar.desktop.login.RegistrationSubViewModel.State.CREATING
@@ -140,7 +140,7 @@ fun PasswordForm(
         if (password.isNotEmpty())
             StrengthMeter(passwordStrength, Modifier.fillMaxWidth())
     }
-    OutlinedTextField(
+    OutlinedPasswordTextField(
         value = password,
         onValueChange = setPassword,
         label = { Text(i18n("startup.field.password")) },
@@ -148,12 +148,11 @@ fun PasswordForm(
         isError = passwordTooWeakError,
         showErrorWhen = AFTER_FOCUS_LOST_ONCE,
         errorMessage = i18n("startup.error.password_too_weak"),
-        visualTransformation = PasswordVisualTransformation(),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Next),
         modifier = Modifier.fillMaxWidth().focusRequester(initialFocusRequester),
-        onEnter = { focusManager.moveFocus(FocusDirection.Next) }
+        onEnter = { focusManager.moveFocus(FocusDirection.Next) },
     )
-    OutlinedTextField(
+    OutlinedPasswordTextField(
         value = passwordConfirmation,
         onValueChange = setPasswordConfirmation,
         label = { Text(i18n("startup.field.password_confirmation")) },
@@ -161,7 +160,6 @@ fun PasswordForm(
         isError = passwordsDontMatchError,
         showErrorWhen = AFTER_FIRST_FOCUSSED,
         errorMessage = i18n("startup.error.passwords_not_match"),
-        visualTransformation = PasswordVisualTransformation(),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
         modifier = Modifier.fillMaxWidth(),
         onEnter = onEnter,
