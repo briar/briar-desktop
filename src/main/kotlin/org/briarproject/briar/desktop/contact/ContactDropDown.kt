@@ -81,7 +81,7 @@ fun ContactDropDown(
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     Text(
                         i18n("contacts.dropdown.connections"),
-                        style = MaterialTheme.typography.h6,
+                        style = MaterialTheme.typography.body2,
                         modifier = Modifier.align(Alignment.CenterVertically)
                     )
                     Icon(
@@ -96,7 +96,7 @@ fun ContactDropDown(
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Text(
                     i18n("contacts.dropdown.contact"),
-                    style = MaterialTheme.typography.h6,
+                    style = MaterialTheme.typography.body2,
                     modifier = Modifier.align(Alignment.CenterVertically)
                 )
                 Icon(
@@ -112,7 +112,7 @@ fun ContactDropDown(
         onDismissRequest = close,
     ) {
         DropdownMenuItem(onClick = { }) {
-            Text(i18n("contacts.dropdown.connections.title"), style = MaterialTheme.typography.h6)
+            Text(i18n("contacts.dropdown.connections.title"), style = MaterialTheme.typography.body2)
         }
         DropdownMenuItem(onClick = { }) {
             Text(i18n("contacts.dropdown.connections.bluetooth"), style = MaterialTheme.typography.body2)
@@ -134,7 +134,7 @@ fun ContactDropDown(
                 )
                 Text(
                     i18n("contacts.dropdown.contact"),
-                    style = MaterialTheme.typography.h6,
+                    style = MaterialTheme.typography.body2,
                     modifier = Modifier.align(Alignment.CenterVertically)
                 )
             }

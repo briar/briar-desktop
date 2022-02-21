@@ -289,7 +289,7 @@ fun AddContactErrorDialog(error: AddContactError, onErrorDialogDismissed: () -> 
                     contentDescription = title,
                     tint = color
                 )
-                Text(title)
+                Text(title, style = MaterialTheme.typography.h6)
             }
         },
         text = { Text(message) }

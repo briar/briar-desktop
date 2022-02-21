@@ -26,6 +26,7 @@ import androidx.compose.material.ButtonType.DESTRUCTIVE
 import androidx.compose.material.ButtonType.NEUTRAL
 import androidx.compose.material.DialogButton
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedPasswordTextField
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
@@ -84,7 +85,7 @@ fun LoginScreen(
         //  a proper error screen instead
         AlertDialog(
             onDismissRequest = viewHolder::closeDecryptionFailedDialog,
-            title = { Text(i18n("startup.error.decryption.title")) },
+            title = { Text(i18n("startup.error.decryption.title"), style = MaterialTheme.typography.h6) },
             text = { Text(i18n("startup.error.decryption.text")) },
             confirmButton = {
                 DialogButton(
@@ -128,7 +129,7 @@ fun LoginForm(
         val closeDialog = { passwordForgotten.value = false }
         AlertDialog(
             onDismissRequest = closeDialog,
-            title = { Text(i18n("startup.password_forgotten.title")) },
+            title = { Text(i18n("startup.password_forgotten.title"), style = MaterialTheme.typography.h6) },
             text = { Text(i18n("startup.password_forgotten.text")) },
             dismissButton = {
                 DialogButton(onClick = closeDialog, text = i18n("cancel"), type = NEUTRAL)
