@@ -121,9 +121,8 @@ with the source code.
 
 ### How can I delete my account?
 
-Until [#166](https://code.briarproject.org/briar/briar-desktop/-/issues/166) is implemented,
-you can delete your Briar Desktop account by deleting the _.briar/desktop/_ folder in your
-home directory.
+When restarting Briar Desktop you can select "I have forgotten my password"
+in order to delete your account.
 
 ## License
 
