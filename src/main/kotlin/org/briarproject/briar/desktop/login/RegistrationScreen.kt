@@ -166,8 +166,8 @@ fun PasswordForm(
         showErrorWhen = AFTER_FOCUS_LOST_ONCE,
         errorMessage = i18n("startup.error.password_too_weak"),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Next),
-        modifier = Modifier.fillMaxWidth().apply {
-            if (focusRequester != null) focusRequester(focusRequester)
+        modifier = Modifier.fillMaxWidth().run {
+            if (focusRequester != null) focusRequester(focusRequester) else this
         },
         onEnter = { focusManager.moveFocus(FocusDirection.Next) },
     )
