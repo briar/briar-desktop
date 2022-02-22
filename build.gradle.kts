@@ -132,6 +132,7 @@ compose.desktop {
             // so that we need to define required modules here:
             modules("java.sql")
             modules("java.naming")
+            modules("jdk.localedata")
             linux {
                 packageName = "briar-desktop"
                 // Explicitly specifying the debian revision '-1' doesn't seem to work, it gets always appended.
