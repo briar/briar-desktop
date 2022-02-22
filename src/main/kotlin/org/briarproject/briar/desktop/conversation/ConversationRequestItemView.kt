@@ -125,7 +125,7 @@ fun ConversationRequestItemView(
                 Row(modifier = Modifier.align(statusAlignment)) {
                     if (!m.answered) {
                         DialogButton(onClick = { onResponse(false) }, text = i18n("decline"), type = DESTRUCTIVE)
-                        DialogButton(onClick = { onResponse(false) }, text = i18n("accept"), type = NEUTRAL)
+                        DialogButton(onClick = { onResponse(true) }, text = i18n("accept"), type = NEUTRAL)
                     } else if (m.canBeOpened) {
                         DialogButton(onClick = onOpenRequestedShareable, text = i18n("open"), type = NEUTRAL)
                     } else {
