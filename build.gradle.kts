@@ -80,14 +80,14 @@ dependencies {
     implementation(compose.desktop.currentOs)
     implementation(compose.materialIconsExtended)
 
-    implementation("com.github.ajalt.clikt:clikt:3.3.0")
+    implementation("com.github.ajalt.clikt:clikt:3.4.0")
     implementation("com.ibm.icu:icu4j:70.1")
 
     implementation(project(path = ":briar-core", configuration = "default"))
     implementation(project(path = ":bramble-java", configuration = "default"))
 
-    implementation("io.github.microutils:kotlin-logging-jvm:2.0.10")
-    implementation("org.slf4j:jul-to-slf4j:1.7.32")
+    implementation("io.github.microutils:kotlin-logging-jvm:2.1.21")
+    implementation("org.slf4j:jul-to-slf4j:1.7.36")
     implementation("ch.qos.logback:logback-classic:1.2.10")
 
     val daggerVersion = "2.24"
