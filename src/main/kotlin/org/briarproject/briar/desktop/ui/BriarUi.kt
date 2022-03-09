@@ -48,7 +48,6 @@ import org.briarproject.bramble.api.lifecycle.LifecycleManager.LifecycleState.RU
 import org.briarproject.bramble.api.lifecycle.event.LifecycleEvent
 import org.briarproject.briar.api.conversation.event.ConversationMessageReceivedEvent
 import org.briarproject.briar.desktop.DesktopFeatureFlags
-import org.briarproject.briar.desktop.expiration.ExpirationBanner
 import org.briarproject.briar.desktop.login.ErrorScreen
 import org.briarproject.briar.desktop.login.StartupScreen
 import org.briarproject.briar.desktop.settings.SettingsViewModel
@@ -186,7 +185,7 @@ constructor(
                     (unencryptedSettings.theme == AUTO && isSystemInDarkTheme())
                 BriarTheme(isDarkTheme) {
                     Column(Modifier.fillMaxSize()) {
-                        ExpirationBanner { screenState = EXPIRED; stop() }
+                        // ExpirationBanner { screenState = EXPIRED; stop() }
                         when (screenState) {
                             STARTUP -> StartupScreen(onShowAbout = { showAbout = true })
                             MAIN -> MainScreen(settingsViewModel, showAbout = { showAbout = true })
