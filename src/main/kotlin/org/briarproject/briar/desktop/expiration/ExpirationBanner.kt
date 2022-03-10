@@ -18,17 +18,22 @@
 
 package org.briarproject.briar.desktop.expiration
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -52,23 +57,35 @@ fun main() = preview {
 }
 
 @Composable
-fun ExpirationBanner(onExpired: () -> Unit) {
+fun ColumnScope.ExpirationBanner(onExpired: () -> Unit) {
 
     var daysLeft by remember { mutableStateOf(0) }
     var expired by remember { mutableStateOf(false) }
+
+    var hideTimestamp by remember { mutableStateOf(0L) }
+
+    var showExpirationBanner by remember { mutableStateOf(value = true) }
+
     LaunchedEffect(Unit) {
         periodicallyCheckIfExpired(
             reportDaysLeft = { daysLeft = it },
-            onExpired = { expired = true; onExpired() },
+            onExpiry = { expired = true; onExpired() },
+            reportHideThreshold = { showExpirationBanner = hideTimestamp <= it }
         )
     }
 
-    if (!expired) ExpirationBanner(daysLeft)
+    AnimatedVisibility(showExpirationBanner && !expired) {
+        ExpirationBanner(daysLeft) {
+            hideTimestamp = System.currentTimeMillis()
+            showExpirationBanner = false
+        }
+    }
 }
 
 @Composable
 fun ExpirationBanner(
     daysLeft: Int,
+    hide: () -> Unit,
 ) = Surface(
     color = MaterialTheme.colors.error,
     modifier = Modifier.fillMaxWidth()
@@ -87,5 +104,11 @@ fun ExpirationBanner(
             text = text,
             style = MaterialTheme.typography.body2
         )
+        Spacer(Modifier.weight(1f))
+        IconButton(
+            onClick = hide,
+        ) {
+            Icon(Icons.Filled.Close, i18n("hide"), Modifier.size(32.dp))
+        }
     }
 }

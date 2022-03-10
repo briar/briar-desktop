@@ -29,10 +29,12 @@ object ExpirationUtils {
 
     private val EXPIRE_AFTER = BuildData.GIT_TIME + 91.days.inWholeMilliseconds
     private val CHECK_INTERVAL = 1.hours.inWholeMilliseconds
+    private val HIDE_INTERVAL = 1.days.inWholeMilliseconds
 
     // for testing uncomment the following instead
     // private val EXPIRE_AFTER = Instant.now().toEpochMilli() + 10.seconds.inWholeMilliseconds
     // private val CHECK_INTERVAL = 1.seconds.inWholeMilliseconds
+    // private val HIDE_INTERVAL = 10.seconds.inWholeMilliseconds
 
     private fun getMillisLeft() = (EXPIRE_AFTER - Instant.now().toEpochMilli()).milliseconds
 
@@ -40,15 +42,20 @@ object ExpirationUtils {
 
     private fun isExpired() = getMillisLeft() <= 0.milliseconds
 
+    private fun hideThreshold() = System.currentTimeMillis() - HIDE_INTERVAL
+
     suspend fun periodicallyCheckIfExpired(
         reportDaysLeft: (Int) -> Unit,
-        onExpired: () -> Unit,
+        onExpiry: () -> Unit,
+        reportHideThreshold: (Long) -> Unit,
     ) {
         while (true) {
+            reportDaysLeft(getDaysLeft())
             if (isExpired()) {
-                onExpired()
-                break
-            } else reportDaysLeft(getDaysLeft())
+                onExpiry()
+            }
+
+            reportHideThreshold(hideThreshold())
             delay(CHECK_INTERVAL)
         }
     }
