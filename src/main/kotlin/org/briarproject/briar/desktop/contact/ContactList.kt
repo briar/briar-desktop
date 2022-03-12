@@ -77,7 +77,7 @@ fun ContactList(
                             onSel = { selectContact(contactItem) },
                             selected = isSelected(contactItem),
                             onRemovePending = { if (contactItem is PendingContactItem) removePendingContact(contactItem) },
-                            padding = PaddingValues(end = 12.dp),
+                            padding = PaddingValues(end = 16.dp),
                         )
                     }
                 }

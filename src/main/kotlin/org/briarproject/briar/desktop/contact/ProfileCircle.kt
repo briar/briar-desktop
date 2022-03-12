@@ -70,7 +70,7 @@ fun ProfileCircle(size: Dp, contactItem: ContactItem) {
  */
 @Composable
 fun ProfileCircle(size: Dp, input: ByteArray) {
-    Canvas(Modifier.size(size).clip(CircleShape).border(2.dp, MaterialTheme.colors.outline, CircleShape)) {
+    Canvas(Modifier.size(size).clip(CircleShape).border(1.dp, MaterialTheme.colors.outline, CircleShape)) {
         Identicon(input, this.size.width, this.size.height).draw(this)
     }
 }
@@ -86,7 +86,7 @@ fun ProfileCircle(size: Dp, avatar: ImageBitmap) {
         bitmap = avatar,
         contentDescription = null,
         contentScale = ContentScale.FillBounds,
-        modifier = Modifier.size(size).clip(CircleShape).border(2.dp, MaterialTheme.colors.outline, CircleShape),
+        modifier = Modifier.size(size).clip(CircleShape).border(1.dp, MaterialTheme.colors.outline, CircleShape),
     )
 }
 

@@ -120,9 +120,10 @@ fun ConversationInput(
                             updateImage(null)
                         }
                     },
-                    Modifier.padding(4.dp).size(32.dp)
+                    Modifier.padding(4.dp)
                         .background(MaterialTheme.colors.primary, CircleShape)
-                        .pointerHoverIcon(PointerIconDefaults.Default),
+                        .pointerHoverIcon(PointerIconDefaults.Default)
+                        .then(Modifier.size(32.dp)),
                 ) {
                     if (image == null) {
                         Icon(Icons.Filled.Add, i18n("access.attachment_add"), Modifier.size(24.dp), Color.White)
@@ -133,7 +134,8 @@ fun ConversationInput(
             },
             trailingIcon = {
                 IconButton(
-                    onClick = onSend, modifier = Modifier.padding(4.dp).size(32.dp).pointerHoverIcon(PointerIconDefaults.Default),
+                    onClick = onSend,
+                    modifier = Modifier.padding(4.dp).size(32.dp).pointerHoverIcon(PointerIconDefaults.Default),
                 ) {
                     Icon(
                         Icons.Filled.Send,

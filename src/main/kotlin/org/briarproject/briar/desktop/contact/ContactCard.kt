@@ -118,7 +118,7 @@ private fun RealContactRow(contactItem: ContactItem, padding: PaddingValues) {
 
     Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.padding(padding)) {
         Row(
-            modifier = Modifier.align(Alignment.CenterVertically).padding(horizontal = 16.dp)
+            modifier = Modifier.align(Alignment.CenterVertically).padding(start = 16.dp, end = 8.dp)
                 .weight(1f, fill = false)
         ) {
             Box(modifier = Modifier.align(Alignment.CenterVertically)) {
@@ -134,7 +134,7 @@ private fun RealContactRow(contactItem: ContactItem, padding: PaddingValues) {
             )
         }
         Canvas(
-            modifier = Modifier.padding(end = 18.dp).size(22.dp).align(Alignment.CenterVertically),
+            modifier = Modifier.size(24.dp).align(Alignment.CenterVertically),
             onDraw = {
                 val size = 16.dp
                 drawCircle(color = outlineColor, radius = size.toPx() / 2f)
@@ -149,9 +149,9 @@ private fun RealContactRow(contactItem: ContactItem, padding: PaddingValues) {
 
 @Composable
 private fun PendingContactRow(contactItem: PendingContactItem, onRemove: () -> Unit, padding: PaddingValues) {
-    Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.padding(padding)) {
+    Row(horizontalArrangement = Arrangement.SpaceBetween) {
         Row(
-            modifier = Modifier.align(Alignment.CenterVertically).padding(horizontal = 16.dp)
+            modifier = Modifier.align(Alignment.CenterVertically).padding(start = 16.dp, end = 8.dp)
                 .weight(1f, fill = false)
         ) {
             ProfileCircle(36.dp)
@@ -162,7 +162,7 @@ private fun PendingContactRow(contactItem: PendingContactItem, onRemove: () -> U
         }
         IconButton(
             onClick = onRemove,
-            modifier = Modifier.padding(end = 4.dp).align(Alignment.CenterVertically),
+            modifier = Modifier.padding(end = 4.dp).align(Alignment.CenterVertically)
         ) {
             Icon(Icons.Filled.Delete, i18n("access.contacts.pending.remove"))
         }
