@@ -230,9 +230,9 @@ fun ConversationList(
                 val firstIndex = scrollState.firstReallyVisibleItemIndex
                 val lastIndex = scrollState.lastReallyVisibleItemIndex
                 val newValue = firstIndex != -1 && lastIndex != -1 && (
-                        currentUnreadMessagesInfo.firstIndex < firstIndex ||
-                                currentUnreadMessagesInfo.lastIndex > lastIndex
-                        )
+                    currentUnreadMessagesInfo.firstIndex < firstIndex ||
+                        currentUnreadMessagesInfo.lastIndex > lastIndex
+                    )
                 // wait some time before showing FAB first to allow for currently shown messages to be marked read
                 if (!this.value && newValue) delay(delayUntilMarkedAsRead + 250L)
                 this.value = newValue
@@ -299,7 +299,7 @@ fun LazyListState.isScrolledToPenultimate(): Boolean {
     val last = layoutInfo.visibleItemsInfo.lastOrNull() ?: return false
     // WARNING: this doesn't work when `contentPadding` is used on the LazyList!
     return last.index == layoutInfo.totalItemsCount - 1 &&
-            last.offset == layoutInfo.viewportEndOffset
+        last.offset == layoutInfo.viewportEndOffset
 }
 
 val LazyListState.lastVisibleItemIndex get() = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1
