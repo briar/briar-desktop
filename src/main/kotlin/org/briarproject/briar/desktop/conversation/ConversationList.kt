@@ -183,7 +183,7 @@ fun ConversationList(
     Box(modifier = Modifier.padding(padding).fillMaxSize()) {
         LazyColumn(
             state = scrollState,
-            modifier = Modifier.fillMaxSize().padding(end = 12.dp)
+            modifier = Modifier.fillMaxSize()
         ) {
             itemsIndexed(messages) { idx, m ->
                 if (idx == initialFirstUnreadMessageIndex) {
