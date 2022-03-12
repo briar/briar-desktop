@@ -61,8 +61,9 @@ fun SearchTextField(searchValue: String, onValueChange: (String) -> Unit, onCont
         trailingIcon = {
             IconButton(
                 onClick = onContactAdd,
-                modifier = Modifier.padding(end = 10.dp).size(32.dp)
+                modifier = Modifier.padding(end = 8.dp)
                     .background(MaterialTheme.colors.primary, CircleShape).pointerHoverIcon(PointerIconDefaults.Default)
+                    .then(Modifier.size(32.dp))
             ) {
                 Icon(
                     Icons.Filled.PersonAdd,

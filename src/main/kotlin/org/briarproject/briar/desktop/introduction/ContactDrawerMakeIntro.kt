@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import org.briarproject.briar.desktop.contact.ContactCard
 import org.briarproject.briar.desktop.contact.ContactItem
 import org.briarproject.briar.desktop.contact.ProfileCircle
+import org.briarproject.briar.desktop.theme.surfaceVariant
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
 import org.briarproject.briar.desktop.ui.HorizontalDivider
 import org.briarproject.briar.desktop.utils.InternationalizationUtils
@@ -62,13 +63,13 @@ fun ContactDrawerMakeIntro(
     LaunchedEffect(contactItem) {
         viewModel.setFirstContact(contactItem)
     }
-    Surface {
+    Surface(color = MaterialTheme.colors.surfaceVariant, contentColor = MaterialTheme.colors.onSurface) {
         Column {
             if (!viewModel.secondScreen.value) {
                 Row(Modifier.fillMaxWidth().height(HEADER_SIZE)) {
                     IconButton(
                         onClick = { closeInfoDrawer(false) },
-                        Modifier.padding(start = 16.dp).size(32.dp).align(Alignment.CenterVertically)
+                        Modifier.padding(start = 24.dp).then(Modifier.size(24.dp)).align(Alignment.CenterVertically)
                     ) {
                         Icon(Icons.Filled.Close, i18n("access.introduction.close"))
                     }
@@ -106,7 +107,9 @@ fun ContactDrawerMakeIntro(
                 }
                 Row(Modifier.fillMaxWidth().padding(12.dp), horizontalArrangement = Arrangement.SpaceAround) {
                     Column(Modifier.align(Alignment.Top).weight(1f)) {
-                        ProfileCircle(36.dp, viewModel.firstContact.value!!)
+                        Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+                            ProfileCircle(36.dp, viewModel.firstContact.value!!)
+                        }
                         Text(
                             text = viewModel.firstContact.value!!.displayName,
                             modifier = Modifier.padding(top = 4.dp),
@@ -115,7 +118,9 @@ fun ContactDrawerMakeIntro(
                     }
                     Icon(Icons.Filled.SwapHoriz, i18n("access.swap"), modifier = Modifier.size(48.dp))
                     Column(Modifier.align(Alignment.Top).weight(1f)) {
-                        ProfileCircle(36.dp, viewModel.secondContact.value!!)
+                        Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+                            ProfileCircle(36.dp, viewModel.secondContact.value!!)
+                        }
                         Text(
                             text = viewModel.secondContact.value!!.displayName,
                             modifier = Modifier.padding(top = 4.dp),

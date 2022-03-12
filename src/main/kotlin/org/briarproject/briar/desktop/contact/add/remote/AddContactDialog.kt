@@ -383,7 +383,7 @@ fun ContactLink(
     OutlinedTextField(
         remoteHandshakeLink,
         setRemoteHandshakeLink,
-        label = { Text(i18n("contact.add.remote.contact_link_hint")) },
+        label = { Text(i18n("contact.add.remote.contact_link_hint"), style = MaterialTheme.typography.body1) },
         modifier = Modifier.fillMaxWidth(),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Next),
         singleLine = true,
@@ -465,7 +465,7 @@ fun Alias(
     OutlinedTextField(
         alias,
         setAddContactAlias,
-        label = { Text(i18n("contact.add.remote.choose_nickname")) },
+        label = { Text(i18n("contact.add.remote.choose_nickname"), style = MaterialTheme.typography.body1) },
         modifier = Modifier.fillMaxWidth().focusRequester(aliasFocusRequester),
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
         singleLine = true,
