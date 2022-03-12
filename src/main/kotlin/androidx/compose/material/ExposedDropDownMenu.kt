@@ -219,7 +219,7 @@ private fun ExposedDropDownMenuImpl(
                         expanded = false
                     }
                 ) {
-                    Text(v)
+                    Text(v, style = MaterialTheme.typography.body1)
                 }
             }
         }
