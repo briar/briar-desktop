@@ -18,33 +18,127 @@
 
 package org.briarproject.briar.desktop.contact
 
-import androidx.compose.foundation.background
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.TweenSpec
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.pointer.PointerIconDefaults
 import androidx.compose.ui.input.pointer.pointerHoverIcon
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
+import org.briarproject.briar.desktop.theme.surfaceVariant
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun SearchTextField(searchValue: String, onValueChange: (String) -> Unit, onContactAdd: () -> Unit) {
+    val textFieldFocusRequester = remember { FocusRequester() }
+    val (isSearchMode, setSearchMode) = remember { mutableStateOf(false) }
+
+    Box(Modifier.fillMaxSize()) {
+
+        SearchInput(
+            searchValue,
+            onValueChange,
+            onContactAdd,
+            onBack = { setSearchMode(false) },
+            textFieldFocusRequester,
+        )
+        AnimatedVisibility(
+            !isSearchMode,
+            enter = fadeIn(TweenSpec(durationMillis = 50)),
+            exit = fadeOut(TweenSpec(durationMillis = 50))
+        ) {
+            ContactListTopAppBar(
+                onContactAdd,
+                onSearch = { setSearchMode(true) },
+                textFieldFocusRequester,
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+fun ContactListTopAppBar(
+    onContactAdd: () -> Unit,
+    onSearch: () -> Unit,
+    textFieldFocusRequester: FocusRequester
+) {
+    Surface(
+        color = MaterialTheme.colors.surfaceVariant,
+        contentColor = MaterialTheme.colors.onSurface,
+        elevation = 4.dp,
+    ) {
+        Row(
+            Modifier.fillMaxSize(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                i18n("contacts.search.title"),
+                style = MaterialTheme.typography.h4,
+                modifier = Modifier.padding(start = 64.dp)
+            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                IconButton(
+                    {
+                        onSearch()
+                        textFieldFocusRequester.requestFocus()
+                    },
+                ) {
+                    Icon(Icons.Filled.Search, i18n("access.contacts.search"))
+                }
+                IconButton(
+                    onClick = onContactAdd,
+                    modifier = Modifier.padding(end = 14.dp).then(Modifier.size(32.dp))
+                        .pointerHoverIcon(PointerIconDefaults.Default)
+                ) {
+                    Icon(
+                        Icons.Filled.PersonAdd,
+                        i18n("access.contacts.add"),
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun SearchInput(
+    searchValue: String,
+    onValueChange: (String) -> Unit,
+    onContactAdd: () -> Unit,
+    onBack: () -> Unit,
+    textFieldFocusRequester: FocusRequester
+) {
+    val focusManager = LocalFocusManager.current
     TextField(
         value = searchValue,
         onValueChange = onValueChange,
@@ -52,27 +146,20 @@ fun SearchTextField(searchValue: String, onValueChange: (String) -> Unit, onCont
         textStyle = LocalTextStyle.current.copy(
             color = MaterialTheme.colors.onSurface
         ),
-        placeholder = { Text(i18n("contacts.search.title"), style = MaterialTheme.typography.body1) },
+        placeholder = { Text("Search", style = MaterialTheme.typography.body1) },
         shape = RoundedCornerShape(0.dp),
         leadingIcon = {
-            val padding = Modifier.padding(top = 8.dp, bottom = 8.dp, start = 32.dp, end = 4.dp)
-            Icon(Icons.Filled.Search, i18n("access.contacts.search"), padding)
-        },
-        trailingIcon = {
             IconButton(
-                onClick = onContactAdd,
-                modifier = Modifier.padding(end = 8.dp)
-                    .background(MaterialTheme.colors.primary, CircleShape).pointerHoverIcon(PointerIconDefaults.Default)
-                    .then(Modifier.size(32.dp))
+                {
+                    onValueChange("")
+                    onBack()
+                    focusManager.clearFocus(true)
+                },
+                Modifier.then(Modifier.padding(start = 20.dp, end = 16.dp).size(24.dp))
             ) {
-                Icon(
-                    Icons.Filled.PersonAdd,
-                    i18n("access.contacts.add"),
-                    tint = Color.White,
-                    modifier = Modifier.size(20.dp)
-                )
+                Icon(Icons.Filled.ArrowBack, i18n("access.contacts.search"))
             }
         },
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize().focusRequester(textFieldFocusRequester)
     )
 }
