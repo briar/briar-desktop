@@ -98,7 +98,7 @@ fun ProfileCircle(size: Dp, avatar: ImageBitmap) {
 @Composable
 fun ProfileCircle(size: Dp) {
     val color = MaterialTheme.colors.outline
-    Canvas(Modifier.size(size).clip(CircleShape).border(1.dp, color, CircleShape)) {
+    Canvas(Modifier.size(size).clip(CircleShape).border(2.dp, color, CircleShape)) {
         val size = size.toPx()
         val center = size / 2
         val width = 2.dp.toPx()
