@@ -19,6 +19,7 @@
 package org.briarproject.briar.desktop.contact
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.TweenSpec
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -36,6 +37,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.PersonAdd
@@ -53,6 +55,7 @@ import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import org.briarproject.briar.desktop.theme.surfaceVariant
+import org.briarproject.briar.desktop.ui.HorizontalDivider
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -62,7 +65,6 @@ fun SearchTextField(searchValue: String, onValueChange: (String) -> Unit, onCont
     val (isSearchMode, setSearchMode) = remember { mutableStateOf(false) }
 
     Box(Modifier.fillMaxSize()) {
-
         SearchInput(
             searchValue,
             onValueChange,
@@ -72,8 +74,9 @@ fun SearchTextField(searchValue: String, onValueChange: (String) -> Unit, onCont
         )
         AnimatedVisibility(
             !isSearchMode,
-            enter = fadeIn(TweenSpec(durationMillis = 50)),
-            exit = fadeOut(TweenSpec(durationMillis = 50))
+            // CubicBezier ease-out curve
+            enter = fadeIn(TweenSpec(durationMillis = 100, easing = CubicBezierEasing(.215f, .61f, .355f, 1f))),
+            exit = fadeOut(TweenSpec(durationMillis = 100, easing = CubicBezierEasing(.215f, .61f, .355f, 1f)))
         ) {
             ContactListTopAppBar(
                 onContactAdd,
@@ -96,36 +99,39 @@ fun ContactListTopAppBar(
         contentColor = MaterialTheme.colors.onSurface,
         elevation = 4.dp,
     ) {
-        Row(
-            Modifier.fillMaxSize(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                i18n("contacts.search.title"),
-                style = MaterialTheme.typography.h4,
-                modifier = Modifier.padding(start = 64.dp)
-            )
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                IconButton(
-                    {
-                        onSearch()
-                        textFieldFocusRequester.requestFocus()
-                    },
-                ) {
-                    Icon(Icons.Filled.Search, i18n("access.contacts.search"))
-                }
-                IconButton(
-                    onClick = onContactAdd,
-                    modifier = Modifier.padding(end = 14.dp).then(Modifier.size(32.dp))
-                        .pointerHoverIcon(PointerIconDefaults.Default)
-                ) {
-                    Icon(
-                        Icons.Filled.PersonAdd,
-                        i18n("access.contacts.add"),
-                    )
+        Box {
+            Row(
+                Modifier.fillMaxSize(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    i18n("contacts.search.title"),
+                    style = MaterialTheme.typography.h4,
+                    modifier = Modifier.padding(start = 64.dp)
+                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(
+                        {
+                            onSearch()
+                            textFieldFocusRequester.requestFocus()
+                        },
+                    ) {
+                        Icon(Icons.Filled.Search, i18n("access.contacts.search"))
+                    }
+                    IconButton(
+                        onClick = onContactAdd,
+                        modifier = Modifier.padding(end = 14.dp).then(Modifier.size(32.dp))
+                            .pointerHoverIcon(PointerIconDefaults.Default)
+                    ) {
+                        Icon(
+                            Icons.Filled.PersonAdd,
+                            i18n("access.contacts.add"),
+                        )
+                    }
                 }
             }
+            HorizontalDivider(modifier = Modifier.align(Alignment.BottomCenter))
         }
     }
 }
@@ -136,7 +142,7 @@ fun SearchInput(
     onValueChange: (String) -> Unit,
     onContactAdd: () -> Unit,
     onBack: () -> Unit,
-    textFieldFocusRequester: FocusRequester
+    textFieldFocusRequester: FocusRequester,
 ) {
     val focusManager = LocalFocusManager.current
     TextField(
@@ -148,6 +154,7 @@ fun SearchInput(
         ),
         placeholder = { Text("Search", style = MaterialTheme.typography.body1) },
         shape = RoundedCornerShape(0.dp),
+        colors = TextFieldDefaults.textFieldColors(backgroundColor = MaterialTheme.colors.surfaceVariant),
         leadingIcon = {
             IconButton(
                 {
