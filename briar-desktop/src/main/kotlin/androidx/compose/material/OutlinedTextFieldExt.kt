@@ -31,6 +31,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -45,6 +46,9 @@ import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.platform.ClipboardManager
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -183,45 +187,53 @@ fun OutlinedPasswordTextField(
 ) {
     var isPasswordVisible by remember { mutableStateOf(false) }
 
-    OutlinedTextField(
-        value = value,
-        onValueChange = onValueChange,
-        modifier = modifier,
-        onEnter = onEnter,
-        enabled = enabled,
-        readOnly = readOnly,
-        textStyle = textStyle,
-        label = label,
-        placeholder = placeholder,
-        leadingIcon = leadingIcon,
-        trailingIcon = {
-            ShowHidePasswordIcon(
-                isVisible = isPasswordVisible,
-                toggleIsVisible = {
-                    isPasswordVisible = !isPasswordVisible
-                },
-            )
-        },
-        errorIcon = {
-            ShowHidePasswordIcon(
-                isVisible = isPasswordVisible,
-                toggleIsVisible = {
-                    isPasswordVisible = !isPasswordVisible
-                },
-            )
-        },
-        helperMessage = helperMessage,
-        errorMessage = errorMessage,
-        isError = isError,
-        showErrorWhen = showErrorWhen,
-        visualTransformation = if (!isPasswordVisible) visualTransformation else VisualTransformation.None,
-        keyboardOptions = keyboardOptions,
-        singleLine = singleLine,
-        maxLines = maxLines,
-        interactionSource = interactionSource,
-        shape = shape,
-        colors = colors,
-    )
+    val clipboardManager: ClipboardManager = LocalClipboardManager.current
+    CompositionLocalProvider(
+        LocalClipboardManager provides object : ClipboardManager {
+            override fun getText() = clipboardManager.getText() // allow copying text from clipboard
+            override fun setText(annotatedString: AnnotatedString) = Unit // don't allow copying text into clipboard
+        }
+    ) {
+        OutlinedTextField(
+            value = value,
+            onValueChange = onValueChange,
+            modifier = modifier,
+            onEnter = onEnter,
+            enabled = enabled,
+            readOnly = readOnly,
+            textStyle = textStyle,
+            label = label,
+            placeholder = placeholder,
+            leadingIcon = leadingIcon,
+            trailingIcon = {
+                ShowHidePasswordIcon(
+                    isVisible = isPasswordVisible,
+                    toggleIsVisible = {
+                        isPasswordVisible = !isPasswordVisible
+                    },
+                )
+            },
+            errorIcon = {
+                ShowHidePasswordIcon(
+                    isVisible = isPasswordVisible,
+                    toggleIsVisible = {
+                        isPasswordVisible = !isPasswordVisible
+                    },
+                )
+            },
+            helperMessage = helperMessage,
+            errorMessage = errorMessage,
+            isError = isError,
+            showErrorWhen = showErrorWhen,
+            visualTransformation = if (!isPasswordVisible) visualTransformation else VisualTransformation.None,
+            keyboardOptions = keyboardOptions,
+            singleLine = singleLine,
+            maxLines = maxLines,
+            interactionSource = interactionSource,
+            shape = shape,
+            colors = colors,
+        )
+    }
 }
 
 @Composable
