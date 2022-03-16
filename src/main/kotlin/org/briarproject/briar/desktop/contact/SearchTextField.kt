@@ -106,7 +106,7 @@ fun ContactListTopAppBar(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    i18n("contacts.search.title"),
+                    "Private Groups",
                     style = MaterialTheme.typography.h4,
                     modifier = Modifier.padding(start = 64.dp)
                 )
