@@ -32,14 +32,20 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.toAwtImage
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalLocalization
 import androidx.compose.ui.platform.PlatformLocalization
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.window.ApplicationScope
 import androidx.compose.ui.window.FrameWindowScope
+import androidx.compose.ui.window.Tray
 import androidx.compose.ui.window.Window
+import androidx.compose.ui.window.isTraySupported
+import androidx.compose.ui.window.rememberTrayState
 import org.briarproject.bramble.api.FeatureFlags
 import org.briarproject.bramble.api.event.EventBus
 import org.briarproject.bramble.api.event.EventListener
@@ -55,6 +61,7 @@ import org.briarproject.briar.desktop.settings.SettingsViewModel
 import org.briarproject.briar.desktop.settings.UnencryptedSettings
 import org.briarproject.briar.desktop.settings.UnencryptedSettings.Theme.AUTO
 import org.briarproject.briar.desktop.settings.UnencryptedSettings.Theme.DARK
+import org.briarproject.briar.desktop.theme.Blue500
 import org.briarproject.briar.desktop.theme.BriarTheme
 import org.briarproject.briar.desktop.ui.Screen.EXPIRED
 import org.briarproject.briar.desktop.ui.Screen.MAIN
@@ -78,7 +85,7 @@ enum class Screen {
 interface BriarUi {
 
     @Composable
-    fun start(onClose: () -> Unit)
+    fun start(applicationScope: ApplicationScope, onClose: () -> Unit)
 
     fun stop()
 }
@@ -115,7 +122,7 @@ constructor(
 
     @OptIn(ExperimentalComposeUiApi::class)
     @Composable
-    override fun start(onClose: () -> Unit) {
+    override fun start(applicationScope: ApplicationScope, onClose: () -> Unit) {
         val title = i18n("main.title")
         val platformLocalization = object : PlatformLocalization {
             override val copy = i18n("copy")
@@ -125,9 +132,40 @@ constructor(
         }
         val focusState = remember { WindowFocusState() }
 
+        var isWindowVisible by remember { mutableStateOf(true) }
+
+        if (isTraySupported) {
+            val state = rememberTrayState()
+            applicationScope.Tray(
+                icon = object : Painter() {
+                    override val intrinsicSize = Size(256f, 256f)
+                    override fun DrawScope.onDraw() {
+                        drawOval(Blue500)
+                    }
+                },
+                state = state,
+                tooltip = title,
+                onAction = {
+                    isWindowVisible = true
+                },
+                menu = {
+                    Item(i18n("exit")) {
+                        onClose()
+                    }
+                }
+            )
+        }
+
         Window(
             title = title,
-            onCloseRequest = onClose,
+            visible = isWindowVisible,
+            onCloseRequest = {
+                if (isTraySupported) {
+                    isWindowVisible = false
+                } else {
+                    onClose()
+                }
+            },
         ) {
             // changing the icon in the Composable itself automatically brings the window to front
             // see https://github.com/JetBrains/compose-jb/issues/1861
