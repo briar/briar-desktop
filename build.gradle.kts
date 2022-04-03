@@ -88,7 +88,7 @@ dependencies {
 
     implementation("io.github.microutils:kotlin-logging-jvm:2.1.21")
     implementation("org.slf4j:jul-to-slf4j:1.7.36")
-    implementation("ch.qos.logback:logback-classic:1.2.10")
+    implementation("ch.qos.logback:logback-classic:1.2.11")
 
     val daggerVersion = "2.24"
     kapt("com.google.dagger:dagger-compiler:$daggerVersion")
