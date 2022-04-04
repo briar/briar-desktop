@@ -52,17 +52,19 @@ fun AboutDialog(
     val buildTime = Instant.ofEpochMilli(BuildData.GIT_TIME).atZone(ZoneId.systemDefault()).toLocalDateTime()
 
     // rows displayed in table
-    val lines = listOf(
-        i18n("about.copyright") to "The Briar Project", // NON-NLS
-        i18n("about.license") to "GNU Affero General Public License v3", // NON-NLS
-        i18n("about.version") to BuildData.VERSION,
-        i18n("about.version.core") to BuildData.CORE_VERSION,
-        "Git branch" to BuildData.GIT_BRANCH, // NON-NLS
-        "Git hash" to BuildData.GIT_HASH, // NON-NLS
-        "Commit time" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(buildTime), // NON-NLS
-        i18n("about.website") to "https://briarproject.org",
-        i18n("about.contact") to "desktop@briarproject.org", // NON-NLS
-    )
+    val lines = buildList<Pair<String, String>> {
+        add(i18n("about.copyright") to "The Briar Project") // NON-NLS
+        add(i18n("about.license") to "GNU Affero General Public License v3") // NON-NLS
+        add(i18n("about.version") to BuildData.VERSION)
+        add(i18n("about.version.core") to BuildData.CORE_VERSION)
+        if (BuildData.GIT_BRANCH != null) add("Git branch" to BuildData.GIT_BRANCH) // NON-NLS
+        if (BuildData.GIT_TAG != null) add("Git tag" to BuildData.GIT_TAG) // NON-NLS
+        if (BuildData.GIT_BRANCH == null && BuildData.GIT_TAG == null) add("Git branch/tag" to "None detected") // NON-NLS
+        add("Git hash" to BuildData.GIT_HASH) // NON-NLS
+        add("Commit time" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(buildTime)) // NON-NLS
+        add(i18n("about.website") to "https://briarproject.org")
+        add(i18n("about.contact") to "desktop@briarproject.org") // NON-NLS
+    }
 
     BriarDialog(onClose = onClose) {
         val box = this

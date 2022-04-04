@@ -102,7 +102,12 @@ private class Main : CliktCommand(
         LOG.i { "Build info:" }
         LOG.i { "  Git hash ${BuildData.GIT_HASH}" }
         LOG.i { "  Commit time ${formatter.format(buildTime)}" }
-        LOG.i { "  Branch ${BuildData.GIT_BRANCH}" }
+        if (BuildData.GIT_BRANCH != null)
+            LOG.i { "  Branch ${BuildData.GIT_BRANCH}" }
+        if (BuildData.GIT_TAG != null)
+            LOG.i { "  Tag ${BuildData.GIT_TAG}" }
+        if (BuildData.GIT_BRANCH == null && BuildData.GIT_TAG == null)
+            LOG.i { "  Neither branch nor tag detected" }
 
         val dataDir = getDataDir()
         val app =

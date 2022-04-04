@@ -22,6 +22,7 @@ import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.lib.Constants
 import org.eclipse.jgit.lib.Ref
 import org.eclipse.jgit.revwalk.RevCommit
+import org.eclipse.jgit.revwalk.RevWalk
 import org.eclipse.jgit.submodule.SubmoduleWalk
 import org.gradle.api.GradleScriptException
 import org.gradle.api.internal.artifacts.PreResolvedResolvableArtifact
@@ -125,7 +126,7 @@ open class GenerateBuildDataSourceTask : AbstractBuildDataTask() {
         val dirBriar = repositoryCore.directory
         val gitBriar = Git.open(dirBriar)
 
-        // Get head ref and it's name => current hash
+        // Get head ref and its name => current hash
         val head = repository.resolve(Constants.HEAD)
         val gitHash = head.name + if (status.hasUncommittedChanges()) "-dirty" else ""
 
@@ -140,14 +141,40 @@ open class GenerateBuildDataSourceTask : AbstractBuildDataTask() {
         val commitTime = first.commitTime * 1000L
 
         // Get current branch, if any
-        var gitBranch = "<unknown>"
+        var gitBranch: String? = null
         val prefix = "refs/heads/"
         val fullBranch = repository.fullBranch
         if (fullBranch.startsWith(prefix)) {
             gitBranch = fullBranch.substring(prefix.length)
         }
 
-        // Get head ref and it's name => current core hash
+        // Build list of tags ordered by creation date. We do this to make sure that when we map
+        // commits to tags below, a commit that has multiple tags pointing to it maps to the latest tag
+        // (like a beta tag that is later promoted to a release tag).
+        val walk = RevWalk(repository)
+        val tagsByCreationDate = git.tagList().call().also {
+            it.sortBy { tag ->
+                val revTag = walk.parseTag(tag.objectId)
+                revTag.taggerIdent.`when`
+            }
+        }
+
+        // Build map of commits to tags that point to them
+        val commitToTag = tagsByCreationDate.associateBy { tag ->
+            val peeled = repository.refDatabase.peel(tag)
+            val call = git.log().add(peeled.peeledObjectId).call()
+            call.iterator().next()
+        }
+
+        // Get current tag, if any
+        var gitTag: String? = null
+        val prefixTags = "refs/tags/"
+        val tag = commitToTag[first]
+        if (tag != null && tag.name.startsWith(prefixTags)) {
+            gitTag = tag.name.substring(prefixTags.length)
+        }
+
+        // Get head ref and its name => current core hash
         val coreHead = repositoryCore.resolve(Constants.HEAD)
         val coreGitHash = coreHead.name
 
@@ -183,7 +210,7 @@ open class GenerateBuildDataSourceTask : AbstractBuildDataTask() {
         val file = path.resolve("$className.kt")
         val content = createSource(
             packageName, className, version,
-            commitTime, gitHash, gitBranch,
+            commitTime, gitHash, gitBranch, gitTag,
             coreGitHash, coreVersion, artifacts
         )
         val input: InputStream = ByteArrayInputStream(
@@ -213,11 +240,14 @@ open class GenerateBuildDataSourceTask : AbstractBuildDataTask() {
         version: String,
         gitTime: Long,
         gitHash: String,
-        gitBranch: String,
+        gitBranch: String?,
+        gitTag: String?,
         coreGitHash: String,
         coreVersion: String,
         artifacts: List<VersionedArtifact>,
     ) = FileBuilder().apply {
+        val branch = if (gitBranch == null) "null" else "\"$gitBranch\""
+        val tag = if (gitTag == null) "null" else "\"$gitTag\""
         line("// this file is generated, do not edit")
         line("package $packageName")
         line()
@@ -227,7 +257,8 @@ open class GenerateBuildDataSourceTask : AbstractBuildDataTask() {
         line("    val VERSION = \"$version\"")
         line("    val GIT_TIME = ${gitTime}L")
         line("    val GIT_HASH = \"$gitHash\"")
-        line("    val GIT_BRANCH = \"$gitBranch\"")
+        line("    val GIT_BRANCH: String? = $branch")
+        line("    val GIT_TAG: String? = $tag")
         line("    val CORE_HASH = \"$coreGitHash\"")
         line("    val CORE_VERSION = \"$coreVersion\"")
         line()
