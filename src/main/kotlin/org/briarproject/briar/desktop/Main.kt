@@ -51,7 +51,8 @@ import java.util.logging.Level.INFO
 import java.util.logging.Level.WARNING
 
 @NonNls
-private val DEFAULT_DATA_DIR = getProperty("user.home") + separator + ".briar" + separator + "desktop"
+private val DEFAULT_DATA_DIR =
+    getProperty("user.home") + separator + ".briar" + separator + "desktop"
 
 private class Main : CliktCommand(
     name = "briar-desktop", // NON-NLS
@@ -96,7 +97,8 @@ private class Main : CliktCommand(
 
         LogUtils.setupLogging(level)
 
-        val buildTime = Instant.ofEpochMilli(BuildData.GIT_TIME).atZone(ZoneId.systemDefault()).toLocalDateTime()
+        val buildTime = Instant.ofEpochMilli(BuildData.GIT_TIME).atZone(ZoneId.systemDefault())
+            .toLocalDateTime()
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss") // NON-NLS
         LOG.i { "This is briar-desktop version ${BuildData.VERSION}" }
         LOG.i { "Build info:" }
@@ -113,6 +115,19 @@ private class Main : CliktCommand(
         // dependency graphs
         BrambleCoreEagerSingletons.Helper.injectEagerSingletons(app)
         BriarCoreEagerSingletons.Helper.injectEagerSingletons(app)
+
+        val eventExecutor = app.getEventExecutor()
+        Thread {
+            while (true) {
+                LOG.i { "Background tick" }
+                eventExecutor.execute { LOG.i { "Foreground tick " } }
+                try {
+                    Thread.sleep(1000)
+                } catch (ignored: InterruptedException) {
+                    break
+                }
+            }
+        }.start()
 
         application {
             app.getBriarUi().start {

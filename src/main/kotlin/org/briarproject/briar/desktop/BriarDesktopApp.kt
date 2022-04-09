@@ -21,10 +21,12 @@ package org.briarproject.briar.desktop
 import dagger.Component
 import org.briarproject.bramble.BrambleCoreEagerSingletons
 import org.briarproject.bramble.BrambleCoreModule
+import org.briarproject.bramble.api.event.EventExecutor
 import org.briarproject.briar.BriarCoreEagerSingletons
 import org.briarproject.briar.BriarCoreModule
 import org.briarproject.briar.desktop.ui.BriarUi
 import java.security.SecureRandom
+import java.util.concurrent.Executor
 import javax.inject.Singleton
 
 @Component(
@@ -40,4 +42,7 @@ internal interface BriarDesktopApp : BrambleCoreEagerSingletons, BriarCoreEagerS
     fun getBriarUi(): BriarUi
 
     fun getSecureRandom(): SecureRandom
+
+    @EventExecutor
+    fun getEventExecutor(): Executor
 }
