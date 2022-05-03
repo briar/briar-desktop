@@ -51,7 +51,7 @@ buildscript {
 plugins {
     kotlin("jvm") version "1.6.10"
     kotlin("kapt") version "1.6.10"
-    id("org.jetbrains.compose") version "1.0.1"
+    id("org.jetbrains.compose") version "1.1.1"
     id("java")
     id("idea")
     id("org.jlleitschuh.gradle.ktlint") version "10.1.0"
@@ -79,6 +79,8 @@ buildData {
 dependencies {
     implementation(compose.desktop.currentOs)
     implementation(compose.materialIconsExtended)
+    // needed to access Dispatchers.Swing for EventExecutor
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.6.1")
 
     implementation("com.github.ajalt.clikt:clikt:3.4.0")
     implementation("com.ibm.icu:icu4j:70.1")
