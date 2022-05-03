@@ -25,7 +25,6 @@ import org.briarproject.briar.desktop.navigation.BriarSidebar
 import org.briarproject.briar.desktop.navigation.SidebarViewModel
 import org.briarproject.briar.desktop.privategroups.PrivateGroupScreen
 import org.briarproject.briar.desktop.settings.SettingsScreen
-import org.briarproject.briar.desktop.settings.SettingsViewModel
 import org.briarproject.briar.desktop.viewmodel.viewModel
 
 /*
@@ -35,22 +34,21 @@ import org.briarproject.briar.desktop.viewmodel.viewModel
  */
 @Composable
 fun MainScreen(
-    settingsViewModel: SettingsViewModel,
     viewModel: SidebarViewModel = viewModel(),
-    showAbout: () -> Unit,
+    onShowAbout: () -> Unit,
 ) {
     Row {
         BriarSidebar(
             viewModel.account.value,
             viewModel.uiMode.value,
             viewModel::setUiMode,
-            showAbout = showAbout,
+            showAbout = onShowAbout,
         )
         VerticalDivider()
         when (viewModel.uiMode.value) {
             UiMode.CONTACTS -> PrivateMessageScreen()
             UiMode.GROUPS -> PrivateGroupScreen()
-            UiMode.SETTINGS -> SettingsScreen(settingsViewModel)
+            UiMode.SETTINGS -> SettingsScreen()
             else -> UiPlaceholder()
         }
     }

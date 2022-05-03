@@ -51,7 +51,6 @@ import org.briarproject.briar.desktop.DesktopFeatureFlags
 import org.briarproject.briar.desktop.expiration.ExpirationBanner
 import org.briarproject.briar.desktop.login.ErrorScreen
 import org.briarproject.briar.desktop.login.StartupScreen
-import org.briarproject.briar.desktop.settings.SettingsViewModel
 import org.briarproject.briar.desktop.settings.UnencryptedSettings
 import org.briarproject.briar.desktop.settings.UnencryptedSettings.Theme.AUTO
 import org.briarproject.briar.desktop.settings.UnencryptedSettings.Theme.DARK
@@ -61,7 +60,6 @@ import org.briarproject.briar.desktop.ui.Screen.MAIN
 import org.briarproject.briar.desktop.ui.Screen.STARTUP
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.viewmodel.ViewModelProvider
-import org.briarproject.briar.desktop.viewmodel.viewModel
 import java.awt.Dimension
 import java.awt.event.WindowEvent
 import java.awt.event.WindowFocusListener
@@ -181,7 +179,6 @@ constructor(
                 }
 
                 var showAbout by remember { mutableStateOf(false) }
-                val settingsViewModel: SettingsViewModel = viewModel()
                 val isDarkTheme = unencryptedSettings.theme == DARK ||
                     (unencryptedSettings.theme == AUTO && isSystemInDarkTheme())
                 BriarTheme(isDarkTheme) {
@@ -189,7 +186,7 @@ constructor(
                         ExpirationBanner { screenState = EXPIRED; stop() }
                         when (screenState) {
                             STARTUP -> StartupScreen(onShowAbout = { showAbout = true })
-                            MAIN -> MainScreen(settingsViewModel, showAbout = { showAbout = true })
+                            MAIN -> MainScreen(onShowAbout = { showAbout = true })
                             EXPIRED -> ErrorScreen(i18n("startup.failed.expired"), onShowAbout = { showAbout = true })
                         }
                     }
