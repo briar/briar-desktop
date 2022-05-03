@@ -23,6 +23,7 @@ import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.Colors
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Typography
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
@@ -122,7 +123,9 @@ fun BriarTheme(
         )
 
         CompositionLocalProvider(LocalTextSelectionColors provides customTextSelectionColors) {
-            content()
+            Surface {
+                content()
+            }
         }
     }
 }
