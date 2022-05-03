@@ -23,7 +23,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -57,6 +56,7 @@ fun main() = preview {
 }
 
 @Composable
+// [ColumnScope] needed for proper [AnimatedVisibility] implementation
 fun ColumnScope.ExpirationBanner(onExpired: () -> Unit) {
 
     var daysLeft by remember { mutableStateOf(0) }
@@ -69,8 +69,8 @@ fun ColumnScope.ExpirationBanner(onExpired: () -> Unit) {
     LaunchedEffect(Unit) {
         periodicallyCheckIfExpired(
             reportDaysLeft = { daysLeft = it },
-            onExpiry = { expired = true; onExpired() },
-            reportHideThreshold = { showExpirationBanner = hideTimestamp <= it }
+            reportHideThreshold = { showExpirationBanner = hideTimestamp <= it },
+            onExpiry = { showExpirationBanner = false; expired = true; onExpired() },
         )
     }
 
@@ -102,13 +102,11 @@ fun ExpirationBanner(
             "${i18nP("expiration.banner.part1.nozero", daysLeft)} ${i18n("expiration.banner.part2")}"
         Text(
             text = text,
-            style = MaterialTheme.typography.body2
+            style = MaterialTheme.typography.body2,
+            modifier = Modifier.weight(1f, true)
         )
-        Spacer(Modifier.weight(1f))
-        IconButton(
-            onClick = hide,
-        ) {
-            Icon(Icons.Filled.Close, i18n("hide"), Modifier.size(32.dp))
+        IconButton(hide) {
+            Icon(Icons.Filled.Close, i18n("hide"), Modifier.size(24.dp))
         }
     }
 }

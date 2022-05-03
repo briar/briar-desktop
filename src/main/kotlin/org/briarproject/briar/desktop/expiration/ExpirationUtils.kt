@@ -32,7 +32,7 @@ object ExpirationUtils {
     private val HIDE_INTERVAL = 1.days.inWholeMilliseconds
 
     // for testing uncomment the following instead
-    // private val EXPIRE_AFTER = Instant.now().toEpochMilli() + 10.seconds.inWholeMilliseconds
+    // private val EXPIRE_AFTER = Instant.now().toEpochMilli() + 30.seconds.inWholeMilliseconds
     // private val CHECK_INTERVAL = 1.seconds.inWholeMilliseconds
     // private val HIDE_INTERVAL = 10.seconds.inWholeMilliseconds
 
@@ -46,16 +46,17 @@ object ExpirationUtils {
 
     suspend fun periodicallyCheckIfExpired(
         reportDaysLeft: (Int) -> Unit,
-        onExpiry: () -> Unit,
         reportHideThreshold: (Long) -> Unit,
+        onExpiry: () -> Unit,
     ) {
         while (true) {
-            reportDaysLeft(getDaysLeft())
             if (isExpired()) {
                 onExpiry()
+                break
+            } else {
+                reportDaysLeft(getDaysLeft())
+                reportHideThreshold(hideThreshold())
             }
-
-            reportHideThreshold(hideThreshold())
             delay(CHECK_INTERVAL)
         }
     }
