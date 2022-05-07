@@ -41,6 +41,11 @@ val materialDarkBg = Color(0xff121212)
 val Red500 = Color(0xffdb3b21)
 val Orange500 = Color(0xfffc9403)
 
+// taken from Android AppCompat DayNight theme as error colors
+// https://android.googlesource.com/platform/frameworks/support/+/refs/heads/androidx-appcompat-release/appcompat/appcompat/src/main/res/values/colors_material.xml#102
+val DeepOrange400 = Color(0xffff7043)
+val DeepOrange500 = Color(0xffff5722)
+
 val Blue400 = Color(0xff418cd8)
 val Blue500 = Color(0xff1f78d1) // todo: unused in Android
 val Blue600 = Color(0xff1b69b6)

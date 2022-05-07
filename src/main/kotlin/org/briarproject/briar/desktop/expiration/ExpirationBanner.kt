@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -44,6 +45,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.briarproject.briar.desktop.expiration.ExpirationUtils.periodicallyCheckIfExpired
+import org.briarproject.briar.desktop.theme.warningBackground
+import org.briarproject.briar.desktop.theme.warningForeground
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nP
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
@@ -87,13 +90,14 @@ fun ExpirationBanner(
     daysLeft: Int,
     hide: () -> Unit,
 ) = Surface(
-    color = MaterialTheme.colors.error,
-    modifier = Modifier.fillMaxWidth()
+    color = MaterialTheme.colors.warningBackground,
+    contentColor = MaterialTheme.colors.warningForeground,
+    modifier = Modifier.fillMaxWidth().sizeIn(minHeight = 56.dp)
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(24.dp),
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+        modifier = Modifier.padding(horizontal = 16.dp)
     ) {
         Icon(Icons.Filled.Warning, i18n("warning"), Modifier.size(40.dp))
         val text = if (daysLeft == 0)
