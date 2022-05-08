@@ -95,6 +95,7 @@ import org.briarproject.briar.desktop.dialogs.DialogType.WARNING
 import org.briarproject.briar.desktop.theme.Orange500
 import org.briarproject.briar.desktop.theme.Red500
 import org.briarproject.briar.desktop.theme.surfaceVariant
+import org.briarproject.briar.desktop.ui.BackgroundSurface
 import org.briarproject.briar.desktop.ui.Constants.DIALOG_WIDTH
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nF
@@ -203,7 +204,7 @@ fun AddContactDialog(
         val scaffoldState = rememberScaffoldState()
         val coroutineScope = rememberCoroutineScope()
         val aliasFocusRequester = remember { FocusRequester() }
-        Surface {
+        BackgroundSurface {
             Scaffold(
                 modifier = Modifier.padding(horizontal = 24.dp).padding(top = 24.dp, bottom = 12.dp),
                 topBar = {

@@ -52,6 +52,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.singleWindowApplication
 import org.briarproject.bramble.api.UniqueId
 import org.briarproject.briar.desktop.theme.BriarTheme
+import org.briarproject.briar.desktop.ui.BackgroundSurface
 import org.briarproject.briar.desktop.ui.LocalWindowScope
 import kotlin.random.Random
 
@@ -225,7 +226,7 @@ object PreviewUtils {
                     }
 
                     BriarTheme(isDarkTheme = scope.getBooleanParameter("darkTheme")) {
-                        Box(Modifier.fillMaxSize(1f)) {
+                        BackgroundSurface(Modifier.fillMaxSize(1f)) {
                             Column(Modifier.padding(10.dp)) {
                                 content(scope)
                             }

@@ -53,6 +53,7 @@ import org.briarproject.bramble.api.lifecycle.LifecycleManager.StartResult.DB_ER
 import org.briarproject.bramble.api.lifecycle.LifecycleManager.StartResult.SERVICE_ERROR
 import org.briarproject.bramble.api.lifecycle.LifecycleManager.StartResult.SUCCESS
 import org.briarproject.briar.desktop.theme.Red500
+import org.briarproject.briar.desktop.ui.BackgroundSurface
 import org.briarproject.briar.desktop.ui.Constants.STARTUP_FIELDS_WIDTH
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
@@ -109,37 +110,39 @@ fun ErrorScreen(
     text: String,
     onShowAbout: () -> Unit,
     onBackButton: (() -> Unit)? = null,
-) = Box {
-    Column(
-        modifier = Modifier.fillMaxSize().padding(32.dp),
-        horizontalAlignment = CenterHorizontally,
-        verticalArrangement = spacedBy(32.dp)
-    ) {
-        Icon(
-            imageVector = Icons.Filled.Error,
-            contentDescription = i18n("error"),
-            modifier = Modifier.size(128.dp),
-            tint = Red500
-        )
+) = BackgroundSurface {
+    Box {
+        Column(
+            modifier = Modifier.fillMaxSize().padding(32.dp),
+            horizontalAlignment = CenterHorizontally,
+            verticalArrangement = spacedBy(32.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Error,
+                contentDescription = i18n("error"),
+                modifier = Modifier.size(128.dp),
+                tint = Red500
+            )
 
-        Text(i18n("sorry"), style = MaterialTheme.typography.h5)
-        Text(
-            text = text,
-            style = MaterialTheme.typography.body1,
-            modifier = Modifier.widthIn(max = STARTUP_FIELDS_WIDTH)
-        )
-    }
-
-    if (onBackButton != null) {
-        IconButton(onClick = onBackButton) {
-            Icon(Icons.Filled.ArrowBack, i18n("back"))
+            Text(i18n("sorry"), style = MaterialTheme.typography.h5)
+            Text(
+                text = text,
+                style = MaterialTheme.typography.body1,
+                modifier = Modifier.widthIn(max = STARTUP_FIELDS_WIDTH)
+            )
         }
-    }
 
-    IconButton(
-        onClick = onShowAbout,
-        modifier = Modifier.align(Alignment.BottomStart)
-    ) {
-        Icon(Icons.Filled.Info, i18n("access.about_briar_desktop"))
+        if (onBackButton != null) {
+            IconButton(onClick = onBackButton) {
+                Icon(Icons.Filled.ArrowBack, i18n("back"))
+            }
+        }
+
+        IconButton(
+            onClick = onShowAbout,
+            modifier = Modifier.align(Alignment.BottomStart)
+        ) {
+            Icon(Icons.Filled.Info, i18n("access.about_briar_desktop"))
+        }
     }
 }

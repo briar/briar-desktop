@@ -48,6 +48,7 @@ import org.briarproject.briar.desktop.contact.PendingContactIdWrapper
 import org.briarproject.briar.desktop.contact.RealContactIdWrapper
 import org.briarproject.briar.desktop.contact.add.remote.AddContactDialog
 import org.briarproject.briar.desktop.contact.add.remote.AddContactViewModel
+import org.briarproject.briar.desktop.ui.BackgroundSurface
 import org.briarproject.briar.desktop.ui.BriarLogo
 import org.briarproject.briar.desktop.ui.Constants.PARAGRAPH_WIDTH
 import org.briarproject.briar.desktop.ui.VerticalDivider
@@ -132,21 +133,23 @@ fun PendingContactSelected() = Explainer(
 
 @Composable
 fun Explainer(headline: String, text: String, content: @Composable () -> Unit = {}) =
-    Column(
-        modifier = Modifier.padding(16.dp).fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        BriarLogo(modifier = Modifier.size(200.dp))
-        Text(
-            text = headline,
-            modifier = Modifier.padding(top = 16.dp, bottom = 4.dp),
-            style = MaterialTheme.typography.h3
-        )
-        Text(
-            text = text,
-            modifier = Modifier.padding(top = 4.dp, bottom = 16.dp).widthIn(max = PARAGRAPH_WIDTH),
-            style = MaterialTheme.typography.body2.copy(textAlign = TextAlign.Center)
-        )
-        content()
+    BackgroundSurface {
+        Column(
+            modifier = Modifier.padding(16.dp).fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            BriarLogo(modifier = Modifier.size(200.dp))
+            Text(
+                text = headline,
+                modifier = Modifier.padding(top = 16.dp, bottom = 4.dp),
+                style = MaterialTheme.typography.h3
+            )
+            Text(
+                text = text,
+                modifier = Modifier.padding(top = 4.dp, bottom = 16.dp).widthIn(max = PARAGRAPH_WIDTH),
+                style = MaterialTheme.typography.body2.copy(textAlign = TextAlign.Center)
+            )
+            content()
+        }
     }

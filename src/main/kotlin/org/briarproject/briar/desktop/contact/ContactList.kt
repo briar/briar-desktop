@@ -32,13 +32,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import org.briarproject.briar.desktop.theme.surfaceVariant
+import org.briarproject.briar.desktop.ui.BackgroundSurface
 import org.briarproject.briar.desktop.ui.Constants.COLUMN_WIDTH
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
 
@@ -54,10 +53,11 @@ fun ContactList(
 ) {
     val scrollState = rememberLazyListState()
 
-    Scaffold(
+    BackgroundSurface(
         modifier = Modifier.fillMaxHeight().width(COLUMN_WIDTH),
-        backgroundColor = MaterialTheme.colors.surfaceVariant,
-        topBar = {
+        overlayAlpha = 0.04f
+    ) {
+        Column {
             Column(
                 modifier = Modifier.fillMaxWidth().height(HEADER_SIZE + 1.dp),
             ) {
@@ -67,10 +67,9 @@ fun ContactList(
                     onContactAdd = onContactAdd,
                 )
             }
-        },
-        content = { padding ->
-            Box(modifier = Modifier.padding(padding).fillMaxSize()) {
-                LazyColumn(state = scrollState) {
+
+            Box(modifier = Modifier.fillMaxSize()) {
+                LazyColumn(state = scrollState, modifier = Modifier.selectableGroup()) {
                     items(contactList) { contactItem ->
                         ContactCard(
                             contactItem,
@@ -87,6 +86,6 @@ fun ContactList(
                     modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight()
                 )
             }
-        },
-    )
+        }
+    }
 }

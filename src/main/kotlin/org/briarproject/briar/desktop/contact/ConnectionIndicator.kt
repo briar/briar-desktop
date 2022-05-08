@@ -16,21 +16,28 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.briarproject.briar.desktop.ui
+package org.briarproject.briar.desktop.contact
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.Text
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import org.briarproject.briar.desktop.theme.contactConnected
+import org.briarproject.briar.desktop.theme.outline
 
 @Composable
-fun UiPlaceholder() = BackgroundSurface {
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Text("TBD")
-    }
-}
+fun ConnectionIndicator(
+    modifier: Modifier = Modifier.size(16.dp),
+    isConnected: Boolean,
+    notConnectedColor: Color = Color.Transparent,
+) = Box(
+    modifier = modifier
+        .border(1.dp, MaterialTheme.colors.outline, CircleShape)
+        .background(if (isConnected) MaterialTheme.colors.contactConnected else notConnectedColor, CircleShape)
+)

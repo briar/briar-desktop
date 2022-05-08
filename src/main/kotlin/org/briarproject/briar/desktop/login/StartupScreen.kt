@@ -38,6 +38,7 @@ import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import org.briarproject.briar.desktop.ui.BackgroundSurface
 import org.briarproject.briar.desktop.ui.BriarLogo
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.viewmodel.viewModel
@@ -61,29 +62,31 @@ fun StartupScreenScaffold(
     onBackButton: () -> Unit = {},
     onShowAbout: () -> Unit = {},
     content: @Composable () -> Unit
-) = Box {
-    Column(
-        modifier = Modifier.padding(16.dp).fillMaxSize(),
-        horizontalAlignment = CenterHorizontally
-    ) {
-        HeaderLine(title)
-        content()
-    }
-
-    if (showBackButton) {
-        IconButton(
-            onClick = onBackButton,
-            modifier = Modifier.align(Alignment.TopStart)
+) = BackgroundSurface {
+    Box {
+        Column(
+            modifier = Modifier.padding(16.dp).fillMaxSize(),
+            horizontalAlignment = CenterHorizontally
         ) {
-            Icon(Icons.Filled.ArrowBack, i18n("back"))
+            HeaderLine(title)
+            content()
         }
-    }
 
-    IconButton(
-        onClick = onShowAbout,
-        modifier = Modifier.align(Alignment.BottomStart)
-    ) {
-        Icon(Icons.Filled.Info, i18n("access.about_briar_desktop"))
+        if (showBackButton) {
+            IconButton(
+                onClick = onBackButton,
+                modifier = Modifier.align(Alignment.TopStart)
+            ) {
+                Icon(Icons.Filled.ArrowBack, i18n("back"))
+            }
+        }
+
+        IconButton(
+            onClick = onShowAbout,
+            modifier = Modifier.align(Alignment.BottomStart)
+        ) {
+            Icon(Icons.Filled.Info, i18n("access.about_briar_desktop"))
+        }
     }
 }
 

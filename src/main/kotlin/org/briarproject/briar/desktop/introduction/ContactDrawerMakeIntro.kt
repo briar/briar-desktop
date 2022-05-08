@@ -32,7 +32,6 @@ import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
@@ -48,7 +47,7 @@ import androidx.compose.ui.unit.dp
 import org.briarproject.briar.desktop.contact.ContactCard
 import org.briarproject.briar.desktop.contact.ContactItem
 import org.briarproject.briar.desktop.contact.ProfileCircle
-import org.briarproject.briar.desktop.theme.surfaceVariant
+import org.briarproject.briar.desktop.ui.BackgroundSurface
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
 import org.briarproject.briar.desktop.ui.HorizontalDivider
 import org.briarproject.briar.desktop.utils.InternationalizationUtils
@@ -65,7 +64,7 @@ fun ContactDrawerMakeIntro(
     LaunchedEffect(contactItem) {
         viewModel.setFirstContact(contactItem)
     }
-    Surface(color = MaterialTheme.colors.surfaceVariant, contentColor = MaterialTheme.colors.onSurface) {
+    BackgroundSurface {
         Column {
             if (!viewModel.secondScreen.value) {
                 Row(Modifier.fillMaxWidth().height(HEADER_SIZE)) {

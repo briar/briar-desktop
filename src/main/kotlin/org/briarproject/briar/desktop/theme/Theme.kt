@@ -35,11 +35,12 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.platform.Font
 import androidx.compose.ui.unit.sp
 
-val Colors.divider: Color get() = if (isLight) Gray300 else Gray800
+val Colors.divider: Color get() = if (isLight) Gray300 else Night700
 val Colors.outline: Color get() = if (isLight) Gray900 else Gray200
+@Deprecated("use BackgroundSurface with a suitable overlayAlpha instead")
 val Colors.surfaceVariant: Color get() = if (isLight) Gray100 else Gray950
-val Colors.sidebarSurface: Color get() = if (isLight) Gray200 else Gray900
-val Colors.selectedCard: Color get() = if (isLight) Gray400 else Gray700
+val Colors.selectedCard: Color get() = if (isLight) Gray300 else Night600
+val Colors.contactConnected: Color get() = Lime500
 val Colors.msgStroke: Color get() = if (isLight) Gray300 else Gray900
 val Colors.msgIn: Color get() = if (isLight) Color.White else Night700
 val Colors.msgOut: Color get() = if (isLight) Blue400 else Blue600
@@ -55,10 +56,10 @@ val Colors.warningForeground get() = Color.White
 
 val DarkColors = darkColors(
     primary = Blue500,
-    primaryVariant = Night500,
-    secondary = Lime500,
-    background = materialDarkBg,
-    surface = materialDarkBg,
+    primaryVariant = Blue500,
+    secondary = Lime400,
+    background = Night900,
+    surface = Night800,
     error = DeepOrange400,
     onPrimary = Color.White,
     onSecondary = Color.White,
@@ -67,14 +68,14 @@ val DarkColors = darkColors(
     onError = Color.White,
 )
 val LightColors = lightColors(
-    primary = Blue500,
-    primaryVariant = Night500,
-    secondary = Lime300,
-    background = Color.White,
+    primary = Blue800,
+    primaryVariant = Blue600,
+    secondary = Lime600,
+    background = Gray100,
     surface = Color.White,
     error = DeepOrange500,
     onPrimary = Color.White,
-    onSecondary = Color.Black,
+    onSecondary = Color.White,
     onBackground = Color.Black,
     onSurface = Color.Black,
     onError = Color.White,

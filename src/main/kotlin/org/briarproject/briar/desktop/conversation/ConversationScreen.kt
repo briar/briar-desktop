@@ -45,7 +45,6 @@ import org.briarproject.bramble.api.contact.ContactId
 import org.briarproject.briar.desktop.contact.ContactInfoDrawer
 import org.briarproject.briar.desktop.contact.ContactInfoDrawerState
 import org.briarproject.briar.desktop.navigation.SIDEBAR_WIDTH
-import org.briarproject.briar.desktop.theme.surfaceVariant
 import org.briarproject.briar.desktop.ui.Constants.COLUMN_WIDTH
 import org.briarproject.briar.desktop.ui.Loader
 import org.briarproject.briar.desktop.viewmodel.viewModel
@@ -135,7 +134,7 @@ fun ConversationScreen(
             Column(
                 modifier = Modifier.fillMaxHeight().width(COLUMN_WIDTH)
                     .offset(maxWidth + animatedInfoDrawerOffsetX)
-                    .background(MaterialTheme.colors.surfaceVariant)
+                    .background(MaterialTheme.colors.background)
             ) {
                 ContactInfoDrawer(
                     contactItem,

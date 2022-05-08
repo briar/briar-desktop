@@ -25,10 +25,11 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChromeReaderMode
 import androidx.compose.material.icons.filled.Contacts
@@ -40,17 +41,23 @@ import androidx.compose.material.icons.filled.WifiTethering
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import org.briarproject.bramble.api.identity.LocalAuthor
 import org.briarproject.briar.desktop.contact.ProfileCircle
-import org.briarproject.briar.desktop.theme.sidebarSurface
+import org.briarproject.briar.desktop.ui.BackgroundSurface
 import org.briarproject.briar.desktop.ui.UiMode
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.getDesktopFeatureFlags
 
 val SIDEBAR_WIDTH = 56.dp
 
+/**
+ * The sidebar used in Briar Desktop as main navigation.
+ * It currently follows the MaterialTheme Navigation Rail compact design for all screen sizes,
+ * but could be adapted in future to extend to standard size (72.dp) or even a standard Navigation Drawer for large screens.
+ */
 @Composable
 fun BriarSidebar(
     account: LocalAuthor?,
@@ -67,7 +74,10 @@ fun BriarSidebar(
         )
     }
 
-    Surface(modifier = Modifier.width(SIDEBAR_WIDTH).fillMaxHeight(), color = MaterialTheme.colors.sidebarSurface) {
+    BackgroundSurface(
+        modifier = Modifier.width(SIDEBAR_WIDTH).fillMaxHeight().selectableGroup(),
+        overlayAlpha = 0.08f,
+    ) {
         Column(verticalArrangement = Arrangement.Top) {
             // profile button
             Box(
@@ -109,11 +119,16 @@ fun BriarSidebar(
 
 @Composable
 fun BriarSidebarButton(selected: Boolean, onClick: () -> Unit, icon: ImageVector, contentDescription: String?) {
-    val tint = if (selected) MaterialTheme.colors.primary else MaterialTheme.colors.onSurface
-    IconButton(
-        modifier = Modifier.padding(vertical = 4.dp, horizontal = 12.dp),
-        onClick = onClick
+    val tint = if (selected) MaterialTheme.colors.primaryVariant else MaterialTheme.colors.onBackground.copy(alpha = 0.6f)
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier.clip(CircleShape).selectable(selected, onClick = onClick).size(SIDEBAR_WIDTH)
     ) {
-        Icon(icon, contentDescription, tint = tint, modifier = Modifier.size(30.dp))
+        Icon(
+            icon,
+            contentDescription,
+            tint = tint,
+            modifier = Modifier.size(24.dp)
+        )
     }
 }

@@ -37,19 +37,18 @@ import org.briarproject.briar.desktop.theme.outline
 
 @Composable
 fun MessageCounter(unread: Int, modifier: Modifier = Modifier) {
-    val outlineColor = MaterialTheme.colors.outline
-    val briarSecondary = MaterialTheme.colors.secondary
     if (unread > 0) {
         Box(
             modifier = modifier
                 .height(20.dp)
                 .widthIn(min = 20.dp, max = Dp.Infinity)
-                .border(1.dp, outlineColor, CircleShape)
-                .background(briarSecondary, CircleShape)
+                .border(2.dp, MaterialTheme.colors.outline, CircleShape)
+                .background(MaterialTheme.colors.primary, CircleShape)
                 .padding(horizontal = 6.dp)
         ) {
             Text(
                 modifier = Modifier.align(Alignment.Center),
+                color = MaterialTheme.colors.onPrimary,
                 style = MaterialTheme.typography.overline,
                 textAlign = TextAlign.Center,
                 text = unread.toString(),
