@@ -18,14 +18,11 @@
 
 package org.briarproject.briar.desktop.contact
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -34,15 +31,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.PointerIconDefaults
-import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.unit.dp
+import org.briarproject.briar.desktop.ui.ColoredIconButton
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun SearchTextField(searchValue: String, onValueChange: (String) -> Unit, onContactAdd: () -> Unit) {
     TextField(
@@ -59,16 +52,13 @@ fun SearchTextField(searchValue: String, onValueChange: (String) -> Unit, onCont
             Icon(Icons.Filled.Search, i18n("access.contacts.search"), padding)
         },
         trailingIcon = {
-            IconButton(
+            ColoredIconButton(
                 onClick = onContactAdd,
                 modifier = Modifier.padding(end = 8.dp)
-                    .background(MaterialTheme.colors.primary, CircleShape).pointerHoverIcon(PointerIconDefaults.Default)
-                    .then(Modifier.size(32.dp))
             ) {
                 Icon(
                     Icons.Filled.PersonAdd,
                     i18n("access.contacts.add"),
-                    tint = Color.White,
                     modifier = Modifier.size(20.dp)
                 )
             }

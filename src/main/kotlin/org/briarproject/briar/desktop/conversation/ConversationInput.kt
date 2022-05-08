@@ -25,7 +25,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.ExperimentalMaterialApi
@@ -46,13 +45,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.input.pointer.PointerIconDefaults
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.res.ResourceLoader
 import androidx.compose.ui.res.loadImageBitmap
 import androidx.compose.ui.unit.dp
+import org.briarproject.briar.desktop.ui.ColoredIconButton
 import org.briarproject.briar.desktop.ui.HorizontalDivider
 import org.briarproject.briar.desktop.ui.LocalWindowScope
 import org.briarproject.briar.desktop.utils.ImagePicker.pickImageUsingDialog
@@ -112,7 +111,7 @@ fun ConversationInput(
             ),
             leadingIcon = {
                 val windowScope = LocalWindowScope.current!!
-                IconButton(
+                ColoredIconButton(
                     onClick = {
                         if (image == null) {
                             pickImageUsingDialog(windowScope.window, updateImage)
@@ -120,15 +119,12 @@ fun ConversationInput(
                             updateImage(null)
                         }
                     },
-                    Modifier.padding(4.dp)
-                        .background(MaterialTheme.colors.primary, CircleShape)
-                        .pointerHoverIcon(PointerIconDefaults.Default)
-                        .then(Modifier.size(32.dp)),
+                    Modifier.padding(4.dp),
                 ) {
                     if (image == null) {
-                        Icon(Icons.Filled.Add, i18n("access.attachment_add"), Modifier.size(24.dp), Color.White)
+                        Icon(Icons.Filled.Add, i18n("access.attachment_add"), Modifier.size(24.dp))
                     } else {
-                        Icon(Icons.Filled.Close, i18n("access.attachment_remove"), Modifier.size(24.dp), Color.White)
+                        Icon(Icons.Filled.Close, i18n("access.attachment_remove"), Modifier.size(24.dp))
                     }
                 }
             },
