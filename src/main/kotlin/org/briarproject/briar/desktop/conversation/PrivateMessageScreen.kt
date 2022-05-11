@@ -32,7 +32,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PersonAdd
@@ -133,23 +132,21 @@ fun PendingContactSelected() = Explainer(
 
 @Composable
 fun Explainer(headline: String, text: String, content: @Composable () -> Unit = {}) =
-    Surface(color = MaterialTheme.colors.background) {
-        Column(
-            modifier = Modifier.padding(16.dp).fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            BriarLogo(modifier = Modifier.size(200.dp))
-            Text(
-                text = headline,
-                modifier = Modifier.padding(top = 16.dp, bottom = 4.dp),
-                style = MaterialTheme.typography.h3
-            )
-            Text(
-                text = text,
-                modifier = Modifier.padding(top = 4.dp, bottom = 16.dp).widthIn(max = PARAGRAPH_WIDTH),
-                style = MaterialTheme.typography.body2.copy(textAlign = TextAlign.Center)
-            )
-            content()
-        }
+    Column(
+        modifier = Modifier.padding(16.dp).fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        BriarLogo(modifier = Modifier.size(200.dp))
+        Text(
+            text = headline,
+            modifier = Modifier.padding(top = 16.dp, bottom = 4.dp),
+            style = MaterialTheme.typography.h3
+        )
+        Text(
+            text = text,
+            modifier = Modifier.padding(top = 4.dp, bottom = 16.dp).widthIn(max = PARAGRAPH_WIDTH),
+            style = MaterialTheme.typography.body2.copy(textAlign = TextAlign.Center)
+        )
+        content()
     }

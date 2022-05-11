@@ -34,7 +34,6 @@ import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
 import androidx.compose.material.Slider
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
@@ -226,7 +225,7 @@ object PreviewUtils {
                     }
 
                     BriarTheme(isDarkTheme = scope.getBooleanParameter("darkTheme")) {
-                        Surface(Modifier.fillMaxSize(1f)) {
+                        Box(Modifier.fillMaxSize(1f)) {
                             Column(Modifier.padding(10.dp)) {
                                 content(scope)
                             }
