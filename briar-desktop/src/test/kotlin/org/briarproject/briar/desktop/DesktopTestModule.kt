@@ -38,6 +38,7 @@ import org.briarproject.bramble.api.plugin.duplex.DuplexPluginFactory
 import org.briarproject.bramble.api.plugin.simplex.SimplexPluginFactory
 import org.briarproject.bramble.battery.DefaultBatteryManagerModule
 import org.briarproject.bramble.network.JavaNetworkModule
+import org.briarproject.bramble.plugin.tcp.LanTcpPluginFactory
 import org.briarproject.bramble.plugin.tor.CircumventionModule
 import org.briarproject.bramble.plugin.tor.UnixTorPluginFactory
 import org.briarproject.bramble.socks.SocksModule
@@ -142,9 +143,9 @@ internal class DesktopTestModule(
     internal fun provideTorControlPort() = controlPort
 
     @Provides
-    internal fun providePluginConfig(tor: UnixTorPluginFactory): PluginConfig {
+    internal fun providePluginConfig(tor: UnixTorPluginFactory, lan: LanTcpPluginFactory): PluginConfig {
         val duplex: List<DuplexPluginFactory> =
-            if (isLinux() || isMac()) listOf(tor) else emptyList()
+            if (isLinux() || isMac()) listOf(tor, lan) else listOf(lan)
         return object : PluginConfig {
             override fun getDuplexFactories(): Collection<DuplexPluginFactory> = duplex
             override fun getSimplexFactories(): Collection<SimplexPluginFactory> = emptyList()
