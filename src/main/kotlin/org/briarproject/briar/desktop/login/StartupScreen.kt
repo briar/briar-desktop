@@ -28,7 +28,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -62,31 +61,29 @@ fun StartupScreenScaffold(
     onBackButton: () -> Unit = {},
     onShowAbout: () -> Unit = {},
     content: @Composable () -> Unit
-) = Surface {
-    Box {
-        Column(
-            modifier = Modifier.padding(16.dp).fillMaxSize(),
-            horizontalAlignment = CenterHorizontally
-        ) {
-            HeaderLine(title)
-            content()
-        }
+) = Box {
+    Column(
+        modifier = Modifier.padding(16.dp).fillMaxSize(),
+        horizontalAlignment = CenterHorizontally
+    ) {
+        HeaderLine(title)
+        content()
+    }
 
-        if (showBackButton) {
-            IconButton(
-                onClick = onBackButton,
-                modifier = Modifier.align(Alignment.TopStart)
-            ) {
-                Icon(Icons.Filled.ArrowBack, i18n("back"))
-            }
-        }
-
+    if (showBackButton) {
         IconButton(
-            onClick = onShowAbout,
-            modifier = Modifier.align(Alignment.BottomStart)
+            onClick = onBackButton,
+            modifier = Modifier.align(Alignment.TopStart)
         ) {
-            Icon(Icons.Filled.Info, i18n("access.about_briar_desktop"))
+            Icon(Icons.Filled.ArrowBack, i18n("back"))
         }
+    }
+
+    IconButton(
+        onClick = onShowAbout,
+        modifier = Modifier.align(Alignment.BottomStart)
+    ) {
+        Icon(Icons.Filled.Info, i18n("access.about_briar_desktop"))
     }
 }
 
