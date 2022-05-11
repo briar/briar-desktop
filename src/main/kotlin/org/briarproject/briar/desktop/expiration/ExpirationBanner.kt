@@ -26,7 +26,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -92,14 +91,14 @@ fun ExpirationBanner(
 ) = Surface(
     color = MaterialTheme.colors.warningBackground,
     contentColor = MaterialTheme.colors.warningForeground,
-    modifier = Modifier.fillMaxWidth().sizeIn(minHeight = 56.dp)
+    modifier = Modifier.fillMaxWidth()
 ) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(24.dp),
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.padding(horizontal = 16.dp)
     ) {
-        Icon(Icons.Filled.Warning, i18n("warning"), Modifier.size(40.dp))
+        Icon(Icons.Filled.Warning, i18n("warning"), Modifier.size(40.dp).padding(vertical = 4.dp))
         val text = if (daysLeft == 0)
             "${i18n("expiration.banner.part1.zero")} ${i18n("expiration.banner.part2")}"
         else
@@ -107,9 +106,9 @@ fun ExpirationBanner(
         Text(
             text = text,
             style = MaterialTheme.typography.body2,
-            modifier = Modifier.weight(1f, true)
+            modifier = Modifier.weight(1f, true).padding(vertical = 12.dp)
         )
-        IconButton(hide) {
+        IconButton(hide, modifier = Modifier.padding(vertical = 4.dp)) {
             Icon(Icons.Filled.Close, i18n("hide"), Modifier.size(24.dp))
         }
     }
