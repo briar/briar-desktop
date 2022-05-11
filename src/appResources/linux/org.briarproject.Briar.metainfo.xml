@@ -53,13 +53,21 @@
   </custom>
 
   <releases>
-    <release version="0.2.0" date="2022-02-22">
+    <release version="0.2.1-beta" date="2022-05-11">
       <description>
         <p>
           See the changelog for more information on this release.
         </p>
       </description>
-      <url>https://code.briarproject.org/briar/briar-desktop/-/wikis/Changelog#anchor-020</url>
+      <url>https://code.briarproject.org/briar/briar-desktop/-/wikis/Changelog#021-beta</url>
+    </release>
+    <release version="0.2.0-beta" date="2022-02-22">
+      <description>
+        <p>
+          See the changelog for more information on this release.
+        </p>
+      </description>
+      <url>https://code.briarproject.org/briar/briar-desktop/-/wikis/Changelog#020-beta</url>
     </release>
   </releases>
 
