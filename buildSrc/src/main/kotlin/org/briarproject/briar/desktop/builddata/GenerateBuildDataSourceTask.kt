@@ -22,8 +22,10 @@ import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.lib.Constants
 import org.eclipse.jgit.lib.Ref
 import org.eclipse.jgit.revwalk.RevCommit
+import org.eclipse.jgit.revwalk.RevTag
 import org.eclipse.jgit.revwalk.RevWalk
 import org.eclipse.jgit.submodule.SubmoduleWalk
+import org.gradle.api.GradleException
 import org.gradle.api.GradleScriptException
 import org.gradle.api.internal.artifacts.PreResolvedResolvableArtifact
 import org.gradle.api.tasks.TaskAction
@@ -148,23 +150,7 @@ open class GenerateBuildDataSourceTask : AbstractBuildDataTask() {
             gitBranch = fullBranch.substring(prefix.length)
         }
 
-        // Build list of tags ordered by creation date. We do this to make sure that when we map
-        // commits to tags below, a commit that has multiple tags pointing to it maps to the latest tag
-        // (like a beta tag that is later promoted to a release tag).
-        val walk = RevWalk(repository)
-        val tagsByCreationDate = git.tagList().call().also {
-            it.sortBy { tag ->
-                val revTag = walk.parseTag(tag.objectId)
-                revTag.taggerIdent.`when`
-            }
-        }
-
-        // Build map of commits to tags that point to them
-        val commitToTag = tagsByCreationDate.associateBy { tag ->
-            val peeled = repository.refDatabase.peel(tag)
-            val call = git.log().add(peeled.peeledObjectId).call()
-            call.iterator().next()
-        }
+        val commitToTag = mapCommitsToTags(git)
 
         // Get current tag, if any
         var gitTag: String? = null
@@ -178,8 +164,11 @@ open class GenerateBuildDataSourceTask : AbstractBuildDataTask() {
         val coreHead = repositoryCore.resolve(Constants.HEAD)
         val coreGitHash = coreHead.name
 
+        val coreCommitToTag = mapCommitsToTags(gitBriar)
+
         // Get latest core tag
-        val coreReleaseTag = getLastReleaseTag(gitBriar)
+        val coreReleaseTag = getLastReleaseTag(gitBriar, coreCommitToTag)
+            ?: throw GradleException("Unable to determine last core release tag")
         val coreVersion = coreReleaseTag.name.substring("refs/tags/release-".length)
 
         // Get direct and transitive dependencies
@@ -219,6 +208,30 @@ open class GenerateBuildDataSourceTask : AbstractBuildDataTask() {
         Files.copy(input, file, StandardCopyOption.REPLACE_EXISTING)
     }
 
+    private fun mapCommitsToTags(git: Git): Map<RevCommit, Ref> {
+        // Build list of tags ordered by creation date. We do this to make sure that when we map
+        // commits to tags below, a commit that has multiple tags pointing to it maps to the latest tag
+        // (like a beta tag that is later promoted to a release tag).
+        val walk = RevWalk(git.repository)
+
+        val tagsByCreationDate = git.tagList().call().filter { tag ->
+            // Skip all tags that are not annotated ones
+            walk.parseAny(tag.objectId) is RevTag
+        }.sortedBy { tag ->
+            val revTag = walk.parseTag(tag.objectId)
+            revTag.taggerIdent.`when`
+        }
+
+        // Build map of commits to tags that point to them
+        val commitToTag = tagsByCreationDate.associateBy { tag ->
+            val peeled = git.repository.refDatabase.peel(tag)
+            val call = git.log().add(peeled.peeledObjectId).call()
+            call.iterator().next()
+        }
+
+        return commitToTag
+    }
+
     private fun getLastCommit(git: Git): RevCommit {
         val commits = git.log().call()
         val iterator: Iterator<RevCommit> = commits.iterator()
@@ -228,10 +241,20 @@ open class GenerateBuildDataSourceTask : AbstractBuildDataTask() {
         return iterator.next()
     }
 
-    private fun getLastReleaseTag(git: Git): Ref {
-        val tags = git.tagList().call()
-        val releases = tags.filter { tag -> tag.name.startsWith("refs/tags/release-") }
-        return releases[releases.size - 1]
+    private fun getLastReleaseTag(git: Git, commitToTag: Map<RevCommit, Ref>): Ref? {
+        // We used to use just the most recent release tag, however that might return
+        // a more recent version than we're actually using. Hence traverse the history and
+        // use the first release tag found in the history starting from the current HEAD.
+        val commits = git.log().call()
+        val iterator: Iterator<RevCommit> = commits.iterator()
+        while (iterator.hasNext()) {
+            val commit = iterator.next()
+            val tag = commitToTag[commit]
+            if (tag != null && tag.name.startsWith("refs/tags/release-")) {
+                return tag
+            }
+        }
+        return null
     }
 
     private fun createSource(
