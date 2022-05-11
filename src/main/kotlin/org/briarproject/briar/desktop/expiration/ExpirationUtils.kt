@@ -27,7 +27,7 @@ import kotlin.time.Duration.Companion.milliseconds
 
 object ExpirationUtils {
 
-    private val EXPIRE_AFTER = BuildData.GIT_TIME + 91.days.inWholeMilliseconds
+    private val EXPIRE_AFTER = BuildData.GIT_TIME + 181.days.inWholeMilliseconds
     private val CHECK_INTERVAL = 1.hours.inWholeMilliseconds
     private val HIDE_INTERVAL = 1.days.inWholeMilliseconds
 
