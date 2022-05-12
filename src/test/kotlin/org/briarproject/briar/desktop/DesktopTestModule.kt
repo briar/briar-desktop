@@ -161,6 +161,7 @@ internal class DesktopTestModule(
         override fun shouldEnablePrivateGroupsInCore() = desktopFeatureFlags.shouldEnablePrivateGroups()
         override fun shouldEnableForumsInCore() = desktopFeatureFlags.shouldEnableForums()
         override fun shouldEnableBlogsInCore() = desktopFeatureFlags.shouldEnableBlogs()
+        override fun shouldEnableMailbox() = false
     }
 
     @Provides
