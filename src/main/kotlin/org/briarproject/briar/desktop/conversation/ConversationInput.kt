@@ -51,6 +51,7 @@ import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.res.ResourceLoader
 import androidx.compose.ui.res.loadImageBitmap
 import androidx.compose.ui.unit.dp
+import org.briarproject.briar.desktop.theme.sendButton
 import org.briarproject.briar.desktop.ui.ColoredIconButton
 import org.briarproject.briar.desktop.ui.HorizontalDivider
 import org.briarproject.briar.desktop.ui.LocalWindowScope
@@ -136,7 +137,7 @@ fun ConversationInput(
                     Icon(
                         Icons.Filled.Send,
                         i18n("access.message.send"),
-                        tint = MaterialTheme.colors.secondary,
+                        tint = MaterialTheme.colors.sendButton,
                         modifier = Modifier.size(24.dp)
                     )
                 }

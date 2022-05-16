@@ -51,8 +51,9 @@ val Blue500 = Color(0xff1f78d1) // todo: unused in Android
 val Blue600 = Color(0xff1b69b6)
 val Blue800 = Color(0xff134a81)
 
-val Lime300 = Color(0xff95DE2D)
-val Lime500 = Color(0xff74B816)
+val Lime300 = Color(0xff95de2d)
+val Lime500 = Color(0xff74b816)
+val Lime700 = Color(0xff53830e)
 
 val TextPrimaryMaterialDark = Color(0xffffffff)
 val TextPrimaryMaterialLight = Color(0xde000000)
