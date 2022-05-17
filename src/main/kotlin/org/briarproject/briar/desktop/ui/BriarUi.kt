@@ -24,12 +24,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.ImageComposeScene
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.toAwtImage
@@ -39,14 +42,13 @@ import androidx.compose.ui.platform.LocalLocalization
 import androidx.compose.ui.platform.PlatformLocalization
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.window.FrameWindowScope
-import androidx.compose.ui.window.Window
+import kotlinx.coroutines.launch
 import org.briarproject.bramble.api.FeatureFlags
 import org.briarproject.bramble.api.event.EventBus
 import org.briarproject.bramble.api.event.EventListener
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.bramble.api.lifecycle.LifecycleManager.LifecycleState.RUNNING
 import org.briarproject.bramble.api.lifecycle.event.LifecycleEvent
-import org.briarproject.briar.api.conversation.event.ConversationMessageReceivedEvent
 import org.briarproject.briar.desktop.DesktopFeatureFlags
 import org.briarproject.briar.desktop.expiration.ExpirationBanner
 import org.briarproject.briar.desktop.login.ErrorScreen
@@ -60,12 +62,11 @@ import org.briarproject.briar.desktop.ui.Screen.MAIN
 import org.briarproject.briar.desktop.ui.Screen.STARTUP
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.viewmodel.ViewModelProvider
-import java.awt.Dimension
-import java.awt.event.WindowEvent
-import java.awt.event.WindowFocusListener
+import java.io.File
 import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.system.exitProcess
 
 enum class Screen {
     STARTUP,
@@ -123,10 +124,8 @@ constructor(
         }
         val focusState = remember { WindowFocusState() }
 
-        Window(
-            title = title,
-            onCloseRequest = onClose,
-        ) {
+        val scene = ImageComposeScene(800, 600) {
+
             // changing the icon in the Composable itself automatically brings the window to front
             // see https://github.com/JetBrains/compose-jb/issues/1861
             // therefore the icon is set here on the AWT Window
@@ -139,33 +138,17 @@ constructor(
                 val eventListener = EventListener { e ->
                     if (e is LifecycleEvent && e.lifecycleState == RUNNING)
                         screenState = MAIN
-                    if (e is ConversationMessageReceivedEvent<*> && !focusState.focused) {
-                        window.iconImage = iconBadge
-                    }
-                }
-                val focusListener = object : WindowFocusListener {
-                    override fun windowGainedFocus(e: WindowEvent?) {
-                        focusState.focused = true
-                        window.iconImage = iconNormal
-                    }
-
-                    override fun windowLostFocus(e: WindowEvent?) {
-                        focusState.focused = false
-                    }
                 }
 
                 eventBus.addListener(eventListener)
-                window.addWindowFocusListener(focusListener)
 
                 onDispose {
                     eventBus.removeListener(eventListener)
-                    window.removeWindowFocusListener(focusListener)
                 }
             }
 
-            window.minimumSize = Dimension(800, 600)
             CompositionLocalProvider(
-                LocalWindowScope provides this,
+                LocalWindowScope provides null,
                 LocalWindowFocusState provides focusState,
                 LocalViewModelProvider provides viewModelProvider,
                 LocalCoreFeatureFlags provides featureFlags,
@@ -174,7 +157,7 @@ constructor(
             ) {
                 // invalidate whole application window in case the theme or language setting is changed
                 unencryptedSettings.invalidateScreen.react {
-                    window.title = i18n("main.title")
+
                     return@CompositionLocalProvider
                 }
 
@@ -194,6 +177,17 @@ constructor(
                         AboutDialog(onClose = { showAbout = false })
                     }
                 }
+            }
+        }
+
+        val scope = rememberCoroutineScope()
+        LaunchedEffect(Unit) {
+            scope.launch {
+                val image = scene.render()
+                val bytes = image.encodeToData()!!
+                File("/tmp/briar").mkdirs()
+                File("/tmp/briar/test.png").writeBytes(bytes.bytes)
+                exitProcess(0)
             }
         }
     }
