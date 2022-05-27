@@ -20,30 +20,35 @@ package org.briarproject.briar.desktop.login
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.material.LinearProgressIndicator
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.ProgressIndicatorDefaults
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.unit.dp
 import org.briarproject.bramble.api.crypto.PasswordStrengthEstimator.QUITE_STRONG
 import org.briarproject.bramble.api.crypto.PasswordStrengthEstimator.QUITE_WEAK
-import org.briarproject.bramble.api.crypto.PasswordStrengthEstimator.STRONG
-import org.briarproject.bramble.api.crypto.PasswordStrengthEstimator.WEAK
+import org.briarproject.briar.desktop.theme.passwordStrengthMiddle
+import org.briarproject.briar.desktop.theme.passwordStrengthStrong
+import org.briarproject.briar.desktop.theme.passwordStrengthWeak
 import org.briarproject.briar.desktop.utils.PreviewUtils
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
-
-val RED = Color(255, 0, 0)
-val ORANGE = Color(255, 160, 0)
-val YELLOW = Color(255, 255, 0)
-val LIME = Color(180, 255, 0)
-val GREEN = Color(0, 255, 0)
 
 @Suppress("HardCodedStringLiteral")
 fun main() = preview(
     "strength" to PreviewUtils.FloatSlider(0f, 0f, 1f)
 ) {
     StrengthMeter(getFloatParameter("strength"))
+    Spacer(Modifier.height(8.dp))
+    OutlinedTextField("test", {})
 }
 
 @Composable
@@ -52,11 +57,9 @@ fun StrengthMeter(
     modifier: Modifier = Modifier
 ) {
     val color = when {
-        strength < WEAK -> RED
-        strength < QUITE_WEAK -> ORANGE
-        strength < QUITE_STRONG -> YELLOW
-        strength < STRONG -> GREEN
-        else -> LIME
+        strength < QUITE_WEAK -> MaterialTheme.colors.passwordStrengthWeak
+        strength < QUITE_STRONG -> MaterialTheme.colors.passwordStrengthMiddle
+        else -> MaterialTheme.colors.passwordStrengthStrong
     }
     val animatedProgress by animateFloatAsState(
         targetValue = strength,
@@ -67,5 +70,12 @@ fun StrengthMeter(
         progress = animatedProgress,
         color = animatedColor,
         modifier = modifier
+            .heightIn(min = 12.dp)
+            .clip(MaterialTheme.shapes.small)
+            .border(
+                width = 1.dp,
+                color = MaterialTheme.colors.onSurface.copy(alpha = TextFieldDefaults.UnfocusedIndicatorLineOpacity),
+                shape = MaterialTheme.shapes.small
+            )
     )
 }

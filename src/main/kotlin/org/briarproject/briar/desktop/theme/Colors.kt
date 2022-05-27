@@ -38,8 +38,11 @@ val Gray900 = Color(0xff2e2e2e)
 val Gray950 = Color(0xff1f1f1f)
 val materialDarkBg = Color(0xff121212)
 
+val Red300 = Color(0xffea8271)
 val Red500 = Color(0xffdb3b21)
+
 val Orange500 = Color(0xfffc9403)
+val Orange700 = Color(0xffc26700)
 
 // taken from Android AppCompat DayNight theme as error colors
 // https://android.googlesource.com/platform/frameworks/support/+/refs/heads/androidx-appcompat-release/appcompat/appcompat/src/main/res/values/colors_material.xml#102

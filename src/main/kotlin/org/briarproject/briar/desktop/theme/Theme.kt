@@ -53,6 +53,9 @@ val Colors.buttonTextPositive: Color get() = Blue400
 val Colors.warningBackground get() = Red500
 val Colors.warningForeground get() = Color.White
 val Colors.sendButton get() = if (isLight) Lime700 else Lime500
+val Colors.passwordStrengthWeak get() = Red500
+val Colors.passwordStrengthMiddle get() = if (isLight) Orange700 else Orange500
+val Colors.passwordStrengthStrong get() = if (isLight) Lime700 else Lime500
 
 val DarkColors = darkColors(
     primary = Blue500,
