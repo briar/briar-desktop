@@ -71,7 +71,7 @@ val DarkColors = darkColors(
     onError = Color.White,
 )
 val LightColors = lightColors(
-    primary = Blue500,
+    primary = Blue700,
     primaryVariant = Night500,
     secondary = Lime300,
     background = Color.White,
