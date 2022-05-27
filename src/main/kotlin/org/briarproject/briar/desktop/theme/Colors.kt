@@ -49,6 +49,7 @@ val DeepOrange500 = Color(0xffff5722)
 val Blue400 = Color(0xff418cd8)
 val Blue500 = Color(0xff1f78d1) // todo: unused in Android
 val Blue600 = Color(0xff1b69b6)
+val Blue700 = Color(0xff17599c)
 val Blue800 = Color(0xff134a81)
 
 val Lime300 = Color(0xff95de2d)
