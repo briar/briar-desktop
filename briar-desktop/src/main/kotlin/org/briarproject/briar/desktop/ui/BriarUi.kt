@@ -48,9 +48,11 @@ import org.briarproject.bramble.api.lifecycle.LifecycleManager.LifecycleState.RU
 import org.briarproject.bramble.api.lifecycle.event.LifecycleEvent
 import org.briarproject.briar.api.conversation.event.ConversationMessageReceivedEvent
 import org.briarproject.briar.desktop.DesktopFeatureFlags
+import org.briarproject.briar.desktop.conversation.ConversationMessagesReadEvent
 import org.briarproject.briar.desktop.expiration.ExpirationBanner
 import org.briarproject.briar.desktop.login.ErrorScreen
 import org.briarproject.briar.desktop.login.StartupScreen
+import org.briarproject.briar.desktop.notification.NotificationProvider
 import org.briarproject.briar.desktop.settings.UnencryptedSettings
 import org.briarproject.briar.desktop.settings.UnencryptedSettings.Theme.AUTO
 import org.briarproject.briar.desktop.settings.UnencryptedSettings.Theme.DARK
@@ -97,6 +99,7 @@ constructor(
     private val unencryptedSettings: UnencryptedSettings,
     private val featureFlags: FeatureFlags,
     private val desktopFeatureFlags: DesktopFeatureFlags,
+    private val notificationProvider: NotificationProvider,
 ) : BriarUi {
 
     private var screenState by mutableStateOf(
@@ -136,11 +139,25 @@ constructor(
                 .toAwtImage(LocalDensity.current, LocalLayoutDirection.current, Size(32f, 32f))
 
             DisposableEffect(Unit) {
+                // todo: hard-coded messageCount doesn't account for unread messages on application start
+                // also see https://code.briarproject.org/briar/briar-desktop/-/issues/133
+                var messageCount = 0
+
                 val eventListener = EventListener { e ->
-                    if (e is LifecycleEvent && e.lifecycleState == RUNNING)
-                        screenState = MAIN
-                    if (e is ConversationMessageReceivedEvent<*> && !focusState.focused) {
-                        window.iconImage = iconBadge
+                    when (e) {
+                        is LifecycleEvent ->
+                            if (e.lifecycleState == RUNNING) screenState = MAIN
+                        is ConversationMessageReceivedEvent<*> -> {
+                            messageCount++
+                            if (!focusState.focused) {
+                                window.iconImage = iconBadge
+                                notificationProvider.notifyPrivateMessages(messageCount)
+                            }
+                        }
+                        is ConversationMessagesReadEvent -> {
+                            messageCount -= e.count
+                            if (messageCount < 0) messageCount = 0
+                        }
                     }
                 }
                 val focusListener = object : WindowFocusListener {
@@ -154,12 +171,14 @@ constructor(
                     }
                 }
 
+                notificationProvider.init()
                 eventBus.addListener(eventListener)
                 window.addWindowFocusListener(focusListener)
 
                 onDispose {
                     eventBus.removeListener(eventListener)
                     window.removeWindowFocusListener(focusListener)
+                    notificationProvider.uninit()
                 }
             }
 
