@@ -15,18 +15,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package org.briarproject.briar.desktop.notification.linux
 
-fun main() {
-    LibnotifyNotificationProvider.apply {
-        init()
+package org.briarproject.briar.desktop.utils
 
-        notifyPrivateMessages(9)
+import java.io.InputStream
 
-        Thread.sleep(100)
+object ResourceUtils {
 
-        notifyPrivateMessages(10)
-
-        uninit()
-    }
+    fun getResourceAsStream(name: String): InputStream? = this::class.java.getResourceAsStream(name)
 }
