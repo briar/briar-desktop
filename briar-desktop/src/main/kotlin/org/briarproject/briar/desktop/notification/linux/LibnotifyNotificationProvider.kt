@@ -22,23 +22,36 @@ import com.sun.jna.Native
 import com.sun.jna.Pointer
 import mu.KotlinLogging
 import org.briarproject.briar.desktop.notification.NotificationProvider
+import org.briarproject.briar.desktop.utils.AudioUtils.loadAudioFromResource
+import org.briarproject.briar.desktop.utils.AudioUtils.play
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nP
 import org.briarproject.briar.desktop.utils.KLoggerUtils.e
 import org.briarproject.briar.desktop.utils.KLoggerUtils.i
+import javax.sound.sampled.Clip
 
 object LibnotifyNotificationProvider : NotificationProvider {
 
     private val LOG = KotlinLogging.logger {}
 
-    private var isAvailable: Boolean = false
+    private var libNotifyAvailable: Boolean = false
+    private var soundAvailable: Boolean = false
 
     private lateinit var libNotify: LibNotify
 
+    private lateinit var sound: Clip
+
     override val available: Boolean
-        get() = isAvailable
+        get() = libNotifyAvailable
 
     override fun init() {
+        try {
+            sound = loadAudioFromResource("/audio/notification.wav") ?: throw Exception() // NON-NLS
+            soundAvailable = true
+        } catch (ex: Exception) {
+            LOG.e(ex) { "Error while loading notification sound" }
+        }
+
         try {
             libNotify = Native.load("libnotify.so.4", LibNotify::class.java) // NON-NLS
         } catch (err: UnsatisfiedLinkError) {
@@ -46,8 +59,8 @@ object LibnotifyNotificationProvider : NotificationProvider {
             return
         }
 
-        isAvailable = libNotify.notify_init(i18n("main.title"))
-        if (!isAvailable) {
+        libNotifyAvailable = libNotify.notify_init(i18n("main.title"))
+        if (!libNotifyAvailable) {
             LOG.e { "unable to initialize libnotify" }
             return
         }
@@ -63,14 +76,22 @@ object LibnotifyNotificationProvider : NotificationProvider {
     }
 
     override fun uninit() {
-        if (!isAvailable) return
-
-        libNotify.notify_uninit()
-        isAvailable = false
+        if (libNotifyAvailable) {
+            libNotify.notify_uninit()
+            libNotifyAvailable = false
+        }
+        if (soundAvailable) {
+            sound.close()
+            soundAvailable = false
+        }
     }
 
     override fun notifyPrivateMessages(num: Int) {
-        if (!isAvailable) return
+        if (!libNotifyAvailable) {
+            // play sound even if libnotify unavailable
+            if (soundAvailable) sound.play()
+            return
+        }
 
         /**
          * summary
@@ -115,6 +136,8 @@ object LibnotifyNotificationProvider : NotificationProvider {
             // todo: error handling
             LOG.e { "error while sending notification via libnotify" }
         }
+
+        sound.play()
     }
 
     /**
