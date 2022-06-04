@@ -21,7 +21,14 @@ package org.briarproject.briar.desktop.settings
 import org.briarproject.briar.desktop.viewmodel.SingleStateEvent
 import java.util.Locale
 
-interface UnencryptedSettings {
+interface UnencryptedSettingsReadOnly {
+    val theme: UnencryptedSettings.Theme
+    val language: UnencryptedSettings.Language
+
+    val invalidateScreen: SingleStateEvent<Unit>
+}
+
+interface UnencryptedSettings : UnencryptedSettingsReadOnly {
 
     enum class Theme { AUTO, LIGHT, DARK }
 
@@ -38,8 +45,8 @@ interface UnencryptedSettings {
             else Locale.forLanguageTag(name.replace('_', '-'))
     }
 
-    var theme: Theme
-    var language: Language
+    override var theme: Theme
+    override var language: Language
 
-    val invalidateScreen: SingleStateEvent<Unit>
+    override val invalidateScreen: SingleStateEvent<Unit>
 }

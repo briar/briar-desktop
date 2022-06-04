@@ -55,8 +55,11 @@ import org.briarproject.briar.desktop.attachment.media.ImageCompressorImpl
 import org.briarproject.briar.desktop.notification.NotificationProvider
 import org.briarproject.briar.desktop.notification.StubNotificationProvider
 import org.briarproject.briar.desktop.notification.linux.LibnotifyNotificationProvider
+import org.briarproject.briar.desktop.settings.Configuration
+import org.briarproject.briar.desktop.settings.ConfigurationImpl
 import org.briarproject.briar.desktop.settings.UnencryptedSettings
 import org.briarproject.briar.desktop.settings.UnencryptedSettingsImpl
+import org.briarproject.briar.desktop.settings.UnencryptedSettingsReadOnly
 import org.briarproject.briar.desktop.testdata.DeterministicTestDataCreator
 import org.briarproject.briar.desktop.testdata.DeterministicTestDataCreatorImpl
 import org.briarproject.briar.desktop.testdata.TestAvatarCreatorImpl
@@ -109,6 +112,11 @@ internal class DesktopTestModule(
         val keyDir = appDir.resolve("key")
         return DesktopDatabaseConfig(dbDir, keyDir)
     }
+
+    @Provides
+    @Singleton
+    // provide [UnencryptedSettings] singleton itself as provided above to use same object
+    fun provideUnencryptedSettingsReadOnly(settings: UnencryptedSettings): UnencryptedSettingsReadOnly = settings
 
     @Provides
     @Singleton
@@ -175,6 +183,10 @@ internal class DesktopTestModule(
         override fun shouldEnableBlogs() = false
         override fun shouldEnableTransportSettings() = false
     }
+
+    @Provides
+    @Singleton
+    fun provideConfiguration(configuration: ConfigurationImpl): Configuration = configuration
 
     @Provides
     @Singleton

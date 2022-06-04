@@ -47,7 +47,7 @@ import org.briarproject.briar.desktop.contact.ProfileCircle
 import org.briarproject.briar.desktop.theme.sidebarSurface
 import org.briarproject.briar.desktop.ui.UiMode
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
-import org.briarproject.briar.desktop.utils.getDesktopFeatureFlags
+import org.briarproject.briar.desktop.utils.getConfiguration
 
 val SIDEBAR_WIDTH = 56.dp
 
@@ -77,10 +77,10 @@ fun BriarSidebar(
             }
             val items = buildList {
                 add(Pair(UiMode.CONTACTS, Icons.Filled.Contacts))
-                val featureFlags = getDesktopFeatureFlags()
-                if (featureFlags.shouldEnablePrivateGroups()) add(Pair(UiMode.GROUPS, Icons.Filled.Group))
-                if (featureFlags.shouldEnableForums()) add(Pair(UiMode.FORUMS, Icons.Filled.Forum))
-                if (featureFlags.shouldEnableBlogs()) add(Pair(UiMode.BLOGS, Icons.Filled.ChromeReaderMode))
+                val configuration = getConfiguration()
+                if (configuration.shouldEnablePrivateGroups()) add(Pair(UiMode.GROUPS, Icons.Filled.Group))
+                if (configuration.shouldEnableForums()) add(Pair(UiMode.FORUMS, Icons.Filled.Forum))
+                if (configuration.shouldEnableBlogs()) add(Pair(UiMode.BLOGS, Icons.Filled.ChromeReaderMode))
             }
             for ((mode, icon) in items) {
                 displayButton(uiMode, mode, icon)
@@ -88,8 +88,8 @@ fun BriarSidebar(
         }
         Column(verticalArrangement = Arrangement.Bottom) {
             val items = buildList {
-                val featureFlags = getDesktopFeatureFlags()
-                if (featureFlags.shouldEnableTransportSettings()) add(
+                val configuration = getConfiguration()
+                if (configuration.shouldEnableTransportSettings()) add(
                     Pair(UiMode.TRANSPORTS, Icons.Filled.WifiTethering)
                 )
                 add(Pair(UiMode.SETTINGS, Icons.Filled.Settings))
