@@ -19,9 +19,10 @@
 package org.briarproject.briar.desktop
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.window.ApplicationScope
 import androidx.compose.ui.window.application
+import kotlinx.coroutines.delay
 import mu.KotlinLogging
 import org.briarproject.bramble.BrambleCoreEagerSingletons
 import org.briarproject.bramble.api.plugin.TorConstants.DEFAULT_CONTROL_PORT
@@ -44,7 +45,6 @@ internal class RunWithMultipleTemporaryAccounts(
 
     private val apps = mutableListOf<BriarDesktopTestApp>()
 
-    @OptIn(ExperimentalComposeUiApi::class)
     fun run() {
         LogUtils.setupLogging(ALL)
 
@@ -54,9 +54,21 @@ internal class RunWithMultipleTemporaryAccounts(
             apps.add(app)
         }
 
-        customization(apps)
-
         application {
+            LaunchedEffect(Unit) {
+                delay(500)
+
+                apps.forEach {
+                    val accountManager = it.getAccountManager()
+                    val lifecycleManager = it.getLifecycleManager()
+                    val dbKey = accountManager.databaseKey ?: throw AssertionError()
+                    lifecycleManager.startServices(dbKey)
+                    lifecycleManager.waitForStartup()
+                }
+
+                customization(apps)
+            }
+
             for (app in apps) {
                 start(app, this)
             }
@@ -82,16 +94,11 @@ internal class RunWithMultipleTemporaryAccounts(
         BrambleCoreEagerSingletons.Helper.injectEagerSingletons(app)
         BriarCoreEagerSingletons.Helper.injectEagerSingletons(app)
 
-        val lifecycleManager = app.getLifecycleManager()
         val accountManager = app.getAccountManager()
 
         @NonNls
         val password = "verySecret123!"
         accountManager.createAccount(name, password)
-
-        val dbKey = accountManager.databaseKey ?: throw AssertionError()
-        lifecycleManager.startServices(dbKey)
-        lifecycleManager.waitForStartup()
 
         return app
     }

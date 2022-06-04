@@ -18,18 +18,10 @@
 
 package org.briarproject.briar.desktop.settings
 
-import org.briarproject.bramble.api.FeatureFlags
-import org.briarproject.briar.desktop.DesktopFeatureFlags
-import javax.inject.Inject
+interface EncryptedSettingsReadOnly {
+    val showNotifications: Boolean
+}
 
-class ConfigurationImpl
-@Inject internal constructor(
-    unencryptedSettings: UnencryptedSettingsReadOnly,
-    encryptedSettings: EncryptedSettingsReadOnly,
-    featureFlags: FeatureFlags,
-    desktopFeatureFlags: DesktopFeatureFlags,
-) : Configuration,
-    UnencryptedSettingsReadOnly by unencryptedSettings,
-    EncryptedSettingsReadOnly by encryptedSettings,
-    FeatureFlags by featureFlags,
-    DesktopFeatureFlags by desktopFeatureFlags
+interface EncryptedSettings : EncryptedSettingsReadOnly {
+    override var showNotifications: Boolean
+}
