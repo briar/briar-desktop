@@ -18,8 +18,10 @@
 
 package org.briarproject.briar.desktop
 
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.window.application
+import kotlinx.coroutines.delay
 import mu.KotlinLogging
 import org.briarproject.bramble.BrambleCoreEagerSingletons
 import org.briarproject.briar.BriarCoreEagerSingletons
@@ -77,17 +79,21 @@ internal class RunWithTemporaryAccount(
             @NonNls
             val password = "verySecret123!"
             accountManager.createAccount("alice", password)
-
-            if (login) {
-                val dbKey = accountManager.databaseKey ?: throw AssertionError()
-                lifecycleManager.startServices(dbKey)
-                lifecycleManager.waitForStartup()
-            }
         }
 
-        customization(app)
-
         application {
+            LaunchedEffect(Unit) {
+                delay(500)
+
+                if (createAccount && login) {
+                    val dbKey = accountManager.databaseKey ?: throw AssertionError()
+                    lifecycleManager.startServices(dbKey)
+                    lifecycleManager.waitForStartup()
+
+                    customization(app)
+                }
+            }
+
             app.getBriarUi().start {
                 app.getBriarUi().stop()
                 exitApplication()

@@ -31,6 +31,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.OutlinedExposedDropDownMenu
+import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -48,6 +49,7 @@ fun SettingDetails(viewModel: SettingsViewModel) {
         SettingCategory.GENERAL -> {
             SettingDetail(i18n("settings.general.title")) {}
         }
+
         SettingCategory.DISPLAY -> {
             // TODO: Change this to `settings.display.title` once more categories are implemented
             SettingDetail(i18n("settings.title")) {
@@ -97,17 +99,34 @@ fun SettingDetails(viewModel: SettingsViewModel) {
                         Text(i18n("settings.security.password.change"))
                     }
                 }
+
+                DetailItem(
+                    label = i18n("settings.notifications.title"),
+                    description = (
+                        if (viewModel.showNotifications.value) i18n("access.settings.currently_enabled")
+                        else i18n("access.settings.currently_disabled")
+                        ) + ". " + i18n("access.settings.click_to_toggle_notifications")
+                ) {
+                    Switch(
+                        checked = viewModel.showNotifications.value,
+                        onCheckedChange = { viewModel.toggleShowNotifications() }
+                    )
+                }
             }
         }
+
         SettingCategory.CONNECTIONS -> {
             SettingDetail(i18n("settings.connections.title")) {}
         }
+
         SettingCategory.SECURITY -> {
             SettingDetail(i18n("settings.security.title")) {}
         }
+
         SettingCategory.NOTIFICATIONS -> {
             SettingDetail(i18n("settings.notifications.title")) {}
         }
+
         SettingCategory.ACTIONS -> {
             SettingDetail(i18n("settings.actions.title")) {}
         }

@@ -21,8 +21,10 @@ package org.briarproject.briar.desktop.settings
 import androidx.compose.runtime.mutableStateOf
 import org.briarproject.bramble.api.account.AccountManager
 import org.briarproject.bramble.api.crypto.PasswordStrengthEstimator
+import org.briarproject.bramble.api.db.TransactionManager
+import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.briar.desktop.threading.BriarExecutors
-import org.briarproject.briar.desktop.viewmodel.ViewModel
+import org.briarproject.briar.desktop.viewmodel.DbViewModel
 import org.briarproject.briar.desktop.viewmodel.asState
 import javax.inject.Inject
 
@@ -39,10 +41,13 @@ class SettingsViewModel
 @Inject
 constructor(
     private val briarExecutors: BriarExecutors,
+    lifecycleManager: LifecycleManager,
+    db: TransactionManager,
     private val unencryptedSettings: UnencryptedSettings,
+    private val encryptedSettings: EncryptedSettings,
     private val accountManager: AccountManager,
     private val passwordStrengthEstimator: PasswordStrengthEstimator,
-) : ViewModel {
+) : DbViewModel(briarExecutors, lifecycleManager, db) {
     private val _selectedSetting = mutableStateOf(SettingCategory.DISPLAY)
     val selectedSetting = _selectedSetting.asState()
 
@@ -59,6 +64,9 @@ constructor(
     val changePasswordDialogVisible = _changePasswordDialogVisible.asState()
 
     val changePasswordSubViewModel = ChangePasswordSubViewModel(accountManager, passwordStrengthEstimator)
+
+    private val _showNotifications = mutableStateOf(encryptedSettings.showNotifications)
+    val showNotifications = _showNotifications.asState()
 
     fun selectSetting(selectedOption: SettingCategory) {
         _selectedSetting.value = selectedOption
@@ -80,5 +88,11 @@ constructor(
 
     fun dismissChangePasswordDialog() {
         _changePasswordDialogVisible.value = false
+    }
+
+    fun toggleShowNotifications() {
+        val newValue = !_showNotifications.value
+        _showNotifications.value = newValue
+        runOnDbThread { encryptedSettings.showNotifications = newValue }
     }
 }

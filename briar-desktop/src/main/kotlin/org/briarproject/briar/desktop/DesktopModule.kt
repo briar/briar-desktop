@@ -57,6 +57,9 @@ import org.briarproject.briar.desktop.notification.StubNotificationProvider
 import org.briarproject.briar.desktop.notification.linux.LibnotifyNotificationProvider
 import org.briarproject.briar.desktop.settings.Configuration
 import org.briarproject.briar.desktop.settings.ConfigurationImpl
+import org.briarproject.briar.desktop.settings.EncryptedSettings
+import org.briarproject.briar.desktop.settings.EncryptedSettingsImpl
+import org.briarproject.briar.desktop.settings.EncryptedSettingsReadOnly
 import org.briarproject.briar.desktop.settings.UnencryptedSettings
 import org.briarproject.briar.desktop.settings.UnencryptedSettingsImpl
 import org.briarproject.briar.desktop.settings.UnencryptedSettingsReadOnly
@@ -116,6 +119,15 @@ internal class DesktopModule(
     @Singleton
     // provide [UnencryptedSettings] singleton itself as provided above to use same object
     fun provideUnencryptedSettingsReadOnly(settings: UnencryptedSettings): UnencryptedSettingsReadOnly = settings
+
+    @Provides
+    @Singleton
+    fun provideEncryptedSettings(settings: EncryptedSettingsImpl): EncryptedSettings = settings
+
+    @Provides
+    @Singleton
+    // provide [EncryptedSettings] singleton itself as provided above to use same object
+    fun provideEncryptedSettingsReadOnly(settings: EncryptedSettings): EncryptedSettingsReadOnly = settings
 
     @Provides
     @Singleton

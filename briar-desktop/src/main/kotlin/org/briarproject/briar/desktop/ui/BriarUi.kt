@@ -147,7 +147,9 @@ constructor(
                             messageCount++
                             if (!focusState.focused) {
                                 window.iconImage = iconBadge
-                                notificationProvider.notifyPrivateMessages(messageCount)
+                                if (configuration.showNotifications) {
+                                    notificationProvider.notifyPrivateMessages(messageCount)
+                                }
                             }
                         }
 
