@@ -18,6 +18,7 @@
 
 package org.briarproject.briar.desktop.settings
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -27,12 +28,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.OutlinedExposedDropDownMenu
 import androidx.compose.material.Switch
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,6 +45,8 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import org.briarproject.briar.desktop.settings.UnencryptedSettings.Language
+import org.briarproject.briar.desktop.theme.warningBackground
+import org.briarproject.briar.desktop.theme.warningForeground
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 
@@ -110,6 +117,25 @@ fun SettingDetails(viewModel: SettingsViewModel) {
                         checked = viewModel.showNotifications.value,
                         onCheckedChange = { viewModel.toggleShowNotifications() }
                     )
+                }
+
+                if (viewModel.notificationProviderState is SettingsViewModel.NotificationProviderState.ERROR) {
+                    Row(
+                        Modifier.fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                            .background(MaterialTheme.colors.warningBackground)
+                            .padding(all = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        Icon(Icons.Filled.Warning, i18n("warning"), Modifier.size(40.dp).padding(vertical = 4.dp))
+                        Text(
+                            text = viewModel.notificationProviderState.message,
+                            color = MaterialTheme.colors.warningForeground,
+                            style = MaterialTheme.typography.body2,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
                 }
             }
         }
