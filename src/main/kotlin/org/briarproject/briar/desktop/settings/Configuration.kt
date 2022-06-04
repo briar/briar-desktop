@@ -21,4 +21,4 @@ package org.briarproject.briar.desktop.settings
 import org.briarproject.bramble.api.FeatureFlags
 import org.briarproject.briar.desktop.DesktopFeatureFlags
 
-interface Configuration : UnencryptedSettingsReadOnly, FeatureFlags, DesktopFeatureFlags
+interface Configuration : UnencryptedSettingsReadOnly, EncryptedSettingsReadOnly, FeatureFlags, DesktopFeatureFlags

@@ -31,6 +31,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.OutlinedExposedDropDownMenu
+import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -79,6 +80,15 @@ fun SettingDetails(viewModel: SettingsViewModel) {
                     OutlinedButton(onClick = viewModel::showChangePasswordDialog) {
                         Text(i18n("settings.security.password.change"))
                     }
+                }
+
+                DetailItem {
+                    Text(i18n("settings.notifications.show"))
+
+                    Switch(
+                        checked = viewModel.showNotifications.value,
+                        onCheckedChange = { viewModel.toggleShowNotifications() }
+                    )
                 }
             }
         }
