@@ -28,6 +28,14 @@ import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ChromeReaderMode
+import androidx.compose.material.icons.filled.Contacts
+import androidx.compose.material.icons.filled.Forum
+import androidx.compose.material.icons.filled.Group
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.WifiTethering
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,7 +46,7 @@ import org.briarproject.briar.desktop.contact.ProfileCircle
 import org.briarproject.briar.desktop.theme.sidebarSurface
 import org.briarproject.briar.desktop.ui.UiMode
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
-import org.briarproject.briar.desktop.utils.getDesktopFeatureFlags
+import org.briarproject.briar.desktop.utils.getConfiguration
 
 val SIDEBAR_WIDTH = 56.dp
 
@@ -69,33 +77,27 @@ fun BriarSidebar(
                 account?.let { ProfileCircle(size = 45.dp, it.id.bytes) }
             }
             val modes = buildList {
-                add(UiMode.CONTACTS)
-                val featureFlags = getDesktopFeatureFlags()
-                if (featureFlags.shouldEnablePrivateGroups()) add(UiMode.GROUPS)
-                if (featureFlags.shouldEnableForums()) add(UiMode.FORUMS)
-                if (featureFlags.shouldEnableBlogs()) add(UiMode.BLOGS)
+                add(Pair(UiMode.CONTACTS, Icons.Filled.Contacts))
+                val configuration = getConfiguration()
+                if (configuration.shouldEnablePrivateGroups()) add(Pair(UiMode.GROUPS, Icons.Filled.Group))
+                if (configuration.shouldEnableForums()) add(Pair(UiMode.FORUMS, Icons.Filled.Forum))
+                if (configuration.shouldEnableBlogs()) add(Pair(UiMode.BLOGS, Icons.Filled.ChromeReaderMode))
             }
-            modes.forEach { mode ->
-                BriarSidebarButton(
-                    currentMode = uiMode,
-                    mode = mode,
-                    setUiMode = setUiMode,
-                )
+            modes.forEach { (mode, icon) ->
+                displayButton(uiMode, mode, icon)
             }
         }
         Column(verticalArrangement = Arrangement.Bottom) {
             val modes = buildList {
-                val featureFlags = getDesktopFeatureFlags()
-                if (featureFlags.shouldEnableTransportSettings()) add(UiMode.TRANSPORTS)
-                add(UiMode.SETTINGS)
-                add(UiMode.ABOUT)
-            }
-            modes.forEach { mode ->
-                BriarSidebarButton(
-                    currentMode = uiMode,
-                    mode = mode,
-                    setUiMode = setUiMode,
+                val configuration = getConfiguration()
+                if (configuration.shouldEnableTransportSettings()) add(
+                    Pair(UiMode.TRANSPORTS, Icons.Filled.WifiTethering)
                 )
+                add(Pair(UiMode.SETTINGS, Icons.Filled.Settings))
+                add(Pair(UiMode.ABOUT, Icons.Filled.Info))
+            }
+            modes.forEach { (mode, icon) ->
+                displayButton(uiMode, mode, icon)
             }
         }
     }

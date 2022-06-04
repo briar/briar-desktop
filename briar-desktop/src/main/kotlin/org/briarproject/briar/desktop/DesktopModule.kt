@@ -55,8 +55,11 @@ import org.briarproject.briar.desktop.attachment.media.ImageCompressorImpl
 import org.briarproject.briar.desktop.notification.NotificationProvider
 import org.briarproject.briar.desktop.notification.StubNotificationProvider
 import org.briarproject.briar.desktop.notification.linux.LibnotifyNotificationProvider
+import org.briarproject.briar.desktop.settings.Configuration
+import org.briarproject.briar.desktop.settings.ConfigurationImpl
 import org.briarproject.briar.desktop.settings.UnencryptedSettings
 import org.briarproject.briar.desktop.settings.UnencryptedSettingsImpl
+import org.briarproject.briar.desktop.settings.UnencryptedSettingsReadOnly
 import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.threading.BriarExecutorsImpl
 import org.briarproject.briar.desktop.threading.UiExecutor
@@ -108,6 +111,11 @@ internal class DesktopModule(
     @Provides
     @Singleton
     fun provideUnencryptedSettings(settings: UnencryptedSettingsImpl): UnencryptedSettings = settings
+
+    @Provides
+    @Singleton
+    // provide [UnencryptedSettings] singleton itself as provided above to use same object
+    fun provideUnencryptedSettingsReadOnly(settings: UnencryptedSettings): UnencryptedSettingsReadOnly = settings
 
     @Provides
     @Singleton
@@ -170,6 +178,10 @@ internal class DesktopModule(
         override fun shouldEnableBlogs() = false
         override fun shouldEnableTransportSettings() = false
     }
+
+    @Provides
+    @Singleton
+    fun provideConfiguration(configuration: ConfigurationImpl): Configuration = configuration
 
     @Provides
     @Singleton

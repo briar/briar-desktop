@@ -35,8 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.briarproject.briar.desktop.contact.ContactDropDown.State
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
-import org.briarproject.briar.desktop.utils.getCoreFeatureFlags
-import org.briarproject.briar.desktop.utils.getDesktopFeatureFlags
+import org.briarproject.briar.desktop.utils.getConfiguration
 
 class ContactDropDown {
     enum class State {
@@ -56,8 +55,7 @@ fun ContactDropDown(
     onChangeAlias: () -> Unit,
     onDeleteContact: () -> Unit,
 ) {
-    val coreFeatureFlags = getCoreFeatureFlags()
-    val desktopFeatureFlags = getDesktopFeatureFlags()
+    val configuration = getConfiguration()
 
     val close = { setState(State.CLOSED) }
 
@@ -68,7 +66,7 @@ fun ContactDropDown(
         DropdownMenuItem(onClick = { close(); onMakeIntroduction() }) {
             Text(i18n("contacts.dropdown.introduction"), style = MaterialTheme.typography.body2)
         }
-        if (coreFeatureFlags.shouldEnableDisappearingMessages()) {
+        if (configuration.shouldEnableDisappearingMessages()) {
             DropdownMenuItem(onClick = {}) {
                 Text(i18n("contacts.dropdown.disappearing"), style = MaterialTheme.typography.body2)
             }
@@ -76,7 +74,7 @@ fun ContactDropDown(
         DropdownMenuItem(onClick = { close(); onDeleteAllMessages() }) {
             Text(i18n("contacts.dropdown.delete.all"), style = MaterialTheme.typography.body2)
         }
-        if (desktopFeatureFlags.shouldEnableTransportSettings()) {
+        if (configuration.shouldEnableTransportSettings()) {
             DropdownMenuItem(onClick = { setState(State.CONNECTION) }) {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     Text(

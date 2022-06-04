@@ -16,18 +16,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.briarproject.briar.desktop.utils
+package org.briarproject.briar.desktop.settings
 
-import androidx.compose.runtime.Composable
-import org.briarproject.briar.desktop.ui.LocalCoreFeatureFlags
-import org.briarproject.briar.desktop.ui.LocalDesktopFeatureFlags
+import org.briarproject.bramble.api.FeatureFlags
+import org.briarproject.briar.desktop.DesktopFeatureFlags
 
-@Composable
-fun getCoreFeatureFlags() = checkNotNull(LocalCoreFeatureFlags.current) {
-    "No FeatureFlags was provided via LocalCoreFeatureFlags" // NON-NLS
-}
-
-@Composable
-fun getDesktopFeatureFlags() = checkNotNull(LocalDesktopFeatureFlags.current) {
-    "No DesktopFeatureFlags was provided via LocalDesktopFeatureFlags" // NON-NLS
-}
+interface Configuration : UnencryptedSettingsReadOnly, FeatureFlags, DesktopFeatureFlags
