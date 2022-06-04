@@ -18,8 +18,21 @@
 
 package org.briarproject.briar.desktop.notification
 
+import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
+
 interface NotificationProvider {
+    /**
+     * true, if the [NotificationProvider] has been successfully initialized
+     * and is ready to show notifications. false otherwise
+     */
     val available: Boolean
+
+    /**
+     * if [available] is false, contains a message explaining the problem
+     * as shown to the user
+     */
+    val errorMessage: String
+
     fun init()
     fun uninit()
     fun notifyPrivateMessages(num: Int)
@@ -28,6 +41,9 @@ interface NotificationProvider {
 object StubNotificationProvider : NotificationProvider {
     override val available: Boolean
         get() = false
+
+    override val errorMessage: String
+        get() = i18n("settings.notifications.error.unsupported")
 
     override fun init() {}
     override fun uninit() {}

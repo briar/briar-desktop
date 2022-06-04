@@ -43,6 +43,17 @@ object LibnotifyNotificationProvider : NotificationProvider {
     override val available: Boolean
         get() = libNotifyAvailable
 
+    private enum class Error { NONE, LOAD, INIT }
+
+    private var error = Error.NONE
+
+    override val errorMessage: String
+        get() = when (error) {
+            Error.LOAD -> i18n("settings.notifications.error.libnotify.load")
+            Error.INIT -> i18n("settings.notifications.error.libnotify.init")
+            else -> ""
+        }
+
     override fun init() {
         try {
             sound = loadAudioFromResource("/audio/notification.wav") ?: throw Exception() // NON-NLS
@@ -54,12 +65,14 @@ object LibnotifyNotificationProvider : NotificationProvider {
         try {
             libNotify = Native.load("libnotify.so.4", LibNotify::class.java) // NON-NLS
         } catch (err: UnsatisfiedLinkError) {
+            error = Error.LOAD
             LOG.e { "unable to load libnotify" }
             return
         }
 
         libNotifyAvailable = libNotify.notify_init(i18n("main.title"))
         if (!libNotifyAvailable) {
+            error = Error.INIT
             LOG.e { "unable to initialize libnotify" }
             return
         }

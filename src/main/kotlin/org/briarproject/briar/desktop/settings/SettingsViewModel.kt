@@ -23,6 +23,9 @@ import org.briarproject.bramble.api.account.AccountManager
 import org.briarproject.bramble.api.crypto.PasswordStrengthEstimator
 import org.briarproject.bramble.api.db.TransactionManager
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
+import org.briarproject.briar.desktop.notification.NotificationProvider
+import org.briarproject.briar.desktop.settings.SettingsViewModel.NotificationProviderState.ERROR
+import org.briarproject.briar.desktop.settings.SettingsViewModel.NotificationProviderState.READY
 import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.viewmodel.DbViewModel
 import org.briarproject.briar.desktop.viewmodel.asState
@@ -47,6 +50,7 @@ constructor(
     private val encryptedSettings: EncryptedSettings,
     private val accountManager: AccountManager,
     private val passwordStrengthEstimator: PasswordStrengthEstimator,
+    private val notificationProvider: NotificationProvider,
 ) : DbViewModel(briarExecutors, lifecycleManager, db) {
     private val _selectedSetting = mutableStateOf(SettingCategory.DISPLAY)
     val selectedSetting = _selectedSetting.asState()
@@ -67,6 +71,14 @@ constructor(
 
     private val _showNotifications = mutableStateOf(encryptedSettings.showNotifications)
     val showNotifications = _showNotifications.asState()
+
+    sealed class NotificationProviderState {
+        object READY : NotificationProviderState()
+        class ERROR(val message: String) : NotificationProviderState()
+    }
+
+    val notificationProviderState =
+        if (notificationProvider.available) READY else ERROR(notificationProvider.errorMessage)
 
     fun selectSetting(selectedOption: SettingCategory) {
         _selectedSetting.value = selectedOption
