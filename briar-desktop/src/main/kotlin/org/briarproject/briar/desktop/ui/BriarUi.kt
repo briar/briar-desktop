@@ -40,20 +40,18 @@ import androidx.compose.ui.platform.PlatformLocalization
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.window.FrameWindowScope
 import androidx.compose.ui.window.Window
-import org.briarproject.bramble.api.FeatureFlags
 import org.briarproject.bramble.api.event.EventBus
 import org.briarproject.bramble.api.event.EventListener
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.bramble.api.lifecycle.LifecycleManager.LifecycleState.RUNNING
 import org.briarproject.bramble.api.lifecycle.event.LifecycleEvent
 import org.briarproject.briar.api.conversation.event.ConversationMessageReceivedEvent
-import org.briarproject.briar.desktop.DesktopFeatureFlags
 import org.briarproject.briar.desktop.conversation.ConversationMessagesReadEvent
 import org.briarproject.briar.desktop.expiration.ExpirationBanner
 import org.briarproject.briar.desktop.login.ErrorScreen
 import org.briarproject.briar.desktop.login.StartupScreen
 import org.briarproject.briar.desktop.notification.NotificationProvider
-import org.briarproject.briar.desktop.settings.UnencryptedSettings
+import org.briarproject.briar.desktop.settings.Configuration
 import org.briarproject.briar.desktop.settings.UnencryptedSettings.Theme.AUTO
 import org.briarproject.briar.desktop.settings.UnencryptedSettings.Theme.DARK
 import org.briarproject.briar.desktop.theme.BriarTheme
@@ -85,8 +83,7 @@ interface BriarUi {
 
 val LocalWindowScope = staticCompositionLocalOf<FrameWindowScope?> { null }
 val LocalViewModelProvider = staticCompositionLocalOf<ViewModelProvider?> { null }
-val LocalCoreFeatureFlags = staticCompositionLocalOf<FeatureFlags?> { null }
-val LocalDesktopFeatureFlags = staticCompositionLocalOf<DesktopFeatureFlags?> { null }
+val LocalConfiguration = staticCompositionLocalOf<Configuration?> { null }
 
 @Immutable
 @Singleton
@@ -96,9 +93,7 @@ constructor(
     private val lifecycleManager: LifecycleManager,
     private val eventBus: EventBus,
     private val viewModelProvider: ViewModelProvider,
-    private val unencryptedSettings: UnencryptedSettings,
-    private val featureFlags: FeatureFlags,
-    private val desktopFeatureFlags: DesktopFeatureFlags,
+    private val configuration: Configuration,
     private val notificationProvider: NotificationProvider,
 ) : BriarUi {
 
@@ -187,19 +182,18 @@ constructor(
                 LocalWindowScope provides this,
                 LocalWindowFocusState provides focusState,
                 LocalViewModelProvider provides viewModelProvider,
-                LocalCoreFeatureFlags provides featureFlags,
-                LocalDesktopFeatureFlags provides desktopFeatureFlags,
+                LocalConfiguration provides configuration,
                 LocalLocalization provides platformLocalization,
             ) {
                 // invalidate whole application window in case the theme or language setting is changed
-                unencryptedSettings.invalidateScreen.react {
+                configuration.invalidateScreen.react {
                     window.title = i18n("main.title")
                     return@CompositionLocalProvider
                 }
 
                 var showAbout by remember { mutableStateOf(false) }
-                val isDarkTheme = unencryptedSettings.theme == DARK ||
-                    (unencryptedSettings.theme == AUTO && isSystemInDarkTheme())
+                val isDarkTheme = configuration.theme == DARK ||
+                    (configuration.theme == AUTO && isSystemInDarkTheme())
                 BriarTheme(isDarkTheme) {
                     Column(Modifier.fillMaxSize()) {
                         ExpirationBanner { screenState = EXPIRED; stop() }
