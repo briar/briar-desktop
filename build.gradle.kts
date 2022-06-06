@@ -16,6 +16,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+@file:Suppress("HardCodedStringLiteral")
+
 import org.jetbrains.compose.compose
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.compose.jetbrainsCompose
@@ -103,6 +105,28 @@ dependencies {
 
 tasks.test {
     useTestNG()
+}
+
+tasks {
+    register("notificationTest", Jar::class.java) {
+        dependsOn.addAll(
+            listOf(
+                "compileJava",
+                "compileKotlin",
+                "processResources"
+            )
+        ) // We need this for Gradle optimization to work
+        archiveClassifier.set("standalone") // Naming the jar
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        manifest {
+            attributes("Main-Class" to "org.briarproject.briar.desktop.notification.linux.TestNativeNotificationsKt")
+        } // Provided we set it up in the application plugin configuration
+        val sourcesTest = sourceSets.test.get()
+        val contents = configurations.runtimeClasspath.get()
+            .map { if (it.isDirectory) it else zipTree(it) } +
+            sourcesTest.output
+        from(contents)
+    }
 }
 
 tasks.withType<KotlinCompile> {
