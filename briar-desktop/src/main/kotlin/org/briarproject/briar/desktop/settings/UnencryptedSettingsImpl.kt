@@ -18,6 +18,7 @@
 
 package org.briarproject.briar.desktop.settings
 
+import org.briarproject.bramble.api.lifecycle.IoExecutor
 import org.briarproject.briar.desktop.settings.UnencryptedSettings.Language
 import org.briarproject.briar.desktop.settings.UnencryptedSettings.Language.DEFAULT
 import org.briarproject.briar.desktop.settings.UnencryptedSettings.Theme
@@ -26,6 +27,7 @@ import org.briarproject.briar.desktop.utils.InternationalizationUtils
 import org.briarproject.briar.desktop.viewmodel.SingleStateEvent
 import java.util.prefs.Preferences
 import javax.inject.Inject
+import kotlin.reflect.KProperty
 
 const val PREF_THEME = "theme" // NON-NLS
 const val PREF_LANG = "language" // NON-NLS
@@ -37,26 +39,9 @@ class UnencryptedSettingsImpl @Inject internal constructor() : UnencryptedSettin
 
     override val invalidateScreen = SingleStateEvent<Unit>()
 
-    override var theme: Theme
-        get() = Theme.valueOf(prefs.get(PREF_THEME, AUTO.name))
-        set(value) {
-            if (theme == value) return
+    override var theme by EnumEntry(PREF_THEME, AUTO, Theme::class.java)
 
-            prefs.put(PREF_THEME, value.name)
-            prefs.flush() // write preferences to disk
-            invalidateScreen.emit(Unit)
-        }
-
-    override var language: Language
-        get() = Language.valueOf(prefs.get(PREF_LANG, DEFAULT.name))
-        set(value) {
-            if (language == value) return
-
-            prefs.put(PREF_LANG, value.name)
-            prefs.flush() // write preferences to disk
-            updateLocale(value)
-            invalidateScreen.emit(Unit)
-        }
+    override var language by EnumEntry(PREF_LANG, DEFAULT, Language::class.java, ::updateLocale)
 
     init {
         updateLocale(language)
@@ -64,5 +49,33 @@ class UnencryptedSettingsImpl @Inject internal constructor() : UnencryptedSettin
 
     private fun updateLocale(language: Language) {
         InternationalizationUtils.locale = language.locale
+    }
+
+    private class EnumEntry<T : Enum<*>>(
+        private val key: String,
+        private val default: T,
+        private val enumClass: Class<T>,
+        private val onChange: (value: T) -> Unit = {}
+    ) {
+        private lateinit var current: T
+
+        operator fun getValue(thisRef: UnencryptedSettingsImpl, property: KProperty<*>): T {
+            if (!::current.isInitialized) {
+                current = enumClass.enumConstants.find { it.name == thisRef.prefs.get(key, default.name) }
+                    ?: throw IllegalArgumentException()
+            }
+            return current
+        }
+
+        @IoExecutor
+        operator fun setValue(thisRef: UnencryptedSettingsImpl, property: KProperty<*>, value: T) {
+            if (current == value) return
+
+            current = value
+            thisRef.prefs.put(key, value.name)
+            thisRef.prefs.flush() // write preferences to disk
+            onChange(value)
+            thisRef.invalidateScreen.emit(Unit)
+        }
     }
 }

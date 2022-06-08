@@ -21,6 +21,7 @@ package org.briarproject.briar.desktop.settings
 import androidx.compose.runtime.mutableStateOf
 import org.briarproject.bramble.api.account.AccountManager
 import org.briarproject.bramble.api.crypto.PasswordStrengthEstimator
+import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.viewmodel.ViewModel
 import org.briarproject.briar.desktop.viewmodel.asState
 import javax.inject.Inject
@@ -37,6 +38,7 @@ enum class SettingCategory {
 class SettingsViewModel
 @Inject
 constructor(
+    private val briarExecutors: BriarExecutors,
     private val unencryptedSettings: UnencryptedSettings,
     private val accountManager: AccountManager,
     private val passwordStrengthEstimator: PasswordStrengthEstimator,
@@ -63,13 +65,13 @@ constructor(
     }
 
     fun selectTheme(theme: UnencryptedSettings.Theme) {
-        unencryptedSettings.theme = theme
         _selectedTheme.value = theme
+        briarExecutors.onIoThread { unencryptedSettings.theme = theme }
     }
 
     fun selectLanguage(language: UnencryptedSettings.Language) {
-        unencryptedSettings.language = language
         _selectedLanguage.value = language
+        briarExecutors.onIoThread { unencryptedSettings.language = language }
     }
 
     fun showChangePasswordDialog() {
