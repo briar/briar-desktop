@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -67,7 +68,10 @@ fun BriarSidebar(
         )
     }
 
-    Surface(modifier = Modifier.width(SIDEBAR_WIDTH).fillMaxHeight(), color = MaterialTheme.colors.sidebarSurface) {
+    Surface(
+        modifier = Modifier.width(SIDEBAR_WIDTH).fillMaxHeight().selectableGroup(),
+        color = MaterialTheme.colors.sidebarSurface
+    ) {
         Column(verticalArrangement = Arrangement.Top) {
             // profile button
             Box(

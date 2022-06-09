@@ -90,7 +90,6 @@ fun ContactDrawerMakeIntro(
                                 onSel = { viewModel.setSecondContact(contactItem) },
                                 selected = false,
                                 onRemovePending = {},
-                                padding = PaddingValues(end = 16.dp),
                             )
                     }
                 }
