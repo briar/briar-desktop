@@ -18,7 +18,6 @@
 
 package org.briarproject.briar.desktop.conversation
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -26,6 +25,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -36,13 +36,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.unit.dp
+import org.briarproject.briar.desktop.contact.ConnectionIndicator
 import org.briarproject.briar.desktop.contact.ContactDropDown
 import org.briarproject.briar.desktop.contact.ContactItem
 import org.briarproject.briar.desktop.contact.ProfileCircle
-import org.briarproject.briar.desktop.theme.outline
 import org.briarproject.briar.desktop.theme.surfaceVariant
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
 import org.briarproject.briar.desktop.ui.HorizontalDivider
@@ -57,9 +56,6 @@ fun ConversationHeader(
     onDeleteContact: () -> Unit,
 ) {
     val (menuState, setMenuState) = remember { mutableStateOf(ContactDropDown.State.CLOSED) }
-    val onlineColor =
-        if (contactItem.isConnected) MaterialTheme.colors.secondary else MaterialTheme.colors.surfaceVariant
-    val outlineColor = MaterialTheme.colors.outline
 
     Box(modifier = Modifier.fillMaxWidth().height(HEADER_SIZE + 1.dp)) {
         Row(
@@ -69,15 +65,10 @@ fun ConversationHeader(
             Row(modifier = Modifier.fillMaxHeight().padding(start = 8.dp).weight(1f, fill = false)) {
                 Box(modifier = Modifier.align(Alignment.CenterVertically)) {
                     ProfileCircle(36.dp, contactItem)
-                    Canvas(
-                        modifier = Modifier,
-                        onDraw = {
-                            val size = 10.dp.toPx()
-                            withTransform({ translate(left = 30f, top = 30f) }) {
-                                drawCircle(color = outlineColor, radius = (size + 2.dp.toPx()) / 2f)
-                                drawCircle(color = onlineColor, radius = size / 2f)
-                            }
-                        }
+                    ConnectionIndicator(
+                        modifier = Modifier.align(Alignment.BottomEnd).size(12.dp),
+                        isConnected = contactItem.isConnected,
+                        notConnectedColor = MaterialTheme.colors.surfaceVariant,
                     )
                 }
                 Text(

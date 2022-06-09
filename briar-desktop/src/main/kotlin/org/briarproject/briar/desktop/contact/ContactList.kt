@@ -26,14 +26,14 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
+import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -54,10 +54,11 @@ fun ContactList(
 ) {
     val scrollState = rememberLazyListState()
 
-    Scaffold(
+    Surface(
         modifier = Modifier.fillMaxHeight().width(COLUMN_WIDTH),
-        backgroundColor = MaterialTheme.colors.surfaceVariant,
-        topBar = {
+        color = MaterialTheme.colors.surfaceVariant
+    ) {
+        Column {
             Column(
                 modifier = Modifier.fillMaxWidth().height(HEADER_SIZE + 1.dp),
             ) {
@@ -67,17 +68,15 @@ fun ContactList(
                     onContactAdd = onContactAdd,
                 )
             }
-        },
-        content = { padding ->
-            Box(modifier = Modifier.padding(padding).fillMaxSize()) {
-                LazyColumn(state = scrollState) {
+
+            Box(modifier = Modifier.fillMaxSize()) {
+                LazyColumn(state = scrollState, modifier = Modifier.selectableGroup()) {
                     items(contactList) { contactItem ->
                         ContactCard(
                             contactItem,
                             onSel = { selectContact(contactItem) },
                             selected = isSelected(contactItem),
                             onRemovePending = { if (contactItem is PendingContactItem) removePendingContact(contactItem) },
-                            padding = PaddingValues(end = 16.dp),
                         )
                     }
                 }
@@ -87,6 +86,6 @@ fun ContactList(
                     modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight()
                 )
             }
-        },
-    )
+        }
+    }
 }

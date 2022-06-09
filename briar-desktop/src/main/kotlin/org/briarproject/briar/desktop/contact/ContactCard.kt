@@ -18,20 +18,17 @@
 
 package org.briarproject.briar.desktop.contact
 
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -40,13 +37,14 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.unit.dp
 import org.briarproject.bramble.api.contact.ContactId
+import org.briarproject.bramble.api.contact.PendingContactId
+import org.briarproject.bramble.api.contact.PendingContactState
 import org.briarproject.bramble.api.identity.AuthorId
-import org.briarproject.briar.desktop.theme.outline
 import org.briarproject.briar.desktop.theme.selectedCard
-import org.briarproject.briar.desktop.theme.surfaceVariant
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
 import org.briarproject.briar.desktop.ui.HorizontalDivider
 import org.briarproject.briar.desktop.ui.MessageCounter
@@ -65,20 +63,31 @@ fun main() = preview(
     "timestamp" to Instant.now().toEpochMilli(),
     "selected" to false,
 ) {
-    ContactCard(
-        ContactItem(
-            idWrapper = RealContactIdWrapper(ContactId(0)),
-            authorId = AuthorId(getRandomIdPersistent()),
-            name = getStringParameter("name"),
-            alias = getStringParameter("alias"),
-            isConnected = getBooleanParameter("isConnected"),
-            isEmpty = getBooleanParameter("isEmpty"),
-            unread = getIntParameter("unread"),
-            timestamp = getLongParameter("timestamp"),
-            avatar = null,
-        ),
-        {}, getBooleanParameter("selected"), {}
-    )
+    Column {
+        ContactCard(
+            ContactItem(
+                idWrapper = RealContactIdWrapper(ContactId(0)),
+                authorId = AuthorId(getRandomIdPersistent()),
+                name = getStringParameter("name"),
+                alias = getStringParameter("alias"),
+                isConnected = getBooleanParameter("isConnected"),
+                isEmpty = getBooleanParameter("isEmpty"),
+                unread = getIntParameter("unread"),
+                timestamp = getLongParameter("timestamp"),
+                avatar = null,
+            ),
+            {}, getBooleanParameter("selected"), {}
+        )
+        ContactCard(
+            PendingContactItem(
+                idWrapper = PendingContactIdWrapper(PendingContactId(getRandomId())),
+                alias = getStringParameter("alias"),
+                timestamp = getLongParameter("timestamp"),
+                state = PendingContactState.ADDING_CONTACT
+            ),
+            {}, false, {}
+        )
+    }
 }
 
 @Composable
@@ -87,22 +96,24 @@ fun ContactCard(
     onSel: () -> Unit,
     selected: Boolean,
     onRemovePending: () -> Unit,
-    padding: PaddingValues = PaddingValues(0.dp),
 ) {
-    val bgColor = if (selected) MaterialTheme.colors.selectedCard else MaterialTheme.colors.surfaceVariant
+    val bgColor = if (selected) MaterialTheme.colors.selectedCard else Color.Transparent
 
-    Card(
-        modifier = Modifier.fillMaxWidth().defaultMinSize(minHeight = HEADER_SIZE).clickable(onClick = onSel),
-        shape = RoundedCornerShape(0.dp),
-        backgroundColor = bgColor,
-        contentColor = MaterialTheme.colors.onSurface
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .defaultMinSize(minHeight = HEADER_SIZE)
+            .selectable(selected, onClick = onSel)
+            .background(bgColor)
+            .padding(vertical = 8.dp),
+        verticalArrangement = Arrangement.Center
     ) {
         when (contactItem) {
             is ContactItem -> {
-                RealContactRow(contactItem, padding)
+                RealContactRow(contactItem)
             }
             is PendingContactItem -> {
-                PendingContactRow(contactItem, onRemovePending, padding)
+                PendingContactRow(contactItem, onRemovePending)
             }
         }
     }
@@ -110,17 +121,16 @@ fun ContactCard(
 }
 
 @Composable
-private fun RealContactRow(contactItem: ContactItem, padding: PaddingValues) {
-    val outlineColor = MaterialTheme.colors.outline
-    val briarSecondary = MaterialTheme.colors.secondary
-    val briarSurfaceVar = MaterialTheme.colors.surfaceVariant
-
-    Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.padding(padding)) {
+private fun RealContactRow(contactItem: ContactItem) {
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         Row(
-            modifier = Modifier.align(Alignment.CenterVertically).padding(start = 16.dp, end = 8.dp)
-                .weight(1f, fill = false)
+            modifier = Modifier.padding(start = 16.dp, end = 8.dp)
         ) {
-            Box(modifier = Modifier.align(Alignment.CenterVertically)) {
+            Box {
                 ProfileCircle(36.dp, contactItem)
                 MessageCounter(
                     unread = contactItem.unread,
@@ -129,41 +139,35 @@ private fun RealContactRow(contactItem: ContactItem, padding: PaddingValues) {
             }
             RealContactInfo(
                 contactItem = contactItem,
-                modifier = Modifier.align(Alignment.CenterVertically)
             )
         }
-        Canvas(
-            modifier = Modifier.size(24.dp).align(Alignment.CenterVertically),
-            onDraw = {
-                val size = 16.dp
-                drawCircle(color = outlineColor, radius = size.toPx() / 2f)
-                drawCircle(
-                    color = if (contactItem.isConnected) briarSecondary else briarSurfaceVar,
-                    radius = (size - 2.dp).toPx() / 2f
-                )
-            }
+        ConnectionIndicator(
+            modifier = Modifier.padding(end = (16 + 4).dp).size(16.dp),
+            isConnected = contactItem.isConnected
         )
     }
 }
 
 @Composable
-private fun PendingContactRow(contactItem: PendingContactItem, onRemove: () -> Unit, padding: PaddingValues) {
-    Row(horizontalArrangement = Arrangement.SpaceBetween) {
+private fun PendingContactRow(contactItem: PendingContactItem, onRemove: () -> Unit) {
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         Row(
-            modifier = Modifier.align(Alignment.CenterVertically).padding(start = 16.dp, end = 8.dp)
-                .weight(1f, fill = false)
+            modifier = Modifier.padding(start = 16.dp, end = 8.dp)
         ) {
             ProfileCircle(36.dp)
             PendingContactInfo(
                 contactItem = contactItem,
-                modifier = Modifier.align(Alignment.CenterVertically)
             )
         }
         IconButton(
             icon = Icons.Filled.Delete,
             contentDescription = i18n("access.contacts.pending.remove"),
             onClick = onRemove,
-            modifier = Modifier.padding(end = 4.dp).align(Alignment.CenterVertically)
+            modifier = Modifier.padding(end = 4.dp)
         )
     }
 }

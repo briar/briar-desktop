@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -47,7 +48,19 @@ fun BriarSidebar(
     uiMode: UiMode,
     setUiMode: (UiMode) -> Unit,
 ) {
-    Surface(modifier = Modifier.width(SIDEBAR_WIDTH).fillMaxHeight(), color = MaterialTheme.colors.sidebarSurface) {
+    val displayButton = @Composable { selectedMode: UiMode, mode: UiMode, icon: ImageVector ->
+        BriarSidebarButton(
+            selectedMode == mode,
+            { setUiMode(mode) },
+            icon,
+            mode.toString()
+        )
+    }
+
+    Surface(
+        modifier = Modifier.width(SIDEBAR_WIDTH).fillMaxHeight().selectableGroup(),
+        color = MaterialTheme.colors.sidebarSurface
+    ) {
         Column(verticalArrangement = Arrangement.Top) {
             // profile button
             Box(
