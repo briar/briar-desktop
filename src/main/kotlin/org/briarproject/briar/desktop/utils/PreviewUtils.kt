@@ -52,7 +52,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.singleWindowApplication
 import org.briarproject.bramble.api.UniqueId
 import org.briarproject.briar.desktop.theme.BriarTheme
+import org.briarproject.briar.desktop.ui.LocalWindowFocusState
 import org.briarproject.briar.desktop.ui.LocalWindowScope
+import org.briarproject.briar.desktop.ui.WindowFocusState
 import kotlin.random.Random
 
 object PreviewUtils {
@@ -206,7 +208,11 @@ object PreviewUtils {
         val scope = PreviewScope()
 
         singleWindowApplication(title = "Interactive Preview") {
-            CompositionLocalProvider(LocalWindowScope provides this) {
+            val focusState = remember { WindowFocusState() }
+            CompositionLocalProvider(
+                LocalWindowScope provides this,
+                LocalWindowFocusState provides focusState
+            ) {
                 Column {
                     Column(Modifier.padding(10.dp)) {
                         scope.addBooleanParameter("darkTheme", true)
