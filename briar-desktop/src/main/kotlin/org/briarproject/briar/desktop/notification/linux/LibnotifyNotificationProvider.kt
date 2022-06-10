@@ -149,7 +149,7 @@ object LibnotifyNotificationProvider : NotificationProvider {
             LOG.e { "error while sending notification via libnotify" }
         }
 
-        sound.play()
+        if (soundAvailable) sound.play()
     }
 
     /**

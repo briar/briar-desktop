@@ -19,6 +19,7 @@
 package org.briarproject.briar.desktop.utils
 
 import org.briarproject.briar.desktop.utils.ResourceUtils.getResourceAsStream
+import java.io.BufferedInputStream
 import javax.sound.sampled.AudioSystem
 import javax.sound.sampled.Clip
 
@@ -26,7 +27,8 @@ object AudioUtils {
 
     fun loadAudioFromResource(name: String): Clip? {
         val resourceStream = getResourceAsStream(name) ?: return null
-        val audioInputStream = AudioSystem.getAudioInputStream(resourceStream)
+        val bufferedStream = BufferedInputStream(resourceStream) // add buffer for mark/reset support
+        val audioInputStream = AudioSystem.getAudioInputStream(bufferedStream)
         val sound = AudioSystem.getClip()
         sound.open(audioInputStream)
         return sound

@@ -17,15 +17,20 @@
  */
 package org.briarproject.briar.desktop.notification.linux
 
+/**
+ * Small program to test notification support for Linux.
+ * Build with ./gradlew :notificationTest
+ * and run as java -jar briar-desktop/build/libs/briar-desktop-*-notificationTest.jar
+ */
 fun main() {
     LibnotifyNotificationProvider.apply {
         init()
 
         notifyPrivateMessages(9)
-
-        Thread.sleep(100)
+        Thread.sleep(1000)
 
         notifyPrivateMessages(10)
+        Thread.sleep(1000)
 
         uninit()
     }
