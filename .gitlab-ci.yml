@@ -31,7 +31,7 @@ ktlint:
   stage: test
   script:
     - git submodule update
-    - ./gradlew --no-daemon :check
+    - ./gradlew --no-daemon desktop:check
   rules:
     - if: '$CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS'
       when: never # avoids duplicate jobs for branch and MR
