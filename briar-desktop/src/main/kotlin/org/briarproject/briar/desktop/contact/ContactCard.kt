@@ -29,6 +29,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -38,6 +39,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.text
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.unit.dp
 import org.briarproject.bramble.api.contact.ContactId
@@ -49,8 +55,11 @@ import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
 import org.briarproject.briar.desktop.ui.HorizontalDivider
 import org.briarproject.briar.desktop.ui.MessageCounter
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
+import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nF
+import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nP
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 import org.briarproject.briar.desktop.utils.TimeUtils.getFormattedTimestamp
+import org.briarproject.briar.desktop.utils.appendCommaSeparated
 import java.time.Instant
 
 @Suppress("HardCodedStringLiteral")
@@ -63,7 +72,7 @@ fun main() = preview(
     "timestamp" to Instant.now().toEpochMilli(),
     "selected" to false,
 ) {
-    Column {
+    Column(Modifier.selectableGroup()) {
         ContactCard(
             ContactItem(
                 idWrapper = RealContactIdWrapper(ContactId(0)),
@@ -103,9 +112,14 @@ fun ContactCard(
         modifier = Modifier
             .fillMaxWidth()
             .defaultMinSize(minHeight = HEADER_SIZE)
-            .selectable(selected, onClick = onSel)
-            .background(bgColor)
-            .padding(vertical = 8.dp),
+            .semantics {
+                contentDescription = if (selected) i18n("access.list.selected.yes")
+                else i18n("access.list.selected.no")
+                // todo: stateDescription apparently not used
+                // stateDescription = if (selected) "selected" else "not selected"
+            }
+            .selectable(selected, onClick = onSel, role = Role.Button)
+            .background(bgColor),
         verticalArrangement = Arrangement.Center
     ) {
         when (contactItem) {
@@ -124,11 +138,33 @@ fun ContactCard(
 private fun RealContactRow(contactItem: ContactItem) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .semantics {
+                text = buildAnnotatedString {
+                    append(i18nF("access.contact.with_name", contactItem.displayName))
+                    appendCommaSeparated(
+                        if (contactItem.isConnected) i18n("access.contact.connected.yes")
+                        else i18n("access.contact.connected.no")
+                    )
+                    if (contactItem.unread > 0)
+                        appendCommaSeparated(i18nP("access.contact.unread_count", contactItem.unread))
+                    if (contactItem.isEmpty)
+                        appendCommaSeparated(i18n("contacts.card.nothing"))
+                    else
+                        appendCommaSeparated(
+                            i18nF(
+                                "access.contact.last_message_timestamp",
+                                getFormattedTimestamp(contactItem.timestamp)
+                            )
+                        )
+                    append('.')
+                }
+            }
     ) {
         Row(
-            modifier = Modifier.padding(start = 16.dp, end = 8.dp)
+            modifier = Modifier.padding(start = 16.dp, end = 8.dp).padding(vertical = 8.dp)
         ) {
             Box {
                 ProfileCircle(36.dp, contactItem)
@@ -152,11 +188,24 @@ private fun RealContactRow(contactItem: ContactItem) {
 private fun PendingContactRow(contactItem: PendingContactItem, onRemove: () -> Unit) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .semantics {
+                text = buildAnnotatedString {
+                    append(i18nF("access.contact.pending.with_name", contactItem.displayName))
+                    // todo: include pending status
+                    appendCommaSeparated(
+                        i18nF(
+                            "access.contact.pending.added_timestamp",
+                            getFormattedTimestamp(contactItem.timestamp)
+                        )
+                    )
+                }
+            },
         verticalAlignment = Alignment.CenterVertically
     ) {
         Row(
-            modifier = Modifier.padding(start = 16.dp, end = 8.dp)
+            modifier = Modifier.padding(start = 16.dp, end = 8.dp).padding(vertical = 8.dp)
         ) {
             ProfileCircle(36.dp)
             PendingContactInfo(
