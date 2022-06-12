@@ -21,7 +21,6 @@ package org.briarproject.briar.desktop.contact
 import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -37,10 +36,13 @@ import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import org.briarproject.briar.desktop.theme.surfaceVariant
 import org.briarproject.briar.desktop.ui.Constants.COLUMN_WIDTH
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
+import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 
 @Composable
 fun ContactList(
@@ -70,7 +72,14 @@ fun ContactList(
             }
 
             Box(modifier = Modifier.fillMaxSize()) {
-                LazyColumn(state = scrollState, modifier = Modifier.selectableGroup()) {
+                LazyColumn(
+                    state = scrollState,
+                    modifier = Modifier
+                        .semantics {
+                            contentDescription = i18n("access.contact.list")
+                        }
+                        .selectableGroup()
+                ) {
                     items(contactList) { contactItem ->
                         ContactCard(
                             contactItem,
