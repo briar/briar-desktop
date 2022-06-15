@@ -38,8 +38,8 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="1.8">
-      <module name="Briar-compose.main" target="11" />
-      <module name="Briar-compose.test" target="11" />
+      <module name="briar-desktop.desktop.main" target="17" />
+      <module name="briar-desktop.desktop.test" target="17" />
     </bytecodeTargetLevel>
   </component>
 </project>

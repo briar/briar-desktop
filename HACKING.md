@@ -5,7 +5,7 @@
 When working on the code base, consider running the style checks and unit
 tests locally, because the CI will complain anyway:
 
-    ./gradlew :check
+    ./gradlew briar-desktop:check
 
 The above command does both. To run style checks only:
 
@@ -17,7 +17,7 @@ If that fails, try formatting:
 
 Running unit tests only:
 
-    ./gradlew :test --tests "*"
+    ./gradlew briar-desktop:test --tests "*"
 
 That will run tests from the desktop project only. On the other hand, this
 will also run tests on briar core:

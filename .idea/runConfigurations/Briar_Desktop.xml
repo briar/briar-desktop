@@ -1,8 +1,9 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Briar Desktop" type="JetRunConfigurationType">
     <option name="MAIN_CLASS_NAME" value="org.briarproject.briar.desktop.MainKt" />
-    <module name="briar-desktop.main" />
+    <module name="briar-desktop.briar-desktop.main" />
     <option name="PROGRAM_PARAMETERS" value="--debug" />
+    <shortenClasspath name="NONE" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>

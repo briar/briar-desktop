@@ -41,7 +41,7 @@ import java.nio.file.StandardCopyOption
 open class GenerateBuildDataSourceTask : AbstractBuildDataTask() {
 
     companion object {
-        val LICENSES = buildMap {
+        val LICENSES = buildMap<UnversionedArtifact, String> {
             put(UnversionedArtifact("ch.qos.logback", "logback-classic"), "EPL 1.0/LGPL 2.1")
             put(UnversionedArtifact("ch.qos.logback", "logback-core"), "EPL 1.0/LGPL 2.1")
             put(UnversionedArtifact("com.fasterxml.jackson.core", "jackson-annotations"), "Apache 2.0")
@@ -118,7 +118,7 @@ open class GenerateBuildDataSourceTask : AbstractBuildDataTask() {
 
         // Get Git hashes, last commit time, current branch and briar-core tag using JGit.
         // First, open main git repository
-        val dir = project.projectDir
+        val dir = project.rootProject.projectDir
         val git = Git.open(dir)
         val repository = git.repository
         val status = git.status().call()
