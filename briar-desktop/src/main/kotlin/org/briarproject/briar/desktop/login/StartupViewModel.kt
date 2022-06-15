@@ -90,6 +90,13 @@ constructor(
         _currentSubViewModel.value = makeError(error)
     }
 
+    private fun makeAbout(previous: SubViewModel) =
+        AboutSubViewModel { _currentSubViewModel.value = previous }
+
+    fun showAbout() {
+        _currentSubViewModel.value = makeAbout(_currentSubViewModel.value)
+    }
+
     override fun eventOccurred(e: Event) {
         if (e is LifecycleEvent) _currentSubViewModel.value.lifecycleStateChanged(e.lifecycleState)
     }
