@@ -8,7 +8,7 @@ set -ex
 DIR=$(dirname $0)
 REPO="$DIR/.."
 
-cd "$REPO/build/compose/binaries/main/deb"
+cd "$REPO/briar-desktop/build/compose/binaries/main/deb"
 
 cp ./briar-desktop_*.deb briar-desktop.original.deb
 
