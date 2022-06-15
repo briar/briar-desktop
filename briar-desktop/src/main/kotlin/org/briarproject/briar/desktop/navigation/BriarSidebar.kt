@@ -102,7 +102,6 @@ fun BriarSidebarButton(
     i18n(mode.contentDescriptionKey)
 )
 
-
 @Composable
 fun BriarSidebarButton(
     selected: Boolean,

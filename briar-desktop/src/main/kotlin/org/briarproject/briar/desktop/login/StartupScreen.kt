@@ -38,19 +38,29 @@ import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import org.briarproject.briar.desktop.ui.AboutScreen
 import org.briarproject.briar.desktop.ui.BriarLogo
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.viewmodel.viewModel
 
 @Composable
 fun StartupScreen(
-    onShowAbout: () -> Unit,
     viewModel: StartupViewModel = viewModel(),
 ) {
     when (val holder = viewModel.currentSubViewModel.value) {
-        is LoginSubViewModel -> LoginScreen(onShowAbout, holder)
-        is RegistrationSubViewModel -> RegistrationScreen(onShowAbout, holder)
-        is ErrorSubViewModel -> ErrorScreen(onShowAbout, holder)
+        is LoginSubViewModel -> LoginScreen(viewModel::showAbout, holder)
+        is RegistrationSubViewModel -> RegistrationScreen(viewModel::showAbout, holder)
+        is ErrorSubViewModel -> ErrorScreen(holder)
+        is AboutSubViewModel -> Box {
+            AboutScreen(Modifier.padding(16.dp))
+
+            IconButton(
+                onClick = holder.onBackButton,
+                modifier = Modifier.align(Alignment.TopStart)
+            ) {
+                Icon(Icons.Filled.ArrowBack, i18n("back"))
+            }
+        }
     }
 }
 

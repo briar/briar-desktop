@@ -10,14 +10,17 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,30 +38,28 @@ fun main() = preview(
     "visible" to true,
 ) {
     if (getBooleanParameter("visible")) {
-        AboutDialog(
-            onClose = { setBooleanParameter("visible", false) },
+        AboutScreen(
+            onBackButton = { setBooleanParameter("visible", false) },
         )
     }
 }
 
 @Composable
-fun AboutDialog(
-    onClose: () -> Unit,
-) {
-    BriarDialog(onClose = onClose) {
-        val box = this
-        Column(
-            modifier = Modifier.requiredSize(
-                box.maxWidth.times(0.8f), box.maxHeight.times(0.8f)
-            ).padding(16.dp)
-        ) {
-            AboutScreen()
-        }
+fun AboutScreen(
+    onBackButton: () -> Unit,
+) = Box {
+    AboutScreen(Modifier.padding(16.dp))
+
+    IconButton(
+        onClick = onBackButton,
+        modifier = Modifier.align(Alignment.TopStart)
+    ) {
+        Icon(Icons.Filled.ArrowBack, i18n("back"))
     }
 }
 
 @Composable
-fun AboutScreen() {
+fun AboutScreen(modifier: Modifier = Modifier) {
     // sizes of the two columns
     val colSizes = listOf(0.3f, 0.7f)
 
@@ -80,7 +81,7 @@ fun AboutScreen() {
         add(i18n("about.contact") to "desktop@briarproject.org") // NON-NLS
     }
 
-    Column {
+    Column(modifier) {
         Row(
             modifier = Modifier.padding(bottom = 8.dp).fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,

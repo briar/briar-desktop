@@ -178,20 +178,16 @@ constructor(
                     return@CompositionLocalProvider
                 }
 
-                var showAbout by remember { mutableStateOf(false) }
                 val isDarkTheme = unencryptedSettings.theme == DARK ||
                     (unencryptedSettings.theme == AUTO && isSystemInDarkTheme())
                 BriarTheme(isDarkTheme) {
                     Column(Modifier.fillMaxSize()) {
                         ExpirationBanner { screenState = EXPIRED; stop() }
                         when (screenState) {
-                            STARTUP -> StartupScreen(onShowAbout = { showAbout = true })
-                            MAIN -> MainScreen(onShowAbout = { showAbout = true })
-                            EXPIRED -> ErrorScreen(i18n("startup.failed.expired"), onShowAbout = { showAbout = true })
+                            STARTUP -> StartupScreen()
+                            MAIN -> MainScreen()
+                            EXPIRED -> ErrorScreen(i18n("startup.failed.expired"))
                         }
-                    }
-                    if (showAbout) {
-                        AboutDialog(onClose = { showAbout = false })
                     }
                 }
             }

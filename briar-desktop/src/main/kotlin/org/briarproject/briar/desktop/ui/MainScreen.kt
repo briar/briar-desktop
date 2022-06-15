@@ -33,10 +33,7 @@ import org.briarproject.briar.desktop.viewmodel.viewModel
  * Multiplatform, stateless, composable are found in briarCompose (possible briar-compose project in the future)
  */
 @Composable
-fun MainScreen(
-    viewModel: SidebarViewModel = viewModel(),
-    onShowAbout: () -> Unit,
-) {
+fun MainScreen(viewModel: SidebarViewModel = viewModel()) {
     Row {
         BriarSidebar(
             viewModel.account.value,

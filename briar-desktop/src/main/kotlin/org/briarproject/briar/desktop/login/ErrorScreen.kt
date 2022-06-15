@@ -53,6 +53,7 @@ import org.briarproject.bramble.api.lifecycle.LifecycleManager.StartResult.DB_ER
 import org.briarproject.bramble.api.lifecycle.LifecycleManager.StartResult.SERVICE_ERROR
 import org.briarproject.bramble.api.lifecycle.LifecycleManager.StartResult.SUCCESS
 import org.briarproject.briar.desktop.theme.Red500
+import org.briarproject.briar.desktop.ui.AboutScreen
 import org.briarproject.briar.desktop.ui.Constants.STARTUP_FIELDS_WIDTH
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
@@ -72,19 +73,17 @@ fun main() = preview {
         }
     }
 
-    ErrorScreen(error, {}) {}
+    ErrorScreen(error) {}
 }
 
 @Composable
 fun ErrorScreen(
-    onShowAbout: () -> Unit,
     viewHolder: ErrorSubViewModel
-) = ErrorScreen(viewHolder.error, onShowAbout, viewHolder.onBackButton)
+) = ErrorScreen(viewHolder.error, viewHolder.onBackButton)
 
 @Composable
 fun ErrorScreen(
     error: ErrorSubViewModel.Error,
-    onShowAbout: () -> Unit,
     onBackButton: (() -> Unit)?,
 ) {
     val text = when (error) {
@@ -101,45 +100,50 @@ fun ErrorScreen(
         }
     }
 
-    ErrorScreen(text, onShowAbout, onBackButton)
+    ErrorScreen(text, onBackButton)
 }
 
 @Composable
 fun ErrorScreen(
     text: String,
-    onShowAbout: () -> Unit,
     onBackButton: (() -> Unit)? = null,
 ) = Box {
-    Column(
-        modifier = Modifier.fillMaxSize().padding(32.dp),
-        horizontalAlignment = CenterHorizontally,
-        verticalArrangement = spacedBy(32.dp)
-    ) {
-        Icon(
-            imageVector = Icons.Filled.Error,
-            contentDescription = i18n("error"),
-            modifier = Modifier.size(128.dp),
-            tint = Red500
-        )
+    var showAbout by remember { mutableStateOf(false) }
 
-        Text(i18n("sorry"), style = MaterialTheme.typography.h5)
-        Text(
-            text = text,
-            style = MaterialTheme.typography.body1,
-            modifier = Modifier.widthIn(max = STARTUP_FIELDS_WIDTH)
-        )
-    }
+    if (showAbout) {
+        AboutScreen { showAbout = false }
+    } else {
+        Column(
+            modifier = Modifier.fillMaxSize().padding(32.dp),
+            horizontalAlignment = CenterHorizontally,
+            verticalArrangement = spacedBy(32.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Error,
+                contentDescription = i18n("error"),
+                modifier = Modifier.size(128.dp),
+                tint = Red500
+            )
 
-    if (onBackButton != null) {
-        IconButton(onClick = onBackButton) {
-            Icon(Icons.Filled.ArrowBack, i18n("access.return_to_previous_screen"))
+            Text(i18n("sorry"), style = MaterialTheme.typography.h5)
+            Text(
+                text = text,
+                style = MaterialTheme.typography.body1,
+                modifier = Modifier.widthIn(max = STARTUP_FIELDS_WIDTH)
+            )
         }
-    }
 
-    IconButton(
-        onClick = onShowAbout,
-        modifier = Modifier.align(Alignment.BottomStart)
-    ) {
-        Icon(Icons.Filled.Info, i18n("access.mode.about"))
+        if (onBackButton != null) {
+            IconButton(onClick = onBackButton) {
+                Icon(Icons.Filled.ArrowBack, i18n("access.return_to_previous_screen"))
+            }
+        }
+
+        IconButton(
+            onClick = { showAbout = true },
+            modifier = Modifier.align(Alignment.BottomStart)
+        ) {
+            Icon(Icons.Filled.Info, i18n("access.mode.about"))
+        }
     }
 }
