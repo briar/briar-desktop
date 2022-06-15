@@ -42,13 +42,13 @@ fun MainScreen(
             viewModel.account.value,
             viewModel.uiMode.value,
             viewModel::setUiMode,
-            showAbout = onShowAbout,
         )
         VerticalDivider()
         when (viewModel.uiMode.value) {
             UiMode.CONTACTS -> PrivateMessageScreen()
             UiMode.GROUPS -> PrivateGroupScreen()
             UiMode.SETTINGS -> SettingsScreen()
+            UiMode.ABOUT -> AboutScreen()
             else -> UiPlaceholder()
         }
     }

@@ -45,6 +45,20 @@ fun main() = preview(
 fun AboutDialog(
     onClose: () -> Unit,
 ) {
+    BriarDialog(onClose = onClose) {
+        val box = this
+        Column(
+            modifier = Modifier.requiredSize(
+                box.maxWidth.times(0.8f), box.maxHeight.times(0.8f)
+            ).padding(16.dp)
+        ) {
+            AboutScreen()
+        }
+    }
+}
+
+@Composable
+fun AboutScreen() {
     // sizes of the two columns
     val colSizes = listOf(0.3f, 0.7f)
 
@@ -52,7 +66,7 @@ fun AboutDialog(
     val buildTime = Instant.ofEpochMilli(BuildData.GIT_TIME).atZone(ZoneId.systemDefault()).toLocalDateTime()
 
     // rows displayed in table
-    val lines = buildList<Pair<String, String>> {
+    val lines = buildList {
         add(i18n("about.copyright") to "The Briar Project") // NON-NLS
         add(i18n("about.license") to "GNU Affero General Public License v3") // NON-NLS
         add(i18n("about.version") to BuildData.VERSION)
@@ -66,63 +80,56 @@ fun AboutDialog(
         add(i18n("about.contact") to "desktop@briarproject.org") // NON-NLS
     }
 
-    BriarDialog(onClose = onClose) {
-        val box = this
-        Column(
-            modifier = Modifier.requiredSize(
-                box.maxWidth.times(0.8f), box.maxHeight.times(0.8f)
-            ).padding(16.dp)
+    Column {
+        Row(
+            modifier = Modifier.padding(bottom = 8.dp).fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
         ) {
-            Row(
-                modifier = Modifier.padding(bottom = 8.dp).fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                BriarLogo(modifier = Modifier.height(48.dp))
-                Text(
-                    i18n("main.title"),
-                    style = MaterialTheme.typography.h4,
-                    modifier = Modifier.padding(start = 16.dp),
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 1,
-                )
-            }
-            val scrollState = rememberLazyListState()
-            Box {
-                LazyColumn(state = scrollState) {
-                    item {
-                        HorizontalDivider()
-                    }
-                    items(lines) { (key, value) ->
-                        // this is required for Divider between Boxes to have appropriate size
-                        Row(Modifier.fillMaxWidth().height(IntrinsicSize.Min)) {
-                            Box(modifier = Modifier.weight(colSizes[0]).fillMaxHeight()) {
+            BriarLogo(modifier = Modifier.height(48.dp))
+            Text(
+                i18n("main.title"),
+                style = MaterialTheme.typography.h4,
+                modifier = Modifier.padding(start = 16.dp),
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 1,
+            )
+        }
+        val scrollState = rememberLazyListState()
+        Box {
+            LazyColumn(state = scrollState) {
+                item {
+                    HorizontalDivider()
+                }
+                items(lines) { (key, value) ->
+                    // this is required for Divider between Boxes to have appropriate size
+                    Row(Modifier.fillMaxWidth().height(IntrinsicSize.Min)) {
+                        Box(modifier = Modifier.weight(colSizes[0]).fillMaxHeight()) {
+                            Text(
+                                text = key,
+                                modifier = Modifier.padding(horizontal = 8.dp)
+                                    .padding(vertical = 8.dp).padding(end = 8.dp)
+                                    .align(Alignment.CenterStart)
+                            )
+                        }
+                        VerticalDivider()
+                        Box(modifier = Modifier.weight(colSizes[1]).fillMaxHeight()) {
+                            SelectionContainer {
                                 Text(
-                                    text = key,
-                                    modifier = Modifier.padding(horizontal = 8.dp)
-                                        .padding(vertical = 8.dp).padding(end = 8.dp)
-                                        .align(Alignment.CenterStart)
+                                    text = value,
+                                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
+                                        .padding(start = 8.dp)
                                 )
                             }
-                            VerticalDivider()
-                            Box(modifier = Modifier.weight(colSizes[1]).fillMaxHeight()) {
-                                SelectionContainer {
-                                    Text(
-                                        text = value,
-                                        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
-                                            .padding(start = 8.dp)
-                                    )
-                                }
-                            }
                         }
-                        HorizontalDivider()
                     }
+                    HorizontalDivider()
                 }
-                VerticalScrollbar(
-                    adapter = rememberScrollbarAdapter(scrollState),
-                    modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight()
-                )
             }
+            VerticalScrollbar(
+                adapter = rememberScrollbarAdapter(scrollState),
+                modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight()
+            )
         }
     }
 }

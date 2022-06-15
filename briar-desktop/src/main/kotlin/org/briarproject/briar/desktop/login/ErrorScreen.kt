@@ -140,6 +140,6 @@ fun ErrorScreen(
         onClick = onShowAbout,
         modifier = Modifier.align(Alignment.BottomStart)
     ) {
-        Icon(Icons.Filled.Info, i18n("access.about_briar_desktop"))
+        Icon(Icons.Filled.Info, i18n("access.mode.about"))
     }
 }

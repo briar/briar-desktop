@@ -29,14 +29,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ChromeReaderMode
-import androidx.compose.material.icons.filled.Contacts
-import androidx.compose.material.icons.filled.Forum
-import androidx.compose.material.icons.filled.Group
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.WifiTethering
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,17 +48,7 @@ fun BriarSidebar(
     account: LocalAuthor?,
     uiMode: UiMode,
     setUiMode: (UiMode) -> Unit,
-    showAbout: () -> Unit,
 ) {
-    val displayButton = @Composable { selectedMode: UiMode, mode: UiMode, icon: ImageVector ->
-        BriarSidebarButton(
-            selectedMode == mode,
-            { setUiMode(mode) },
-            icon,
-            mode.toString()
-        )
-    }
-
     Surface(modifier = Modifier.width(SIDEBAR_WIDTH).fillMaxHeight(), color = MaterialTheme.colors.sidebarSurface) {
         Column(verticalArrangement = Arrangement.Top) {
             // profile button
@@ -75,40 +57,59 @@ fun BriarSidebar(
             ) {
                 account?.let { ProfileCircle(size = 45.dp, it.id.bytes) }
             }
-            val items = buildList {
-                add(Pair(UiMode.CONTACTS, Icons.Filled.Contacts))
+            val modes = buildList {
+                add(UiMode.CONTACTS)
                 val featureFlags = getDesktopFeatureFlags()
-                if (featureFlags.shouldEnablePrivateGroups()) add(Pair(UiMode.GROUPS, Icons.Filled.Group))
-                if (featureFlags.shouldEnableForums()) add(Pair(UiMode.FORUMS, Icons.Filled.Forum))
-                if (featureFlags.shouldEnableBlogs()) add(Pair(UiMode.BLOGS, Icons.Filled.ChromeReaderMode))
+                if (featureFlags.shouldEnablePrivateGroups()) add(UiMode.GROUPS)
+                if (featureFlags.shouldEnableForums()) add(UiMode.FORUMS)
+                if (featureFlags.shouldEnableBlogs()) add(UiMode.BLOGS)
             }
-            for ((mode, icon) in items) {
-                displayButton(uiMode, mode, icon)
+            modes.forEach { mode ->
+                BriarSidebarButton(
+                    currentMode = uiMode,
+                    mode = mode,
+                    setUiMode = setUiMode,
+                )
             }
         }
         Column(verticalArrangement = Arrangement.Bottom) {
-            val items = buildList {
+            val modes = buildList {
                 val featureFlags = getDesktopFeatureFlags()
-                if (featureFlags.shouldEnableTransportSettings()) add(
-                    Pair(UiMode.TRANSPORTS, Icons.Filled.WifiTethering)
+                if (featureFlags.shouldEnableTransportSettings()) add(UiMode.TRANSPORTS)
+                add(UiMode.SETTINGS)
+                add(UiMode.ABOUT)
+            }
+            modes.forEach { mode ->
+                BriarSidebarButton(
+                    currentMode = uiMode,
+                    mode = mode,
+                    setUiMode = setUiMode,
                 )
-                add(Pair(UiMode.SETTINGS, Icons.Filled.Settings))
             }
-            for ((mode, icon) in items) {
-                displayButton(uiMode, mode, icon)
-            }
-            BriarSidebarButton(
-                selected = false,
-                onClick = showAbout,
-                icon = Icons.Filled.Info,
-                contentDescription = i18n("access.about_briar_desktop")
-            )
         }
     }
 }
 
 @Composable
-fun BriarSidebarButton(selected: Boolean, onClick: () -> Unit, icon: ImageVector, contentDescription: String?) {
+fun BriarSidebarButton(
+    mode: UiMode,
+    currentMode: UiMode,
+    setUiMode: (UiMode) -> Unit,
+) = BriarSidebarButton(
+    currentMode == mode,
+    { setUiMode(mode) },
+    mode.icon,
+    i18n(mode.contentDescriptionKey)
+)
+
+
+@Composable
+fun BriarSidebarButton(
+    selected: Boolean,
+    onClick: () -> Unit,
+    icon: ImageVector,
+    contentDescription: String?,
+) {
     val tint = if (selected) MaterialTheme.colors.primary else MaterialTheme.colors.onSurface
     IconButton(
         modifier = Modifier.padding(vertical = 4.dp, horizontal = 12.dp),
