@@ -18,11 +18,22 @@
 
 package org.briarproject.briar.desktop.ui
 
-enum class UiMode {
-    CONTACTS,
-    GROUPS,
-    FORUMS,
-    BLOGS,
-    TRANSPORTS,
-    SETTINGS,
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ChromeReaderMode
+import androidx.compose.material.icons.filled.Contacts
+import androidx.compose.material.icons.filled.Forum
+import androidx.compose.material.icons.filled.Group
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.WifiTethering
+import androidx.compose.ui.graphics.vector.ImageVector
+
+enum class UiMode(val icon: ImageVector, val contentDescriptionKey: String) {
+    CONTACTS(Icons.Filled.Contacts, "access.mode.contacts"),
+    GROUPS(Icons.Filled.Group, "access.mode.groups"),
+    FORUMS(Icons.Filled.Forum, "access.mode.forums"),
+    BLOGS(Icons.Filled.ChromeReaderMode, "access.mode.blogs"),
+    TRANSPORTS(Icons.Filled.WifiTethering, "access.mode.transports"),
+    SETTINGS(Icons.Filled.Settings, "access.mode.settings"),
+    ABOUT(Icons.Filled.Info, "access.mode.about"),
 }
