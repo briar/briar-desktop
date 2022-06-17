@@ -13,7 +13,7 @@ echo "Creating output directory"
 mkdir -p "$OUTPUT"
 
 echo "Extracting debian archive"
-ar --output "$OUTPUT" x "$REPO/build/compose/binaries/main/deb"/briar-desktop*.deb
+ar --output "$OUTPUT" x "$REPO/briar-desktop/build/compose/binaries/main/deb"/briar-desktop*.deb
 
 echo "Extracting control.tar.xz"
 mkdir -p "$OUTPUT/control"
