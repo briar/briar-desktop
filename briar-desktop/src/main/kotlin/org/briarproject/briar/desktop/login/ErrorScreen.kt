@@ -132,7 +132,7 @@ fun ErrorScreen(
 
     if (onBackButton != null) {
         IconButton(onClick = onBackButton) {
-            Icon(Icons.Filled.ArrowBack, i18n("back"))
+            Icon(Icons.Filled.ArrowBack, i18n("access.return_to_previous_screen"))
         }
     }
 
