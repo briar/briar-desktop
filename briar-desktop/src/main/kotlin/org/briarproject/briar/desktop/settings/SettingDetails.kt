@@ -35,7 +35,10 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import org.briarproject.briar.desktop.settings.UnencryptedSettings.Language
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 
@@ -48,23 +51,36 @@ fun SettingDetails(viewModel: SettingsViewModel) {
         SettingCategory.DISPLAY -> {
             // TODO: Change this to `settings.display.title` once more categories are implemented
             SettingDetail(i18n("settings.title")) {
-                DetailItem {
-                    Text(i18n("settings.display.theme.title"))
-
+                DetailItem(
+                    label = i18n("settings.display.theme.title"),
+                    description = "${i18n("access.settings.current_value")}: " +
+                        i18n("settings.display.theme.${viewModel.selectedTheme.value.name.lowercase()}") + // NON-NLS
+                        ", " + i18n("access.settings.click_to_change_value")
+                ) {
                     OutlinedExposedDropDownMenu(
-                        values = viewModel.themesList.map { i18n("settings.display.theme.${it.name.lowercase()}") },
+                        values = viewModel.themesList.map {
+                            i18n("settings.display.theme.${it.name.lowercase()}") // NON-NLS
+                        },
                         selectedIndex = viewModel.selectedTheme.value.ordinal,
                         onChange = { viewModel.selectTheme(viewModel.themesList[it]) },
                         modifier = Modifier.widthIn(min = 200.dp)
                     )
                 }
 
-                DetailItem {
-                    Text(i18n("settings.display.language.title"))
-
+                DetailItem(
+                    label = i18n("settings.display.language.title"),
+                    description = "${i18n("access.settings.current_value")}: " +
+                        viewModel.selectedLanguage.value.let {
+                            if (it == Language.DEFAULT)
+                                i18n("settings.display.language.auto")
+                            else it.locale.getDisplayLanguage(it.locale)
+                        } +
+                        ", " + i18n("access.settings.click_to_change_value")
+                ) {
                     OutlinedExposedDropDownMenu(
                         values = viewModel.languageList.map {
-                            if (it == UnencryptedSettings.Language.DEFAULT) i18n("settings.display.language.auto")
+                            if (it == Language.DEFAULT)
+                                i18n("settings.display.language.auto")
                             else it.locale.getDisplayLanguage(it.locale)
                         },
                         selectedIndex = viewModel.selectedLanguage.value.ordinal,
@@ -73,9 +89,10 @@ fun SettingDetails(viewModel: SettingsViewModel) {
                     )
                 }
 
-                DetailItem {
-                    Text(i18n("settings.security.title"))
-
+                DetailItem(
+                    label = i18n("settings.security.title"),
+                    description = i18n("access.settings.click_to_change_password")
+                ) {
                     OutlinedButton(onClick = viewModel::showChangePasswordDialog) {
                         Text(i18n("settings.security.password.change"))
                     }
@@ -111,10 +128,22 @@ fun SettingDetail(header: String, content: @Composable (ColumnScope.() -> Unit))
     }
 
 @Composable
-fun DetailItem(content: @Composable (RowScope.() -> Unit)) = Row(
-    Modifier.fillMaxWidth().height(HEADER_SIZE).padding(horizontal = 16.dp),
+fun DetailItem(
+    label: String,
+    description: String,
+    setting: @Composable (RowScope.() -> Unit),
+) = Row(
+    Modifier
+        .fillMaxWidth().height(HEADER_SIZE).padding(horizontal = 16.dp)
+        .semantics(mergeDescendants = true) {
+            // it would be nicer to derive the contentDescriptions from the descendants automatically
+            // which is currently not supported in Compose for Desktop
+            // see https://github.com/JetBrains/compose-jb/issues/2111
+            contentDescription = description
+        },
     verticalAlignment = Alignment.CenterVertically,
     horizontalArrangement = Arrangement.SpaceBetween
 ) {
-    content()
+    Text(label)
+    setting()
 }
