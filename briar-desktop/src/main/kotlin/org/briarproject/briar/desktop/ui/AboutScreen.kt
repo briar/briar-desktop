@@ -24,6 +24,10 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.text
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import org.briarproject.briar.desktop.BuildData
@@ -48,18 +52,18 @@ fun main() = preview(
 fun AboutScreen(
     onBackButton: () -> Unit,
 ) = Box {
-    AboutScreen(Modifier.padding(16.dp))
+    AboutScreen()
 
     IconButton(
         onClick = onBackButton,
         modifier = Modifier.align(Alignment.TopStart)
     ) {
-        Icon(Icons.Filled.ArrowBack, i18n("back"))
+        Icon(Icons.Filled.ArrowBack, i18n("access.return_to_previous_screen"))
     }
 }
 
 @Composable
-fun AboutScreen(modifier: Modifier = Modifier) {
+fun AboutScreen(modifier: Modifier = Modifier.padding(16.dp)) {
     // sizes of the two columns
     val colSizes = listOf(0.3f, 0.7f)
 
@@ -83,7 +87,7 @@ fun AboutScreen(modifier: Modifier = Modifier) {
 
     Column(modifier) {
         Row(
-            modifier = Modifier.padding(bottom = 8.dp).fillMaxWidth(),
+            modifier = Modifier.padding(bottom = 16.dp).fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
@@ -98,19 +102,31 @@ fun AboutScreen(modifier: Modifier = Modifier) {
         }
         val scrollState = rememberLazyListState()
         Box {
-            LazyColumn(state = scrollState) {
+            LazyColumn(
+                modifier = Modifier.semantics {
+                    contentDescription = i18n("access.about.list")
+                },
+                state = scrollState
+            ) {
                 item {
                     HorizontalDivider()
                 }
                 items(lines) { (key, value) ->
-                    // this is required for Divider between Boxes to have appropriate size
-                    Row(Modifier.fillMaxWidth().height(IntrinsicSize.Min)) {
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            // this is required for Divider between Boxes to have appropriate size
+                            .height(IntrinsicSize.Min)
+                            .semantics(mergeDescendants = true) {
+                                // manual text setting can be removed if Compose issue resolved
+                                // https://github.com/JetBrains/compose-jb/issues/2111
+                                text = buildAnnotatedString { append("$key: $value") }
+                            }
+                    ) {
                         Box(modifier = Modifier.weight(colSizes[0]).fillMaxHeight()) {
                             Text(
                                 text = key,
-                                modifier = Modifier.padding(horizontal = 8.dp)
-                                    .padding(vertical = 8.dp).padding(end = 8.dp)
-                                    .align(Alignment.CenterStart)
+                                modifier = Modifier.padding(8.dp)
                             )
                         }
                         VerticalDivider()
@@ -118,8 +134,7 @@ fun AboutScreen(modifier: Modifier = Modifier) {
                             SelectionContainer {
                                 Text(
                                     text = value,
-                                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
-                                        .padding(start = 8.dp)
+                                    modifier = Modifier.padding(8.dp)
                                 )
                             }
                         }

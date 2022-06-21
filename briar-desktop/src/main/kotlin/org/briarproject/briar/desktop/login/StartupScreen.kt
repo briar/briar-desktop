@@ -51,16 +51,7 @@ fun StartupScreen(
         is LoginSubViewModel -> LoginScreen(viewModel::showAbout, holder)
         is RegistrationSubViewModel -> RegistrationScreen(viewModel::showAbout, holder)
         is ErrorSubViewModel -> ErrorScreen(holder)
-        is AboutSubViewModel -> Box {
-            AboutScreen(Modifier.padding(16.dp))
-
-            IconButton(
-                onClick = holder.onBackButton,
-                modifier = Modifier.align(Alignment.TopStart)
-            ) {
-                Icon(Icons.Filled.ArrowBack, i18n("back"))
-            }
-        }
+        is AboutSubViewModel -> AboutScreen(holder.onBackButton)
     }
 }
 
