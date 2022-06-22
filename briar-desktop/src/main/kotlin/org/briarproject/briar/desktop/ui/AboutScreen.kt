@@ -1,5 +1,6 @@
 package org.briarproject.briar.desktop.ui
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,12 +21,15 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.text
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -61,6 +65,7 @@ fun AboutScreen(
     )
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AboutScreen(modifier: Modifier = Modifier.padding(16.dp)) {
     // sizes of the two columns
@@ -69,19 +74,26 @@ fun AboutScreen(modifier: Modifier = Modifier.padding(16.dp)) {
     // format date
     val buildTime = Instant.ofEpochMilli(BuildData.GIT_TIME).atZone(ZoneId.systemDefault()).toLocalDateTime()
 
+    data class Entry(
+        val label: String,
+        val value: String,
+        val showCopy: Boolean = false
+    )
+
     // rows displayed in table
     val lines = buildList {
-        add(i18n("about.copyright") to "The Briar Project") // NON-NLS
-        add(i18n("about.license") to "GNU Affero General Public License v3") // NON-NLS
-        add(i18n("about.version") to BuildData.VERSION)
-        add(i18n("about.version.core") to BuildData.CORE_VERSION)
-        if (BuildData.GIT_BRANCH != null) add("Git branch" to BuildData.GIT_BRANCH) // NON-NLS
-        if (BuildData.GIT_TAG != null) add("Git tag" to BuildData.GIT_TAG) // NON-NLS
-        if (BuildData.GIT_BRANCH == null && BuildData.GIT_TAG == null) add("Git branch/tag" to "None detected") // NON-NLS
-        add("Git hash" to BuildData.GIT_HASH) // NON-NLS
-        add("Commit time" to DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(buildTime)) // NON-NLS
-        add(i18n("about.website") to "https://briarproject.org")
-        add(i18n("about.contact") to "desktop@briarproject.org") // NON-NLS
+        add(Entry(i18n("about.copyright"), "The Briar Project")) // NON-NLS
+        add(Entry(i18n("about.license"), "GNU Affero General Public License v3")) // NON-NLS
+        add(Entry(i18n("about.version"), BuildData.VERSION))
+        add(Entry(i18n("about.version.core"), BuildData.CORE_VERSION))
+        if (BuildData.GIT_BRANCH != null) add(Entry("Git branch", BuildData.GIT_BRANCH)) // NON-NLS
+        if (BuildData.GIT_TAG != null) add(Entry("Git tag", BuildData.GIT_TAG)) // NON-NLS
+        if (BuildData.GIT_BRANCH == null && BuildData.GIT_TAG == null)
+            add(Entry("Git branch/tag", "None detected")) // NON-NLS
+        add(Entry("Git hash", BuildData.GIT_HASH)) // NON-NLS
+        add(Entry("Commit time", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(buildTime))) // NON-NLS
+        add(Entry(i18n("about.website"), "https://briarproject.org", true))
+        add(Entry(i18n("about.contact"), "desktop@briarproject.org", true)) // NON-NLS
     }
 
     Column(modifier) {
@@ -110,7 +122,7 @@ fun AboutScreen(modifier: Modifier = Modifier.padding(16.dp)) {
                 item {
                     HorizontalDivider()
                 }
-                items(lines) { (key, value) ->
+                items(lines) { (label, value, showCopy) ->
                     Row(
                         Modifier
                             .fillMaxWidth()
@@ -119,22 +131,38 @@ fun AboutScreen(modifier: Modifier = Modifier.padding(16.dp)) {
                             .semantics(mergeDescendants = true) {
                                 // manual text setting can be removed if Compose issue resolved
                                 // https://github.com/JetBrains/compose-jb/issues/2111
-                                text = buildAnnotatedString { append("$key: $value") }
+                                text = buildAnnotatedString { append("$label: $value") }
                             }
                     ) {
                         Box(modifier = Modifier.weight(colSizes[0]).fillMaxHeight()) {
                             Text(
-                                text = key,
-                                modifier = Modifier.padding(8.dp)
+                                text = label,
+                                modifier = Modifier.padding(8.dp).align(Alignment.CenterStart)
                             )
                         }
                         VerticalDivider()
                         Box(modifier = Modifier.weight(colSizes[1]).fillMaxHeight()) {
-                            SelectionContainer {
-                                Text(
-                                    text = value,
-                                    modifier = Modifier.padding(8.dp)
-                                )
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                SelectionContainer {
+                                    Text(
+                                        text = value,
+                                        modifier = Modifier.padding(8.dp)
+                                    )
+                                }
+                                if (showCopy) {
+                                    val clipboardManager = LocalClipboardManager.current
+                                    IconButton(
+                                        icon = Icons.Filled.ContentCopy,
+                                        contentDescription = i18n("copy"),
+                                        onClick = {
+                                            clipboardManager.setText(AnnotatedString(value))
+                                        }
+                                    )
+                                }
                             }
                         }
                     }
