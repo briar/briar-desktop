@@ -116,27 +116,30 @@ fun TextField(
     )
 }
 
-val KeyEvent.isModifierKeyPressed: Boolean
+private val KeyEvent.isModifierKeyPressed: Boolean
     get() = isShiftPressed || isAltPressed || isMetaPressed || isCtrlPressed
 
-fun TextFieldValue.insertOrReplaceBy(replacement: CharSequence) = this.copy(
+private fun TextFieldValue.insertOrReplaceBy(replacement: CharSequence) = this.copy(
     text = text.replaceRange(selection.min, selection.max, replacement),
     selection = TextRange(selection.min + 1, selection.min + 1)
 )
 
-// tab navigation for multi-line TextField is broken upstream
-// see https://github.com/JetBrains/compose-jb/issues/109
-@OptIn(ExperimentalComposeUiApi::class)
-@Composable
-fun Modifier.moveFocusOnTab(
-    focusManager: FocusManager = LocalFocusManager.current
-) = onPreviewKeyEvent {
-    if (it.type == KeyEventType.KeyDown && it.key == Key.Tab) {
-        focusManager.moveFocus(
-            if (it.isShiftPressed) FocusDirection.Previous
-            else FocusDirection.Next
-        )
-        return@onPreviewKeyEvent true
+object TextFieldExt {
+
+    // tab navigation for multi-line TextField is broken upstream
+    // see https://github.com/JetBrains/compose-jb/issues/109
+    @OptIn(ExperimentalComposeUiApi::class)
+    @Composable
+    fun Modifier.moveFocusOnTab(
+        focusManager: FocusManager = LocalFocusManager.current
+    ) = onPreviewKeyEvent {
+        if (it.type == KeyEventType.KeyDown && it.key == Key.Tab) {
+            focusManager.moveFocus(
+                if (it.isShiftPressed) FocusDirection.Previous
+                else FocusDirection.Next
+            )
+            return@onPreviewKeyEvent true
+        }
+        false
     }
-    false
 }

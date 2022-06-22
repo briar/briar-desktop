@@ -96,6 +96,7 @@ import org.briarproject.briar.desktop.theme.Orange500
 import org.briarproject.briar.desktop.theme.Red500
 import org.briarproject.briar.desktop.theme.surfaceVariant
 import org.briarproject.briar.desktop.ui.Constants.DIALOG_WIDTH
+import org.briarproject.briar.desktop.utils.AccessibilityUtils.description
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nF
 import org.briarproject.briar.desktop.utils.PreviewUtils
@@ -323,7 +324,7 @@ fun OwnLink(
                         duration = SnackbarDuration.Short,
                     )
                 }
-            }
+            }.description(i18n("contact.add.remote.your_link_hint"))
     ) {
         Text(
             handshakeLink,
@@ -384,7 +385,7 @@ fun ContactLink(
         remoteHandshakeLink,
         setRemoteHandshakeLink,
         label = { Text(i18n("contact.add.remote.contact_link_hint")) },
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().description(i18n("contact.add.remote.contact_link_hint")),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Next),
         singleLine = true,
         onEnter = { aliasFocusRequester.requestFocus() },
@@ -443,7 +444,8 @@ fun Alias(
         alias,
         setAddContactAlias,
         label = { Text(i18n("contact.add.remote.choose_nickname")) },
-        modifier = Modifier.fillMaxWidth().focusRequester(aliasFocusRequester),
+        modifier = Modifier.fillMaxWidth().focusRequester(aliasFocusRequester)
+            .description(i18n("contact.add.remote.choose_nickname")),
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
         singleLine = true,
         onEnter = onSubmitAddContactDialog,

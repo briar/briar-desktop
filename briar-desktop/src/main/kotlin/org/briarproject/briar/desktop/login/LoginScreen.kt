@@ -45,6 +45,7 @@ import org.briarproject.briar.desktop.login.LoginSubViewModel.State.MIGRATING
 import org.briarproject.briar.desktop.login.LoginSubViewModel.State.SIGNED_OUT
 import org.briarproject.briar.desktop.login.LoginSubViewModel.State.STARTED
 import org.briarproject.briar.desktop.login.LoginSubViewModel.State.STARTING
+import org.briarproject.briar.desktop.utils.AccessibilityUtils.description
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -118,7 +119,8 @@ fun LoginForm(
         isError = passwordInvalidError,
         errorMessage = i18n("startup.error.password_wrong"),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Next),
-        modifier = Modifier.fillMaxWidth().focusRequester(initialFocusRequester),
+        modifier = Modifier.fillMaxWidth().focusRequester(initialFocusRequester)
+            .description(i18n("startup.field.password")),
         onEnter = onEnter
     )
     TextButton(onClick = { passwordForgotten.value = true }) {

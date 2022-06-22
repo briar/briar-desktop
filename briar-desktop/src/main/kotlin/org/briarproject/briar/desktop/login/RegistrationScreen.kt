@@ -44,6 +44,7 @@ import org.briarproject.briar.desktop.login.RegistrationSubViewModel.State.CREAT
 import org.briarproject.briar.desktop.login.RegistrationSubViewModel.State.CREATING
 import org.briarproject.briar.desktop.login.RegistrationSubViewModel.State.INSERT_NICKNAME
 import org.briarproject.briar.desktop.login.RegistrationSubViewModel.State.INSERT_PASSWORD
+import org.briarproject.briar.desktop.utils.AccessibilityUtils.description
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 
 @Composable
@@ -121,7 +122,8 @@ fun NicknameForm(
         isError = nicknameTooLongError,
         errorMessage = i18n("startup.error.name_too_long"),
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-        modifier = Modifier.fillMaxWidth().focusRequester(initialFocusRequester),
+        modifier = Modifier.fillMaxWidth().focusRequester(initialFocusRequester)
+            .description(i18n("startup.field.nickname")),
         onEnter = onSubmit
     )
 
@@ -168,7 +170,7 @@ fun PasswordForm(
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Next),
         modifier = Modifier.fillMaxWidth().run {
             if (focusRequester != null) focusRequester(focusRequester) else this
-        },
+        }.description(i18n(keyLabelPassword)),
         onEnter = { focusManager.moveFocus(FocusDirection.Next) },
     )
     OutlinedPasswordTextField(
@@ -180,7 +182,7 @@ fun PasswordForm(
         showErrorWhen = AFTER_FIRST_FOCUSSED,
         errorMessage = i18n("startup.error.passwords_not_match"),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().description(i18n(keyLabelPasswordConfirmation)),
         onEnter = onSubmit,
     )
 }
