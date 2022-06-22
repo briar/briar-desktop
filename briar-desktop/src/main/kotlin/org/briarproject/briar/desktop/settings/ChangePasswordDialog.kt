@@ -48,6 +48,7 @@ import org.briarproject.bramble.api.crypto.DecryptionResult.INVALID_PASSWORD
 import org.briarproject.briar.desktop.login.PasswordForm
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
+import org.briarproject.briar.desktop.utils.description
 import java.lang.Float.min
 
 @Suppress("HardCodedStringLiteral")
@@ -216,7 +217,8 @@ fun PasswordForm(
             showErrorWhen = InitialFocusState.FROM_START,
             errorMessage = i18n("startup.error.password_wrong"),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Next),
-            modifier = Modifier.fillMaxWidth().focusRequester(initialFocusRequester),
+            modifier = Modifier.fillMaxWidth().focusRequester(initialFocusRequester)
+                .description(i18n("settings.security.password.current")),
             onEnter = { focusManager.moveFocus(FocusDirection.Next) },
         )
         PasswordForm(

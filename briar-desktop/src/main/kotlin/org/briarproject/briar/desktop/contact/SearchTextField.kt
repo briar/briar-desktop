@@ -35,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.briarproject.briar.desktop.ui.ColoredIconButton
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
+import org.briarproject.briar.desktop.utils.description
 
 @Composable
 fun SearchTextField(searchValue: String, onValueChange: (String) -> Unit, onContactAdd: () -> Unit) {
@@ -49,7 +50,7 @@ fun SearchTextField(searchValue: String, onValueChange: (String) -> Unit, onCont
         shape = RoundedCornerShape(0.dp),
         leadingIcon = {
             val padding = Modifier.padding(top = 8.dp, bottom = 8.dp, start = 32.dp, end = 4.dp)
-            Icon(Icons.Filled.Search, i18n("access.contacts.search"), padding)
+            Icon(Icons.Filled.Search, null, padding)
         },
         trailingIcon = {
             ColoredIconButton(
@@ -63,6 +64,6 @@ fun SearchTextField(searchValue: String, onValueChange: (String) -> Unit, onCont
                 )
             }
         },
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize().description(i18n("access.contacts.filter"))
     )
 }

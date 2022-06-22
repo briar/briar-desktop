@@ -100,6 +100,7 @@ import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nF
 import org.briarproject.briar.desktop.utils.PreviewUtils
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
+import org.briarproject.briar.desktop.utils.description
 import org.briarproject.briar.desktop.viewmodel.viewModel
 import java.awt.Dimension
 
@@ -384,7 +385,7 @@ fun ContactLink(
         remoteHandshakeLink,
         setRemoteHandshakeLink,
         label = { Text(i18n("contact.add.remote.contact_link_hint")) },
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().description(i18n("contact.add.remote.contact_link_hint")),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Next),
         singleLine = true,
         onEnter = { aliasFocusRequester.requestFocus() },
@@ -466,7 +467,8 @@ fun Alias(
         alias,
         setAddContactAlias,
         label = { Text(i18n("contact.add.remote.choose_nickname")) },
-        modifier = Modifier.fillMaxWidth().focusRequester(aliasFocusRequester),
+        modifier = Modifier.fillMaxWidth().focusRequester(aliasFocusRequester)
+            .description(i18n("contact.add.remote.choose_nickname")),
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
         singleLine = true,
         onEnter = onSubmitAddContactDialog,

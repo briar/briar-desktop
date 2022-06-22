@@ -235,12 +235,12 @@ private fun ShowHidePasswordIcon(
         if (isVisible) {
             Icon(
                 imageVector = Icons.Filled.VisibilityOff,
-                contentDescription = i18n("access.password.show"),
+                contentDescription = i18n("access.password.hide"),
             )
         } else {
             Icon(
                 imageVector = Icons.Filled.Visibility,
-                contentDescription = i18n("access.password.hide"),
+                contentDescription = i18n("access.password.show"),
             )
         }
     }
