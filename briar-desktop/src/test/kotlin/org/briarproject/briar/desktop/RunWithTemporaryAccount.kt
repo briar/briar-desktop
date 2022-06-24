@@ -24,6 +24,7 @@ import mu.KotlinLogging
 import org.briarproject.bramble.BrambleCoreEagerSingletons
 import org.briarproject.briar.BriarCoreEagerSingletons
 import org.briarproject.briar.desktop.TestUtils.getDataDir
+import org.briarproject.briar.desktop.settings.SettingsUtils.initScaleFactor
 import org.briarproject.briar.desktop.utils.KLoggerUtils.i
 import org.briarproject.briar.desktop.utils.LogUtils
 import org.jetbrains.annotations.NonNls
@@ -64,6 +65,8 @@ internal class RunWithTemporaryAccount(
             LOG.i { "deleting temporary account at $dataDir" }
             org.apache.commons.io.FileUtils.deleteDirectory(dataDir.toFile())
         }
+
+        initScaleFactor(app.getUnencryptedSettings())
 
         // We need to load the eager singletons directly after making the
         // dependency graphs

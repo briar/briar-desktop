@@ -23,6 +23,8 @@ import org.briarproject.briar.desktop.settings.UnencryptedSettings.Language
 import org.briarproject.briar.desktop.settings.UnencryptedSettings.Language.DEFAULT
 import org.briarproject.briar.desktop.settings.UnencryptedSettings.Theme
 import org.briarproject.briar.desktop.settings.UnencryptedSettings.Theme.AUTO
+import org.briarproject.briar.desktop.settings.UnencryptedSettings.UiScale
+import org.briarproject.briar.desktop.settings.UnencryptedSettings.UiScale.S1
 import org.briarproject.briar.desktop.utils.InternationalizationUtils
 import org.briarproject.briar.desktop.viewmodel.SingleStateEvent
 import java.util.prefs.Preferences
@@ -31,17 +33,26 @@ import kotlin.reflect.KProperty
 
 const val PREF_THEME = "theme" // NON-NLS
 const val PREF_LANG = "language" // NON-NLS
+const val PREF_UI_SCALE = "uiScale" // NON-NLS
 
 class UnencryptedSettingsImpl @Inject internal constructor() : UnencryptedSettings {
 
-    // used for unencrypted settings, namely theme and language
+    // used for unencrypted settings, namely theme, language and UI scale factor
     private val prefs = Preferences.userNodeForPackage(this::class.java)
 
     override val invalidateScreen = SingleStateEvent<Unit>()
 
-    override var theme by EnumEntry(PREF_THEME, AUTO, Theme::class.java)
+    override var theme by EnumEntry(PREF_THEME, AUTO, Theme::class.java, invalidateScreenOnChange = true)
 
-    override var language by EnumEntry(PREF_LANG, DEFAULT, Language::class.java, ::updateLocale)
+    override var language by EnumEntry(
+        PREF_LANG,
+        DEFAULT,
+        Language::class.java,
+        onChange = ::updateLocale,
+        invalidateScreenOnChange = true
+    )
+
+    override var uiScale by EnumEntry(PREF_UI_SCALE, S1, UiScale::class.java, storageMapper = { it.factor.toString() })
 
     init {
         updateLocale(language)
@@ -55,13 +66,17 @@ class UnencryptedSettingsImpl @Inject internal constructor() : UnencryptedSettin
         private val key: String,
         private val default: T,
         private val enumClass: Class<T>,
-        private val onChange: (value: T) -> Unit = {}
+        private val onChange: (value: T) -> Unit = {},
+        private val storageMapper: (value: T) -> String = { it.name },
+        private val invalidateScreenOnChange: Boolean = false,
     ) {
         private lateinit var current: T
 
         operator fun getValue(thisRef: UnencryptedSettingsImpl, property: KProperty<*>): T {
             if (!::current.isInitialized) {
-                current = enumClass.enumConstants.find { it.name == thisRef.prefs.get(key, default.name) }
+                current = enumClass.enumConstants.find {
+                    storageMapper(it) == thisRef.prefs.get(key, storageMapper(default))
+                }
                     ?: throw IllegalArgumentException()
             }
             return current
@@ -72,10 +87,10 @@ class UnencryptedSettingsImpl @Inject internal constructor() : UnencryptedSettin
             if (current == value) return
 
             current = value
-            thisRef.prefs.put(key, value.name)
+            thisRef.prefs.put(key, storageMapper(value))
             thisRef.prefs.flush() // write preferences to disk
             onChange(value)
-            thisRef.invalidateScreen.emit(Unit)
+            if (invalidateScreenOnChange) thisRef.invalidateScreen.emit(Unit)
         }
     }
 }

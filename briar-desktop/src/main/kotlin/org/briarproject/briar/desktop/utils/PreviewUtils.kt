@@ -51,10 +51,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.singleWindowApplication
 import org.briarproject.bramble.api.UniqueId
+import org.briarproject.briar.desktop.settings.SettingsUtils.initScaleFactor
+import org.briarproject.briar.desktop.settings.UnencryptedSettingsImpl
 import org.briarproject.briar.desktop.theme.BriarTheme
 import org.briarproject.briar.desktop.ui.LocalWindowFocusState
 import org.briarproject.briar.desktop.ui.LocalWindowScope
 import org.briarproject.briar.desktop.ui.WindowFocusState
+import java.util.prefs.Preferences
 import kotlin.random.Random
 
 object PreviewUtils {
@@ -206,6 +209,10 @@ object PreviewUtils {
         content: @Composable PreviewScope.() -> Unit
     ) {
         val scope = PreviewScope()
+
+        val prefs = Preferences.userNodeForPackage(UnencryptedSettingsImpl::class.java)
+        val uiScale = prefs.get("uiScale", null)?.toDouble() ?: 1.0
+        initScaleFactor(uiScale)
 
         singleWindowApplication(title = "Interactive Preview") {
             val focusState = remember { WindowFocusState() }

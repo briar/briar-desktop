@@ -28,6 +28,7 @@ import org.briarproject.bramble.api.plugin.TorConstants.DEFAULT_CONTROL_PORT
 import org.briarproject.bramble.api.plugin.TorConstants.DEFAULT_SOCKS_PORT
 import org.briarproject.briar.BriarCoreEagerSingletons
 import org.briarproject.briar.desktop.TestUtils.getDataDir
+import org.briarproject.briar.desktop.settings.SettingsUtils.initScaleFactor
 import org.briarproject.briar.desktop.utils.KLoggerUtils.i
 import org.briarproject.briar.desktop.utils.LogUtils
 import org.jetbrains.annotations.NonNls
@@ -76,6 +77,8 @@ internal class RunWithMultipleTemporaryAccounts(
             LOG.i { "deleting temporary account at $dataDir" }
             org.apache.commons.io.FileUtils.deleteDirectory(dataDir.toFile())
         }
+
+        initScaleFactor(app.getUnencryptedSettings())
 
         // We need to load the eager singletons directly after making the
         // dependency graphs

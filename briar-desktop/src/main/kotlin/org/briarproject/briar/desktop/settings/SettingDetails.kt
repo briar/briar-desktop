@@ -80,6 +80,19 @@ fun SettingDetails(viewModel: SettingsViewModel) {
                         Text(i18n("settings.security.password.change"))
                     }
                 }
+
+                DetailItem {
+                    Text(i18n("settings.display.ui.scale.title"))
+
+                    OutlinedExposedDropDownMenu(
+                        values = viewModel.uiScaleList.map {
+                            it.factor.toString()
+                        },
+                        selectedIndex = viewModel.selectedUiScale.value.ordinal,
+                        onChange = { viewModel.selectUiScale(viewModel.uiScaleList[it]) },
+                        modifier = Modifier.widthIn(min = 200.dp)
+                    )
+                }
             }
         }
         SettingCategory.CONNECTIONS -> {

@@ -48,12 +48,16 @@ constructor(
 
     val themesList = UnencryptedSettings.Theme.values()
     val languageList = UnencryptedSettings.Language.values()
+    val uiScaleList = UnencryptedSettings.UiScale.values()
 
     private val _selectedTheme = mutableStateOf(unencryptedSettings.theme)
     val selectedTheme = _selectedTheme.asState()
 
     private val _selectedLanguage = mutableStateOf(unencryptedSettings.language)
     val selectedLanguage = _selectedLanguage.asState()
+
+    private val _selectedUiScale = mutableStateOf(unencryptedSettings.uiScale)
+    val selectedUiScale = _selectedUiScale.asState()
 
     private val _changePasswordDialogVisible = mutableStateOf(false)
     val changePasswordDialogVisible = _changePasswordDialogVisible.asState()
@@ -72,6 +76,11 @@ constructor(
     fun selectLanguage(language: UnencryptedSettings.Language) {
         _selectedLanguage.value = language
         briarExecutors.onIoThread { unencryptedSettings.language = language }
+    }
+
+    fun selectUiScale(uiScale: UnencryptedSettings.UiScale) {
+        _selectedUiScale.value = uiScale
+        briarExecutors.onIoThread { unencryptedSettings.uiScale = uiScale }
     }
 
     fun showChangePasswordDialog() {

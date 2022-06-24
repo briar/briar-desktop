@@ -18,31 +18,13 @@
 
 package org.briarproject.briar.desktop.settings
 
-import org.briarproject.briar.desktop.viewmodel.SingleStateEvent
-import java.util.Locale
+object SettingsUtils {
 
-interface UnencryptedSettings {
-
-    enum class Theme { AUTO, LIGHT, DARK }
-
-    enum class Language {
-        // special handling
-        DEFAULT, EN,
-
-        // languages as present in resources
-        AR, BG, CA, DE, ES, FA, FR, GL, HE, HU, IS, IT, JA, KO, LT, MY, NL, PL, PT_BR, RO, RU, SK, SQ, SV, TR, UK, ZH_CN;
-
-        val locale: Locale
-            get() = if (this == DEFAULT)
-                Locale.getDefault()
-            else Locale.forLanguageTag(name.replace('_', '-'))
+    fun initScaleFactor(unencryptedSettings: UnencryptedSettings) {
+        initScaleFactor(unencryptedSettings.uiScale.factor)
     }
 
-    enum class UiScale(val factor: Double) { S1(1.0), S2(2.0) }
-
-    var theme: Theme
-    var language: Language
-    var uiScale: UiScale
-
-    val invalidateScreen: SingleStateEvent<Unit>
+    fun initScaleFactor(uiScale: Double) {
+        System.setProperty("sun.java2d.uiScale", uiScale.toString())
+    }
 }

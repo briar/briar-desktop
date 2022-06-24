@@ -31,6 +31,7 @@ import org.briarproject.briar.BriarCoreEagerSingletons
 import org.briarproject.briar.BriarCoreModule
 import org.briarproject.briar.api.introduction.IntroductionManager
 import org.briarproject.briar.api.test.TestDataCreator
+import org.briarproject.briar.desktop.settings.UnencryptedSettings
 import org.briarproject.briar.desktop.testdata.DeterministicTestDataCreator
 import org.briarproject.briar.desktop.ui.BriarUi
 import java.security.SecureRandom
@@ -67,4 +68,6 @@ internal interface BriarDesktopTestApp : BrambleCoreEagerSingletons, BriarCoreEa
     fun getTestDataCreator(): TestDataCreator
 
     fun getDeterministicTestDataCreator(): DeterministicTestDataCreator
+
+    fun getUnencryptedSettings(): UnencryptedSettings
 }
