@@ -33,6 +33,7 @@ import kotlin.reflect.KProperty
 
 const val PREF_THEME = "theme" // NON-NLS
 const val PREF_LANG = "language" // NON-NLS
+const val PREF_UI_SCALE = "uiScale" // NON-NLS
 
 class UnencryptedSettingsImpl @Inject internal constructor() : UnencryptedSettings {
 
@@ -40,14 +41,26 @@ class UnencryptedSettingsImpl @Inject internal constructor() : UnencryptedSettin
         private val LOG = KotlinLogging.logger {}
     }
 
-    // used for unencrypted settings, namely theme and language
+    // used for unencrypted settings, namely theme, language and UI scale factor
     private val prefs = Preferences.userNodeForPackage(this::class.java)
 
     override val invalidateScreen = SingleStateEvent<Unit>()
 
-    override var theme by EnumEntry(PREF_THEME, AUTO, Theme::class.java)
+    override var theme by EnumEntry(PREF_THEME, AUTO, Theme::class.java, invalidateScreenOnChange = true)
 
-    override var language by EnumEntry(PREF_LANG, DEFAULT, Language::class.java, ::updateLocale)
+    override var language by EnumEntry(
+        PREF_LANG,
+        DEFAULT,
+        Language::class.java,
+        onChange = ::updateLocale,
+        invalidateScreenOnChange = true
+    )
+
+    override var uiScale by FloatEntry(
+        PREF_UI_SCALE,
+        null,
+        invalidateScreenOnChange = true
+    )
 
     init {
         updateLocale(language)
@@ -57,22 +70,20 @@ class UnencryptedSettingsImpl @Inject internal constructor() : UnencryptedSettin
         InternationalizationUtils.locale = language.locale
     }
 
-    private class EnumEntry<T : Enum<*>>(
+    private open class Entry<T : Any>(
         private val key: String,
         private val default: T,
-        private val enumClass: Class<T>,
-        private val onChange: (value: T) -> Unit = {}
+        private val deserialize: (string: String) -> T?,
+        private val serialize: (value: T) -> String = { it.toString() },
+        private val onChange: (value: T) -> Unit = {},
+        private val invalidateScreenOnChange: Boolean = false,
     ) {
         private lateinit var current: T
 
         operator fun getValue(thisRef: UnencryptedSettingsImpl, property: KProperty<*>): T {
             if (!::current.isInitialized) {
-                val value = thisRef.prefs.get(key, default.name)
-                current = enumClass.enumConstants.find { it.name == value }
-                    ?: run {
-                        LOG.e { "Unexpected enum value for ${enumClass.simpleName}: $value" }
-                        default
-                    }
+                current = deserialize(thisRef.prefs.get(key, serialize(default)))
+                    ?: throw IllegalArgumentException()
             }
             return current
         }
@@ -82,10 +93,75 @@ class UnencryptedSettingsImpl @Inject internal constructor() : UnencryptedSettin
             if (current == value) return
 
             current = value
-            thisRef.prefs.put(key, value.name)
+            thisRef.prefs.put(key, serialize(value))
             thisRef.prefs.flush() // write preferences to disk
             onChange(value)
-            thisRef.invalidateScreen.emit(Unit)
+            if (invalidateScreenOnChange) thisRef.invalidateScreen.emit(Unit)
         }
     }
+
+    private open class NullableEntry<T : Any>(
+        private val key: String,
+        private val default: T?,
+        private val deserialize: (string: String?) -> T?,
+        private val serialize: (value: T?) -> String? = { it.toString() },
+        private val onChange: (value: T?) -> Unit = {},
+        private val invalidateScreenOnChange: Boolean = false,
+    ) {
+        private var read = false
+        private var current: T? = null
+
+        operator fun getValue(thisRef: UnencryptedSettingsImpl, property: KProperty<*>): T? {
+            if (!read) {
+                read = true
+                current = deserialize(thisRef.prefs.get(key, serialize(default)))
+            }
+            return current
+        }
+
+        @IoExecutor
+        operator fun setValue(thisRef: UnencryptedSettingsImpl, property: KProperty<*>, value: T?) {
+            if (current == value) return
+
+            current = value
+            if (current == default || serialize(value) == null) {
+                thisRef.prefs.remove(key)
+            } else {
+                thisRef.prefs.put(key, serialize(value))
+            }
+            thisRef.prefs.flush() // write preferences to disk
+            onChange(value)
+            if (invalidateScreenOnChange) thisRef.invalidateScreen.emit(Unit)
+        }
+    }
+
+    private class EnumEntry<T : Enum<*>>(
+        key: String,
+        default: T,
+        private val enumClass: Class<T>,
+        serialize: (value: T) -> String = { it.toString() },
+        deserialize: (string: String) -> T? = { string ->
+            enumClass.enumConstants.find {
+                serialize(it) == string
+            } ?: run {
+                LOG.e { "Unexpected enum value for ${enumClass.simpleName}: $string" }
+                default
+            }
+        },
+        onChange: (value: T) -> Unit = {},
+        invalidateScreenOnChange: Boolean = false,
+    ) : Entry<T>(
+        key, default, deserialize, serialize, onChange, invalidateScreenOnChange
+    )
+
+    private class FloatEntry(
+        key: String,
+        default: Float?,
+        deserialize: (string: String?) -> Float? = { it?.toFloatOrNull() },
+        serialize: (value: Float?) -> String? = { it?.toString() },
+        onChange: (value: Float?) -> Unit = {},
+        invalidateScreenOnChange: Boolean = false,
+    ) : NullableEntry<Float>(
+        key, default, deserialize, serialize, onChange, invalidateScreenOnChange
+    )
 }

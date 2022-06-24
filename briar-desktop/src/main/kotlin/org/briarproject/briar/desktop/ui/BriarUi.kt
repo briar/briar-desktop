@@ -37,6 +37,7 @@ import androidx.compose.ui.graphics.toAwtImage
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.window.FrameWindowScope
 import androidx.compose.ui.window.Window
 import org.briarproject.bramble.api.event.EventBus
@@ -62,8 +63,9 @@ import org.briarproject.briar.desktop.ui.Screen.EXPIRED
 import org.briarproject.briar.desktop.ui.Screen.MAIN
 import org.briarproject.briar.desktop.ui.Screen.STARTUP
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
+import org.briarproject.briar.desktop.utils.UiUtils.DensityDimension
+import org.briarproject.briar.desktop.utils.UiUtils.GlobalDensity
 import org.briarproject.briar.desktop.viewmodel.ViewModelProvider
-import java.awt.Dimension
 import java.awt.event.WindowEvent
 import java.awt.event.WindowFocusListener
 import javax.annotation.concurrent.Immutable
@@ -205,7 +207,13 @@ constructor(
                 }
             }
 
-            window.minimumSize = Dimension(800, 600)
+            CompositionLocalProvider(
+                LocalDensity provides Density(configuration.uiScale ?: GlobalDensity),
+            ) {
+                window.minimumSize = DensityDimension(800, 600)
+                window.preferredSize = DensityDimension(800, 600)
+            }
+
             CompositionLocalProvider(
                 LocalWindowScope provides this,
                 LocalWindowFocusState provides focusState,
@@ -221,7 +229,7 @@ constructor(
 
                 val isDarkTheme = configuration.theme == DARK ||
                     (configuration.theme == AUTO && isSystemInDarkTheme())
-                BriarTheme(isDarkTheme) {
+                BriarTheme(isDarkTheme, configuration.uiScale) {
                     Column(Modifier.fillMaxSize()) {
                         ExpirationBanner { screenState = EXPIRED; stop() }
                         when (screenState) {

@@ -115,6 +115,7 @@ private class Main : CliktCommand(
             DaggerBriarDesktopApp.builder().desktopCoreModule(
                 DesktopCoreModule(dataDir, socksPort, controlPort)
             ).build()
+
         // We need to load the eager singletons directly after making the
         // dependency graphs
         BrambleCoreEagerSingletons.Helper.injectEagerSingletons(app)

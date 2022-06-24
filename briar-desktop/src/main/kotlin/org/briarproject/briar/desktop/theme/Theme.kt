@@ -33,9 +33,11 @@ import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.platform.Font
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.sp
 
 val Colors.divider: Color get() = if (isLight) Gray300 else Gray800
@@ -53,12 +55,12 @@ val Colors.textSecondary: Color get() = if (isLight) TextSecondaryMaterialLight 
 val Colors.privateMessageDate: Color get() = Gray200
 val Colors.buttonTextNegative: Color get() = Red500
 val Colors.buttonTextPositive: Color get() = Blue400
-val Colors.warningBackground get() = Red500
-val Colors.warningForeground get() = Color.White
-val Colors.sendButton get() = if (isLight) Lime700 else Lime500
-val Colors.passwordStrengthWeak get() = Red500
-val Colors.passwordStrengthMiddle get() = if (isLight) Orange700 else Orange500
-val Colors.passwordStrengthStrong get() = if (isLight) Lime700 else Lime500
+val Colors.warningBackground: Color get() = Red500
+val Colors.warningForeground: Color get() = Color.White
+val Colors.sendButton: Color get() = if (isLight) Lime700 else Lime500
+val Colors.passwordStrengthWeak: Color get() = Red500
+val Colors.passwordStrengthMiddle: Color get() = if (isLight) Orange700 else Orange500
+val Colors.passwordStrengthStrong: Color get() = if (isLight) Lime700 else Lime500
 
 val DarkColors = darkColors(
     primary = Blue500,
@@ -119,6 +121,7 @@ val briarTypography = Typography(
 @Composable
 fun BriarTheme(
     isDarkTheme: Boolean = isSystemInDarkTheme(),
+    density: Float? = null,
     colors: Colors? = null,
     content: @Composable () -> Unit,
 ) = MaterialTheme(
@@ -138,6 +141,7 @@ fun BriarTheme(
     CompositionLocalProvider(
         LocalTextSelectionColors provides customTextSelectionColors,
         LocalContextMenuRepresentation provides contextMenuRepresentation,
+        LocalDensity provides if (density != null) Density(density) else LocalDensity.current,
     ) {
         Surface {
             content()

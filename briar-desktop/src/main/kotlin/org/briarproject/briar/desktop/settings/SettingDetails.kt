@@ -29,18 +29,25 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.OutlinedExposedDropDownMenu
+import androidx.compose.material.Slider
 import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.FormatSize
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
@@ -88,6 +95,33 @@ fun SettingDetails(viewModel: SettingsViewModel) {
                         onChange = { viewModel.selectLanguage(viewModel.languageList[it]) },
                         modifier = Modifier.widthIn(min = 200.dp)
                     )
+                }
+
+                // TODO: add description
+                DetailItem(
+                    label = i18n("settings.display.ui_scale.title"),
+                    description = ""
+                ) {
+                    val uiScale = remember { mutableStateOf(viewModel.selectedUiScale.value) }
+
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(2.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.width(200.dp)
+                    ) {
+                        Icon(Icons.Default.FormatSize, null, Modifier.scale(0.7f))
+                        Slider(
+                            value = uiScale.value ?: LocalDensity.current.density,
+                            onValueChange = { uiScale.value = it },
+                            onValueChangeFinished = { viewModel.selectUiScale(uiScale.value!!) },
+                            valueRange = 1f..3f,
+                            steps = 3,
+                            // todo: without setting the width explicitly,
+                            //  the slider takes up the whole remaining space
+                            modifier = Modifier.width(150.dp)
+                        )
+                        Icon(Icons.Default.FormatSize, null)
+                    }
                 }
 
                 DetailItem(

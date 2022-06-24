@@ -47,6 +47,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.singleWindowApplication
 import org.briarproject.bramble.api.UniqueId
@@ -55,7 +57,9 @@ import org.briarproject.briar.desktop.theme.BriarTheme
 import org.briarproject.briar.desktop.ui.LocalWindowFocusState
 import org.briarproject.briar.desktop.ui.LocalWindowScope
 import org.briarproject.briar.desktop.ui.WindowFocusState
+import org.briarproject.briar.desktop.utils.UiUtils.DensityDimension
 import org.briarproject.briar.desktop.viewmodel.SingleStateEvent
+import java.util.prefs.Preferences
 import kotlin.random.Random
 
 object PreviewUtils {
@@ -208,6 +212,9 @@ object PreviewUtils {
     ) {
         val scope = PreviewScope()
 
+        val prefs = Preferences.userNodeForPackage(PreviewUtils::class.java)
+        val settingsDensity: Float? = prefs.get("previewsUiScale", null)?.toFloat()
+
         singleWindowApplication(title = "Interactive Preview") {
             val focusState = remember { WindowFocusState() }
             CompositionLocalProvider(
@@ -215,22 +222,27 @@ object PreviewUtils {
                 LocalWindowFocusState provides focusState
             ) {
                 Column {
-                    Column(Modifier.padding(10.dp)) {
-                        scope.addBooleanParameter("darkTheme", true)
-                        scope.addDropDownParameter(
-                            "language",
-                            DropDownValues(0, UnencryptedSettings.Language.values().toList().map { it.name })
-                        )
-                        parameters.forEach { (name, initial) ->
-                            when (initial) {
-                                is String -> scope.addStringParameter(name, initial)
-                                is Boolean -> scope.addBooleanParameter(name, initial)
-                                is Int -> scope.addIntParameter(name, initial)
-                                is Long -> scope.addLongParameter(name, initial)
-                                is Float -> scope.addFloatParameter(name, initial)
-                                is FloatSlider -> scope.addFloatSliderParameter(name, initial)
-                                is DropDownValues -> scope.addDropDownParameter(name, initial)
-                                else -> throw IllegalArgumentException("Type ${initial::class.simpleName} is not supported for previewing.")
+                    val density = settingsDensity ?: LocalDensity.current.density
+                    CompositionLocalProvider(LocalDensity provides Density(density)) {
+                        window.preferredSize = DensityDimension(800, 600)
+                        Column(Modifier.padding(10.dp)) {
+                            scope.addBooleanParameter("darkTheme", true)
+                            scope.addDropDownParameter(
+                                "language",
+                                DropDownValues(0, UnencryptedSettings.Language.values().toList().map { it.name })
+                            )
+                            scope.addFloatParameter("density", density)
+                            parameters.forEach { (name, initial) ->
+                                when (initial) {
+                                    is String -> scope.addStringParameter(name, initial)
+                                    is Boolean -> scope.addBooleanParameter(name, initial)
+                                    is Int -> scope.addIntParameter(name, initial)
+                                    is Long -> scope.addLongParameter(name, initial)
+                                    is Float -> scope.addFloatParameter(name, initial)
+                                    is FloatSlider -> scope.addFloatSliderParameter(name, initial)
+                                    is DropDownValues -> scope.addDropDownParameter(name, initial)
+                                    else -> throw IllegalArgumentException("Type ${initial::class.simpleName} is not supported for previewing.")
+                                }
                             }
                         }
                     }
@@ -245,7 +257,10 @@ object PreviewUtils {
 
                     invalidate.react { return@Column }
 
-                    BriarTheme(isDarkTheme = scope.getBooleanParameter("darkTheme")) {
+                    BriarTheme(
+                        isDarkTheme = scope.getBooleanParameter("darkTheme"),
+                        density = scope.getFloatParameter("density"),
+                    ) {
                         Box(Modifier.fillMaxSize(1f)) {
                             Column(Modifier.padding(10.dp)) {
                                 content(scope)

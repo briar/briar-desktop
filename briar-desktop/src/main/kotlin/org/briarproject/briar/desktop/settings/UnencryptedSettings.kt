@@ -25,6 +25,7 @@ import java.util.Locale
 interface UnencryptedSettingsReadOnly {
     val theme: UnencryptedSettings.Theme
     val language: UnencryptedSettings.Language
+    val uiScale: Float?
 
     val invalidateScreen: SingleStateEvent<Unit>
 }
@@ -57,6 +58,7 @@ interface UnencryptedSettings : UnencryptedSettingsReadOnly {
 
     override var theme: Theme
     override var language: Language
+    override var uiScale: Float?
 
     override val invalidateScreen: SingleStateEvent<Unit>
 }
