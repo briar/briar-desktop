@@ -7,10 +7,12 @@
         </encoder>
     </appender>
 
+    <!-- possible log levels: TRACE, DEBUG, INFO, WARN and ERROR -->
+
     <logger name="org.briarproject.briar" level="INFO"/>
     <logger name="org.briarproject.briar.desktop" level="INFO"/>
 
-    <root level="info">
+    <root level="INFO">
         <appender-ref ref="STDOUT"/>
     </root>
 </configuration>
