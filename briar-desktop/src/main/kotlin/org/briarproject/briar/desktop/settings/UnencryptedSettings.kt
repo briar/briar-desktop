@@ -38,11 +38,9 @@ interface UnencryptedSettings {
             else Locale.forLanguageTag(name.replace('_', '-'))
     }
 
-    enum class UiScale(val factor: Double) { S1(1.0), S2(2.0) }
-
     var theme: Theme
     var language: Language
-    var uiScale: UiScale
+    var uiScale: Float
 
     val invalidateScreen: SingleStateEvent<Unit>
 }

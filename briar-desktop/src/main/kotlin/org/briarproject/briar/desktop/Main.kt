@@ -31,7 +31,6 @@ import org.briarproject.bramble.BrambleCoreEagerSingletons
 import org.briarproject.bramble.api.plugin.TorConstants.DEFAULT_CONTROL_PORT
 import org.briarproject.bramble.api.plugin.TorConstants.DEFAULT_SOCKS_PORT
 import org.briarproject.briar.BriarCoreEagerSingletons
-import org.briarproject.briar.desktop.settings.SettingsUtils.initScaleFactor
 import org.briarproject.briar.desktop.utils.FileUtils
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nF
@@ -115,8 +114,6 @@ private class Main : CliktCommand(
             DaggerBriarDesktopApp.builder().desktopModule(
                 DesktopModule(dataDir, socksPort, controlPort)
             ).build()
-
-        initScaleFactor(app.getUnencryptedSettings())
 
         // We need to load the eager singletons directly after making the
         // dependency graphs

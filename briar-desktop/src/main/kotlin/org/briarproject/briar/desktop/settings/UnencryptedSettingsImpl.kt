@@ -23,8 +23,6 @@ import org.briarproject.briar.desktop.settings.UnencryptedSettings.Language
 import org.briarproject.briar.desktop.settings.UnencryptedSettings.Language.DEFAULT
 import org.briarproject.briar.desktop.settings.UnencryptedSettings.Theme
 import org.briarproject.briar.desktop.settings.UnencryptedSettings.Theme.AUTO
-import org.briarproject.briar.desktop.settings.UnencryptedSettings.UiScale
-import org.briarproject.briar.desktop.settings.UnencryptedSettings.UiScale.S1
 import org.briarproject.briar.desktop.utils.InternationalizationUtils
 import org.briarproject.briar.desktop.viewmodel.SingleStateEvent
 import java.util.prefs.Preferences
@@ -52,7 +50,11 @@ class UnencryptedSettingsImpl @Inject internal constructor() : UnencryptedSettin
         invalidateScreenOnChange = true
     )
 
-    override var uiScale by EnumEntry(PREF_UI_SCALE, S1, UiScale::class.java, storageMapper = { it.factor.toString() })
+    override var uiScale by FloatEntry(
+        PREF_UI_SCALE,
+        2f,
+        invalidateScreenOnChange = true
+    )
 
     init {
         updateLocale(language)
@@ -62,21 +64,19 @@ class UnencryptedSettingsImpl @Inject internal constructor() : UnencryptedSettin
         InternationalizationUtils.locale = language.locale
     }
 
-    private class EnumEntry<T : Enum<*>>(
+    private open class Entry<T : Any>(
         private val key: String,
         private val default: T,
-        private val enumClass: Class<T>,
+        private val deserialize: (string: String) -> T?,
+        private val serialize: (value: T) -> String = { it.toString() },
         private val onChange: (value: T) -> Unit = {},
-        private val storageMapper: (value: T) -> String = { it.name },
         private val invalidateScreenOnChange: Boolean = false,
     ) {
         private lateinit var current: T
 
         operator fun getValue(thisRef: UnencryptedSettingsImpl, property: KProperty<*>): T {
             if (!::current.isInitialized) {
-                current = enumClass.enumConstants.find {
-                    storageMapper(it) == thisRef.prefs.get(key, storageMapper(default))
-                }
+                current = deserialize(thisRef.prefs.get(key, serialize(default)))
                     ?: throw IllegalArgumentException()
             }
             return current
@@ -87,10 +87,37 @@ class UnencryptedSettingsImpl @Inject internal constructor() : UnencryptedSettin
             if (current == value) return
 
             current = value
-            thisRef.prefs.put(key, storageMapper(value))
+            thisRef.prefs.put(key, serialize(value))
             thisRef.prefs.flush() // write preferences to disk
             onChange(value)
             if (invalidateScreenOnChange) thisRef.invalidateScreen.emit(Unit)
         }
     }
+
+    private class EnumEntry<T : Enum<*>>(
+        key: String,
+        default: T,
+        private val enumClass: Class<T>,
+        serialize: (value: T) -> String = { it.toString() },
+        deserialize: (string: String) -> T? = { string ->
+            enumClass.enumConstants.find {
+                serialize(it) == string
+            }
+        },
+        onChange: (value: T) -> Unit = {},
+        invalidateScreenOnChange: Boolean = false,
+    ) : Entry<T>(
+        key, default, deserialize, serialize, onChange, invalidateScreenOnChange
+    )
+
+    private class FloatEntry(
+        key: String,
+        default: Float,
+        deserialize: (string: String) -> Float? = String::toFloatOrNull,
+        serialize: (value: Float) -> String = { it.toString() },
+        onChange: (value: Float) -> Unit = {},
+        invalidateScreenOnChange: Boolean = false,
+    ) : Entry<Float>(
+        key, default, deserialize, serialize, onChange, invalidateScreenOnChange
+    )
 }

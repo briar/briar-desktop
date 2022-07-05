@@ -181,7 +181,7 @@ constructor(
                 var showAbout by remember { mutableStateOf(false) }
                 val isDarkTheme = unencryptedSettings.theme == DARK ||
                     (unencryptedSettings.theme == AUTO && isSystemInDarkTheme())
-                BriarTheme(isDarkTheme) {
+                BriarTheme(isDarkTheme, unencryptedSettings.uiScale) {
                     Column(Modifier.fillMaxSize()) {
                         ExpirationBanner { screenState = EXPIRED; stop() }
                         when (screenState) {

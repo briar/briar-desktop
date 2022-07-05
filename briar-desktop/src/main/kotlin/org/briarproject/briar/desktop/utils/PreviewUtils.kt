@@ -51,13 +51,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.singleWindowApplication
 import org.briarproject.bramble.api.UniqueId
-import org.briarproject.briar.desktop.settings.SettingsUtils.initScaleFactor
-import org.briarproject.briar.desktop.settings.UnencryptedSettingsImpl
 import org.briarproject.briar.desktop.theme.BriarTheme
 import org.briarproject.briar.desktop.ui.LocalWindowFocusState
 import org.briarproject.briar.desktop.ui.LocalWindowScope
 import org.briarproject.briar.desktop.ui.WindowFocusState
-import java.util.prefs.Preferences
 import kotlin.random.Random
 
 object PreviewUtils {
@@ -210,10 +207,6 @@ object PreviewUtils {
     ) {
         val scope = PreviewScope()
 
-        val prefs = Preferences.userNodeForPackage(UnencryptedSettingsImpl::class.java)
-        val uiScale = prefs.get("uiScale", null)?.toDouble() ?: 1.0
-        initScaleFactor(uiScale)
-
         singleWindowApplication(title = "Interactive Preview") {
             val focusState = remember { WindowFocusState() }
             CompositionLocalProvider(
@@ -223,6 +216,7 @@ object PreviewUtils {
                 Column {
                     Column(Modifier.padding(10.dp)) {
                         scope.addBooleanParameter("darkTheme", true)
+                        scope.addFloatParameter("density", 2f)
                         parameters.forEach { (name, initial) ->
                             when (initial) {
                                 is String -> scope.addStringParameter(name, initial)
@@ -237,7 +231,10 @@ object PreviewUtils {
                         }
                     }
 
-                    BriarTheme(isDarkTheme = scope.getBooleanParameter("darkTheme")) {
+                    BriarTheme(
+                        isDarkTheme = scope.getBooleanParameter("darkTheme"),
+                        density = scope.getFloatParameter("density")
+                    ) {
                         Box(Modifier.fillMaxSize(1f)) {
                             Column(Modifier.padding(10.dp)) {
                                 content(scope)

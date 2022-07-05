@@ -48,7 +48,6 @@ constructor(
 
     val themesList = UnencryptedSettings.Theme.values()
     val languageList = UnencryptedSettings.Language.values()
-    val uiScaleList = UnencryptedSettings.UiScale.values()
 
     private val _selectedTheme = mutableStateOf(unencryptedSettings.theme)
     val selectedTheme = _selectedTheme.asState()
@@ -78,7 +77,7 @@ constructor(
         briarExecutors.onIoThread { unencryptedSettings.language = language }
     }
 
-    fun selectUiScale(uiScale: UnencryptedSettings.UiScale) {
+    fun selectUiScale(uiScale: Float) {
         _selectedUiScale.value = uiScale
         briarExecutors.onIoThread { unencryptedSettings.uiScale = uiScale }
     }

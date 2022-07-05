@@ -23,7 +23,6 @@ import org.briarproject.bramble.BrambleCoreEagerSingletons
 import org.briarproject.bramble.BrambleCoreModule
 import org.briarproject.briar.BriarCoreEagerSingletons
 import org.briarproject.briar.BriarCoreModule
-import org.briarproject.briar.desktop.settings.UnencryptedSettings
 import org.briarproject.briar.desktop.ui.BriarUi
 import java.security.SecureRandom
 import javax.inject.Singleton
@@ -41,6 +40,4 @@ internal interface BriarDesktopApp : BrambleCoreEagerSingletons, BriarCoreEagerS
     fun getBriarUi(): BriarUi
 
     fun getSecureRandom(): SecureRandom
-
-    fun getUnencryptedSettings(): UnencryptedSettings
 }
