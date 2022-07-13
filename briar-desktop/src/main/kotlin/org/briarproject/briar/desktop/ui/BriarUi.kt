@@ -163,7 +163,11 @@ constructor(
                 }
             }
 
-            window.minimumSize = Dimension(800, 600)
+            val scale = unencryptedSettings.uiScale ?: 1f
+            val width = (800 * scale).toInt()
+            val height = (600 * scale).toInt()
+
+            window.minimumSize = Dimension(width, height)
             CompositionLocalProvider(
                 LocalWindowScope provides this,
                 LocalWindowFocusState provides focusState,
