@@ -57,6 +57,7 @@ import androidx.compose.material.icons.filled.SouthWest
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -69,6 +70,7 @@ import androidx.compose.ui.input.pointer.PointerIconDefaults
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -190,6 +192,7 @@ fun AddContactDialog(
     if (!visible) {
         return
     }
+    val density = LocalDensity.current
     Dialog(
         title = i18n("contact.add.title_dialog"),
         onCloseRequest = onClose,
@@ -198,67 +201,71 @@ fun AddContactDialog(
             size = DpSize(width = 560.dp, height = 520.dp),
         ),
     ) {
-        window.minimumSize = Dimension(360, 512)
-        val clipboardManager = LocalClipboardManager.current
-        val scaffoldState = rememberScaffoldState()
-        val coroutineScope = rememberCoroutineScope()
-        val aliasFocusRequester = remember { FocusRequester() }
-        Surface {
-            Scaffold(
-                modifier = Modifier.padding(horizontal = 24.dp).padding(top = 24.dp, bottom = 12.dp),
-                topBar = {
-                    Box(Modifier.fillMaxWidth()) {
-                        Text(
-                            i18n("contact.add.remote.title"),
-                            style = MaterialTheme.typography.h6,
-                            modifier = Modifier.padding(bottom = 12.dp)
-                        )
-                    }
-                },
-                scaffoldState = scaffoldState,
-                content = {
-                    Column(Modifier.fillMaxSize()) {
-                        if (error != null) {
-                            AddContactErrorDialog(error, onErrorDialogDismissed)
+        CompositionLocalProvider(LocalDensity provides density) {
+            with(LocalDensity.current) {
+                window.minimumSize = Dimension(360.dp.toPx().toInt(), 512.dp.toPx().toInt())
+            }
+            val clipboardManager = LocalClipboardManager.current
+            val scaffoldState = rememberScaffoldState()
+            val coroutineScope = rememberCoroutineScope()
+            val aliasFocusRequester = remember { FocusRequester() }
+            Surface {
+                Scaffold(
+                    modifier = Modifier.padding(horizontal = 24.dp).padding(top = 24.dp, bottom = 12.dp),
+                    topBar = {
+                        Box(Modifier.fillMaxWidth()) {
+                            Text(
+                                i18n("contact.add.remote.title"),
+                                style = MaterialTheme.typography.h6,
+                                modifier = Modifier.padding(bottom = 12.dp)
+                            )
                         }
-                        OwnLink(
-                            handshakeLink,
-                            clipboardManager,
-                            coroutineScope,
-                            scaffoldState,
-                        )
-                        ContactLink(
-                            remoteHandshakeLink,
-                            setRemoteHandshakeLink,
-                            clipboardManager,
-                            coroutineScope,
-                            scaffoldState,
-                            aliasFocusRequester,
-                        )
-                        Alias(
-                            alias,
-                            setAddContactAlias,
-                            aliasFocusRequester,
-                            onSubmitAddContactDialog,
-                        )
-                    }
-                },
-                bottomBar = {
-                    Box(Modifier.fillMaxWidth()) {
-                        Row(Modifier.align(Alignment.CenterEnd)) {
-                            TextButton(
-                                onClose,
-                                colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colors.error)
-                            ) {
-                                Text(i18n("cancel"))
+                    },
+                    scaffoldState = scaffoldState,
+                    content = {
+                        Column(Modifier.fillMaxSize()) {
+                            if (error != null) {
+                                AddContactErrorDialog(error, onErrorDialogDismissed)
                             }
-                            Button(onSubmitAddContactDialog, modifier = Modifier.padding(start = 8.dp)) {
-                                Text(i18n("add"))
+                            OwnLink(
+                                handshakeLink,
+                                clipboardManager,
+                                coroutineScope,
+                                scaffoldState,
+                            )
+                            ContactLink(
+                                remoteHandshakeLink,
+                                setRemoteHandshakeLink,
+                                clipboardManager,
+                                coroutineScope,
+                                scaffoldState,
+                                aliasFocusRequester,
+                            )
+                            Alias(
+                                alias,
+                                setAddContactAlias,
+                                aliasFocusRequester,
+                                onSubmitAddContactDialog,
+                            )
+                        }
+                    },
+                    bottomBar = {
+                        Box(Modifier.fillMaxWidth()) {
+                            Row(Modifier.align(Alignment.CenterEnd)) {
+                                TextButton(
+                                    onClose,
+                                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colors.error)
+                                ) {
+                                    Text(i18n("cancel"))
+                                }
+                                Button(onSubmitAddContactDialog, modifier = Modifier.padding(start = 8.dp)) {
+                                    Text(i18n("add"))
+                                }
                             }
                         }
-                    }
-                },
-            )
+                    },
+                )
+            }
         }
     }
 }
