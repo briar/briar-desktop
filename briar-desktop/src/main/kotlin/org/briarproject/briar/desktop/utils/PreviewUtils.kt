@@ -48,6 +48,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.singleWindowApplication
 import org.briarproject.bramble.api.UniqueId
@@ -206,6 +208,8 @@ object PreviewUtils {
         content: @Composable PreviewScope.() -> Unit
     ) {
         val scope = PreviewScope()
+        // TODO: get from settings specific for preview utils
+        val settingsDensity: Float? = null
 
         singleWindowApplication(title = "Interactive Preview") {
             val focusState = remember { WindowFocusState() }
@@ -214,19 +218,22 @@ object PreviewUtils {
                 LocalWindowFocusState provides focusState
             ) {
                 Column {
-                    Column(Modifier.padding(10.dp)) {
-                        scope.addBooleanParameter("darkTheme", true)
-                        scope.addFloatParameter("density", 2f)
-                        parameters.forEach { (name, initial) ->
-                            when (initial) {
-                                is String -> scope.addStringParameter(name, initial)
-                                is Boolean -> scope.addBooleanParameter(name, initial)
-                                is Int -> scope.addIntParameter(name, initial)
-                                is Long -> scope.addLongParameter(name, initial)
-                                is Float -> scope.addFloatParameter(name, initial)
-                                is FloatSlider -> scope.addFloatSliderParameter(name, initial)
-                                is DropDownValues -> scope.addDropDownParameter(name, initial)
-                                else -> throw IllegalArgumentException("Type ${initial::class.simpleName} is not supported for previewing.")
+                    val density = settingsDensity ?: LocalDensity.current.density
+                    CompositionLocalProvider(LocalDensity provides Density(density)) {
+                        Column(Modifier.padding(10.dp)) {
+                            scope.addBooleanParameter("darkTheme", true)
+                            scope.addFloatParameter("density", density)
+                            parameters.forEach { (name, initial) ->
+                                when (initial) {
+                                    is String -> scope.addStringParameter(name, initial)
+                                    is Boolean -> scope.addBooleanParameter(name, initial)
+                                    is Int -> scope.addIntParameter(name, initial)
+                                    is Long -> scope.addLongParameter(name, initial)
+                                    is Float -> scope.addFloatParameter(name, initial)
+                                    is FloatSlider -> scope.addFloatSliderParameter(name, initial)
+                                    is DropDownValues -> scope.addDropDownParameter(name, initial)
+                                    else -> throw IllegalArgumentException("Type ${initial::class.simpleName} is not supported for previewing.")
+                                }
                             }
                         }
                     }
