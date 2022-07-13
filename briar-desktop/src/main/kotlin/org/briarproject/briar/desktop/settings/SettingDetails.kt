@@ -43,6 +43,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
@@ -104,11 +105,11 @@ fun SettingDetails(viewModel: SettingsViewModel) {
                     ) {
                         Icon(Icons.Default.FormatSize, null, Modifier.scale(0.7f))
                         Slider(
-                            value = uiScale.value,
+                            value = uiScale.value ?: LocalDensity.current.density,
                             onValueChange = { uiScale.value = it },
-                            onValueChangeFinished = { viewModel.selectUiScale(uiScale.value) },
-                            valueRange = 1f..4f,
-                            steps = 2,
+                            onValueChangeFinished = { viewModel.selectUiScale(uiScale.value!!) },
+                            valueRange = 1f..3f,
+                            steps = 3,
                             // todo: without setting the width explicitly,
                             //  the slider takes up the whole remaining space
                             modifier = Modifier.width(150.dp)

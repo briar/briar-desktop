@@ -40,7 +40,7 @@ interface UnencryptedSettings {
 
     var theme: Theme
     var language: Language
-    var uiScale: Float
+    var uiScale: Float?
 
     val invalidateScreen: SingleStateEvent<Unit>
 }
