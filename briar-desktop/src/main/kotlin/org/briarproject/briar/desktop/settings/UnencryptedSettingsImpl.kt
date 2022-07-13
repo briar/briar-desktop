@@ -97,7 +97,7 @@ class UnencryptedSettingsImpl @Inject internal constructor() : UnencryptedSettin
     private open class NullableEntry<T : Any>(
         private val key: String,
         private val default: T?,
-        private val deserialize: (string: String) -> T?,
+        private val deserialize: (string: String?) -> T?,
         private val serialize: (value: T?) -> String? = { it.toString() },
         private val onChange: (value: T?) -> Unit = {},
         private val invalidateScreenOnChange: Boolean = false,
@@ -148,7 +148,7 @@ class UnencryptedSettingsImpl @Inject internal constructor() : UnencryptedSettin
     private class FloatEntry(
         key: String,
         default: Float?,
-        deserialize: (string: String) -> Float? = String::toFloatOrNull,
+        deserialize: (string: String?) -> Float? = { it?.toFloatOrNull() },
         serialize: (value: Float?) -> String? = { it?.toString() },
         onChange: (value: Float?) -> Unit = {},
         invalidateScreenOnChange: Boolean = false,
