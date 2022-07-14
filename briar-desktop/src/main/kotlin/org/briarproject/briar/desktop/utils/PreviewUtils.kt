@@ -57,6 +57,7 @@ import org.briarproject.briar.desktop.theme.BriarTheme
 import org.briarproject.briar.desktop.ui.LocalWindowFocusState
 import org.briarproject.briar.desktop.ui.LocalWindowScope
 import org.briarproject.briar.desktop.ui.WindowFocusState
+import org.briarproject.briar.desktop.utils.UiUtils.DensityDimension
 import java.util.prefs.Preferences
 import kotlin.random.Random
 
@@ -222,6 +223,7 @@ object PreviewUtils {
                 Column {
                     val density = settingsDensity ?: LocalDensity.current.density
                     CompositionLocalProvider(LocalDensity provides Density(density)) {
+                        window.preferredSize = DensityDimension(800, 600)
                         Column(Modifier.padding(10.dp)) {
                             scope.addBooleanParameter("darkTheme", true)
                             scope.addFloatParameter("density", density)
