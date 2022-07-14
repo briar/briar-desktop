@@ -102,8 +102,8 @@ import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nF
 import org.briarproject.briar.desktop.utils.PreviewUtils
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
+import org.briarproject.briar.desktop.utils.UiUtils.DensityDimension
 import org.briarproject.briar.desktop.viewmodel.viewModel
-import java.awt.Dimension
 
 @Suppress("HardCodedStringLiteral")
 const val link = "briar://ady23gvb2r76afe5zhxh5kvnh4b22zrcnxibn63tfknrdcwrw7zrs"
@@ -202,9 +202,8 @@ fun AddContactDialog(
         ),
     ) {
         CompositionLocalProvider(LocalDensity provides density) {
-            with(LocalDensity.current) {
-                window.minimumSize = Dimension(360.dp.toPx().toInt(), 512.dp.toPx().toInt())
-            }
+            window.minimumSize = DensityDimension(360, 512)
+            window.preferredSize = DensityDimension(520, 512)
             val clipboardManager = LocalClipboardManager.current
             val scaffoldState = rememberScaffoldState()
             val coroutineScope = rememberCoroutineScope()

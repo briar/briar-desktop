@@ -38,6 +38,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalLocalization
 import androidx.compose.ui.platform.PlatformLocalization
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.window.FrameWindowScope
 import androidx.compose.ui.window.Window
 import org.briarproject.bramble.api.FeatureFlags
@@ -59,8 +60,9 @@ import org.briarproject.briar.desktop.ui.Screen.EXPIRED
 import org.briarproject.briar.desktop.ui.Screen.MAIN
 import org.briarproject.briar.desktop.ui.Screen.STARTUP
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
+import org.briarproject.briar.desktop.utils.UiUtils.DensityDimension
+import org.briarproject.briar.desktop.utils.UiUtils.GlobalDensity
 import org.briarproject.briar.desktop.viewmodel.ViewModelProvider
-import java.awt.Dimension
 import java.awt.event.WindowEvent
 import java.awt.event.WindowFocusListener
 import javax.annotation.concurrent.Immutable
@@ -163,11 +165,13 @@ constructor(
                 }
             }
 
-            val scale = unencryptedSettings.uiScale ?: 1f
-            val width = (800 * scale).toInt()
-            val height = (600 * scale).toInt()
+            CompositionLocalProvider(
+                LocalDensity provides Density(unencryptedSettings.uiScale ?: GlobalDensity),
+            ) {
+                window.minimumSize = DensityDimension(800, 600)
+                window.preferredSize = DensityDimension(800, 600)
+            }
 
-            window.minimumSize = Dimension(width, height)
             CompositionLocalProvider(
                 LocalWindowScope provides this,
                 LocalWindowFocusState provides focusState,
