@@ -57,6 +57,7 @@ import org.briarproject.briar.desktop.theme.BriarTheme
 import org.briarproject.briar.desktop.ui.LocalWindowFocusState
 import org.briarproject.briar.desktop.ui.LocalWindowScope
 import org.briarproject.briar.desktop.ui.WindowFocusState
+import java.util.prefs.Preferences
 import kotlin.random.Random
 
 object PreviewUtils {
@@ -208,8 +209,9 @@ object PreviewUtils {
         content: @Composable PreviewScope.() -> Unit
     ) {
         val scope = PreviewScope()
-        // TODO: get from settings specific for preview utils
-        val settingsDensity: Float? = null
+
+        val prefs = Preferences.userNodeForPackage(PreviewUtils::class.java)
+        val settingsDensity: Float? = prefs.get("previewsUiScale", null)?.toFloat()
 
         singleWindowApplication(title = "Interactive Preview") {
             val focusState = remember { WindowFocusState() }
