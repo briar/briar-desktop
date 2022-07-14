@@ -73,3 +73,23 @@ in the scope which is configured in
 
 Which copyright profile is applied in which scope can be configured in
 `Settings → Editor → Copyright`.
+
+## Unencrypted settings
+
+We're currently using the [Java Preferences
+API](https://docs.oracle.com/javase/8/docs/api/java/util/prefs/Preferences.html)
+for storing unencrypted settings. This stores some UI preferences that are
+required before the database has been decrypted such as the UI language,
+light/dark theme and a custom scale factor for the whole UI.
+This API stores our preferences in an OS-specific manner.
+On Linux they're stored in flat XML files,
+on macOS they're stored in a proprietary format
+and on Windows they're probably stored in the registry.
+
+On Linux the settings are stored in an XML file at
+`~/.java/.userPrefs/org/briarproject/briar/desktop/settings/prefs.xml` and can
+be edited with a simple text editor. On other platforms inspecting and editing
+those preferences is not as straightforward. There is however a
+platform-independent UI tool called [JPUI](http://jpui.sourceforge.net/) that
+allows you to inspect and edit them easily. Last release is from 2004, but it
+still works ;)
