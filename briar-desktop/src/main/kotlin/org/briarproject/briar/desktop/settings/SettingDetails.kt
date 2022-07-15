@@ -110,9 +110,7 @@ fun SettingDetails(viewModel: SettingsViewModel) {
                             onValueChangeFinished = { viewModel.selectUiScale(uiScale.value!!) },
                             valueRange = 1f..3f,
                             steps = 3,
-                            // todo: without setting the width explicitly,
-                            //  the slider takes up the whole remaining space
-                            modifier = Modifier.width(150.dp)
+                            modifier = Modifier.weight(1f)
                         )
                         Icon(Icons.Default.FormatSize, null)
                     }
