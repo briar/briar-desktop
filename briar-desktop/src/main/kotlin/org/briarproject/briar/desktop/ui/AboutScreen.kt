@@ -15,7 +15,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -55,11 +54,11 @@ fun AboutScreen(
     AboutScreen()
 
     IconButton(
+        icon = Icons.Filled.ArrowBack,
+        contentDescription = i18n("access.return_to_previous_screen"),
         onClick = onBackButton,
         modifier = Modifier.align(Alignment.TopStart)
-    ) {
-        Icon(Icons.Filled.ArrowBack, i18n("access.return_to_previous_screen"))
-    }
+    )
 }
 
 @Composable

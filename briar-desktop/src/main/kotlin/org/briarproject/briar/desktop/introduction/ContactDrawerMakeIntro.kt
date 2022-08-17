@@ -70,11 +70,11 @@ fun ContactDrawerMakeIntro(
             if (!viewModel.secondScreen.value) {
                 Row(Modifier.fillMaxWidth().height(HEADER_SIZE)) {
                     IconButton(
+                        icon = Icons.Filled.Close,
+                        contentDescription = i18n("access.introduction.close"),
                         onClick = { closeInfoDrawer(false) },
-                        Modifier.padding(start = 24.dp).size(24.dp).align(Alignment.CenterVertically)
-                    ) {
-                        Icon(Icons.Filled.Close, i18n("access.introduction.close"))
-                    }
+                        modifier = Modifier.padding(start = 24.dp).size(24.dp).align(Alignment.CenterVertically)
+                    )
                     Text(
                         text = i18nF("introduction.title_first", contactItem.displayName),
                         modifier = Modifier.align(Alignment.CenterVertically).padding(start = 16.dp),
@@ -97,11 +97,11 @@ fun ContactDrawerMakeIntro(
             } else {
                 Row(Modifier.fillMaxWidth().height(HEADER_SIZE)) {
                     IconButton(
+                        icon = Icons.Filled.ArrowBack,
+                        contentDescription = i18n("access.introduction.back.contact"),
                         onClick = viewModel::backToFirstScreen,
-                        Modifier.padding(start = 24.dp).size(24.dp).align(Alignment.CenterVertically)
-                    ) {
-                        Icon(Icons.Filled.ArrowBack, i18n("access.introduction.back.contact"))
-                    }
+                        modifier = Modifier.padding(start = 24.dp).size(24.dp).align(Alignment.CenterVertically)
+                    )
                     Text(
                         text = i18n("introduction.title_second"),
                         modifier = Modifier.align(Alignment.CenterVertically).padding(start = 16.dp),

@@ -23,9 +23,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -107,13 +105,15 @@ fun BriarSidebarButton(
     selected: Boolean,
     onClick: () -> Unit,
     icon: ImageVector,
-    contentDescription: String?,
+    contentDescription: String,
 ) {
     val tint = if (selected) MaterialTheme.colors.primary else MaterialTheme.colors.onSurface
     IconButton(
+        icon = icon,
+        iconSize = 30.dp,
+        iconTint = tint,
+        contentDescription = contentDescription,
+        onClick = onClick,
         modifier = Modifier.padding(vertical = 4.dp, horizontal = 12.dp),
-        onClick = onClick
-    ) {
-        Icon(icon, contentDescription, tint = tint, modifier = Modifier.size(30.dp))
-    }
+    )
 }

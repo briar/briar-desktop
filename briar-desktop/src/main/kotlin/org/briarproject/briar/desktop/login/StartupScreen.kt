@@ -25,7 +25,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -73,19 +72,19 @@ fun StartupScreenScaffold(
 
     if (showBackButton) {
         IconButton(
+            icon = Icons.Filled.ArrowBack,
+            contentDescription = i18n("access.return_to_previous_screen"),
             onClick = onBackButton,
             modifier = Modifier.align(Alignment.TopStart)
-        ) {
-            Icon(Icons.Filled.ArrowBack, i18n("access.return_to_previous_screen"))
-        }
+        )
     }
 
     IconButton(
+        icon = Icons.Filled.Info,
+        contentDescription = i18n("access.mode.about"),
         onClick = onShowAbout,
         modifier = Modifier.align(Alignment.BottomStart)
-    ) {
-        Icon(Icons.Filled.Info, i18n("access.mode.about"))
-    }
+    )
 }
 
 @Composable

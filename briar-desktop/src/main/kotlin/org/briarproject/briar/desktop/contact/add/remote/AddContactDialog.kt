@@ -362,7 +362,7 @@ fun OwnLink(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun ContactLink(
     remoteHandshakeLink: String,
@@ -394,55 +394,32 @@ fun ContactLink(
             letterSpacing = (-0.5).sp,
         ),
         trailingIcon = {
-            TooltipArea(
-                tooltip = {
-                    Surface(
-                        modifier = Modifier.shadow(4.dp),
-                        shape = RoundedCornerShape(4.dp),
-                    ) {
-                        Text(
-                            text = i18n("contact.add.remote.paste_tooltip"),
-                            modifier = Modifier.padding(8.dp),
-                            color = MaterialTheme.colors.onSurface,
-                        )
+            IconButton(
+                icon = Icons.Filled.ContentPaste,
+                iconTint = MaterialTheme.colors.onSurface,
+                contentDescription = i18n("contact.add.remote.paste_tooltip"),
+                onClick = {
+                    val clipboardText = clipboardManager.getText().toString()
+                    if (clipboardText.isNotEmpty()) {
+                        setRemoteHandshakeLink(clipboardManager.getText().toString())
+                        coroutineScope.launch {
+                            scaffoldState.snackbarHostState.showSnackbar(
+                                message = i18n("contact.add.remote.link_pasted_snackbar"),
+                                duration = SnackbarDuration.Short,
+                            )
+                        }
+                        aliasFocusRequester.requestFocus()
+                    } else {
+                        coroutineScope.launch {
+                            scaffoldState.snackbarHostState.showSnackbar(
+                                message = i18n("contact.add.remote.paste_error_snackbar"),
+                                duration = SnackbarDuration.Short,
+                            )
+                        }
                     }
                 },
-                modifier = Modifier.padding(start = 30.dp),
-                delayMillis = 200,
-                tooltipPlacement = TooltipPlacement.ComponentRect(
-                    alignment = Alignment.BottomCenter,
-                )
-            ) {
-                IconButton(
-                    {
-                        val clipboardText = clipboardManager.getText().toString()
-                        if (clipboardText.isNotEmpty()) {
-                            setRemoteHandshakeLink(clipboardManager.getText().toString())
-                            coroutineScope.launch {
-                                scaffoldState.snackbarHostState.showSnackbar(
-                                    message = i18n("contact.add.remote.link_pasted_snackbar"),
-                                    duration = SnackbarDuration.Short,
-                                )
-                            }
-                            aliasFocusRequester.requestFocus()
-                        } else {
-                            coroutineScope.launch {
-                                scaffoldState.snackbarHostState.showSnackbar(
-                                    message = i18n("contact.add.remote.paste_error_snackbar"),
-                                    duration = SnackbarDuration.Short,
-                                )
-                            }
-                        }
-                    },
-                    Modifier.pointerHoverIcon(PointerIconDefaults.Default)
-                ) {
-                    Icon(
-                        Icons.Filled.ContentPaste,
-                        "contact.add.remote.paste_tooltip",
-                        tint = MaterialTheme.colors.onSurface
-                    )
-                }
-            }
+                modifier = Modifier.pointerHoverIcon(PointerIconDefaults.Default)
+            )
         }
     )
 }

@@ -27,7 +27,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -115,6 +114,8 @@ fun ConversationInput(
             leadingIcon = {
                 val windowScope = LocalWindowScope.current!!
                 ColoredIconButton(
+                    icon = if (image == null) Icons.Filled.Add else Icons.Filled.Close,
+                    contentDescription = if (image == null) i18n("access.attachment_add") else i18n("access.attachment_remove"),
                     onClick = {
                         if (image == null) {
                             pickImageUsingDialog(windowScope.window, updateImage)
@@ -122,27 +123,17 @@ fun ConversationInput(
                             updateImage(null)
                         }
                     },
-                    Modifier.padding(4.dp),
-                ) {
-                    if (image == null) {
-                        Icon(Icons.Filled.Add, i18n("access.attachment_add"), Modifier.size(24.dp))
-                    } else {
-                        Icon(Icons.Filled.Close, i18n("access.attachment_remove"), Modifier.size(24.dp))
-                    }
-                }
+                    modifier = Modifier.padding(4.dp),
+                )
             },
             trailingIcon = {
                 IconButton(
+                    icon = Icons.Filled.Send,
+                    iconTint = MaterialTheme.colors.sendButton,
+                    contentDescription = i18n("access.message.send"),
                     onClick = onSend,
                     modifier = Modifier.padding(4.dp).size(32.dp).pointerHoverIcon(PointerIconDefaults.Default),
-                ) {
-                    Icon(
-                        Icons.Filled.Send,
-                        i18n("access.message.send"),
-                        tint = MaterialTheme.colors.sendButton,
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
+                )
             }
         )
     }

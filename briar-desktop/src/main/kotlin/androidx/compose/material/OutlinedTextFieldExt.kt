@@ -228,20 +228,8 @@ fun OutlinedPasswordTextField(
 private fun ShowHidePasswordIcon(
     isVisible: Boolean,
     toggleIsVisible: () -> Unit,
-) {
-    IconButton(
-        onClick = toggleIsVisible
-    ) {
-        if (isVisible) {
-            Icon(
-                imageVector = Icons.Filled.VisibilityOff,
-                contentDescription = i18n("access.password.show"),
-            )
-        } else {
-            Icon(
-                imageVector = Icons.Filled.Visibility,
-                contentDescription = i18n("access.password.hide"),
-            )
-        }
-    }
-}
+) = IconButton(
+    icon = if (isVisible) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
+    contentDescription = if (isVisible) i18n("access.password.hide") else i18n("access.password.show"),
+    onClick = toggleIsVisible
+)

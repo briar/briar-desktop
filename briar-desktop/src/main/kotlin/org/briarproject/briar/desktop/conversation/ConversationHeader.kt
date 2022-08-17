@@ -26,8 +26,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -92,10 +90,11 @@ fun ConversationHeader(
                 )
             }
             IconButton(
+                icon = Icons.Filled.MoreVert,
+                contentDescription = i18n("access.contact.menu"),
                 onClick = { setMenuState(ContactDropDown.State.MAIN) },
                 modifier = Modifier.align(Alignment.CenterVertically).padding(end = 16.dp)
             ) {
-                Icon(Icons.Filled.MoreVert, i18n("access.contact.menu"), modifier = Modifier.size(24.dp))
                 ContactDropDown(
                     menuState,
                     setMenuState,

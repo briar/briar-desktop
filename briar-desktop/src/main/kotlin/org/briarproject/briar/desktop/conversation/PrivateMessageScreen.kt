@@ -18,7 +18,6 @@
 
 package org.briarproject.briar.desktop.conversation
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,9 +27,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -38,7 +34,6 @@ import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import org.briarproject.briar.desktop.contact.ConfirmRemovePendingContactDialog
@@ -49,6 +44,7 @@ import org.briarproject.briar.desktop.contact.RealContactIdWrapper
 import org.briarproject.briar.desktop.contact.add.remote.AddContactDialog
 import org.briarproject.briar.desktop.contact.add.remote.AddContactViewModel
 import org.briarproject.briar.desktop.ui.BriarLogo
+import org.briarproject.briar.desktop.ui.ColoredIconButton
 import org.briarproject.briar.desktop.ui.Constants.PARAGRAPH_WIDTH
 import org.briarproject.briar.desktop.ui.VerticalDivider
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
@@ -104,18 +100,12 @@ fun NoContactsYet(onContactAdd: () -> Unit) = Explainer(
     headline = i18n("welcome.title"),
     text = i18n("welcome.text"),
 ) {
-    IconButton(
+    ColoredIconButton(
+        icon = Icons.Filled.PersonAdd,
+        iconSize = 20.dp,
+        contentDescription = i18n("access.contacts.add"),
         onClick = onContactAdd,
-        modifier = Modifier.padding(end = 10.dp).size(32.dp)
-            .background(MaterialTheme.colors.primary, CircleShape)
-    ) {
-        Icon(
-            Icons.Filled.PersonAdd,
-            i18n("access.contacts.add"),
-            tint = Color.White,
-            modifier = Modifier.size(20.dp)
-        )
-    }
+    )
 }
 
 @Composable

@@ -20,7 +20,6 @@ package org.briarproject.briar.desktop.contact
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.LocalTextStyle
@@ -53,15 +52,12 @@ fun SearchTextField(searchValue: String, onValueChange: (String) -> Unit, onCont
         },
         trailingIcon = {
             ColoredIconButton(
+                icon = Icons.Filled.PersonAdd,
+                iconSize = 20.dp,
+                contentDescription = i18n("access.contacts.add"),
                 onClick = onContactAdd,
                 modifier = Modifier.padding(end = 8.dp)
-            ) {
-                Icon(
-                    Icons.Filled.PersonAdd,
-                    i18n("access.contacts.add"),
-                    modifier = Modifier.size(20.dp)
-                )
-            }
+            )
         },
         modifier = Modifier.fillMaxSize()
     )

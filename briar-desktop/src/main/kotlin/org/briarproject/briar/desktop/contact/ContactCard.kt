@@ -32,7 +32,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
-import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -161,11 +160,11 @@ private fun PendingContactRow(contactItem: PendingContactItem, onRemove: () -> U
             )
         }
         IconButton(
+            icon = Icons.Filled.Delete,
+            contentDescription = i18n("access.contacts.pending.remove"),
             onClick = onRemove,
             modifier = Modifier.padding(end = 4.dp).align(Alignment.CenterVertically)
-        ) {
-            Icon(Icons.Filled.Delete, i18n("access.contacts.pending.remove"))
-        }
+        )
     }
 }
 

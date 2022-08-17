@@ -33,8 +33,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.PointerIconDefaults
 import androidx.compose.ui.input.pointer.pointerHoverIcon
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -62,3 +64,29 @@ fun ColoredIconButton(
         content = content
     )
 }
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+fun ColoredIconButton(
+    icon: ImageVector,
+    contentDescription: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    iconSize: Dp = 24.dp,
+    color: Color = MaterialTheme.colors.primary,
+    contentColor: Color = contentColorFor(color),
+    enabled: Boolean = true,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
+) = IconButton(
+    icon = icon,
+    contentDescription = contentDescription,
+    onClick = onClick,
+    modifier = modifier
+        .pointerHoverIcon(PointerIconDefaults.Default)
+        .background(color, CircleShape)
+        .then(Modifier.size(32.dp)),
+    iconSize = iconSize,
+    iconTint = contentColor,
+    enabled = enabled,
+    interactionSource = interactionSource
+)

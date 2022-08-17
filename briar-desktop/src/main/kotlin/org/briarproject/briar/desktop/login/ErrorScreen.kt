@@ -134,16 +134,18 @@ fun ErrorScreen(
         }
 
         if (onBackButton != null) {
-            IconButton(onClick = onBackButton) {
-                Icon(Icons.Filled.ArrowBack, i18n("access.return_to_previous_screen"))
-            }
+            IconButton(
+                icon = Icons.Filled.ArrowBack,
+                contentDescription = i18n("access.return_to_previous_screen"),
+                onClick = onBackButton
+            )
         }
 
         IconButton(
+            icon = Icons.Filled.Info,
+            contentDescription = i18n("access.mode.about"),
             onClick = { showAbout = true },
             modifier = Modifier.align(Alignment.BottomStart)
-        ) {
-            Icon(Icons.Filled.Info, i18n("access.mode.about"))
-        }
+        )
     }
 }

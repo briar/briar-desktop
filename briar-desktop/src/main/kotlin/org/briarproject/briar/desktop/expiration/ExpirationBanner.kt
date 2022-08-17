@@ -108,8 +108,11 @@ fun ExpirationBanner(
             style = MaterialTheme.typography.body2,
             modifier = Modifier.weight(1f, true).padding(vertical = 12.dp)
         )
-        IconButton(hide, modifier = Modifier.padding(vertical = 4.dp)) {
-            Icon(Icons.Filled.Close, i18n("hide"), Modifier.size(24.dp))
-        }
+        IconButton(
+            icon = Icons.Filled.Close,
+            contentDescription = i18n("hide"),
+            onClick = hide,
+            modifier = Modifier.padding(vertical = 4.dp)
+        )
     }
 }
