@@ -68,17 +68,8 @@ fun AboutScreen(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AboutScreen(modifier: Modifier = Modifier.padding(16.dp)) {
-    // sizes of the two columns
-    val colSizes = listOf(0.3f, 0.7f)
-
     // format date
     val buildTime = Instant.ofEpochMilli(BuildData.GIT_TIME).atZone(ZoneId.systemDefault()).toLocalDateTime()
-
-    data class Entry(
-        val label: String,
-        val value: String,
-        val showCopy: Boolean = false
-    )
 
     // rows displayed in table
     val lines = buildList {
@@ -122,50 +113,8 @@ fun AboutScreen(modifier: Modifier = Modifier.padding(16.dp)) {
                 item {
                     HorizontalDivider()
                 }
-                items(lines) { (label, value, showCopy) ->
-                    Row(
-                        Modifier
-                            .fillMaxWidth()
-                            // this is required for Divider between Boxes to have appropriate size
-                            .height(IntrinsicSize.Min)
-                            .semantics(mergeDescendants = true) {
-                                // manual text setting can be removed if Compose issue resolved
-                                // https://github.com/JetBrains/compose-jb/issues/2111
-                                text = buildAnnotatedString { append("$label: $value") }
-                            }
-                    ) {
-                        Box(modifier = Modifier.weight(colSizes[0]).fillMaxHeight()) {
-                            Text(
-                                text = label,
-                                modifier = Modifier.padding(8.dp).align(Alignment.CenterStart)
-                            )
-                        }
-                        VerticalDivider()
-                        Box(modifier = Modifier.weight(colSizes[1]).fillMaxHeight()) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                SelectionContainer {
-                                    Text(
-                                        text = value,
-                                        modifier = Modifier.padding(8.dp)
-                                    )
-                                }
-                                if (showCopy) {
-                                    val clipboardManager = LocalClipboardManager.current
-                                    IconButton(
-                                        icon = Icons.Filled.ContentCopy,
-                                        contentDescription = i18n("copy"),
-                                        onClick = {
-                                            clipboardManager.setText(AnnotatedString(value))
-                                        }
-                                    )
-                                }
-                            }
-                        }
-                    }
+                items(lines) {
+                    AboutEntry(it)
                     HorizontalDivider()
                 }
             }
@@ -176,3 +125,58 @@ fun AboutScreen(modifier: Modifier = Modifier.padding(16.dp)) {
         }
     }
 }
+
+private data class Entry(
+    val label: String,
+    val value: String,
+    val showCopy: Boolean = false
+)
+
+// sizes of the two columns
+private val colSizes = listOf(0.3f, 0.7f)
+
+@Composable
+private fun AboutEntry(entry: Entry) =
+    Row(
+        Modifier
+            .fillMaxWidth()
+            // this is required for Divider between Boxes to have appropriate size
+            .height(IntrinsicSize.Min)
+            .semantics(mergeDescendants = true) {
+                // manual text setting can be removed if Compose issue resolved
+                // https://github.com/JetBrains/compose-jb/issues/2111
+                text = buildAnnotatedString { append("${entry.label}: ${entry.value}") }
+            }
+    ) {
+        Box(modifier = Modifier.weight(colSizes[0]).fillMaxHeight()) {
+            Text(
+                text = entry.label,
+                modifier = Modifier.padding(8.dp).align(Alignment.CenterStart)
+            )
+        }
+        VerticalDivider()
+        Box(modifier = Modifier.weight(colSizes[1]).fillMaxHeight()) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                SelectionContainer {
+                    Text(
+                        text = entry.value,
+                        modifier = Modifier.padding(8.dp)
+                    )
+                }
+                if (entry.showCopy) {
+                    val clipboardManager = LocalClipboardManager.current
+                    IconButton(
+                        icon = Icons.Filled.ContentCopy,
+                        contentDescription = i18n("copy"),
+                        onClick = {
+                            clipboardManager.setText(AnnotatedString(entry.value))
+                        }
+                    )
+                }
+            }
+        }
+    }
