@@ -29,6 +29,8 @@ sealed class ConversationItem {
     abstract val autoDeleteTimer: Long
     abstract val isIncoming: Boolean
 
+    inline val isOutgoing get() = !isIncoming
+
     /**
      * Only useful for incoming messages.
      */

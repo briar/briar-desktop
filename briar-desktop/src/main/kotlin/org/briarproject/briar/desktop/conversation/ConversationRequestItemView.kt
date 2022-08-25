@@ -50,6 +50,8 @@ import org.briarproject.briar.desktop.theme.textPrimary
 import org.briarproject.briar.desktop.theme.textSecondary
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
+import org.briarproject.briar.desktop.utils.appendAfterColon
+import org.briarproject.briar.desktop.utils.appendCommaSeparated
 import java.time.Instant
 
 @Suppress("HardCodedStringLiteral")
@@ -98,9 +100,24 @@ fun ConversationRequestItemView(
     val textColor = if (m.isIncoming) MaterialTheme.colors.textPrimary else Color.White
     val noticeBackground = if (m.isIncoming) MaterialTheme.colors.noticeIn else MaterialTheme.colors.noticeOut
     val noticeColor = if (m.isIncoming) MaterialTheme.colors.textSecondary else MaterialTheme.colors.privateMessageDate
-    ConversationItemView(m, onDelete) {
+    val text = m.text
+    ConversationItemView(
+        item = m,
+        onDelete = onDelete,
+        conversationItemDescription = buildString {
+            append(m.notice)
+            if (text != null) {
+                appendCommaSeparated(i18n("access.conversation.notice.additional_message"))
+                appendAfterColon(text)
+            }
+            if (!m.answered) {
+                appendCommaSeparated(i18n("access.conversation.request.navigate_inside_to_react"))
+            } else if (m.canBeOpened) {
+                appendCommaSeparated(i18n("access.conversation.request.click_to_open"))
+            }
+        }
+    ) {
         Column(Modifier.width(IntrinsicSize.Max)) {
-            val text = m.text
             if (text != null) {
                 SelectionContainer {
                     Text(

@@ -42,6 +42,8 @@ import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.text
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import org.briarproject.bramble.api.sync.GroupId
@@ -56,6 +58,8 @@ import org.briarproject.briar.desktop.theme.textPrimary
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 import org.briarproject.briar.desktop.utils.TimeUtils.getFormattedTimestamp
+import org.briarproject.briar.desktop.utils.appendCommaSeparated
+import org.briarproject.briar.desktop.utils.buildBlankAnnotatedString
 import java.time.Instant
 
 @Suppress("HardCodedStringLiteral")
@@ -170,6 +174,7 @@ fun main() = preview {
 fun ConversationItemView(
     item: ConversationItem,
     onDelete: (MessageId) -> Unit = {},
+    conversationItemDescription: String,
     content: @Composable () -> Unit
 ) {
     val arrangement = if (item.isIncoming) Arrangement.Start else Arrangement.End
@@ -194,7 +199,18 @@ fun ConversationItemView(
                     elevation = 2.dp,
                     shape = shape,
                     border = BorderStroke(Dp.Hairline, MaterialTheme.colors.msgStroke),
-                    modifier = Modifier.padding(8.dp),
+                    modifier = Modifier.padding(8.dp)
+                        .semantics(mergeDescendants = true) {
+                            text = buildBlankAnnotatedString {
+                                append(getFormattedTimestamp(item.time))
+                                appendCommaSeparated(conversationItemDescription)
+                                if (item.isOutgoing) {
+                                    if (item.isSeen) appendCommaSeparated(i18n("access.conversation.status.seen"))
+                                    else if (item.isSent) appendCommaSeparated(i18n("access.conversation.status.sent"))
+                                    else appendCommaSeparated(i18n("access.conversation.status.scheduled"))
+                                }
+                            }
+                        },
                 ) {
                     content()
                 }
@@ -213,7 +229,7 @@ fun ColumnScope.ConversationItemStatusView(item: ConversationItem, rowModifier: 
             style = MaterialTheme.typography.caption,
             color = statusColor,
         )
-        if (!item.isIncoming) {
+        if (item.isOutgoing) {
             val modifier = Modifier.padding(start = 4.dp).size(12.dp).align(Alignment.CenterVertically)
             val icon =
                 if (item.isSeen) Icons.Filled.DoneAll // acknowledged

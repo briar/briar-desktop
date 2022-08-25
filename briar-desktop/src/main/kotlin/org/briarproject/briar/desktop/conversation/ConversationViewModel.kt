@@ -404,7 +404,7 @@ constructor(
         seen: Boolean
     ) {
         val messages = HashSet(messageIds)
-        _messages.replaceIf({ !it.isIncoming && messages.contains(it.id) }) {
+        _messages.replaceIf({ it.isOutgoing && messages.contains(it.id) }) {
             it.mark(sent, seen)
         }
     }

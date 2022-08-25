@@ -51,6 +51,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.text
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -183,7 +187,8 @@ fun ConversationList(
     Box(modifier = Modifier.padding(padding).fillMaxSize()) {
         LazyColumn(
             state = scrollState,
-            modifier = Modifier.fillMaxSize().padding(end = 8.dp),
+            modifier = Modifier.fillMaxSize().padding(end = 8.dp)
+                .semantics { contentDescription = i18n("access.conversation.list") },
         ) {
             itemsIndexed(messages) { idx, m ->
                 if (idx == initialFirstUnreadMessageIndex) {
@@ -274,6 +279,7 @@ fun UnreadMessagesMarker() = Box {
             .border(1.dp, MaterialTheme.colors.divider, RoundedCornerShape(16.dp))
             .background(MaterialTheme.colors.background)
             .padding(8.dp)
+            .semantics { text = AnnotatedString(i18n("access.conversation.message.unread")) }
     )
 }
 

@@ -19,11 +19,25 @@
 package org.briarproject.briar.desktop.utils
 
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.buildAnnotatedString
 
-fun AnnotatedString.Builder.appendLeading(leading: String, text: String? = null) {
+fun StringBuilder.appendLeading(leading: String, text: String? = null) {
     append(leading)
     if (text != null) append(text)
 }
 
-fun AnnotatedString.Builder.appendCommaSeparated(text: String? = null) =
+fun StringBuilder.appendCommaSeparated(text: String? = null) =
     appendLeading(", ", text)
+
+fun StringBuilder.appendAfterColon(text: String? = null) =
+    appendLeading(": ", text)
+
+/**
+ * Builds a new string by populating newly created [StringBuilder] using provided [builder]
+ * and then converting it to a blank [AnnotatedString] (without annotations).
+ *
+ * If a bare [String] is needed, use [buildString] instead.
+ * If an [AnnotatedString] with actual annotations is needed, use [buildAnnotatedString] instead.
+ */
+inline fun buildBlankAnnotatedString(builder: (StringBuilder).() -> Unit): AnnotatedString =
+    AnnotatedString(StringBuilder().apply(builder).toString())

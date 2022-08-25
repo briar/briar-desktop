@@ -43,7 +43,6 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.text
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.unit.dp
 import org.briarproject.bramble.api.contact.ContactId
@@ -60,6 +59,7 @@ import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nP
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 import org.briarproject.briar.desktop.utils.TimeUtils.getFormattedTimestamp
 import org.briarproject.briar.desktop.utils.appendCommaSeparated
+import org.briarproject.briar.desktop.utils.buildBlankAnnotatedString
 import java.time.Instant
 
 @Suppress("HardCodedStringLiteral")
@@ -142,7 +142,7 @@ private fun RealContactRow(contactItem: ContactItem) {
         modifier = Modifier
             .fillMaxWidth()
             .semantics {
-                text = buildAnnotatedString {
+                text = buildBlankAnnotatedString {
                     append(i18nF("access.contact.with_name", contactItem.displayName))
                     appendCommaSeparated(
                         if (contactItem.isConnected) i18n("access.contact.connected.yes")
@@ -191,7 +191,7 @@ private fun PendingContactRow(contactItem: PendingContactItem, onRemove: () -> U
         modifier = Modifier
             .fillMaxWidth()
             .semantics {
-                text = buildAnnotatedString {
+                text = buildBlankAnnotatedString {
                     append(i18nF("access.contact.pending.with_name", contactItem.displayName))
                     // todo: include pending status
                     appendCommaSeparated(

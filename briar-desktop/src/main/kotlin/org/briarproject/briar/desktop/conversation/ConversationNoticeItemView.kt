@@ -41,7 +41,10 @@ import org.briarproject.briar.desktop.theme.noticeOut
 import org.briarproject.briar.desktop.theme.privateMessageDate
 import org.briarproject.briar.desktop.theme.textPrimary
 import org.briarproject.briar.desktop.theme.textSecondary
+import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
+import org.briarproject.briar.desktop.utils.appendAfterColon
+import org.briarproject.briar.desktop.utils.appendCommaSeparated
 import java.time.Instant
 
 @Suppress("HardCodedStringLiteral")
@@ -84,7 +87,17 @@ fun ConversationNoticeItemView(
     val noticeBackground = if (m.isIncoming) MaterialTheme.colors.noticeIn else MaterialTheme.colors.noticeOut
     val noticeColor = if (m.isIncoming) MaterialTheme.colors.textSecondary else MaterialTheme.colors.privateMessageDate
     val text = m.text
-    ConversationItemView(m, onDelete) {
+    ConversationItemView(
+        item = m,
+        onDelete = onDelete,
+        conversationItemDescription = buildString {
+            append(m.notice)
+            if (text != null) {
+                appendCommaSeparated(i18n("access.conversation.notice.additional_message"))
+                appendAfterColon(text)
+            }
+        }
+    ) {
         Column(Modifier.width(IntrinsicSize.Max)) {
             if (text != null) {
                 SelectionContainer {

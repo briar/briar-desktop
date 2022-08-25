@@ -32,7 +32,10 @@ import androidx.compose.ui.unit.dp
 import org.briarproject.bramble.api.sync.GroupId
 import org.briarproject.bramble.api.sync.MessageId
 import org.briarproject.briar.desktop.theme.textPrimary
+import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
+import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nP
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
+import org.briarproject.briar.desktop.utils.appendAfterColon
 import java.time.Instant
 
 @Suppress("HardCodedStringLiteral")
@@ -68,7 +71,11 @@ fun ConversationMessageItemView(
     onDelete: (MessageId) -> Unit = {},
 ) {
     val textColor = if (m.isIncoming) MaterialTheme.colors.textPrimary else Color.White
-    ConversationItemView(m, onDelete) {
+    ConversationItemView(
+        item = m,
+        onDelete = onDelete,
+        conversationItemDescription = semanticDescription(m)
+    ) {
         Column(
             Modifier.padding(12.dp, 8.dp)
         ) {
@@ -88,6 +95,34 @@ fun ConversationMessageItemView(
                 }
             }
             ConversationItemStatusView(m)
+        }
+    }
+}
+
+private fun semanticDescription(m: ConversationMessageItem) = buildString {
+    if (m.isIncoming) {
+        if (m.attachments.isNotEmpty()) {
+            if (m.text == null)
+                append(i18nP("access.conversation.message.image.blank.your_contact", m.attachments.size))
+            else {
+                append(i18nP("access.conversation.message.image.caption.your_contact", m.attachments.size))
+                appendAfterColon(m.text)
+            }
+        } else {
+            append(i18n("access.conversation.message.blank.your_contact"))
+            appendAfterColon(m.text)
+        }
+    } else {
+        if (m.attachments.isNotEmpty()) {
+            if (m.text == null)
+                append(i18nP("access.conversation.message.image.blank.you", m.attachments.size))
+            else {
+                append(i18nP("access.conversation.message.image.caption.you", m.attachments.size))
+                appendAfterColon(m.text)
+            }
+        } else {
+            append(i18n("access.conversation.message.blank.you"))
+            appendAfterColon(m.text)
         }
     }
 }
