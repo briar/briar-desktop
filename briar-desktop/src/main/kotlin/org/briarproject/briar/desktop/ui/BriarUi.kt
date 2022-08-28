@@ -45,8 +45,6 @@ import org.briarproject.bramble.api.event.EventListener
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.bramble.api.lifecycle.LifecycleManager.LifecycleState.RUNNING
 import org.briarproject.bramble.api.lifecycle.event.LifecycleEvent
-import org.briarproject.briar.api.conversation.event.ConversationMessageReceivedEvent
-import org.briarproject.briar.desktop.conversation.ConversationMessagesReadEvent
 import org.briarproject.briar.desktop.expiration.ExpirationBanner
 import org.briarproject.briar.desktop.login.ErrorScreen
 import org.briarproject.briar.desktop.login.StartupScreen
@@ -95,6 +93,7 @@ constructor(
     private val viewModelProvider: ViewModelProvider,
     private val configuration: Configuration,
     private val notificationProvider: NotificationProvider,
+    private val messageCounter: MessageCounterImpl,
 ) : BriarUi {
 
     private var screenState by mutableStateOf(
@@ -134,27 +133,11 @@ constructor(
                 .toAwtImage(LocalDensity.current, LocalLayoutDirection.current, Size(32f, 32f))
 
             DisposableEffect(Unit) {
-                // todo: hard-coded messageCount doesn't account for unread messages on application start
-                // also see https://code.briarproject.org/briar/briar-desktop/-/issues/133
-                var messageCount = 0
 
                 val eventListener = EventListener { e ->
                     when (e) {
                         is LifecycleEvent ->
                             if (e.lifecycleState == RUNNING) screenState = MAIN
-                        is ConversationMessageReceivedEvent<*> -> {
-                            messageCount++
-                            if (!focusState.focused) {
-                                window.iconImage = iconBadge
-                                if (configuration.showNotifications) {
-                                    notificationProvider.notifyPrivateMessages(messageCount)
-                                }
-                            }
-                        }
-                        is ConversationMessagesReadEvent -> {
-                            messageCount -= e.count
-                            if (messageCount < 0) messageCount = 0
-                        }
                     }
                 }
                 val focusListener = object : WindowFocusListener {
@@ -167,12 +150,22 @@ constructor(
                         focusState.focused = false
                     }
                 }
+                val messageCounterListener: MessageCounterListener = { (total, contacts) ->
+                    if (total > 0 && !focusState.focused) {
+                        window.iconImage = iconBadge
+                        if (configuration.showNotifications) {
+                            notificationProvider.notifyPrivateMessages(total, contacts)
+                        }
+                    }
+                }
 
                 notificationProvider.init()
                 eventBus.addListener(eventListener)
                 window.addWindowFocusListener(focusListener)
+                messageCounter.addListener(messageCounterListener)
 
                 onDispose {
+                    messageCounter.removeListener(messageCounterListener)
                     eventBus.removeListener(eventListener)
                     window.removeWindowFocusListener(focusListener)
                     notificationProvider.uninit()

@@ -18,8 +18,13 @@
 
 package org.briarproject.briar.desktop.threading
 
+import mu.KotlinLogging
 import org.briarproject.bramble.api.db.DatabaseExecutor
+import org.briarproject.bramble.api.db.Transaction
+import org.briarproject.bramble.api.db.TransactionManager
 import org.briarproject.bramble.api.lifecycle.IoExecutor
+import org.briarproject.bramble.api.lifecycle.LifecycleManager
+import org.briarproject.briar.desktop.utils.KLoggerUtils.w
 import java.util.concurrent.Executor
 import javax.inject.Inject
 
@@ -29,8 +34,46 @@ constructor(
     @UiExecutor private val uiExecutor: Executor,
     @DatabaseExecutor private val dbExecutor: Executor,
     @IoExecutor private val ioExecutor: Executor,
+    private val lifecycleManager: LifecycleManager,
+    private val db: TransactionManager,
 ) : BriarExecutors {
-    override fun onDbThread(@DatabaseExecutor task: () -> Unit) = dbExecutor.execute(task)
+
+    companion object {
+        private val LOG = KotlinLogging.logger {}
+    }
+
+    override fun onDbThread(@DatabaseExecutor task: () -> Unit) = dbExecutor.execute {
+        try {
+            lifecycleManager.waitForDatabase()
+            task()
+        } catch (e: InterruptedException) {
+            LOG.w { "Interrupted while waiting for database" }
+            Thread.currentThread().interrupt()
+        } catch (e: Exception) {
+            LOG.w(e) { "Unhandled exception in database executor" }
+        }
+    }
+
+    override fun onDbThreadWithTransaction(
+        readOnly: Boolean,
+        @DatabaseExecutor task: (Transaction) -> Unit,
+    ) = dbExecutor.execute {
+        try {
+            lifecycleManager.waitForDatabase()
+            val txn = db.startTransaction(readOnly)
+            try {
+                task(txn)
+                db.commitTransaction(txn)
+            } finally {
+                db.endTransaction(txn)
+            }
+        } catch (e: InterruptedException) {
+            LOG.w { "Interrupted while waiting for database" }
+            Thread.currentThread().interrupt()
+        } catch (e: Exception) {
+            LOG.w(e) { "Unhandled exception in database executor" }
+        }
+    }
 
     override fun onUiThread(@UiExecutor task: () -> Unit) = uiExecutor.execute(task)
 

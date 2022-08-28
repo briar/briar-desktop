@@ -50,7 +50,7 @@ import org.briarproject.briar.desktop.theme.selectedCard
 import org.briarproject.briar.desktop.theme.surfaceVariant
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
 import org.briarproject.briar.desktop.ui.HorizontalDivider
-import org.briarproject.briar.desktop.ui.MessageCounter
+import org.briarproject.briar.desktop.ui.NumberBadge
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 import org.briarproject.briar.desktop.utils.TimeUtils.getFormattedTimestamp
@@ -123,8 +123,8 @@ private fun RealContactRow(contactItem: ContactItem, padding: PaddingValues) {
         ) {
             Box(modifier = Modifier.align(Alignment.CenterVertically)) {
                 ProfileCircle(36.dp, contactItem)
-                MessageCounter(
-                    unread = contactItem.unread,
+                NumberBadge(
+                    num = contactItem.unread,
                     modifier = Modifier.align(Alignment.TopEnd).offset(6.dp, (-6).dp)
                 )
             }

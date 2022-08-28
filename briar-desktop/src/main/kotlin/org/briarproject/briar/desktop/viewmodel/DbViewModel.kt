@@ -24,7 +24,6 @@ import org.briarproject.bramble.api.db.Transaction
 import org.briarproject.bramble.api.db.TransactionManager
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.briar.desktop.threading.BriarExecutors
-import org.briarproject.briar.desktop.utils.KLoggerUtils.w
 
 abstract class DbViewModel(
     private val briarExecutors: BriarExecutors,
@@ -42,17 +41,7 @@ abstract class DbViewModel(
      * whenever the UI should react to a successful transaction,
      * strongly consider using [runOnDbThreadWithTransaction] instead.
      */
-    protected fun runOnDbThread(task: () -> Unit) = briarExecutors.onDbThread {
-        try {
-            lifecycleManager.waitForDatabase()
-            task()
-        } catch (e: InterruptedException) {
-            LOG.w { "Interrupted while waiting for database" }
-            Thread.currentThread().interrupt()
-        } catch (e: Exception) {
-            LOG.w(e) { "Unhandled exception in database executor" }
-        }
-    }
+    protected fun runOnDbThread(task: () -> Unit) = briarExecutors.onDbThread(task)
 
     /**
      * Waits for the DB to open and runs the given [task] on the [DatabaseExecutor],
@@ -63,21 +52,5 @@ abstract class DbViewModel(
     protected fun runOnDbThreadWithTransaction(
         readOnly: Boolean,
         task: (Transaction) -> Unit
-    ) = briarExecutors.onDbThread {
-        try {
-            lifecycleManager.waitForDatabase()
-            val txn = db.startTransaction(readOnly)
-            try {
-                task(txn)
-                db.commitTransaction(txn)
-            } finally {
-                db.endTransaction(txn)
-            }
-        } catch (e: InterruptedException) {
-            LOG.w { "Interrupted while waiting for database" }
-            Thread.currentThread().interrupt()
-        } catch (e: Exception) {
-            LOG.w(e) { "Unhandled exception in database executor" }
-        }
-    }
+    ) = briarExecutors.onDbThreadWithTransaction(readOnly, task)
 }
