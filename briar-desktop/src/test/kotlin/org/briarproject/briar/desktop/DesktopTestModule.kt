@@ -72,6 +72,8 @@ import org.briarproject.briar.desktop.threading.BriarExecutorsImpl
 import org.briarproject.briar.desktop.threading.UiExecutor
 import org.briarproject.briar.desktop.ui.BriarUi
 import org.briarproject.briar.desktop.ui.BriarUiImpl
+import org.briarproject.briar.desktop.ui.MessageCounter
+import org.briarproject.briar.desktop.ui.MessageCounterImpl
 import org.briarproject.briar.desktop.viewmodel.ViewModelModule
 import org.briarproject.briar.identity.IdentityModule
 import org.briarproject.briar.test.TestModule
@@ -211,6 +213,10 @@ internal class DesktopTestModule(
     @Singleton
     internal fun provideNotificationProvider(): NotificationProvider =
         if (isLinux()) LibnotifyNotificationProvider else StubNotificationProvider
+
+    @Provides
+    @Singleton
+    internal fun provideMessageCounter(messageCounter: MessageCounterImpl): MessageCounter = messageCounter
 
     @Provides
     @Singleton

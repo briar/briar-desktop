@@ -25,6 +25,7 @@ import org.briarproject.briar.desktop.notification.NotificationProvider
 import org.briarproject.briar.desktop.utils.AudioUtils.loadAudioFromResource
 import org.briarproject.briar.desktop.utils.AudioUtils.play
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
+import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nF
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nP
 import org.briarproject.briar.desktop.utils.KLoggerUtils.e
 import org.briarproject.briar.desktop.utils.KLoggerUtils.i
@@ -99,7 +100,7 @@ object LibnotifyNotificationProvider : NotificationProvider {
         }
     }
 
-    override fun notifyPrivateMessages(num: Int) {
+    override fun notifyPrivateMessages(num: Int, contacts: Int) {
         if (!libNotifyAvailable) {
             // play sound even if libnotify unavailable
             if (soundAvailable) sound.play()
@@ -116,7 +117,10 @@ object LibnotifyNotificationProvider : NotificationProvider {
          * The summary must be encoded using UTF-8.
          */
         // todo: we could use body instead with markup (where supported)
-        val text = i18nP("notifications.message.private", num)
+        val text = if (contacts == 1)
+            i18nP("notifications.message.private.one_chat", num)
+        else
+            i18nF("notifications.message.private.several_chats", num, contacts)
         val notification = libNotify.notify_notification_new(text, null, null)
 
         /**

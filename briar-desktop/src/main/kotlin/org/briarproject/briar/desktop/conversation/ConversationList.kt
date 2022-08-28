@@ -65,7 +65,7 @@ import org.briarproject.briar.desktop.theme.ChevronUp
 import org.briarproject.briar.desktop.theme.divider
 import org.briarproject.briar.desktop.ui.HorizontalDivider
 import org.briarproject.briar.desktop.ui.Loader
-import org.briarproject.briar.desktop.ui.MessageCounter
+import org.briarproject.briar.desktop.ui.NumberBadge
 import org.briarproject.briar.desktop.ui.isWindowFocused
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
@@ -295,7 +295,7 @@ fun UnreadMessagesFAB(
             Icons.Filled.ChevronUp else Icons.Filled.ChevronDown
         Icon(arrow, i18n("access.message.jump_to_unread"))
     }
-    MessageCounter(
+    NumberBadge(
         counter,
         Modifier.align(Alignment.TopEnd).offset(3.dp, (-3).dp)
     )

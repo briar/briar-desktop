@@ -35,7 +35,7 @@ interface NotificationProvider {
 
     fun init()
     fun uninit()
-    fun notifyPrivateMessages(num: Int)
+    fun notifyPrivateMessages(num: Int, contacts: Int)
 }
 
 object StubNotificationProvider : NotificationProvider {
@@ -47,5 +47,5 @@ object StubNotificationProvider : NotificationProvider {
 
     override fun init() {}
     override fun uninit() {}
-    override fun notifyPrivateMessages(num: Int) {}
+    override fun notifyPrivateMessages(num: Int, contacts: Int) {}
 }

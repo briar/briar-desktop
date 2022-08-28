@@ -26,10 +26,10 @@ fun main() {
     LibnotifyNotificationProvider.apply {
         init()
 
-        notifyPrivateMessages(9)
+        notifyPrivateMessages(4, 1)
         Thread.sleep(1000)
 
-        notifyPrivateMessages(10)
+        notifyPrivateMessages(10, 3)
         Thread.sleep(1000)
 
         uninit()
