@@ -69,6 +69,10 @@ import androidx.compose.ui.input.pointer.PointerIconDefaults
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -152,9 +156,11 @@ private fun PreviewUtils.PreviewScope.mapErrors(name: String?): AddContactError?
     ContactAlreadyExistsError::class.simpleName!! -> ContactAlreadyExistsError(
         link, "David", getStringParameter("alias")
     )
+
     PendingAlreadyExistsError::class.simpleName!! -> PendingAlreadyExistsError(
         link, "Frank", getStringParameter("alias")
     )
+
     else -> null
 }
 
@@ -324,7 +330,10 @@ fun OwnLink(
                         duration = SnackbarDuration.Short,
                     )
                 }
-            }.description(i18n("contact.add.remote.your_link_hint"))
+            }.clearAndSetSemantics {
+                contentDescription = i18n("access.contact.add.remote.your_link")
+                role = Role.Button
+            }
     ) {
         Text(
             handshakeLink,
@@ -385,7 +394,7 @@ fun ContactLink(
         remoteHandshakeLink,
         setRemoteHandshakeLink,
         label = { Text(i18n("contact.add.remote.contact_link_hint")) },
-        modifier = Modifier.fillMaxWidth().description(i18n("contact.add.remote.contact_link_hint")),
+        modifier = Modifier.fillMaxWidth().description(i18n("access.contact.add.remote.contact_link")),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Next),
         singleLine = true,
         onEnter = { aliasFocusRequester.requestFocus() },
@@ -461,11 +470,13 @@ fun errorMessage(error: AddContactError) = when (error) {
         ERROR, i18n("error"),
         i18nF("contact.add.error.public_key_invalid", error.link)
     )
+
     is ContactAlreadyExistsError -> {
         val intro = i18nF("contact.add.error.contact_already_exists", error.existingName)
         val explanation = i18nF("contact.add.error.duplicate_contact_explainer", error.existingName, error.alias)
         Triple(WARNING, i18n("contact.add.error.adding_failed"), (intro + "\n\n" + explanation))
     }
+
     is PendingAlreadyExistsError -> {
         val intro = i18nF("contact.add.error.pending_contact_already_exists", error.existingAlias)
         val explanation = i18nF("contact.add.error.duplicate_contact_explainer", error.existingAlias, error.alias)
