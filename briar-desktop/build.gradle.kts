@@ -123,3 +123,27 @@ compose.desktop {
         }
     }
 }
+
+tasks.register<Jar>("notificationTest") {
+    dependsOn.addAll(
+        listOf(
+            "compileJava",
+            "compileKotlin",
+            "processResources"
+        )
+    ) // We need this for Gradle optimization to work
+    archiveClassifier.set("notificationTest") // Naming the jar
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    manifest {
+        attributes("Main-Class" to "org.briarproject.briar.desktop.notification.linux.TestNativeNotificationsKt")
+    } // Provided we set it up in the application plugin configuration
+    val sourcesTest = sourceSets.test.get()
+    val contents = configurations.runtimeClasspath.get()
+        .map { if (it.isDirectory) it else zipTree(it) }
+    from(contents)
+    // add normal jar outputs
+    with(tasks["jar"] as CopySpec)
+    // add testing output, too
+    from(sourceSets["test"].output)
+    from(sourceSets["main"].output)
+}
