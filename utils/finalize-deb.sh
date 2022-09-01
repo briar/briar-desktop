@@ -18,5 +18,7 @@ fakeroot sh -c '
   cp ../../../../../src/packagingResources/linux/postinst tmp/DEBIAN/postinst
   cp ../../../../../src/packagingResources/linux/preinst tmp/DEBIAN/preinst
   cp ../../../../../src/packagingResources/linux/prerm tmp/DEBIAN/prerm
+  sed -i "/Depends:/s/$/, libnotify4/" tmp/DEBIAN/control
   dpkg-deb -b tmp briar-desktop.deb
+  rm -r tmp
 '
