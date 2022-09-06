@@ -20,7 +20,7 @@ package org.briarproject.briar.desktop.notification.linux
 /**
  * Small program to test notification support for Linux.
  * Build with ./gradlew briar-desktop:notificationTest
- * and run as java -jar briar-desktop/build/libs/briar-desktop-*-notificationTest.jar
+ * and run as java -jar briar-desktop/build/libs/notificationTest.jar
  */
 fun main() {
     LibnotifyNotificationProvider.apply {

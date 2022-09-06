@@ -57,22 +57,6 @@ in pkgs.nixosTest {
         environment.systemPackages = [ pkgs.jdk ];
       };
     };
-
-    /*
-      Unfortunately, it was not straightforward to run the jar on the following desktop environments.
-      Enlightenment always starts a configuration dialog which somehow needs to be skipped,
-      Gnome and Plasma doesn't show the notifications when run from the test script, but does show them when run from the terminal (Konsole).
-      Additionally, Gnome only started with Wayland which is incompatible with the `wait_for_window()` function in the test script.
-      Therefore these machines are disabled for now.
-
-    enlightenment = { ... }: makeDesktopEnvironment {
-      envOptions = {
-        services.xserver = {
-          displayManager.lightdm.enable = true;
-          desktopManager.enlightenment.enable = true;
-        };
-      };
-    };
     gnome = { ... }: makeDesktopEnvironment {
       envOptions = {
         services.xserver = {
@@ -91,6 +75,20 @@ in pkgs.nixosTest {
         };
       };
     };
+
+    /*
+      Unfortunately, it was not straightforward to run the jar on the Enlightenment desktop environment.
+      It always starts a configuration dialog which somehow needs to be skipped.
+      Therefore the following machine is disabled for now.
+
+    enlightenment = { ... }: makeDesktopEnvironment {
+      envOptions = {
+        services.xserver = {
+          displayManager.lightdm.enable = true;
+          desktopManager.enlightenment.enable = true;
+        };
+      };
+    };
     */
   };
 
@@ -98,17 +96,38 @@ in pkgs.nixosTest {
   skipLint = true;
   testScript = { nodes, ... }: let
   in ''
-    def run(machine):
-      machine.wait_for_x()
-      machine.wait_for_window("xfce4-panel")
-      machine.sleep(20)
-      machine.copy_from_host("../briar-desktop/build/libs/briar-desktop-0.2.1-snapshot-notificationTest.jar", "/tmp/test.jar")
-      machine.succeed("su - alice -c 'DISPLAY=:0.0 LD_LIBRARY_PATH=/run/current-system/sw/lib java -jar /tmp/test.jar &'")
+    # test on systems with libnotify installed
 
-    # test on system with libnotify installed
-    run(xfce)
+    xfce.wait_for_x()
+    xfce.wait_for_window("xfce4-panel")
+    xfce.sleep(10)
+    xfce.copy_from_host("../briar-desktop/build/libs/notificationTest.jar", "/tmp/test.jar")
+    xfce.succeed("su - alice -c 'DISPLAY=:0.0 LD_LIBRARY_PATH=/run/current-system/sw/lib java -jar /tmp/test.jar &'")
     xfce.sleep(1)
-    xfce.screenshot("notifications")
+    xfce.screenshot("notifications_xfce")
     xfce.shutdown()
+
+    gnome.wait_for_x()
+    gnome.sleep(5)
+    gnome.send_key( 'esc' )
+    gnome.sleep(5)
+    gnome.copy_from_host("../briar-desktop/build/libs/notificationTest.jar", "/tmp/test.jar")
+    gnome.copy_from_host("gnome.sh", "/tmp/")
+    gnome.succeed("chown alice:users /tmp/gnome.sh")
+    gnome.succeed("su - alice -c '/tmp/gnome.sh &'")
+    gnome.sleep(1)
+    gnome.screenshot("notifications_gnome")
+    gnome.shutdown()
+
+    plasma.wait_for_x()
+    plasma.wait_for_window("Plasma")
+    plasma.sleep(5)
+    plasma.copy_from_host("../briar-desktop/build/libs/notificationTest.jar", "/tmp/test.jar")
+    plasma.copy_from_host("plasma.sh", "/tmp/")
+    plasma.succeed("chown alice:users /tmp/plasma.sh")
+    plasma.succeed("su - alice -c '/tmp/plasma.sh &'")
+    plasma.sleep(1)
+    plasma.screenshot("notifications_plasma")
+    plasma.shutdown()
     '';
 }

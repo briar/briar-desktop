@@ -132,7 +132,7 @@ tasks.register<Jar>("notificationTest") {
             "processResources"
         )
     ) // We need this for Gradle optimization to work
-    archiveClassifier.set("notificationTest") // Naming the jar
+    archiveFileName.set("notificationTest.jar") // Version-agnostic name of the jar
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     manifest {
         attributes("Main-Class" to "org.briarproject.briar.desktop.notification.linux.TestNativeNotificationsKt")
