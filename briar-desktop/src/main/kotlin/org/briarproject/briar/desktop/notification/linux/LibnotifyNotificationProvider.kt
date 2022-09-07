@@ -20,6 +20,7 @@ package org.briarproject.briar.desktop.notification.linux
 import com.sun.jna.Library
 import com.sun.jna.Native
 import com.sun.jna.Pointer
+import com.sun.jna.ptr.PointerByReference
 import mu.KotlinLogging
 import org.briarproject.briar.desktop.notification.VisualNotificationProvider
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
@@ -126,9 +127,11 @@ object LibnotifyNotificationProvider : VisualNotificationProvider {
          */
         libNotify.notify_notification_set_category(notification, "im.received")
 
-        if (!libNotify.notify_notification_show(notification, null)) {
-            // todo: error handling
+        val errorPointer = PointerByReference()
+        if (!libNotify.notify_notification_show(notification, errorPointer)) {
             LOG.e { "error while sending notification via libnotify" }
+            val error = GErrorStruct(errorPointer.value)
+            LOG.e { "error code: ${error.code}, message: '${error.message}'" }
         }
     }
 
@@ -210,7 +213,7 @@ object LibnotifyNotificationProvider : VisualNotificationProvider {
          *
          * @return true if successful. On error, this will return false and set [error].
          */
-        fun notify_notification_show(notification: Pointer, error: Pointer?): Boolean
+        fun notify_notification_show(notification: Pointer, error: PointerByReference?): Boolean
 
         /**
          * Sets a hint for [key] with value [value]. If [value] is null,
