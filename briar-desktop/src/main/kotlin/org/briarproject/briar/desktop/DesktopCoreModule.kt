@@ -26,6 +26,7 @@ import kotlinx.coroutines.swing.Swing
 import org.briarproject.bramble.account.AccountModule
 import org.briarproject.bramble.api.db.DatabaseConfig
 import org.briarproject.bramble.api.event.EventExecutor
+import org.briarproject.bramble.api.mailbox.MailboxDirectory
 import org.briarproject.bramble.api.plugin.PluginConfig
 import org.briarproject.bramble.api.plugin.TorConstants.DEFAULT_CONTROL_PORT
 import org.briarproject.bramble.api.plugin.TorConstants.DEFAULT_SOCKS_PORT
@@ -146,6 +147,12 @@ internal class DesktopCoreModule(
     @Provides
     @Singleton
     fun provideBriarExecutors(briarExecutors: BriarExecutorsImpl): BriarExecutors = briarExecutors
+
+    @Provides
+    @MailboxDirectory
+    internal fun provideMailboxDirectory(): File {
+        return appDir.resolve("mailbox").toFile()
+    }
 
     @Provides
     @TorDirectory
