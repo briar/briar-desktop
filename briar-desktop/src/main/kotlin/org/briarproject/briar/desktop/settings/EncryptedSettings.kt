@@ -19,9 +19,11 @@
 package org.briarproject.briar.desktop.settings
 
 interface EncryptedSettingsReadOnly {
-    val showNotifications: Boolean
+    val visualNotifications: Boolean
+    val soundNotifications: Boolean
 }
 
 interface EncryptedSettings : EncryptedSettingsReadOnly {
-    override var showNotifications: Boolean
+    override var visualNotifications: Boolean
+    override var soundNotifications: Boolean
 }

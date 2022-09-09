@@ -26,7 +26,8 @@ import javax.inject.Inject
 
 const val SETTINGS_NAMESPACE = "desktop-ui" // NON-NLS
 
-const val PREF_NOTIFY = "notify" // NON-NLS
+const val PREF_NOTIFY_VISUAL = "notify_visual" // NON-NLS
+const val PREF_NOTIFY_SOUND = "notify_sound" // NON-NLS
 
 class EncryptedSettingsImpl
 @Inject internal constructor(
@@ -42,11 +43,19 @@ class EncryptedSettingsImpl
 
     private lateinit var settings: Settings
 
-    override var showNotifications: Boolean
-        get() = settings.getBoolean(PREF_NOTIFY, true)
+    override var visualNotifications: Boolean
+        get() = settings.getBoolean(PREF_NOTIFY_VISUAL, true)
         @IoExecutor
         set(value) {
-            settings.putBoolean(PREF_NOTIFY, value)
+            settings.putBoolean(PREF_NOTIFY_VISUAL, value)
+            settingsManager.mergeSettings(settings, SETTINGS_NAMESPACE)
+        }
+
+    override var soundNotifications: Boolean
+        get() = settings.getBoolean(PREF_NOTIFY_SOUND, true)
+        @IoExecutor
+        set(value) {
+            settings.putBoolean(PREF_NOTIFY_SOUND, value)
             settingsManager.mergeSettings(settings, SETTINGS_NAMESPACE)
         }
 }

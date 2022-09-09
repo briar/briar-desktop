@@ -21,29 +21,21 @@ import com.sun.jna.Library
 import com.sun.jna.Native
 import com.sun.jna.Pointer
 import mu.KotlinLogging
-import org.briarproject.briar.desktop.notification.NotificationProvider
-import org.briarproject.briar.desktop.utils.AudioUtils.loadAudioFromResource
-import org.briarproject.briar.desktop.utils.AudioUtils.play
+import org.briarproject.briar.desktop.notification.VisualNotificationProvider
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nF
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nP
 import org.briarproject.briar.desktop.utils.KLoggerUtils.e
 import org.briarproject.briar.desktop.utils.KLoggerUtils.i
-import javax.sound.sampled.Clip
 
-object LibnotifyNotificationProvider : NotificationProvider {
+object LibnotifyNotificationProvider : VisualNotificationProvider {
 
     private val LOG = KotlinLogging.logger {}
 
-    private var libNotifyAvailable: Boolean = false
-    private var soundAvailable: Boolean = false
-
     private lateinit var libNotify: LibNotify
 
-    private lateinit var sound: Clip
-
-    override val available: Boolean
-        get() = libNotifyAvailable
+    override var available: Boolean = false
+        private set
 
     private enum class Error { NONE, LOAD, INIT }
 
@@ -51,19 +43,12 @@ object LibnotifyNotificationProvider : NotificationProvider {
 
     override val errorMessage: String
         get() = when (error) {
-            Error.LOAD -> i18n("settings.notifications.error.libnotify.load")
-            Error.INIT -> i18n("settings.notifications.error.libnotify.init")
+            Error.LOAD -> i18n("settings.notifications.visual.error.libnotify.load")
+            Error.INIT -> i18n("settings.notifications.visual.error.libnotify.init")
             else -> ""
         }
 
     override fun init() {
-        try {
-            sound = loadAudioFromResource("/audio/notification.wav") ?: throw Exception() // NON-NLS
-            soundAvailable = true
-        } catch (ex: Exception) {
-            LOG.e(ex) { "Error while loading notification sound" }
-        }
-
         try {
             libNotify = Native.load("libnotify.so.4", LibNotify::class.java) // NON-NLS
         } catch (err: UnsatisfiedLinkError) {
@@ -72,8 +57,8 @@ object LibnotifyNotificationProvider : NotificationProvider {
             return
         }
 
-        libNotifyAvailable = libNotify.notify_init(i18n("main.title"))
-        if (!libNotifyAvailable) {
+        available = libNotify.notify_init(i18n("main.title"))
+        if (!available) {
             error = Error.INIT
             LOG.e { "unable to initialize libnotify" }
             return
@@ -90,22 +75,14 @@ object LibnotifyNotificationProvider : NotificationProvider {
     }
 
     override fun uninit() {
-        if (libNotifyAvailable) {
+        if (available) {
             libNotify.notify_uninit()
-            libNotifyAvailable = false
-        }
-        if (soundAvailable) {
-            sound.close()
-            soundAvailable = false
+            available = false
         }
     }
 
     override fun notifyPrivateMessages(num: Int, contacts: Int) {
-        if (!libNotifyAvailable) {
-            // play sound even if libnotify unavailable
-            if (soundAvailable) sound.play()
-            return
-        }
+        if (!available) return
 
         /**
          * summary
@@ -153,8 +130,6 @@ object LibnotifyNotificationProvider : NotificationProvider {
             // todo: error handling
             LOG.e { "error while sending notification via libnotify" }
         }
-
-        if (soundAvailable) sound.play()
     }
 
     /**

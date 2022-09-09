@@ -48,7 +48,8 @@ import org.briarproject.bramble.api.lifecycle.event.LifecycleEvent
 import org.briarproject.briar.desktop.expiration.ExpirationBanner
 import org.briarproject.briar.desktop.login.ErrorScreen
 import org.briarproject.briar.desktop.login.StartupScreen
-import org.briarproject.briar.desktop.notification.NotificationProvider
+import org.briarproject.briar.desktop.notification.SoundNotificationProvider
+import org.briarproject.briar.desktop.notification.VisualNotificationProvider
 import org.briarproject.briar.desktop.settings.Configuration
 import org.briarproject.briar.desktop.settings.UnencryptedSettings.Theme.AUTO
 import org.briarproject.briar.desktop.settings.UnencryptedSettings.Theme.DARK
@@ -92,7 +93,8 @@ constructor(
     private val eventBus: EventBus,
     private val viewModelProvider: ViewModelProvider,
     private val configuration: Configuration,
-    private val notificationProvider: NotificationProvider,
+    private val visualNotificationProvider: VisualNotificationProvider,
+    private val soundNotificationProvider: SoundNotificationProvider,
     private val messageCounter: MessageCounterImpl,
 ) : BriarUi {
 
@@ -153,13 +155,15 @@ constructor(
                 val messageCounterListener: MessageCounterListener = { (total, contacts) ->
                     if (total > 0 && !focusState.focused) {
                         window.iconImage = iconBadge
-                        if (configuration.showNotifications) {
-                            notificationProvider.notifyPrivateMessages(total, contacts)
-                        }
+                        if (configuration.visualNotifications)
+                            visualNotificationProvider.notifyPrivateMessages(total, contacts)
+                        if (configuration.soundNotifications)
+                            soundNotificationProvider.notifyPrivateMessages(total, contacts)
                     }
                 }
 
-                notificationProvider.init()
+                visualNotificationProvider.init()
+                soundNotificationProvider.init()
                 eventBus.addListener(eventListener)
                 window.addWindowFocusListener(focusListener)
                 messageCounter.addListener(messageCounterListener)
@@ -168,7 +172,8 @@ constructor(
                     messageCounter.removeListener(messageCounterListener)
                     eventBus.removeListener(eventListener)
                     window.removeWindowFocusListener(focusListener)
-                    notificationProvider.uninit()
+                    visualNotificationProvider.uninit()
+                    soundNotificationProvider.uninit()
                 }
             }
 

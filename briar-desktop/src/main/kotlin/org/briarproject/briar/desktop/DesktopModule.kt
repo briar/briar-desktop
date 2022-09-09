@@ -52,8 +52,9 @@ import org.briarproject.bramble.util.OsUtils.isMac
 import org.briarproject.briar.attachment.AttachmentModule
 import org.briarproject.briar.desktop.attachment.media.ImageCompressor
 import org.briarproject.briar.desktop.attachment.media.ImageCompressorImpl
-import org.briarproject.briar.desktop.notification.NotificationProvider
+import org.briarproject.briar.desktop.notification.SoundNotificationProvider
 import org.briarproject.briar.desktop.notification.StubNotificationProvider
+import org.briarproject.briar.desktop.notification.VisualNotificationProvider
 import org.briarproject.briar.desktop.notification.linux.LibnotifyNotificationProvider
 import org.briarproject.briar.desktop.settings.Configuration
 import org.briarproject.briar.desktop.settings.ConfigurationImpl
@@ -205,8 +206,12 @@ internal class DesktopModule(
 
     @Provides
     @Singleton
-    internal fun provideNotificationProvider(): NotificationProvider =
+    internal fun provideVisualNotificationProvider(): VisualNotificationProvider =
         if (isLinux()) LibnotifyNotificationProvider else StubNotificationProvider
+
+    @Provides
+    @Singleton
+    internal fun provideSoundNotificationProvider() = SoundNotificationProvider
 
     @Provides
     @Singleton

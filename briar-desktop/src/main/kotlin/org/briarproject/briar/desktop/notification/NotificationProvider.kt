@@ -38,12 +38,14 @@ interface NotificationProvider {
     fun notifyPrivateMessages(num: Int, contacts: Int)
 }
 
-object StubNotificationProvider : NotificationProvider {
+interface VisualNotificationProvider : NotificationProvider
+
+object StubNotificationProvider : VisualNotificationProvider {
     override val available: Boolean
         get() = false
 
     override val errorMessage: String
-        get() = i18n("settings.notifications.error.unsupported")
+        get() = i18n("settings.notifications.visual.error.unsupported")
 
     override fun init() {}
     override fun uninit() {}

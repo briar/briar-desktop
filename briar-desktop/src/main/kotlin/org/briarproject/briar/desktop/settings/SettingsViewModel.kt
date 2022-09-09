@@ -23,7 +23,7 @@ import org.briarproject.bramble.api.account.AccountManager
 import org.briarproject.bramble.api.crypto.PasswordStrengthEstimator
 import org.briarproject.bramble.api.db.TransactionManager
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
-import org.briarproject.briar.desktop.notification.NotificationProvider
+import org.briarproject.briar.desktop.notification.VisualNotificationProvider
 import org.briarproject.briar.desktop.settings.SettingsViewModel.NotificationProviderState.ERROR
 import org.briarproject.briar.desktop.settings.SettingsViewModel.NotificationProviderState.READY
 import org.briarproject.briar.desktop.threading.BriarExecutors
@@ -50,7 +50,7 @@ constructor(
     private val encryptedSettings: EncryptedSettings,
     private val accountManager: AccountManager,
     private val passwordStrengthEstimator: PasswordStrengthEstimator,
-    private val notificationProvider: NotificationProvider,
+    private val visualNotificationProvider: VisualNotificationProvider,
 ) : DbViewModel(briarExecutors, lifecycleManager, db) {
     private val _selectedSetting = mutableStateOf(SettingCategory.DISPLAY)
     val selectedSetting = _selectedSetting.asState()
@@ -69,16 +69,19 @@ constructor(
 
     val changePasswordSubViewModel = ChangePasswordSubViewModel(accountManager, passwordStrengthEstimator)
 
-    private val _showNotifications = mutableStateOf(encryptedSettings.showNotifications)
-    val showNotifications = _showNotifications.asState()
+    private val _visualNotifications = mutableStateOf(encryptedSettings.visualNotifications)
+    val visualNotifications = _visualNotifications.asState()
+
+    private val _soundNotifications = mutableStateOf(encryptedSettings.soundNotifications)
+    val soundNotifications = _soundNotifications.asState()
 
     sealed class NotificationProviderState {
         object READY : NotificationProviderState()
         class ERROR(val message: String) : NotificationProviderState()
     }
 
-    val notificationProviderState =
-        if (notificationProvider.available) READY else ERROR(notificationProvider.errorMessage)
+    val visualNotificationProviderState =
+        if (visualNotificationProvider.available) READY else ERROR(visualNotificationProvider.errorMessage)
 
     fun selectSetting(selectedOption: SettingCategory) {
         _selectedSetting.value = selectedOption
@@ -102,9 +105,15 @@ constructor(
         _changePasswordDialogVisible.value = false
     }
 
-    fun toggleShowNotifications() {
-        val newValue = !_showNotifications.value
-        _showNotifications.value = newValue
-        runOnDbThread { encryptedSettings.showNotifications = newValue }
+    fun toggleVisualNotifications() {
+        val newValue = !_visualNotifications.value
+        _visualNotifications.value = newValue
+        runOnDbThread { encryptedSettings.visualNotifications = newValue }
+    }
+
+    fun toggleSoundNotifications() {
+        val newValue = !_soundNotifications.value
+        _soundNotifications.value = newValue
+        runOnDbThread { encryptedSettings.soundNotifications = newValue }
     }
 }

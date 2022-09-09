@@ -108,24 +108,24 @@ fun SettingDetails(viewModel: SettingsViewModel) {
                     }
                 }
 
-                val notificationError = viewModel.notificationProviderState is NotificationProviderState.ERROR
-                val checked = !notificationError && viewModel.showNotifications.value
+                val notificationError = viewModel.visualNotificationProviderState is NotificationProviderState.ERROR
+                val visualNotificationsChecked = !notificationError && viewModel.visualNotifications.value
 
                 DetailItem(
-                    label = i18n("settings.notifications.title"),
+                    label = i18n("settings.notifications.visual.title"),
                     description = (
-                        if (checked) i18n("access.settings.currently_enabled")
+                        if (visualNotificationsChecked) i18n("access.settings.currently_enabled")
                         else i18n("access.settings.currently_disabled")
                         ) + ". " + i18n("access.settings.click_to_toggle_notifications")
                 ) {
                     Switch(
-                        checked = checked,
-                        onCheckedChange = { viewModel.toggleShowNotifications() },
+                        checked = visualNotificationsChecked,
+                        onCheckedChange = { viewModel.toggleVisualNotifications() },
                         enabled = !notificationError
                     )
                 }
 
-                if (viewModel.notificationProviderState is NotificationProviderState.ERROR) {
+                if (viewModel.visualNotificationProviderState is NotificationProviderState.ERROR) {
                     Row(
                         Modifier.fillMaxWidth()
                             .padding(horizontal = 16.dp)
@@ -141,12 +141,27 @@ fun SettingDetails(viewModel: SettingsViewModel) {
                             MaterialTheme.colors.warningForeground
                         )
                         Text(
-                            text = viewModel.notificationProviderState.message,
+                            text = viewModel.visualNotificationProviderState.message,
                             color = MaterialTheme.colors.warningForeground,
                             style = MaterialTheme.typography.body2,
                             modifier = Modifier.fillMaxWidth()
                         )
                     }
+                }
+
+                val soundNotificationsChecked = viewModel.soundNotifications.value
+
+                DetailItem(
+                    label = i18n("settings.notifications.sound.title"),
+                    description = (
+                        if (soundNotificationsChecked) i18n("access.settings.currently_enabled")
+                        else i18n("access.settings.currently_disabled")
+                        ) + ". " + i18n("access.settings.click_to_toggle_notifications")
+                ) {
+                    Switch(
+                        checked = soundNotificationsChecked,
+                        onCheckedChange = { viewModel.toggleSoundNotifications() },
+                    )
                 }
             }
         }
