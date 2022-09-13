@@ -37,7 +37,7 @@ internal class RunWithTemporaryAccount(
     val createAccount: Boolean = true,
     val login: Boolean = true,
     val makeDirUnwritable: Boolean = false,
-    val customization: suspend BriarDesktopTestApp.() -> Unit = {}
+    val customization: suspend BriarDesktopTestApp.() -> Unit = {},
 ) {
 
     companion object {
@@ -58,8 +58,8 @@ internal class RunWithTemporaryAccount(
         }
 
         val app =
-            DaggerBriarDesktopTestApp.builder().desktopTestModule(
-                DesktopTestModule(dataDir)
+            DaggerBriarDesktopTestApp.builder().desktopCoreModule(
+                DesktopCoreModule(dataDir)
             ).build()
 
         app.getShutdownManager().addShutdownHook {

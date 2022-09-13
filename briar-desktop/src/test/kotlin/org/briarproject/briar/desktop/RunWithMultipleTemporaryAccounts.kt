@@ -36,7 +36,7 @@ import java.util.logging.Level.ALL
 
 internal class RunWithMultipleTemporaryAccounts(
     private val names: List<String>,
-    val customization: List<BriarDesktopTestApp>.() -> Unit
+    val customization: List<BriarDesktopTestApp>.() -> Unit,
 ) {
 
     companion object {
@@ -80,8 +80,8 @@ internal class RunWithMultipleTemporaryAccounts(
         LOG.i { "Using data directory '$dataDir'" }
 
         val app =
-            DaggerBriarDesktopTestApp.builder().desktopTestModule(
-                DesktopTestModule(dataDir, socksPort, controlPort)
+            DaggerBriarDesktopTestApp.builder().desktopCoreModule(
+                DesktopCoreModule(dataDir, socksPort, controlPort)
             ).build()
 
         app.getShutdownManager().addShutdownHook {

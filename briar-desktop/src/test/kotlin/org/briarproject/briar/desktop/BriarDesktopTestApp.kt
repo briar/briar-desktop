@@ -35,7 +35,6 @@ import org.briarproject.briar.api.introduction.IntroductionManager
 import org.briarproject.briar.api.test.TestDataCreator
 import org.briarproject.briar.desktop.testdata.DeterministicTestDataCreator
 import org.briarproject.briar.desktop.ui.BriarUi
-import java.security.SecureRandom
 import java.util.concurrent.Executor
 import javax.inject.Singleton
 
@@ -43,7 +42,7 @@ import javax.inject.Singleton
     modules = [
         BrambleCoreModule::class,
         BriarCoreModule::class,
-        DesktopTestModule::class
+        DesktopTestModule::class,
     ]
 )
 @Singleton
@@ -58,8 +57,6 @@ internal interface BriarDesktopTestApp : BrambleCoreEagerSingletons, BriarCoreEa
     fun getIntroductionManager(): IntroductionManager
 
     fun getContactManager(): ContactManager
-
-    fun getSecureRandom(): SecureRandom
 
     fun getLifecycleManager(): LifecycleManager
 

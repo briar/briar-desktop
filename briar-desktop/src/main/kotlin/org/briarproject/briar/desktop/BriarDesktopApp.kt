@@ -24,20 +24,19 @@ import org.briarproject.bramble.BrambleCoreModule
 import org.briarproject.briar.BriarCoreEagerSingletons
 import org.briarproject.briar.BriarCoreModule
 import org.briarproject.briar.desktop.ui.BriarUi
-import java.security.SecureRandom
 import javax.inject.Singleton
 
+// corresponding Briar Android class in
+// briar/briar-android/src/main/java/org/briarproject/briar/android/AndroidComponent.java
 @Component(
     modules = [
         BrambleCoreModule::class,
         BriarCoreModule::class,
-        DesktopModule::class
+        DesktopModule::class,
     ]
 )
 @Singleton
 internal interface BriarDesktopApp : BrambleCoreEagerSingletons, BriarCoreEagerSingletons {
 
     fun getBriarUi(): BriarUi
-
-    fun getSecureRandom(): SecureRandom
 }
