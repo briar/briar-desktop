@@ -37,7 +37,7 @@ internal class RunWithTemporaryAccount(
     val createAccount: Boolean = true,
     val login: Boolean = true,
     val makeDirUnwritable: Boolean = false,
-    val customization: BriarDesktopTestApp.() -> Unit = {}
+    val customization: suspend BriarDesktopTestApp.() -> Unit = {}
 ) {
 
     companion object {
