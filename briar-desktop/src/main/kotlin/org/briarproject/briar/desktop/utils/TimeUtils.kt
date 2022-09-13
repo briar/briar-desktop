@@ -38,7 +38,7 @@ object TimeUtils {
             DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
         } else {
             DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
-        }
+        }.withLocale(InternationalizationUtils.locale)
         return messageTime.format(formatter)
     }
 }
