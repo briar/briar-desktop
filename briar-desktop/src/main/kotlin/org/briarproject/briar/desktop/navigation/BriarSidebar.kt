@@ -61,7 +61,7 @@ fun BriarSidebar(
             selectedMode == mode,
             { setUiMode(mode) },
             icon,
-            mode.toString()
+            i18n(mode.contentDescriptionKey)
         )
     }
 
