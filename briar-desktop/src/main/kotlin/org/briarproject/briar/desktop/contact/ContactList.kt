@@ -33,6 +33,8 @@ import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -65,9 +67,11 @@ fun ContactList(
                 modifier = Modifier.fillMaxWidth().height(HEADER_SIZE + 1.dp),
             ) {
                 SearchTextField(
-                    filterBy,
+                    placeholder = i18n("contacts.search.title"),
+                    icon = Icons.Filled.PersonAdd,
+                    searchValue = filterBy,
                     onValueChange = setFilterBy,
-                    onContactAdd = onContactAdd,
+                    onAddButtonClicked = onContactAdd,
                 )
             }
 

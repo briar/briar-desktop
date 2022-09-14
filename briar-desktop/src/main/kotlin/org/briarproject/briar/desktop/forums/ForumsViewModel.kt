@@ -19,6 +19,7 @@
 package org.briarproject.briar.desktop.forums
 
 import androidx.compose.runtime.State
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import org.briarproject.bramble.api.db.TransactionManager
@@ -30,6 +31,7 @@ import org.briarproject.briar.api.forum.ForumManager
 import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.utils.clearAndAddAll
 import org.briarproject.briar.desktop.viewmodel.EventListenerDbViewModel
+import org.briarproject.briar.desktop.viewmodel.asState
 import javax.inject.Inject
 
 class ForumsViewModel
@@ -43,10 +45,18 @@ constructor(
 ) : EventListenerDbViewModel(briarExecutors, lifecycleManager, db, eventBus) {
 
     private val _fullGroupList = mutableStateListOf<ForumsItem>()
-    val groupList: List<ForumsItem> = _fullGroupList
+    val groupList = derivedStateOf {
+        val filter = _filterBy.value
+        _fullGroupList.filter { item ->
+            item.name.contains(filter, ignoreCase = true)
+        }.sortedByDescending { it.timestamp }
+    }
 
     private val _selectedGroupId = mutableStateOf<GroupId?>(null)
     val selectedGroupId: State<GroupId?> = _selectedGroupId
+
+    private val _filterBy = mutableStateOf("")
+    val filterBy = _filterBy.asState()
 
     override fun onInit() {
         super.onInit()
@@ -76,4 +86,8 @@ constructor(
     }
 
     fun isSelected(privateGroupId: GroupId) = _selectedGroupId.value == privateGroupId
+
+    fun setFilterBy(filter: String) {
+        _filterBy.value = filter
+    }
 }

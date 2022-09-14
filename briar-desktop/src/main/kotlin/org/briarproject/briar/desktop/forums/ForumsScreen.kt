@@ -36,7 +36,10 @@ fun ForumsScreen(
         ForumsList(
             list = viewModel.groupList,
             isSelected = viewModel::isSelected,
+            filterBy = viewModel.filterBy,
+            onFilterSet = viewModel::setFilterBy,
             onGroupIdSelected = viewModel::selectGroup,
+            onAddButtonClicked = {},
         )
         VerticalDivider()
         Column(modifier = Modifier.weight(1f).fillMaxHeight()) {

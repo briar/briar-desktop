@@ -27,17 +27,23 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import org.briarproject.briar.desktop.ui.ColoredIconButton
 import org.briarproject.briar.desktop.utils.AccessibilityUtils.description
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 
 @Composable
-fun SearchTextField(searchValue: String, onValueChange: (String) -> Unit, onContactAdd: () -> Unit) {
+fun SearchTextField(
+    placeholder: String,
+    icon: ImageVector,
+    searchValue: String,
+    onValueChange: (String) -> Unit,
+    onAddButtonClicked: () -> Unit,
+) {
     TextField(
         value = searchValue,
         onValueChange = onValueChange,
@@ -45,7 +51,7 @@ fun SearchTextField(searchValue: String, onValueChange: (String) -> Unit, onCont
         textStyle = LocalTextStyle.current.copy(
             color = MaterialTheme.colors.onSurface
         ),
-        placeholder = { Text(i18n("contacts.search.title"), style = MaterialTheme.typography.body1) },
+        placeholder = { Text(placeholder, style = MaterialTheme.typography.body1) },
         shape = RoundedCornerShape(0.dp),
         leadingIcon = {
             val padding = Modifier.padding(top = 8.dp, bottom = 8.dp, start = 32.dp, end = 4.dp)
@@ -53,10 +59,10 @@ fun SearchTextField(searchValue: String, onValueChange: (String) -> Unit, onCont
         },
         trailingIcon = {
             ColoredIconButton(
-                icon = Icons.Filled.PersonAdd,
+                icon = icon,
                 iconSize = 20.dp,
                 contentDescription = i18n("access.contacts.add"),
-                onClick = onContactAdd,
+                onClick = onAddButtonClicked,
                 modifier = Modifier.padding(end = 8.dp)
             )
         },
