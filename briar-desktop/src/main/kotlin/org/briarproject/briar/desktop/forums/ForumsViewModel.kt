@@ -27,6 +27,7 @@ import org.briarproject.bramble.api.event.Event
 import org.briarproject.bramble.api.event.EventBus
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.bramble.api.sync.GroupId
+import org.briarproject.bramble.api.sync.event.GroupAddedEvent
 import org.briarproject.briar.api.forum.ForumManager
 import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.utils.clearAndAddAll
@@ -64,7 +65,13 @@ constructor(
     }
 
     override fun eventOccurred(e: Event) {
-        // TODO
+        if (e is GroupAddedEvent) {
+            if (e.group.clientId == ForumManager.CLIENT_ID) loadGroups()
+        }
+    }
+
+    fun createForum(name: String) {
+        forumManager.addForum(name)
     }
 
     private fun loadGroups() {

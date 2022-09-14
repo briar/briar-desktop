@@ -107,13 +107,19 @@ fun GroupsCard(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = i18nP("group.card.posts", item.msgCount),
+                        text = if (item.msgCount > 0) {
+                            i18nP("group.card.posts", item.msgCount)
+                        } else {
+                            i18nP("group.card.no_posts", item.msgCount)
+                        },
                         style = MaterialTheme.typography.caption
                     )
-                    Text(
-                        text = getFormattedTimestamp(item.timestamp),
-                        style = MaterialTheme.typography.caption
-                    )
+                    if (item.msgCount > 0) {
+                        Text(
+                            text = getFormattedTimestamp(item.timestamp),
+                            style = MaterialTheme.typography.caption
+                        )
+                    }
                 }
             }
         }

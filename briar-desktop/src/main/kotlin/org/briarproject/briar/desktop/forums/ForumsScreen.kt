@@ -25,6 +25,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddComment
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.briarproject.briar.desktop.conversation.Explainer
@@ -38,8 +40,18 @@ import org.briarproject.briar.desktop.viewmodel.viewModel
 fun ForumsScreen(
     viewModel: ForumsViewModel = viewModel(),
 ) {
+    val addDialogVisible = remember { mutableStateOf(false) }
+    AddForumDialog(
+        visible = addDialogVisible,
+        onCreate = { name ->
+            viewModel.createForum(name)
+            addDialogVisible.value = false
+        },
+        onCancelButtonClicked = { addDialogVisible.value = false }
+    )
+
     if (viewModel.groupList.value.isEmpty()) {
-        NoForumsYet {}
+        NoForumsYet { addDialogVisible.value = true }
     } else {
         Row(modifier = Modifier.fillMaxWidth()) {
             ForumsList(
@@ -48,7 +60,7 @@ fun ForumsScreen(
                 filterBy = viewModel.filterBy,
                 onFilterSet = viewModel::setFilterBy,
                 onGroupIdSelected = viewModel::selectGroup,
-                onAddButtonClicked = {},
+                onAddButtonClicked = { addDialogVisible.value = true },
             )
             VerticalDivider()
             Column(modifier = Modifier.weight(1f).fillMaxHeight()) {
