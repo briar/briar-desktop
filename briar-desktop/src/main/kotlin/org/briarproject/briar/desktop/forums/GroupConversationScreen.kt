@@ -49,6 +49,7 @@ import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.unit.dp
+import org.briarproject.bramble.api.sync.MessageId
 import org.briarproject.briar.desktop.contact.ContactDropDown.State.CLOSED
 import org.briarproject.briar.desktop.contact.ContactDropDown.State.MAIN
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
@@ -61,13 +62,23 @@ fun GroupConversationScreen(
     groupItem: GroupItem,
     viewModel: ForumsViewModel = viewModel(),
 ) {
+    val selectedPost = remember { mutableStateOf<MessageId?>(null) }
     Scaffold(
         topBar = {
             GroupConversationHeader(groupItem) { viewModel.deleteGroup(groupItem) }
         },
         content = { padding ->
-            ThreadedConversationScreen(viewModel.posts.value)
+            ThreadedConversationScreen(
+                postsState = viewModel.posts.value,
+                selectedPost = selectedPost,
+                modifier = Modifier.padding(padding)
+            )
         },
+        bottomBar = {
+            GroupInputComposable(selectedPost) { text ->
+                viewModel.createPost(groupItem, text, selectedPost.value)
+            }
+        }
     )
 }
 

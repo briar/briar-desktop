@@ -20,10 +20,13 @@ package org.briarproject.briar.desktop
 
 import dagger.Module
 import dagger.Provides
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.asExecutor
 import kotlinx.coroutines.swing.Swing
 import org.briarproject.bramble.account.AccountModule
+import org.briarproject.bramble.api.crypto.CryptoExecutor
 import org.briarproject.bramble.api.db.DatabaseConfig
 import org.briarproject.bramble.api.event.EventExecutor
 import org.briarproject.bramble.api.mailbox.MailboxDirectory
@@ -143,6 +146,12 @@ internal class DesktopCoreModule(
     @Singleton
     @UiExecutor
     fun provideUiExecutor(): Executor = Dispatchers.Swing.asExecutor()
+
+    @Provides
+    @Singleton
+    @CryptoExecutor
+    fun provideCryptoDispatcher(@CryptoExecutor executor: Executor): CoroutineDispatcher =
+        executor.asCoroutineDispatcher()
 
     @Provides
     @Singleton

@@ -20,10 +20,13 @@ package org.briarproject.briar.desktop.viewmodel
 
 import mu.KotlinLogging
 import org.briarproject.bramble.api.db.DatabaseExecutor
+import org.briarproject.bramble.api.db.DbCallable
 import org.briarproject.bramble.api.db.Transaction
 import org.briarproject.bramble.api.db.TransactionManager
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.briar.desktop.threading.BriarExecutors
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 abstract class DbViewModel(
     private val briarExecutors: BriarExecutors,
@@ -53,4 +56,14 @@ abstract class DbViewModel(
         readOnly: Boolean,
         task: (Transaction) -> Unit
     ) = briarExecutors.onDbThreadWithTransaction(readOnly, task)
+
+    protected suspend fun <T> runOnDbThread(
+        readOnly: Boolean,
+        task: (Transaction) -> T
+    ) = suspendCoroutine<T> { cont ->
+        briarExecutors.onDbThread {
+            val t = db.transactionWithResult(readOnly, DbCallable { txn -> task(txn) })
+            cont.resume(t)
+        }
+    }
 }

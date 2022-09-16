@@ -42,7 +42,7 @@ import org.briarproject.bramble.api.sync.GroupId
 import org.briarproject.briar.desktop.theme.selectedCard
 import org.briarproject.briar.desktop.theme.surfaceVariant
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
-import org.briarproject.briar.desktop.utils.InternationalizationUtils
+import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nP
 import org.briarproject.briar.desktop.utils.PreviewUtils
 import org.briarproject.briar.desktop.utils.TimeUtils.getFormattedTimestamp
@@ -78,8 +78,8 @@ fun GroupsCard(
             .clickable(onClick = { onGroupItemSelected(item) })
             .semantics {
                 contentDescription =
-                    if (selected) InternationalizationUtils.i18n("access.list.selected.yes")
-                    else InternationalizationUtils.i18n("access.list.selected.no")
+                    if (selected) i18n("access.list.selected.yes")
+                    else i18n("access.list.selected.no")
             },
         shape = RoundedCornerShape(0.dp),
         backgroundColor = if (selected) {
