@@ -53,7 +53,6 @@ import org.briarproject.briar.desktop.contact.ContactDropDown.State.CLOSED
 import org.briarproject.briar.desktop.contact.ContactDropDown.State.MAIN
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
 import org.briarproject.briar.desktop.ui.HorizontalDivider
-import org.briarproject.briar.desktop.ui.UiPlaceholder
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.viewmodel.viewModel
 
@@ -67,8 +66,7 @@ fun GroupConversationScreen(
             GroupConversationHeader(groupItem) { viewModel.deleteGroup(groupItem) }
         },
         content = { padding ->
-            // Loader()
-            UiPlaceholder()
+            ThreadedConversationScreen(viewModel.posts.value)
         },
     )
 }

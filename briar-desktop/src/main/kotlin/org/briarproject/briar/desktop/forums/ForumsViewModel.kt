@@ -30,15 +30,20 @@ import org.briarproject.bramble.api.sync.GroupId
 import org.briarproject.bramble.api.sync.event.GroupAddedEvent
 import org.briarproject.bramble.api.sync.event.GroupRemovedEvent
 import org.briarproject.briar.api.forum.ForumManager
+import org.briarproject.briar.client.MessageTreeImpl
 import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.utils.clearAndAddAll
 import org.briarproject.briar.desktop.viewmodel.EventListenerDbViewModel
 import org.briarproject.briar.desktop.viewmodel.asState
 import javax.inject.Inject
 
-class ForumsViewModel
-@Inject
-constructor(
+sealed class PostsState
+object Loading : PostsState()
+class Loaded(private val messageTree: MessageTreeImpl<ThreadItem>) : PostsState() {
+    val posts: MutableList<ThreadItem> get() = messageTree.depthFirstOrder()
+}
+
+class ForumsViewModel @Inject constructor(
     private val forumManager: ForumManager,
     briarExecutors: BriarExecutors,
     lifecycleManager: LifecycleManager,
@@ -59,6 +64,9 @@ constructor(
 
     private val _filterBy = mutableStateOf("")
     val filterBy = _filterBy.asState()
+
+    private val _posts = mutableStateOf<PostsState>(Loading)
+    val posts: State<PostsState> = _posts
 
     override fun onInit() {
         super.onInit()
@@ -96,9 +104,23 @@ constructor(
 
     fun selectGroup(groupItem: GroupItem) {
         _selectedGroupItem.value = groupItem
+        loadPosts(groupItem.id)
     }
 
     fun isSelected(groupId: GroupId) = _selectedGroupItem.value?.id == groupId
+
+    private fun loadPosts(groupId: GroupId) {
+        _posts.value = Loading
+        runOnDbThreadWithTransaction(true) { txn ->
+            val items = forumManager.getPostHeaders(txn, groupId).map { header ->
+                ForumPostItem(header, forumManager.getPostText(txn, header.id))
+            }
+            val tree = MessageTreeImpl<ThreadItem>().apply { add(items) }
+            txn.attach {
+                _posts.value = Loaded(tree)
+            }
+        }
+    }
 
     fun setFilterBy(filter: String) {
         _filterBy.value = filter
