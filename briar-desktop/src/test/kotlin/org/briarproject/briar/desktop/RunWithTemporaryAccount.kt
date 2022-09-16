@@ -29,6 +29,7 @@ import org.briarproject.bramble.api.lifecycle.Service
 import org.briarproject.bramble.api.lifecycle.ServiceException
 import org.briarproject.briar.BriarCoreEagerSingletons
 import org.briarproject.briar.desktop.TestUtils.getDataDir
+import org.briarproject.briar.desktop.settings.DesktopSettingsModule
 import org.briarproject.briar.desktop.utils.KLoggerUtils.i
 import org.briarproject.briar.desktop.utils.KLoggerUtils.w
 import org.briarproject.briar.desktop.utils.LogUtils
@@ -61,9 +62,10 @@ internal class RunWithTemporaryAccount(
         }
 
         val app =
-            DaggerBriarDesktopTestApp.builder().desktopCoreModule(
-                DesktopCoreModule(dataDir)
-            ).build()
+            DaggerBriarDesktopTestApp.builder()
+                .desktopCoreModule(DesktopCoreModule(dataDir))
+                .desktopSettingsModule(DesktopSettingsModule("test"))
+                .build()
 
         app.getShutdownManager().addShutdownHook {
             LOG.i { "deleting temporary account at $dataDir" }

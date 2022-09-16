@@ -28,21 +28,26 @@ import org.briarproject.briar.desktop.utils.InternationalizationUtils
 import org.briarproject.briar.desktop.utils.KLoggerUtils.e
 import org.briarproject.briar.desktop.viewmodel.SingleStateEvent
 import java.util.prefs.Preferences
-import javax.inject.Inject
 import kotlin.reflect.KProperty
 
 const val PREF_THEME = "theme" // NON-NLS
 const val PREF_LANG = "language" // NON-NLS
 const val PREF_UI_SCALE = "uiScale" // NON-NLS
 
-class UnencryptedSettingsImpl @Inject internal constructor() : UnencryptedSettings {
+class UnencryptedSettingsImpl(
+    unencryptedSettingsPostfix: String? = null,
+) : UnencryptedSettings {
 
     companion object {
         private val LOG = KotlinLogging.logger {}
     }
 
     // used for unencrypted settings, namely theme, language and UI scale factor
-    private val prefs = Preferences.userNodeForPackage(this::class.java)
+    private val prefs = Preferences.userNodeForPackage(this::class.java).let { node ->
+        if (unencryptedSettingsPostfix != null)
+            node.node(unencryptedSettingsPostfix)
+        else node
+    }
 
     override val invalidateScreen = SingleStateEvent<Unit>()
 

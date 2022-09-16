@@ -60,12 +60,7 @@ import org.briarproject.briar.desktop.notification.linux.LibnotifyNotificationPr
 import org.briarproject.briar.desktop.notification.windows.Toast4jNotificationProvider
 import org.briarproject.briar.desktop.settings.Configuration
 import org.briarproject.briar.desktop.settings.ConfigurationImpl
-import org.briarproject.briar.desktop.settings.EncryptedSettings
-import org.briarproject.briar.desktop.settings.EncryptedSettingsImpl
-import org.briarproject.briar.desktop.settings.EncryptedSettingsReadOnly
-import org.briarproject.briar.desktop.settings.UnencryptedSettings
-import org.briarproject.briar.desktop.settings.UnencryptedSettingsImpl
-import org.briarproject.briar.desktop.settings.UnencryptedSettingsReadOnly
+import org.briarproject.briar.desktop.settings.DesktopSettingsModule
 import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.threading.BriarExecutorsImpl
 import org.briarproject.briar.desktop.threading.UiExecutor
@@ -95,6 +90,7 @@ import javax.swing.SwingUtilities.isEventDispatchThread
         DefaultTaskSchedulerModule::class,
         DefaultWakefulIoExecutorModule::class,
         DesktopSecureRandomModule::class,
+        DesktopSettingsModule::class,
         JavaNetworkModule::class,
         JavaSystemModule::class,
         SocksModule::class,
@@ -123,24 +119,6 @@ internal class DesktopCoreModule(
         val keyDir = appDir.resolve("key")
         return DesktopDatabaseConfig(dbDir, keyDir)
     }
-
-    @Provides
-    @Singleton
-    fun provideUnencryptedSettings(settings: UnencryptedSettingsImpl): UnencryptedSettings = settings
-
-    @Provides
-    @Singleton
-    // provide [UnencryptedSettings] singleton itself as provided above to use same object
-    fun provideUnencryptedSettingsReadOnly(settings: UnencryptedSettings): UnencryptedSettingsReadOnly = settings
-
-    @Provides
-    @Singleton
-    fun provideEncryptedSettings(settings: EncryptedSettingsImpl): EncryptedSettings = settings
-
-    @Provides
-    @Singleton
-    // provide [EncryptedSettings] singleton itself as provided above to use same object
-    fun provideEncryptedSettingsReadOnly(settings: EncryptedSettings): EncryptedSettingsReadOnly = settings
 
     @Provides
     @Singleton

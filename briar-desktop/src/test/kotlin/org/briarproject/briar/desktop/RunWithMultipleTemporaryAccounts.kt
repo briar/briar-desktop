@@ -28,6 +28,7 @@ import org.briarproject.bramble.api.plugin.TorConstants.DEFAULT_CONTROL_PORT
 import org.briarproject.bramble.api.plugin.TorConstants.DEFAULT_SOCKS_PORT
 import org.briarproject.briar.BriarCoreEagerSingletons
 import org.briarproject.briar.desktop.TestUtils.getDataDir
+import org.briarproject.briar.desktop.settings.DesktopSettingsModule
 import org.briarproject.briar.desktop.utils.KLoggerUtils.i
 import org.briarproject.briar.desktop.utils.KLoggerUtils.w
 import org.briarproject.briar.desktop.utils.LogUtils
@@ -78,9 +79,10 @@ internal class RunWithMultipleTemporaryAccounts(
         LOG.i { "Using data directory '$dataDir'" }
 
         val app =
-            DaggerBriarDesktopTestApp.builder().desktopCoreModule(
-                DesktopCoreModule(dataDir, socksPort, controlPort)
-            ).build()
+            DaggerBriarDesktopTestApp.builder()
+                .desktopCoreModule(DesktopCoreModule(dataDir, socksPort, controlPort))
+                .desktopSettingsModule(DesktopSettingsModule("test"))
+                .build()
 
         app.getShutdownManager().addShutdownHook {
             LOG.i { "deleting temporary account at $dataDir" }
