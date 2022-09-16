@@ -28,6 +28,7 @@ import org.briarproject.bramble.api.event.EventBus
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.bramble.api.sync.GroupId
 import org.briarproject.bramble.api.sync.event.GroupAddedEvent
+import org.briarproject.bramble.api.sync.event.GroupRemovedEvent
 import org.briarproject.briar.api.forum.ForumManager
 import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.utils.clearAndAddAll
@@ -53,8 +54,8 @@ constructor(
         }.sortedByDescending { it.timestamp }
     }
 
-    private val _selectedGroupId = mutableStateOf<GroupId?>(null)
-    val selectedGroupId: State<GroupId?> = _selectedGroupId
+    private val _selectedGroupItem = mutableStateOf<GroupItem?>(null)
+    val selectedGroupItem: State<GroupItem?> = _selectedGroupItem
 
     private val _filterBy = mutableStateOf("")
     val filterBy = _filterBy.asState()
@@ -67,6 +68,11 @@ constructor(
     override fun eventOccurred(e: Event) {
         if (e is GroupAddedEvent) {
             if (e.group.clientId == ForumManager.CLIENT_ID) loadGroups()
+        } else if (e is GroupRemovedEvent) {
+            if (e.group.clientId == ForumManager.CLIENT_ID) {
+                loadGroups()
+                if (selectedGroupItem.value?.id == e.group.id) _selectedGroupItem.value = null
+            }
         }
     }
 
@@ -88,13 +94,17 @@ constructor(
         }
     }
 
-    fun selectGroup(privateGroupId: GroupId) {
-        _selectedGroupId.value = privateGroupId
+    fun selectGroup(groupItem: GroupItem) {
+        _selectedGroupItem.value = groupItem
     }
 
-    fun isSelected(privateGroupId: GroupId) = _selectedGroupId.value == privateGroupId
+    fun isSelected(groupId: GroupId) = _selectedGroupItem.value?.id == groupId
 
     fun setFilterBy(filter: String) {
         _filterBy.value = filter
+    }
+
+    fun deleteGroup(groupItem: GroupItem) {
+        forumManager.removeForum((groupItem as ForumsItem).forum)
     }
 }

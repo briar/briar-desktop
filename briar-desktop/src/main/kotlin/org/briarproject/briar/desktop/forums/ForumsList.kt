@@ -54,7 +54,7 @@ fun ForumsList(
     isSelected: (GroupId) -> Boolean,
     filterBy: State<String>,
     onFilterSet: (String) -> Unit,
-    onGroupIdSelected: (GroupId) -> Unit,
+    onGroupItemSelected: (GroupItem) -> Unit,
     onAddButtonClicked: () -> Unit,
 ) {
     val scrollState = rememberLazyListState()
@@ -82,7 +82,7 @@ fun ForumsList(
                     items(list.value) { item ->
                         GroupsCard(
                             item = item,
-                            onGroupIdSelected = onGroupIdSelected,
+                            onGroupItemSelected = onGroupItemSelected,
                             selected = isSelected(item.id)
                         )
                         HorizontalDivider()

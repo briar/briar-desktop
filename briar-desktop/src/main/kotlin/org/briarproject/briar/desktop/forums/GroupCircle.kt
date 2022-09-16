@@ -41,7 +41,7 @@ import org.briarproject.briar.desktop.theme.outline
 import org.briarproject.briar.desktop.ui.NumberBadge
 
 @Composable
-fun GroupCircle(item: GroupItem, modifier: Modifier = Modifier) {
+fun GroupCircle(item: GroupItem, showMessageCount: Boolean = true, modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
     ) {
@@ -66,7 +66,7 @@ fun GroupCircle(item: GroupItem, modifier: Modifier = Modifier) {
                 )
             )
         }
-        NumberBadge(
+        if (showMessageCount) NumberBadge(
             num = item.unread,
             modifier = Modifier.align(TopEnd).offset(8.dp, (-6).dp)
         )

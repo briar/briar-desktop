@@ -59,7 +59,7 @@ fun main() = PreviewUtils.preview {
                 override val unread: Int = 23
                 override val timestamp: Long = System.currentTimeMillis()
             },
-            onGroupIdSelected = {},
+            onGroupItemSelected = {},
             selected = false,
         )
     }
@@ -68,14 +68,14 @@ fun main() = PreviewUtils.preview {
 @Composable
 fun GroupsCard(
     item: GroupItem,
-    onGroupIdSelected: (GroupId) -> Unit,
+    onGroupItemSelected: (GroupItem) -> Unit,
     selected: Boolean,
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .defaultMinSize(minHeight = HEADER_SIZE)
-            .clickable(onClick = { onGroupIdSelected(item.id) })
+            .clickable(onClick = { onGroupItemSelected(item) })
             .semantics {
                 contentDescription =
                     if (selected) InternationalizationUtils.i18n("access.list.selected.yes")

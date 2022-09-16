@@ -31,7 +31,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.briarproject.briar.desktop.conversation.Explainer
 import org.briarproject.briar.desktop.ui.ColoredIconButton
-import org.briarproject.briar.desktop.ui.UiPlaceholder
 import org.briarproject.briar.desktop.ui.VerticalDivider
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.viewmodel.viewModel
@@ -59,16 +58,16 @@ fun ForumsScreen(
                 isSelected = viewModel::isSelected,
                 filterBy = viewModel.filterBy,
                 onFilterSet = viewModel::setFilterBy,
-                onGroupIdSelected = viewModel::selectGroup,
+                onGroupItemSelected = viewModel::selectGroup,
                 onAddButtonClicked = { addDialogVisible.value = true },
             )
             VerticalDivider()
             Column(modifier = Modifier.weight(1f).fillMaxHeight()) {
-                val id = viewModel.selectedGroupId.value
-                if (id == null) {
+                val item = viewModel.selectedGroupItem.value
+                if (item == null) {
                     NoForumSelected()
                 } else {
-                    UiPlaceholder()
+                    GroupConversationScreen(item)
                 }
             }
         }
