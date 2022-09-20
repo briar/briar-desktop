@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.sp
 import org.briarproject.bramble.api.sync.GroupId
 import org.briarproject.briar.desktop.theme.outline
 import org.briarproject.briar.desktop.ui.NumberBadge
+import org.briarproject.briar.desktop.utils.InternationalizationUtils.locale
 
 @Composable
 fun GroupCircle(item: GroupItem, showMessageCount: Boolean = true, modifier: Modifier = Modifier) {
@@ -54,7 +55,7 @@ fun GroupCircle(item: GroupItem, showMessageCount: Boolean = true, modifier: Mod
                 .background(item.id.getBackgroundColor()),
         ) {
             Text(
-                text = item.name.substring(0..0).uppercase(),
+                text = item.name.substring(0..0).uppercase(locale),
                 color = Color.White,
                 style = MaterialTheme.typography.body1.copy(
                     fontSize = 24.sp,
@@ -75,12 +76,12 @@ fun GroupCircle(item: GroupItem, showMessageCount: Boolean = true, modifier: Mod
 
 fun GroupId.getBackgroundColor(): Color {
     return Color(
-        red = getByte(bytes, 0) * 3 / 4 + 96,
-        green = getByte(bytes, 1) * 3 / 4 + 96,
-        blue = getByte(bytes, 2) * 3 / 4 + 96,
+        red = bytes.getByte(0) * 3 / 4 + 96,
+        green = bytes.getByte(1) * 3 / 4 + 96,
+        blue = bytes.getByte(2) * 3 / 4 + 96,
     )
 }
 
-private fun getByte(bytes: ByteArray, index: Int): Byte {
-    return bytes[index % bytes.size]
+private fun ByteArray.getByte(index: Int): Byte {
+    return this[index % size]
 }

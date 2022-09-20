@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.briarproject.briar.desktop.contact
+package org.briarproject.briar.desktop.ui
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -32,7 +32,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import org.briarproject.briar.desktop.ui.ColoredIconButton
 import org.briarproject.briar.desktop.utils.AccessibilityUtils.description
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 
@@ -41,6 +40,7 @@ fun SearchTextField(
     placeholder: String,
     icon: ImageVector,
     searchValue: String,
+    addButtonDescription: String,
     onValueChange: (String) -> Unit,
     onAddButtonClicked: () -> Unit,
 ) {
@@ -61,7 +61,7 @@ fun SearchTextField(
             ColoredIconButton(
                 icon = icon,
                 iconSize = 20.dp,
-                contentDescription = i18n("access.contacts.add"),
+                contentDescription = addButtonDescription,
                 onClick = onAddButtonClicked,
                 modifier = Modifier.padding(end = 8.dp)
             )

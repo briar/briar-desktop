@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import org.briarproject.briar.desktop.theme.surfaceVariant
 import org.briarproject.briar.desktop.ui.Constants.COLUMN_WIDTH
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
+import org.briarproject.briar.desktop.ui.SearchTextField
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 
 @Composable
@@ -70,6 +71,7 @@ fun ContactList(
                     placeholder = i18n("contacts.search.title"),
                     icon = Icons.Filled.PersonAdd,
                     searchValue = filterBy,
+                    addButtonDescription = i18n("access.contacts.add"),
                     onValueChange = setFilterBy,
                     onAddButtonClicked = onContactAdd,
                 )
@@ -89,7 +91,11 @@ fun ContactList(
                             contactItem,
                             onSel = { selectContact(contactItem) },
                             selected = isSelected(contactItem),
-                            onRemovePending = { if (contactItem is PendingContactItem) removePendingContact(contactItem) },
+                            onRemovePending = {
+                                if (contactItem is PendingContactItem) {
+                                    removePendingContact(contactItem)
+                                }
+                            },
                         )
                     }
                 }

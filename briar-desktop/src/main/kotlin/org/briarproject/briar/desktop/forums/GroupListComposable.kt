@@ -39,17 +39,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import org.briarproject.bramble.api.sync.GroupId
-import org.briarproject.briar.desktop.contact.SearchTextField
 import org.briarproject.briar.desktop.theme.surfaceVariant
 import org.briarproject.briar.desktop.ui.Constants
 import org.briarproject.briar.desktop.ui.Constants.COLUMN_WIDTH
 import org.briarproject.briar.desktop.ui.HorizontalDivider
+import org.briarproject.briar.desktop.ui.SearchTextField
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 
 @Composable
-fun ForumsList(
+fun GroupListComposable(
     list: State<List<GroupItem>>,
     isSelected: (GroupId) -> Boolean,
     filterBy: State<String>,
@@ -70,6 +72,7 @@ fun ForumsList(
                     placeholder = i18n("forum.search.title"),
                     icon = Icons.Filled.AddComment,
                     searchValue = filterBy.value,
+                    addButtonDescription = i18n("forum.add.title"),
                     onValueChange = onFilterSet,
                     onAddButtonClicked = onAddButtonClicked,
                 )
@@ -77,10 +80,13 @@ fun ForumsList(
             Box(modifier = Modifier.fillMaxSize()) {
                 LazyColumn(
                     state = scrollState,
-                    modifier = Modifier.selectableGroup()
+                    modifier = Modifier
+                        .semantics {
+                            contentDescription = i18n("access.forums.list")
+                        }.selectableGroup()
                 ) {
                     items(list.value) { item ->
-                        GroupsCard(
+                        GroupCard(
                             item = item,
                             onGroupItemSelected = onGroupItemSelected,
                             selected = isSelected(item.id)

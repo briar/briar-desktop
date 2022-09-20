@@ -55,21 +55,10 @@ abstract class ThreadItem(
     private var level: Int = UNDEFINED
     var isHighlighted = false
 
-    fun getLevel(): Int {
-        return level
-    }
-
-    override fun getId(): MessageId {
-        return messageId
-    }
-
-    override fun getParentId(): MessageId? {
-        return parentId
-    }
-
-    override fun getTimestamp(): Long {
-        return timestamp
-    }
+    override fun getId(): MessageId = messageId
+    override fun getParentId(): MessageId? = parentId
+    override fun getTimestamp(): Long = timestamp
+    fun getLevel(): Int = level
 
     /**
      * Returns the author's name, with an alias if one exists.
@@ -81,9 +70,7 @@ abstract class ThreadItem(
         this.level = level
     }
 
-    override fun hashCode(): Int {
-        return messageId.hashCode()
-    }
+    override fun hashCode(): Int = messageId.hashCode()
 
     override fun equals(other: Any?): Boolean {
         return other is ThreadItem && messageId == other.messageId

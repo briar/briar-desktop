@@ -20,6 +20,7 @@ package org.briarproject.briar.desktop.threading
 
 import mu.KotlinLogging
 import org.briarproject.bramble.api.db.DatabaseExecutor
+import org.briarproject.bramble.api.db.DbCallable
 import org.briarproject.bramble.api.db.Transaction
 import org.briarproject.bramble.api.db.TransactionManager
 import org.briarproject.bramble.api.lifecycle.IoExecutor
@@ -27,6 +28,8 @@ import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.briar.desktop.utils.KLoggerUtils.w
 import java.util.concurrent.Executor
 import javax.inject.Inject
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 class BriarExecutorsImpl
 @Inject
@@ -72,6 +75,18 @@ constructor(
             Thread.currentThread().interrupt()
         } catch (e: Exception) {
             LOG.w(e) { "Unhandled exception in database executor" }
+        }
+    }
+
+    override suspend fun <T> runOnDbThread(
+        readOnly: Boolean,
+        @DatabaseExecutor task: (Transaction) -> T
+    ) = suspendCoroutine<T> { cont ->
+        // The coroutine suspends until the DatabaseExecutor has finished the task
+        // and ended the transaction. It then resumes with the returned value.
+        onDbThread {
+            val t = db.transactionWithResult(readOnly, DbCallable { txn -> task(txn) })
+            cont.resume(t)
         }
     }
 

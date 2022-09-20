@@ -52,10 +52,10 @@ import androidx.compose.ui.window.rememberDialogState
 import org.briarproject.briar.api.forum.ForumConstants.MAX_FORUM_NAME_LENGTH
 import org.briarproject.briar.desktop.utils.AccessibilityUtils.description
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
-import org.briarproject.briar.desktop.utils.PreviewUtils
+import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 import java.awt.Dimension
 
-fun main() = PreviewUtils.preview {
+fun main() = preview {
     val visible = mutableStateOf(true)
     AddForumDialog(visible, {}, { visible.value = false })
 }
@@ -66,13 +66,13 @@ fun AddForumDialog(
     onCreate: (String) -> Unit,
     onCancelButtonClicked: () -> Unit,
 ) {
+    if (!visible.value) return
     Dialog(
         title = i18n("forum.add.title"),
         onCloseRequest = onCancelButtonClicked,
         state = rememberDialogState(
             position = WindowPosition(Alignment.Center),
         ),
-        visible = visible.value,
     ) {
         window.minimumSize = Dimension(360, 180)
         val scaffoldState = rememberScaffoldState()
@@ -101,7 +101,6 @@ fun AddForumDialog(
                         okButtonEnabled = isValidForumName(name.value),
                         onOkButtonClicked = {
                             onCreate(name.value)
-                            name.value = ""
                         },
                         onCancelButtonClicked = onCancelButtonClicked,
                     )

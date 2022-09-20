@@ -60,7 +60,7 @@ import org.briarproject.briar.desktop.viewmodel.viewModel
 @Composable
 fun GroupConversationScreen(
     groupItem: GroupItem,
-    viewModel: ForumsViewModel = viewModel(),
+    viewModel: ForumViewModel = viewModel(),
 ) {
     val selectedPost = remember { mutableStateOf<MessageId?>(null) }
     Scaffold(
@@ -87,7 +87,7 @@ private fun GroupConversationHeader(
     groupItem: GroupItem,
     onGroupDelete: () -> Unit,
 ) {
-    val deleteGroupDialogState = remember { mutableStateOf(false) }
+    val deleteGroupDialogVisible = remember { mutableStateOf(false) }
     val menuState = remember { mutableStateOf(CLOSED) }
     val close = { menuState.value = CLOSED }
     Box(modifier = Modifier.fillMaxWidth().height(HEADER_SIZE + 1.dp)) {
@@ -130,7 +130,7 @@ private fun GroupConversationHeader(
                     DropdownMenuItem(
                         onClick = {
                             close()
-                            deleteGroupDialogState.value = true
+                            deleteGroupDialogVisible.value = true
                         }
                     ) {
                         Text(
@@ -143,9 +143,9 @@ private fun GroupConversationHeader(
         }
         HorizontalDivider(modifier = Modifier.align(BottomCenter))
     }
-    if (deleteGroupDialogState.value) {
+    if (deleteGroupDialogVisible.value) {
         DeleteForumDialog(
-            close = { deleteGroupDialogState.value = false },
+            close = { deleteGroupDialogVisible.value = false },
             onDelete = onGroupDelete,
         )
     }

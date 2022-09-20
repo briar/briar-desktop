@@ -18,13 +18,13 @@
 
 package org.briarproject.briar.desktop.forums
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement.SpaceBetween
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
@@ -35,8 +35,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Alignment.Companion.Start
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.text
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import org.briarproject.bramble.api.sync.GroupId
 import org.briarproject.briar.desktop.theme.selectedCard
@@ -44,13 +47,14 @@ import org.briarproject.briar.desktop.theme.surfaceVariant
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nP
-import org.briarproject.briar.desktop.utils.PreviewUtils
+import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 import org.briarproject.briar.desktop.utils.TimeUtils.getFormattedTimestamp
+import org.briarproject.briar.desktop.utils.buildBlankAnnotatedString
 
 @Suppress("HardCodedStringLiteral")
-fun main() = PreviewUtils.preview {
+fun main() = preview {
     Column(Modifier.selectableGroup()) {
-        GroupsCard(
+        GroupCard(
             item = object : GroupItem {
                 override val id: GroupId = GroupId(getRandomId())
                 override val name: String =
@@ -58,6 +62,7 @@ fun main() = PreviewUtils.preview {
                 override val msgCount: Int = 42
                 override val unread: Int = 23
                 override val timestamp: Long = System.currentTimeMillis()
+                override val description: AnnotatedString = buildBlankAnnotatedString { }
             },
             onGroupItemSelected = {},
             selected = false,
@@ -66,7 +71,7 @@ fun main() = PreviewUtils.preview {
 }
 
 @Composable
-fun GroupsCard(
+fun GroupCard(
     item: GroupItem,
     onGroupItemSelected: (GroupItem) -> Unit,
     selected: Boolean,
@@ -75,7 +80,7 @@ fun GroupsCard(
         modifier = Modifier
             .fillMaxWidth()
             .defaultMinSize(minHeight = HEADER_SIZE)
-            .clickable(onClick = { onGroupItemSelected(item) })
+            .selectable(selected, onClick = { onGroupItemSelected(item) }, role = Role.Button)
             .semantics {
                 contentDescription =
                     if (selected) i18n("access.list.selected.yes")
@@ -90,7 +95,11 @@ fun GroupsCard(
         contentColor = MaterialTheme.colors.onSurface,
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+            modifier = Modifier
+                .padding(horizontal = 8.dp, vertical = 4.dp)
+                .semantics {
+                    text = item.description
+                },
         ) {
             GroupCircle(item, modifier = Modifier.align(Alignment.Top).padding(vertical = 12.dp))
             Column(

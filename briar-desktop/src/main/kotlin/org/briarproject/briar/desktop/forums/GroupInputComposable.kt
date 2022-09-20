@@ -73,7 +73,7 @@ fun GroupInputComposable(
                     text = if (selectedPost.value == null) {
                         i18n("forum.message.hint")
                     } else {
-                        i18n("forum.message.replay.hint")
+                        i18n("forum.message.reply.hint")
                     },
                     style = MaterialTheme.typography.body1,
                 )

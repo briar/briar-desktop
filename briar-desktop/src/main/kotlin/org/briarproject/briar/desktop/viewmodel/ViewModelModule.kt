@@ -25,7 +25,7 @@ import dagger.multibindings.IntoMap
 import org.briarproject.briar.desktop.contact.ContactListViewModel
 import org.briarproject.briar.desktop.contact.add.remote.AddContactViewModel
 import org.briarproject.briar.desktop.conversation.ConversationViewModel
-import org.briarproject.briar.desktop.forums.ForumsViewModel
+import org.briarproject.briar.desktop.forums.ForumViewModel
 import org.briarproject.briar.desktop.introduction.IntroductionViewModel
 import org.briarproject.briar.desktop.login.StartupViewModel
 import org.briarproject.briar.desktop.navigation.SidebarViewModel
@@ -76,8 +76,8 @@ abstract class ViewModelModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(ForumsViewModel::class)
-    abstract fun bindForumsViewModel(forumsViewModel: ForumsViewModel): ViewModel
+    @ViewModelKey(ForumViewModel::class)
+    abstract fun bindForumsViewModel(forumViewModel: ForumViewModel): ViewModel
 
     @Binds
     @IntoMap

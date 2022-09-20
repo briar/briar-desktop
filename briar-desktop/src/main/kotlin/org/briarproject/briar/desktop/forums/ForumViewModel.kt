@@ -18,7 +18,6 @@
 
 package org.briarproject.briar.desktop.forums
 
-import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -57,7 +56,7 @@ class Loaded(
     val posts: MutableList<ThreadItem> get() = messageTree.depthFirstOrder()
 }
 
-class ForumsViewModel @Inject constructor(
+class ForumViewModel @Inject constructor(
     private val forumManager: ForumManager,
     private val identityManager: IdentityManager,
     private val clock: Clock,
@@ -68,22 +67,22 @@ class ForumsViewModel @Inject constructor(
     eventBus: EventBus,
 ) : EventListenerDbViewModel(briarExecutors, lifecycleManager, db, eventBus) {
 
-    private val _fullGroupList = mutableStateListOf<ForumsItem>()
-    val groupList = derivedStateOf {
+    private val _fullForumList = mutableStateListOf<ForumItem>()
+    val forumList = derivedStateOf {
         val filter = _filterBy.value
-        _fullGroupList.filter { item ->
+        _fullForumList.filter { item ->
             item.name.contains(filter, ignoreCase = true)
         }.sortedByDescending { it.timestamp }
     }
 
     private val _selectedGroupItem = mutableStateOf<GroupItem?>(null)
-    val selectedGroupItem: State<GroupItem?> = _selectedGroupItem
+    val selectedGroupItem = _selectedGroupItem.asState()
 
     private val _filterBy = mutableStateOf("")
     val filterBy = _filterBy.asState()
 
     private val _posts = mutableStateOf<PostsState>(Loading)
-    val posts: State<PostsState> = _posts
+    val posts = _posts.asState()
 
     override fun onInit() {
         super.onInit()
@@ -108,13 +107,13 @@ class ForumsViewModel @Inject constructor(
     private fun loadGroups() {
         runOnDbThreadWithTransaction(true) { txn ->
             val list = forumManager.getForums(txn).map { forums ->
-                ForumsItem(
-                    forums,
-                    forumManager.getGroupCount(txn, forums.id),
+                ForumItem(
+                    forum = forums,
+                    groupCount = forumManager.getGroupCount(txn, forums.id),
                 )
             }
             txn.attach {
-                _fullGroupList.clearAndAddAll(list)
+                _fullForumList.clearAndAddAll(list)
             }
         }
     }
@@ -174,6 +173,6 @@ class ForumsViewModel @Inject constructor(
     }
 
     fun deleteGroup(groupItem: GroupItem) {
-        forumManager.removeForum((groupItem as ForumsItem).forum)
+        forumManager.removeForum((groupItem as ForumItem).forum)
     }
 }

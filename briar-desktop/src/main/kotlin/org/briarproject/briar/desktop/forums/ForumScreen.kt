@@ -36,8 +36,8 @@ import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.viewmodel.viewModel
 
 @Composable
-fun ForumsScreen(
-    viewModel: ForumsViewModel = viewModel(),
+fun ForumScreen(
+    viewModel: ForumViewModel = viewModel(),
 ) {
     val addDialogVisible = remember { mutableStateOf(false) }
     AddForumDialog(
@@ -49,12 +49,12 @@ fun ForumsScreen(
         onCancelButtonClicked = { addDialogVisible.value = false }
     )
 
-    if (viewModel.groupList.value.isEmpty()) {
+    if (viewModel.forumList.value.isEmpty()) {
         NoForumsYet { addDialogVisible.value = true }
     } else {
         Row(modifier = Modifier.fillMaxWidth()) {
-            ForumsList(
-                list = viewModel.groupList,
+            GroupListComposable(
+                list = viewModel.forumList,
                 isSelected = viewModel::isSelected,
                 filterBy = viewModel.filterBy,
                 onFilterSet = viewModel::setFilterBy,
