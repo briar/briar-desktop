@@ -34,7 +34,6 @@ import androidx.compose.material.TextButton
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -77,6 +76,10 @@ fun AddForumDialog(
         window.minimumSize = Dimension(360, 180)
         val scaffoldState = rememberScaffoldState()
         val name = rememberSaveable { mutableStateOf("") }
+        val onNameChanged = { changedName: String ->
+            // not checking for blank here, so user can still remove all characters
+            if (changedName.length <= MAX_FORUM_NAME_LENGTH) name.value = changedName
+        }
         Surface {
             Scaffold(
                 modifier = Modifier
@@ -93,7 +96,7 @@ fun AddForumDialog(
                     }
                 },
                 content = {
-                    AddForumContent(name, onCreate)
+                    AddForumContent(name.value, onNameChanged, onCreate)
                 },
                 bottomBar = {
                     OkCancelBottomBar(
@@ -101,6 +104,7 @@ fun AddForumDialog(
                         okButtonEnabled = isValidForumName(name.value),
                         onOkButtonClicked = {
                             onCreate(name.value)
+                            onNameChanged("")
                         },
                         onCancelButtonClicked = onCancelButtonClicked,
                     )
@@ -115,17 +119,17 @@ private fun isValidForumName(name: String): Boolean {
 }
 
 @Composable
-fun AddForumContent(name: MutableState<String>, onCreate: (String) -> Unit) {
+fun AddForumContent(name: String, onNameChanged: (String) -> Unit, onCreate: (String) -> Unit) {
     val focusRequester = remember { FocusRequester() }
     OutlinedTextField(
-        value = name.value,
-        onValueChange = { if (it.length <= MAX_FORUM_NAME_LENGTH) name.value = it },
+        value = name,
+        onValueChange = onNameChanged,
         label = { Text(i18n("forum.add.hint")) },
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
         singleLine = true,
         onEnter = {
-            onCreate(name.value)
-            name.value = ""
+            onCreate(name)
+            onNameChanged("")
         },
         modifier = Modifier
             .fillMaxWidth()
