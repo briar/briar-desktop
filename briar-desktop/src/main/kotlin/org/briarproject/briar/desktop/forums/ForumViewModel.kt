@@ -77,6 +77,8 @@ class ForumViewModel @Inject constructor(
         }.sortedByDescending { it.timestamp }
     }
 
+    val noForumsYet = derivedStateOf { _fullForumList.isEmpty() }
+
     private val _selectedGroupItem = mutableStateOf<GroupItem?>(null)
     val selectedGroupItem = _selectedGroupItem.asState()
 

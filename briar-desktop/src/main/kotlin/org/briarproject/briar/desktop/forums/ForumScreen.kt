@@ -49,7 +49,7 @@ fun ForumScreen(
         onCancelButtonClicked = { addDialogVisible.value = false }
     )
 
-    if (viewModel.forumList.value.isEmpty()) {
+    if (viewModel.noForumsYet.value) {
         NoForumsYet { addDialogVisible.value = true }
     } else {
         Row(modifier = Modifier.fillMaxWidth()) {
