@@ -50,6 +50,8 @@ dependencies {
     implementation("com.github.ajalt.clikt:clikt:3.4.0")
     implementation("com.ibm.icu:icu4j:70.1")
     implementation("net.java.dev.jna:jna:5.12.1")
+    implementation("net.java.dev.jna:jna-platform:5.12.1")
+    implementation("com.dorkbox:Utilities:1.22")
 
     implementation(project(path = ":briar-core", configuration = "default"))
     implementation(project(path = ":bramble-java", configuration = "default"))
@@ -135,7 +137,7 @@ tasks.register<Jar>("notificationTest") {
     archiveFileName.set("notificationTest.jar") // Version-agnostic name of the jar
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     manifest {
-        attributes("Main-Class" to "org.briarproject.briar.desktop.notification.linux.TestNativeNotificationsKt")
+        attributes("Main-Class" to "org.briarproject.briar.desktop.notification.windows.TestDorkBoxNotificationsKt")
     } // Provided we set it up in the application plugin configuration
     val sourcesTest = sourceSets.test.get()
     val contents = configurations.runtimeClasspath.get()

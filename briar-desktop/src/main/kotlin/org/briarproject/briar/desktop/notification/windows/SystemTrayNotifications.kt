@@ -64,5 +64,4 @@ class SystemTrayNotifications private constructor(image: Image?) {
     fun notify(title: String?, description: String?) {
         trayIcon.displayMessage(title, description, TrayIcon.MessageType.INFO)
     }
-
 }
