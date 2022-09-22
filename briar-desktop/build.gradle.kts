@@ -35,9 +35,11 @@ val versionCode = "0.3.1"
 val buildType = if (project.hasProperty("buildType")) project.properties["buildType"] else "snapshot"
 group = "app.briar.desktop"
 version = "$versionCode-$buildType"
+val windowsAumiName = "Briar"
 
 buildData {
     packageName = "org.briarproject.briar.desktop"
+    windowsAumi = windowsAumiName
 }
 
 dependencies {
@@ -53,9 +55,10 @@ dependencies {
     implementation(project(path = ":briar-core", configuration = "default"))
     implementation(project(path = ":bramble-java", configuration = "default"))
 
-    implementation("io.github.microutils:kotlin-logging-jvm:2.1.21")
-    implementation("org.slf4j:jul-to-slf4j:1.7.36")
-    implementation("ch.qos.logback:logback-classic:1.2.11")
+    implementation("io.github.microutils:kotlin-logging-jvm:3.0.4")
+    implementation("org.slf4j:jul-to-slf4j:2.0.5")
+    implementation("ch.qos.logback:logback-classic:1.4.5")
+    implementation("de.mobanisto:toast4j:0.2.0")
 
     val daggerVersion = "2.24"
     kapt("com.google.dagger:dagger-compiler:$daggerVersion")

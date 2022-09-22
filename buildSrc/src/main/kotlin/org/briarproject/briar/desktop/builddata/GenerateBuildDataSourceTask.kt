@@ -112,6 +112,10 @@ open class GenerateBuildDataSourceTask : AbstractBuildDataTask() {
         if (className == null) {
             className = "BuildData"
         }
+        val windowsAumi = configuration?.windowsAumi
+
+        checkNotNull(packageName) { "Please specify 'packageName'." }
+        checkNotNull(windowsAumi) { "Please specify 'windowsAumi'." }
 
         // Get version from Gradle project information
         val version = project.version.toString()
@@ -187,7 +191,6 @@ open class GenerateBuildDataSourceTask : AbstractBuildDataTask() {
         artifacts.sortWith(compareBy<VersionedArtifact> { it.group }.thenBy { it.artifact })
 
         // Generate output file
-        checkNotNull(packageName) { "Please specify 'packageName'." }
         val parts = packageName.split("\\.".toRegex()).toTypedArray()
         val pathBuildDir = project.buildDir.toPath()
         val source = Util.getSourceDir(pathBuildDir)
@@ -200,7 +203,8 @@ open class GenerateBuildDataSourceTask : AbstractBuildDataTask() {
         val content = createSource(
             packageName, className, version,
             commitTime, gitHash, gitBranch, gitTag,
-            coreGitHash, coreVersion, artifacts
+            coreGitHash, coreVersion, artifacts,
+            windowsAumi
         )
         val input: InputStream = ByteArrayInputStream(
             content.toByteArray(StandardCharsets.UTF_8)
@@ -268,6 +272,7 @@ open class GenerateBuildDataSourceTask : AbstractBuildDataTask() {
         coreGitHash: String,
         coreVersion: String,
         artifacts: List<VersionedArtifact>,
+        windowsAumi: String,
     ) = FileBuilder().apply {
         val branch = if (gitBranch == null) "null" else "\"$gitBranch\""
         val tag = if (gitTag == null) "null" else "\"$gitTag\""
@@ -284,6 +289,7 @@ open class GenerateBuildDataSourceTask : AbstractBuildDataTask() {
         line("    val GIT_TAG: String? = $tag")
         line("    val CORE_HASH = \"$coreGitHash\"")
         line("    val CORE_VERSION = \"$coreVersion\"")
+        line("    val WINDOWS_AUMI = \"$windowsAumi\"")
         line()
         line("    val ARTIFACTS: List<Artifact> = buildList {")
         for (artifact in artifacts) {
