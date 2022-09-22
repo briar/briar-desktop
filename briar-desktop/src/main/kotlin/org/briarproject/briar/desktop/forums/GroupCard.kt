@@ -19,10 +19,12 @@
 package org.briarproject.briar.desktop.forums
 
 import androidx.compose.foundation.layout.Arrangement.SpaceBetween
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
@@ -39,16 +41,18 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.text
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import org.briarproject.bramble.api.sync.GroupId
 import org.briarproject.briar.desktop.theme.selectedCard
 import org.briarproject.briar.desktop.theme.surfaceVariant
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
+import org.briarproject.briar.desktop.ui.NumberBadge
+import org.briarproject.briar.desktop.utils.InternationalizationUtils
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nP
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 import org.briarproject.briar.desktop.utils.TimeUtils.getFormattedTimestamp
+import org.briarproject.briar.desktop.utils.appendCommaSeparated
 import org.briarproject.briar.desktop.utils.buildBlankAnnotatedString
 
 @Suppress("HardCodedStringLiteral")
@@ -62,7 +66,6 @@ fun main() = preview {
                 override val msgCount: Int = 42
                 override val unread: Int = 23
                 override val timestamp: Long = System.currentTimeMillis()
-                override val description: AnnotatedString = buildBlankAnnotatedString { }
             },
             onGroupItemSelected = {},
             selected = false,
@@ -94,14 +97,23 @@ fun GroupCard(
         },
         contentColor = MaterialTheme.colors.onSurface,
     ) {
+        val itemDescription = getItemDescription(item)
         Row(
             modifier = Modifier
                 .padding(horizontal = 8.dp, vertical = 4.dp)
                 .semantics {
-                    text = item.description
+                    text = itemDescription
                 },
         ) {
-            GroupCircle(item, modifier = Modifier.align(Alignment.Top).padding(vertical = 12.dp))
+            Box(
+                modifier = Modifier.align(Alignment.Top).padding(vertical = 12.dp),
+            ) {
+                GroupCircle(item)
+                NumberBadge(
+                    num = item.unread,
+                    modifier = Modifier.align(Alignment.TopEnd).offset(8.dp, (-6).dp)
+                )
+            }
             Column(
                 verticalArrangement = SpaceBetween,
                 modifier = Modifier.align(CenterVertically).padding(start = 16.dp)
@@ -133,4 +145,17 @@ fun GroupCard(
             }
         }
     }
+}
+
+@Composable
+private fun getItemDescription(item: GroupItem) = buildBlankAnnotatedString {
+    append(item.name)
+    if (item.unread > 0) appendCommaSeparated(i18nP("access.forums.unread_count", item.unread))
+    if (item.msgCount == 0) appendCommaSeparated(i18n("group.card.no_posts"))
+    else appendCommaSeparated(
+        InternationalizationUtils.i18nF(
+            "access.forums.last_post_timestamp",
+            getFormattedTimestamp(item.timestamp)
+        )
+    )
 }

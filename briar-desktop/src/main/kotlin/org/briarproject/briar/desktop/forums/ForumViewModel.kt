@@ -31,12 +31,14 @@ import org.briarproject.bramble.api.db.TransactionManager
 import org.briarproject.bramble.api.event.Event
 import org.briarproject.bramble.api.event.EventBus
 import org.briarproject.bramble.api.identity.IdentityManager
+import org.briarproject.bramble.api.identity.LocalAuthor
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.bramble.api.sync.GroupId
 import org.briarproject.bramble.api.sync.MessageId
 import org.briarproject.bramble.api.sync.event.GroupAddedEvent
 import org.briarproject.bramble.api.sync.event.GroupRemovedEvent
 import org.briarproject.bramble.api.system.Clock
+import org.briarproject.briar.api.client.MessageTracker.GroupCount
 import org.briarproject.briar.api.forum.ForumManager
 import org.briarproject.briar.client.MessageTreeImpl
 import org.briarproject.briar.desktop.threading.BriarExecutors
@@ -144,17 +146,17 @@ class ForumViewModel @Inject constructor(
 
     @OptIn(DelicateCoroutinesApi::class)
     fun createPost(groupItem: GroupItem, text: String, parentId: MessageId?) = GlobalScope.launch {
-        val author = runOnDbThread(false) { txn ->
+        val author = runOnDbThreadWithTransaction<LocalAuthor>(false) { txn ->
             identityManager.getLocalAuthor(txn)
         }
-        val count = runOnDbThread(false) { txn ->
+        val count = runOnDbThreadWithTransaction<GroupCount>(false) { txn ->
             forumManager.getGroupCount(txn, groupItem.id)
         }
         val timestamp = max(count.latestMsgTime + 1, clock.currentTimeMillis())
         val post = withContext(cryptoDispatcher) {
             forumManager.createLocalPost(groupItem.id, text, timestamp, parentId, author)
         }
-        runOnDbThread(false) { txn ->
+        runOnDbThreadWithTransaction(false) { txn ->
             val header = forumManager.addLocalPost(txn, post)
             txn.attach {
                 val item = ForumPostItem(header, text)

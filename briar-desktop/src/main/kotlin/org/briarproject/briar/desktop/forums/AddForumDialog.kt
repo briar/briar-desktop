@@ -20,6 +20,7 @@ package org.briarproject.briar.desktop.forums
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
@@ -39,7 +40,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.CenterEnd
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -148,21 +148,20 @@ fun OkCancelBottomBar(
     onOkButtonClicked: () -> Unit,
     onCancelButtonClicked: () -> Unit,
 ) {
-    Box(Modifier.fillMaxWidth()) {
-        Row(Modifier.align(CenterEnd)) {
-            TextButton(
-                onClick = onCancelButtonClicked,
-                colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colors.error)
-            ) {
-                Text(i18n("cancel"))
-            }
-            Button(
-                onClick = onOkButtonClicked,
-                enabled = okButtonEnabled,
-                modifier = Modifier.padding(start = 8.dp)
-            ) {
-                Text(okButtonLabel)
-            }
+    Row(Modifier.fillMaxWidth()) {
+        Spacer(Modifier.weight(1f))
+        TextButton(
+            onClick = onCancelButtonClicked,
+            colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colors.error)
+        ) {
+            Text(i18n("cancel"))
+        }
+        Button(
+            onClick = onOkButtonClicked,
+            enabled = okButtonEnabled,
+            modifier = Modifier.padding(start = 8.dp)
+        ) {
+            Text(okButtonLabel)
         }
     }
 }

@@ -30,7 +30,7 @@ interface BriarExecutors {
         @DatabaseExecutor task: (Transaction) -> Unit,
     )
 
-    suspend fun <T> runOnDbThread(
+    suspend fun <T> runOnDbThreadWithTransaction(
         readOnly: Boolean,
         @DatabaseExecutor task: (Transaction) -> T,
     ): T

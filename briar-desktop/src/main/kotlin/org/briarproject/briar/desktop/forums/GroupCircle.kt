@@ -21,14 +21,12 @@ package org.briarproject.briar.desktop.forums
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.Center
-import androidx.compose.ui.Alignment.Companion.TopEnd
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
@@ -38,38 +36,29 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.briarproject.bramble.api.sync.GroupId
 import org.briarproject.briar.desktop.theme.outline
-import org.briarproject.briar.desktop.ui.NumberBadge
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.locale
 
 @Composable
-fun GroupCircle(item: GroupItem, showMessageCount: Boolean = true, modifier: Modifier = Modifier) {
+fun GroupCircle(item: GroupItem, modifier: Modifier = Modifier) {
     Box(
+        contentAlignment = Center,
         modifier = modifier
+            .size(36.dp)
+            .clip(CircleShape)
+            .border(1.dp, MaterialTheme.colors.outline, CircleShape)
+            .background(item.id.getBackgroundColor()),
     ) {
-        Box(
-            contentAlignment = Center,
-            modifier = Modifier
-                .size(36.dp)
-                .clip(CircleShape)
-                .border(1.dp, MaterialTheme.colors.outline, CircleShape)
-                .background(item.id.getBackgroundColor()),
-        ) {
-            Text(
-                text = item.name.substring(0..0).uppercase(locale),
-                color = Color.White,
-                style = MaterialTheme.typography.body1.copy(
-                    fontSize = 24.sp,
-                    shadow = Shadow(
-                        color = Color.Black.copy(alpha = 0.4f),
-                        offset = Offset(4f, 4f),
-                        blurRadius = 8f
-                    )
+        Text(
+            text = item.name.substring(0..0).uppercase(locale),
+            color = Color.White,
+            style = MaterialTheme.typography.body1.copy(
+                fontSize = 24.sp,
+                shadow = Shadow(
+                    color = Color.Black.copy(alpha = 0.4f),
+                    offset = Offset(4f, 4f),
+                    blurRadius = 8f
                 )
             )
-        }
-        if (showMessageCount) NumberBadge(
-            num = item.unread,
-            modifier = Modifier.align(TopEnd).offset(8.dp, (-6).dp)
         )
     }
 }

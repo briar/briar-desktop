@@ -53,8 +53,8 @@ abstract class DbViewModel(
      * Waits for the DB to open and runs the given [task] on the [DatabaseExecutor],
      * returning its result.
      */
-    protected suspend fun <T> runOnDbThread(
+    protected suspend fun <T> runOnDbThreadWithTransaction(
         readOnly: Boolean,
         @DatabaseExecutor task: (Transaction) -> T,
-    ): T = briarExecutors.runOnDbThread(readOnly, task)
+    ): T = briarExecutors.runOnDbThreadWithTransaction(readOnly, task)
 }

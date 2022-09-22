@@ -37,6 +37,8 @@ class ForumPostItem(h: ForumPostHeader, text: String?) : ThreadItem(
     isRead = h.isRead
 )
 
+// TODO the mutable state here might need to be made immutable later
+//  and copy on data classes used to trigger recompositions when items update
 @NotThreadSafe
 abstract class ThreadItem(
     private val messageId: MessageId,

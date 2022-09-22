@@ -103,7 +103,6 @@ private fun GroupConversationHeader(
             ) {
                 GroupCircle(
                     item = groupItem,
-                    showMessageCount = false,
                     modifier = Modifier.align(CenterVertically),
                 )
                 Text(

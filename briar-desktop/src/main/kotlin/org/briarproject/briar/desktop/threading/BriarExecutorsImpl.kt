@@ -78,7 +78,7 @@ constructor(
         }
     }
 
-    override suspend fun <T> runOnDbThread(
+    override suspend fun <T> runOnDbThreadWithTransaction(
         readOnly: Boolean,
         @DatabaseExecutor task: (Transaction) -> T
     ) = suspendCoroutine<T> { cont ->

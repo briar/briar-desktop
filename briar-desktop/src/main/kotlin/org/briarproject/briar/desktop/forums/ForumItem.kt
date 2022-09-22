@@ -18,16 +18,9 @@
 
 package org.briarproject.briar.desktop.forums
 
-import androidx.compose.ui.text.AnnotatedString
 import org.briarproject.bramble.api.sync.GroupId
 import org.briarproject.briar.api.client.MessageTracker
 import org.briarproject.briar.api.forum.Forum
-import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
-import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nF
-import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nP
-import org.briarproject.briar.desktop.utils.TimeUtils.getFormattedTimestamp
-import org.briarproject.briar.desktop.utils.appendCommaSeparated
-import org.briarproject.briar.desktop.utils.buildBlankAnnotatedString
 
 interface GroupItem {
     val id: GroupId
@@ -35,7 +28,6 @@ interface GroupItem {
     val msgCount: Int
     val unread: Int
     val timestamp: Long
-    val description: AnnotatedString
 }
 
 data class ForumItem(
@@ -54,19 +46,6 @@ data class ForumItem(
 
     override val id: GroupId get() = forum.id
     override val name: String get() = forum.name
-
-    override val description: AnnotatedString
-        get() = buildBlankAnnotatedString {
-            append(name)
-            if (unread > 0) appendCommaSeparated(i18nP("access.forums.unread_count", unread))
-            if (msgCount == 0) appendCommaSeparated(i18n("group.card.no_posts"))
-            else appendCommaSeparated(
-                i18nF(
-                    "access.forums.last_message_timestamp",
-                    getFormattedTimestamp(timestamp)
-                )
-            )
-        }
 
     override fun equals(other: Any?): Boolean {
         return other is ForumItem && other.id == id
