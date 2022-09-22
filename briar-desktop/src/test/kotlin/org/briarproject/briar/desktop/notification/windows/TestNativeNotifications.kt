@@ -15,20 +15,21 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package org.briarproject.briar.desktop.notification.windows
 
-package org.briarproject.briar.desktop.builddata
+/**
+ * Small program to test notification support for Windows.
+ */
+fun main() {
+    Toast4jNotificationProvider.apply {
+        init()
 
-import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.Optional
+        notifyPrivateMessages(5, 2)
+        Thread.sleep(3000)
 
-open class BuildDataPluginExtension {
-    @Input
-    var packageName: String? = null
+        notifyPrivateMessages(6, 3)
+        Thread.sleep(3000)
 
-    @Input
-    @Optional
-    var className: String? = null
-
-    @Input
-    var windowsAumi: String? = null
+        uninit()
+    }
 }

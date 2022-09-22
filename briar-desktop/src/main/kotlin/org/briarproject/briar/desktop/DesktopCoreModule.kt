@@ -49,6 +49,7 @@ import org.briarproject.bramble.system.DefaultWakefulIoExecutorModule
 import org.briarproject.bramble.system.DesktopSecureRandomModule
 import org.briarproject.bramble.system.JavaSystemModule
 import org.briarproject.bramble.util.OsUtils.isLinux
+import org.briarproject.bramble.util.OsUtils.isWindows
 import org.briarproject.briar.attachment.AttachmentModule
 import org.briarproject.briar.desktop.attachment.media.ImageCompressor
 import org.briarproject.briar.desktop.attachment.media.ImageCompressorImpl
@@ -56,6 +57,7 @@ import org.briarproject.briar.desktop.notification.SoundNotificationProvider
 import org.briarproject.briar.desktop.notification.StubNotificationProvider
 import org.briarproject.briar.desktop.notification.VisualNotificationProvider
 import org.briarproject.briar.desktop.notification.linux.LibnotifyNotificationProvider
+import org.briarproject.briar.desktop.notification.windows.Toast4jNotificationProvider
 import org.briarproject.briar.desktop.settings.Configuration
 import org.briarproject.briar.desktop.settings.ConfigurationImpl
 import org.briarproject.briar.desktop.settings.EncryptedSettings
@@ -191,7 +193,11 @@ internal class DesktopCoreModule(
     @Provides
     @Singleton
     internal fun provideVisualNotificationProvider(): VisualNotificationProvider =
-        if (isLinux()) LibnotifyNotificationProvider else StubNotificationProvider
+        when {
+            isLinux() -> LibnotifyNotificationProvider
+            isWindows() -> Toast4jNotificationProvider
+            else -> StubNotificationProvider
+        }
 
     @Provides
     @Singleton
