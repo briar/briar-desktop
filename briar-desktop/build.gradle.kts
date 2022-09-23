@@ -124,7 +124,7 @@ compose.desktop {
     }
 }
 
-tasks.register<Jar>("notificationTest") {
+tasks.create<Jar>("notificationTest") {
     dependsOn.addAll(
         listOf(
             "compileJava",
