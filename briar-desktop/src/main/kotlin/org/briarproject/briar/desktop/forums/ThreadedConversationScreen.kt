@@ -34,13 +34,11 @@ import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment.Companion.CenterEnd
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
-import org.briarproject.bramble.api.sync.MessageId
 import org.briarproject.briar.desktop.forums.ThreadItem.Companion.UNDEFINED
 import org.briarproject.briar.desktop.theme.selectedCard
 import org.briarproject.briar.desktop.theme.surfaceVariant
@@ -50,8 +48,9 @@ import org.briarproject.briar.desktop.ui.Loader
 @Composable
 fun ThreadedConversationScreen(
     postsState: PostsState,
-    selectedPost: MutableState<MessageId?>,
-    modifier: Modifier = Modifier
+    selectedPost: ThreadItem?,
+    onPostSelected: (ThreadItem) -> Unit,
+    modifier: Modifier = Modifier,
 ) = when (postsState) {
     Loading -> Loader()
     is Loaded -> {
@@ -68,7 +67,7 @@ fun ThreadedConversationScreen(
                 modifier = Modifier.selectableGroup()
             ) {
                 items(postsState.posts) { item ->
-                    ThreadItemComposable(item, selectedPost)
+                    ThreadItemComposable(item, selectedPost, onPostSelected)
                     HorizontalDivider()
                 }
             }
@@ -81,8 +80,12 @@ fun ThreadedConversationScreen(
 }
 
 @Composable
-fun ThreadItemComposable(item: ThreadItem, selectedPost: MutableState<MessageId?>) {
-    val isSelected = selectedPost.value == item.id
+fun ThreadItemComposable(
+    item: ThreadItem,
+    selectedPost: ThreadItem?,
+    onPostSelected: (ThreadItem) -> Unit,
+) {
+    val isSelected = selectedPost == item
     Text(
         text = item.text,
         modifier = Modifier
@@ -95,7 +98,7 @@ fun ThreadItemComposable(item: ThreadItem, selectedPost: MutableState<MessageId?
                 }
             ).selectable(
                 selected = isSelected,
-                onClick = { selectedPost.value = item.id }
+                onClick = { onPostSelected(item) }
             )
             .padding(4.dp)
             .padding(

@@ -41,6 +41,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment.Companion.BottomCenter
@@ -49,7 +50,6 @@ import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.unit.dp
-import org.briarproject.bramble.api.sync.MessageId
 import org.briarproject.briar.desktop.contact.ContactDropDown.State.CLOSED
 import org.briarproject.briar.desktop.contact.ContactDropDown.State.MAIN
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
@@ -60,9 +60,11 @@ import org.briarproject.briar.desktop.viewmodel.viewModel
 @Composable
 fun GroupConversationScreen(
     groupItem: GroupItem,
-    viewModel: ForumViewModel = viewModel(),
+    viewModel: ThreadedConversationViewModel = viewModel(),
 ) {
-    val selectedPost = remember { mutableStateOf<MessageId?>(null) }
+    LaunchedEffect(groupItem) {
+        viewModel.setGroupItem(groupItem)
+    }
     Scaffold(
         topBar = {
             GroupConversationHeader(groupItem) { viewModel.deleteGroup(groupItem) }
@@ -70,13 +72,14 @@ fun GroupConversationScreen(
         content = { padding ->
             ThreadedConversationScreen(
                 postsState = viewModel.posts.value,
-                selectedPost = selectedPost,
+                selectedPost = viewModel.selectedPost.value,
+                onPostSelected = viewModel::selectPost,
                 modifier = Modifier.padding(padding)
             )
         },
         bottomBar = {
-            GroupInputComposable(selectedPost) { text ->
-                viewModel.createPost(groupItem, text, selectedPost.value)
+            GroupInputComposable(viewModel.selectedPost.value) { text ->
+                viewModel.createPost(groupItem, text, viewModel.selectedPost.value?.id)
             }
         }
     )

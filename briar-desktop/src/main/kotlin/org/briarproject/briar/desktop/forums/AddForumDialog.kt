@@ -35,7 +35,6 @@ import androidx.compose.material.TextButton
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -56,16 +55,16 @@ import java.awt.Dimension
 
 fun main() = preview {
     val visible = mutableStateOf(true)
-    AddForumDialog(visible, {}, { visible.value = false })
+    AddForumDialog(visible.value, {}, { visible.value = false })
 }
 
 @Composable
 fun AddForumDialog(
-    visible: State<Boolean>,
+    visible: Boolean,
     onCreate: (String) -> Unit,
     onCancelButtonClicked: () -> Unit,
 ) {
-    if (!visible.value) return
+    if (!visible) return
     Dialog(
         title = i18n("forum.add.title"),
         onCloseRequest = onCancelButtonClicked,

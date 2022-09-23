@@ -36,7 +36,6 @@ import androidx.compose.material.Surface
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddComment
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
@@ -52,9 +51,9 @@ import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 
 @Composable
 fun GroupListComposable(
-    list: State<List<GroupItem>>,
+    list: List<GroupItem>,
     isSelected: (GroupId) -> Boolean,
-    filterBy: State<String>,
+    filterBy: String,
     onFilterSet: (String) -> Unit,
     onGroupItemSelected: (GroupItem) -> Unit,
     onAddButtonClicked: () -> Unit,
@@ -71,7 +70,7 @@ fun GroupListComposable(
                 SearchTextField(
                     placeholder = i18n("forum.search.title"),
                     icon = Icons.Filled.AddComment,
-                    searchValue = filterBy.value,
+                    searchValue = filterBy,
                     addButtonDescription = i18n("forum.add.title"),
                     onValueChange = onFilterSet,
                     onAddButtonClicked = onAddButtonClicked,
@@ -85,7 +84,7 @@ fun GroupListComposable(
                             contentDescription = i18n("access.forums.list")
                         }.selectableGroup()
                 ) {
-                    items(list.value) { item ->
+                    items(list) { item ->
                         GroupCard(
                             item = item,
                             onGroupItemSelected = onGroupItemSelected,

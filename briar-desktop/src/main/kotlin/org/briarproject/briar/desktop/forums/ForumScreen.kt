@@ -41,7 +41,7 @@ fun ForumScreen(
 ) {
     val addDialogVisible = remember { mutableStateOf(false) }
     AddForumDialog(
-        visible = addDialogVisible,
+        visible = addDialogVisible.value,
         onCreate = { name ->
             viewModel.createForum(name)
             addDialogVisible.value = false
@@ -54,9 +54,9 @@ fun ForumScreen(
     } else {
         Row(modifier = Modifier.fillMaxWidth()) {
             GroupListComposable(
-                list = viewModel.forumList,
+                list = viewModel.forumList.value,
                 isSelected = viewModel::isSelected,
-                filterBy = viewModel.filterBy,
+                filterBy = viewModel.filterBy.value,
                 onFilterSet = viewModel::setFilterBy,
                 onGroupItemSelected = viewModel::selectGroup,
                 onAddButtonClicked = { addDialogVisible.value = true },

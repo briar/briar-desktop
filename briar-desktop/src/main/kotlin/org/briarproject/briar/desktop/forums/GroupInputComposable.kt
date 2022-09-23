@@ -32,7 +32,6 @@ import androidx.compose.material.TextFieldExt.moveFocusOnTab
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -40,7 +39,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.PointerIconDefaults
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.unit.dp
-import org.briarproject.bramble.api.sync.MessageId
 import org.briarproject.briar.api.forum.ForumConstants.MAX_FORUM_POST_TEXT_LENGTH
 import org.briarproject.briar.desktop.theme.sendButton
 import org.briarproject.briar.desktop.ui.HorizontalDivider
@@ -49,7 +47,7 @@ import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 @Composable
 @OptIn(ExperimentalComposeUiApi::class)
 fun GroupInputComposable(
-    selectedPost: State<MessageId?>,
+    selectedPost: ThreadItem?,
     onSend: (String) -> Unit,
 ) {
     val postText = rememberSaveable { mutableStateOf("") }
@@ -70,7 +68,7 @@ fun GroupInputComposable(
             textStyle = MaterialTheme.typography.body1,
             placeholder = {
                 Text(
-                    text = if (selectedPost.value == null) {
+                    text = if (selectedPost == null) {
                         i18n("forum.message.hint")
                     } else {
                         i18n("forum.message.reply.hint")
