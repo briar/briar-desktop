@@ -21,10 +21,18 @@ package org.briarproject.briar.desktop
 import dagger.Module
 import dagger.Provides
 import org.briarproject.bramble.api.FeatureFlags
+import org.briarproject.bramble.api.plugin.PluginConfig
+import org.briarproject.bramble.api.plugin.TransportId
+import org.briarproject.bramble.api.plugin.duplex.DuplexPluginFactory
+import org.briarproject.bramble.api.plugin.simplex.SimplexPluginFactory
+import org.briarproject.bramble.plugin.tcp.TestLanTcpPluginFactory
+import org.briarproject.bramble.plugin.tor.UnixTorPluginFactory
+import org.briarproject.bramble.util.OsUtils
 import org.briarproject.briar.api.test.TestAvatarCreator
 import org.briarproject.briar.desktop.testdata.DeterministicTestDataCreator
 import org.briarproject.briar.desktop.testdata.DeterministicTestDataCreatorImpl
 import org.briarproject.briar.desktop.testdata.TestAvatarCreatorImpl
+import java.util.Collections
 import javax.inject.Singleton
 
 @Module(
@@ -62,4 +70,16 @@ internal class DesktopTestModule {
     @Singleton
     internal fun provideDeterministicTestDataCreator(testDataCreator: DeterministicTestDataCreatorImpl): DeterministicTestDataCreator =
         testDataCreator
+
+    @Provides
+    internal fun providePluginConfig(tor: UnixTorPluginFactory, lan: TestLanTcpPluginFactory): PluginConfig {
+        val duplex: List<DuplexPluginFactory> =
+            if (OsUtils.isLinux() || OsUtils.isMac()) listOf(tor, lan) else listOf(lan)
+        return object : PluginConfig {
+            override fun getDuplexFactories(): Collection<DuplexPluginFactory> = duplex
+            override fun getSimplexFactories(): Collection<SimplexPluginFactory> = Collections.emptyList()
+            override fun shouldPoll(): Boolean = true
+            override fun getTransportPreferences(): Map<TransportId, List<TransportId>> = emptyMap()
+        }
+    }
 }

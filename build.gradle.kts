@@ -35,11 +35,13 @@ buildscript {
 
     // keep version here in sync when updating briar
     extra.apply {
+        set("kotlin_version", "1.7.10") // todo: different version used in Briar-Desktop?!
         set("dagger_version", "2.33")
         set("okhttp_version", "3.12.13")
         set("jackson_version", "2.13.0")
-        set("tor_version", "0.4.5.12-2")
-        set("obfs4proxy_version", "0.0.12")
+        set("tor_version", "0.4.5.14")
+        set("obfs4proxy_version", "0.0.14")
+        set("snowflake_version", "2.3.1")
         set("junit_version", "4.13.2")
         set("jmock_version", "2.12.0")
     }

@@ -30,20 +30,17 @@ import org.briarproject.bramble.api.crypto.CryptoExecutor
 import org.briarproject.bramble.api.db.DatabaseConfig
 import org.briarproject.bramble.api.event.EventExecutor
 import org.briarproject.bramble.api.mailbox.MailboxDirectory
-import org.briarproject.bramble.api.plugin.PluginConfig
 import org.briarproject.bramble.api.plugin.TorConstants.DEFAULT_CONTROL_PORT
 import org.briarproject.bramble.api.plugin.TorConstants.DEFAULT_SOCKS_PORT
 import org.briarproject.bramble.api.plugin.TorControlPort
 import org.briarproject.bramble.api.plugin.TorDirectory
 import org.briarproject.bramble.api.plugin.TorSocksPort
-import org.briarproject.bramble.api.plugin.TransportId
-import org.briarproject.bramble.api.plugin.duplex.DuplexPluginFactory
-import org.briarproject.bramble.api.plugin.simplex.SimplexPluginFactory
 import org.briarproject.bramble.battery.DefaultBatteryManagerModule
+import org.briarproject.bramble.io.DnsModule
+import org.briarproject.bramble.mailbox.MailboxModule
+import org.briarproject.bramble.mailbox.UrlConverterModule
 import org.briarproject.bramble.network.JavaNetworkModule
-import org.briarproject.bramble.plugin.tcp.LanTcpPluginFactory
 import org.briarproject.bramble.plugin.tor.CircumventionModule
-import org.briarproject.bramble.plugin.tor.UnixTorPluginFactory
 import org.briarproject.bramble.socks.SocksModule
 import org.briarproject.bramble.system.ClockModule
 import org.briarproject.bramble.system.DefaultTaskSchedulerModule
@@ -51,7 +48,6 @@ import org.briarproject.bramble.system.DefaultWakefulIoExecutorModule
 import org.briarproject.bramble.system.DesktopSecureRandomModule
 import org.briarproject.bramble.system.JavaSystemModule
 import org.briarproject.bramble.util.OsUtils.isLinux
-import org.briarproject.bramble.util.OsUtils.isMac
 import org.briarproject.briar.attachment.AttachmentModule
 import org.briarproject.briar.desktop.attachment.media.ImageCompressor
 import org.briarproject.briar.desktop.attachment.media.ImageCompressorImpl
@@ -78,7 +74,6 @@ import org.briarproject.briar.desktop.viewmodel.ViewModelModule
 import org.briarproject.briar.identity.IdentityModule
 import java.io.File
 import java.nio.file.Path
-import java.util.Collections.emptyList
 import java.util.concurrent.Executor
 import javax.inject.Singleton
 
@@ -99,6 +94,9 @@ import javax.inject.Singleton
         SocksModule::class,
         ViewModelModule::class,
         AttachmentModule::class,
+        MailboxModule::class,
+        UrlConverterModule::class,
+        DnsModule::class,
     ]
 )
 internal class DesktopCoreModule(
@@ -177,18 +175,6 @@ internal class DesktopCoreModule(
     @Singleton
     @TorControlPort
     internal fun provideTorControlPort() = controlPort
-
-    @Provides
-    internal fun providePluginConfig(tor: UnixTorPluginFactory, lan: LanTcpPluginFactory): PluginConfig {
-        val duplex: List<DuplexPluginFactory> =
-            if (isLinux() || isMac()) listOf(tor, lan) else listOf(lan)
-        return object : PluginConfig {
-            override fun getDuplexFactories(): Collection<DuplexPluginFactory> = duplex
-            override fun getSimplexFactories(): Collection<SimplexPluginFactory> = emptyList()
-            override fun shouldPoll(): Boolean = true
-            override fun getTransportPreferences(): Map<TransportId, List<TransportId>> = emptyMap()
-        }
-    }
 
     @Provides
     @Singleton
