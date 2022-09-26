@@ -81,6 +81,7 @@ class ThreadedConversationViewModel @Inject constructor(
     @UiExecutor
     fun setGroupItem(groupItem: GroupItem) {
         this.groupItem = groupItem
+        _selectedPost.value = null
         loadPosts(groupItem.id)
     }
 
