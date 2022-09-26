@@ -67,7 +67,7 @@ fun ForumScreen(
                 if (item == null) {
                     NoForumSelected()
                 } else {
-                    GroupConversationScreen(item)
+                    GroupConversationScreen(viewModel.threadViewModel)
                 }
             }
         }

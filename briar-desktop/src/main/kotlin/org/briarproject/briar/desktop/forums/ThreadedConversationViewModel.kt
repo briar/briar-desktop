@@ -69,7 +69,8 @@ class ThreadedConversationViewModel @Inject constructor(
         private val LOG = getLogger(ThreadedConversationViewModel::class.java)
     }
 
-    private lateinit var groupItem: GroupItem
+    lateinit var groupItem: GroupItem
+        private set
 
     private val _posts = mutableStateOf<PostsState>(Loading)
     val posts = _posts.asState()

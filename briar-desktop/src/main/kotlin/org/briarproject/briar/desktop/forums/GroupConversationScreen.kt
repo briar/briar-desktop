@@ -41,7 +41,6 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment.Companion.BottomCenter
@@ -55,19 +54,16 @@ import org.briarproject.briar.desktop.contact.ContactDropDown.State.MAIN
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
 import org.briarproject.briar.desktop.ui.HorizontalDivider
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
-import org.briarproject.briar.desktop.viewmodel.viewModel
 
 @Composable
 fun GroupConversationScreen(
-    groupItem: GroupItem,
-    viewModel: ThreadedConversationViewModel = viewModel(),
+    viewModel: ThreadedConversationViewModel,
 ) {
-    LaunchedEffect(groupItem) {
-        viewModel.setGroupItem(groupItem)
-    }
     Scaffold(
         topBar = {
-            GroupConversationHeader(groupItem) { viewModel.deleteGroup(groupItem) }
+            GroupConversationHeader(viewModel.groupItem) {
+                viewModel.deleteGroup(viewModel.groupItem)
+            }
         },
         content = { padding ->
             ThreadedConversationScreen(
@@ -79,7 +75,7 @@ fun GroupConversationScreen(
         },
         bottomBar = {
             GroupInputComposable(viewModel.selectedPost.value) { text ->
-                viewModel.createPost(groupItem, text, viewModel.selectedPost.value?.id)
+                viewModel.createPost(viewModel.groupItem, text, viewModel.selectedPost.value?.id)
             }
         }
     )

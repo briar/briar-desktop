@@ -26,11 +26,11 @@ import org.briarproject.briar.desktop.contact.ContactListViewModel
 import org.briarproject.briar.desktop.contact.add.remote.AddContactViewModel
 import org.briarproject.briar.desktop.conversation.ConversationViewModel
 import org.briarproject.briar.desktop.forums.ForumViewModel
-import org.briarproject.briar.desktop.forums.ThreadedConversationViewModel
 import org.briarproject.briar.desktop.introduction.IntroductionViewModel
 import org.briarproject.briar.desktop.login.StartupViewModel
 import org.briarproject.briar.desktop.navigation.SidebarViewModel
 import org.briarproject.briar.desktop.privategroups.PrivateGroupListViewModel
+import org.briarproject.briar.desktop.privategroups.ThreadedConversationViewModel
 import org.briarproject.briar.desktop.settings.SettingsViewModel
 import kotlin.reflect.KClass
 

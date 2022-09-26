@@ -36,6 +36,7 @@ import org.briarproject.briar.desktop.viewmodel.asState
 import javax.inject.Inject
 
 class ForumViewModel @Inject constructor(
+    val threadViewModel: ThreadedConversationViewModel,
     private val forumManager: ForumManager,
     briarExecutors: BriarExecutors,
     lifecycleManager: LifecycleManager,
@@ -95,6 +96,7 @@ class ForumViewModel @Inject constructor(
 
     fun selectGroup(groupItem: GroupItem) {
         _selectedGroupItem.value = groupItem
+        threadViewModel.setGroupItem(groupItem)
     }
 
     fun isSelected(groupId: GroupId) = _selectedGroupItem.value?.id == groupId
