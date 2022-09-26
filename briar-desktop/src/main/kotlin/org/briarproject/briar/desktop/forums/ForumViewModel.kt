@@ -55,7 +55,16 @@ class ForumViewModel @Inject constructor(
     val noForumsYet = derivedStateOf { _fullForumList.isEmpty() }
 
     private val _selectedGroupItem = mutableStateOf<GroupItem?>(null)
-    val selectedGroupItem = _selectedGroupItem.asState()
+    val selectedGroupItem = derivedStateOf {
+        // reset selected group item to null if not part of list after filtering
+        val groupItem = _selectedGroupItem.value
+        if (groupItem == null || forumList.value.any { it.id == groupItem.id }) {
+            groupItem
+        } else {
+            _selectedGroupItem.value = null
+            null
+        }
+    }
 
     private val _filterBy = mutableStateOf("")
     val filterBy = _filterBy.asState()
