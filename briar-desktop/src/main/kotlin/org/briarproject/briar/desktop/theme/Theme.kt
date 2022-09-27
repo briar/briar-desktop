@@ -61,6 +61,7 @@ val DarkColors = darkColors(
     primary = Blue500,
     primaryVariant = Night500,
     secondary = Lime500,
+    secondaryVariant = Lime500,
     background = materialDarkBg,
     surface = materialDarkBg,
     error = DeepOrange400,
@@ -74,6 +75,7 @@ val LightColors = lightColors(
     primary = Blue700,
     primaryVariant = Night500,
     secondary = Lime300,
+    secondaryVariant = Lime500,
     background = Color.White,
     surface = Color.White,
     error = DeepOrange500,
@@ -115,7 +117,7 @@ val briarTypography = Typography(
 fun BriarTheme(
     isDarkTheme: Boolean = isSystemInDarkTheme(),
     colors: Colors? = null,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     val myColors = colors ?: if (isDarkTheme) DarkColors else LightColors
 
