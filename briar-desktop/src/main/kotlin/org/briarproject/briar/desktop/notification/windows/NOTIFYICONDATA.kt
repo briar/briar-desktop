@@ -39,7 +39,7 @@ internal class NOTIFYICONDATA : Structure() {
     }
 
     @JvmField
-    var cbSize: Int
+    var cbSize: Int = 0 // cannot use size() directly here, will throw IllegalStateException
 
     @JvmField
     var hWnd: HWND? = null
