@@ -35,6 +35,7 @@ internal class NOTIFYICONDATA : Structure() {
         const val NIIF_WARNING = 0x2
         const val NIIF_ERROR = 0x3
         const val NIIF_USER = 0x4
+        const val NIIF_NOSOUND = 0x10
     }
 
     var cbSize: Int

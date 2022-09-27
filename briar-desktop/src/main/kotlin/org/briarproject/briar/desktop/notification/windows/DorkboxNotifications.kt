@@ -21,6 +21,9 @@ package org.briarproject.briar.desktop.notification.windows
 import com.sun.jna.platform.win32.User32
 import com.sun.jna.platform.win32.WinDef
 import com.sun.jna.platform.win32.WinUser
+import org.briarproject.briar.desktop.notification.windows.NOTIFYICONDATA.Companion.NIIF_NONE
+import org.briarproject.briar.desktop.notification.windows.NOTIFYICONDATA.Companion.NIIF_NOSOUND
+import org.briarproject.briar.desktop.notification.windows.Shell32.NIM_DELETE
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
@@ -37,8 +40,7 @@ class DorkboxNotifications {
             User32.INSTANCE.LoadImage(null, tmp.absolutePath, WinUser.IMAGE_ICON, 0, 0, WinUser.LR_LOADFROMFILE)
 
         val data = NOTIFYICONDATA()
-        val NIIF_NOSOUND = 0x10 // not in the dorkbox library yet
-        data.setBalloon(title, message, 10000, NOTIFYICONDATA.NIIF_NONE or NIIF_NOSOUND)
+        data.setBalloon(title, message, 10000, NIIF_NONE or NIIF_NOSOUND)
         data.setIcon(WinDef.HICON(image))
         val ret = Shell32.Shell_NotifyIcon(Shell32.NIM_ADD, data)
         println("return value: $ret")
@@ -48,6 +50,6 @@ class DorkboxNotifications {
 
     fun uninit() {
         val data = NOTIFYICONDATA()
-        Shell32.Shell_NotifyIcon(Shell32.NIM_DELETE, data)
+        Shell32.Shell_NotifyIcon(NIM_DELETE, data)
     }
 }
