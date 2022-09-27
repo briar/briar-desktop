@@ -21,8 +21,6 @@ package org.briarproject.briar.desktop.notification.windows
 import com.sun.jna.platform.win32.User32
 import com.sun.jna.platform.win32.WinDef
 import com.sun.jna.platform.win32.WinUser
-import dorkbox.jna.windows.Shell32
-import dorkbox.jna.windows.structs.NOTIFYICONDATA
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption

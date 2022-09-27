@@ -51,7 +51,6 @@ dependencies {
     implementation("com.ibm.icu:icu4j:70.1")
     implementation("net.java.dev.jna:jna:5.12.1")
     implementation("net.java.dev.jna:jna-platform:5.12.1")
-    implementation("com.dorkbox:Utilities:1.22")
 
     implementation(project(path = ":briar-core", configuration = "default"))
     implementation(project(path = ":bramble-java", configuration = "default"))
