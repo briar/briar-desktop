@@ -18,6 +18,9 @@
 
 package org.briarproject.briar.desktop.theme
 
+import androidx.compose.foundation.DarkDefaultContextMenuRepresentation
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.LightDefaultContextMenuRepresentation
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.foundation.text.selection.TextSelectionColors
@@ -111,11 +114,12 @@ val briarTypography = Typography(
     overline = TextStyle(letterSpacing = spacing, fontSize = 10.sp),
 )
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun BriarTheme(
     isDarkTheme: Boolean = isSystemInDarkTheme(),
     colors: Colors? = null,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     val myColors = colors ?: if (isDarkTheme) DarkColors else LightColors
 
@@ -127,8 +131,16 @@ fun BriarTheme(
             handleColor = MaterialTheme.colors.secondary,
             backgroundColor = MaterialTheme.colors.secondary.copy(alpha = 0.4f)
         )
+        val contextMenuRepresentation = if (isDarkTheme) {
+            DarkDefaultContextMenuRepresentation
+        } else {
+            LightDefaultContextMenuRepresentation
+        }
 
-        CompositionLocalProvider(LocalTextSelectionColors provides customTextSelectionColors) {
+        CompositionLocalProvider(
+            LocalTextSelectionColors provides customTextSelectionColors,
+            LocalContextMenuRepresentation provides contextMenuRepresentation,
+        ) {
             Surface {
                 content()
             }
