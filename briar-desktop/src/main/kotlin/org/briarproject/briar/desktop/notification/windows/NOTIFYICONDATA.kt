@@ -38,18 +38,43 @@ internal class NOTIFYICONDATA : Structure() {
         const val NIIF_NOSOUND = 0x10
     }
 
+    @JvmField
     var cbSize: Int
+
+    @JvmField
     var hWnd: HWND? = null
+
+    @JvmField
     var uID = 0
+
+    @JvmField
     var uFlags = 0
+
+    @JvmField
     var uCallbackMessage = 0
+
+    @JvmField
     var hIcon: WinDef.HICON? = null
+
+    @JvmField
     var szTip = CharArray(128)
+
+    @JvmField
     var dwState = 0
+
+    @JvmField
     var dwStateMask = 0
+
+    @JvmField
     var szInfo = CharArray(256)
+
+    @JvmField
     var uTimeoutOrVersion = 0 // {UINT uTimeout; UINT uVersion;};
+
+    @JvmField
     var szInfoTitle = CharArray(64)
+
+    @JvmField
     var dwInfoFlags = 0
 
     init {
