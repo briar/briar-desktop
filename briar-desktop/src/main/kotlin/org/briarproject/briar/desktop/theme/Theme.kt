@@ -1,6 +1,6 @@
 /*
  * Briar Desktop
- * Copyright (C) 2021-2022 The Briar Project
+ * Copyright (C) 2021-2023 The Briar Project
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -18,6 +18,9 @@
 
 package org.briarproject.briar.desktop.theme
 
+import androidx.compose.foundation.DarkDefaultContextMenuRepresentation
+import androidx.compose.foundation.LightDefaultContextMenuRepresentation
+import androidx.compose.foundation.LocalContextMenuRepresentation
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.foundation.text.selection.TextSelectionColors
@@ -118,22 +121,26 @@ fun BriarTheme(
     isDarkTheme: Boolean = isSystemInDarkTheme(),
     colors: Colors? = null,
     content: @Composable () -> Unit,
+) = MaterialTheme(
+    colors = colors ?: if (isDarkTheme) DarkColors else LightColors,
+    typography = briarTypography,
 ) {
-    val myColors = colors ?: if (isDarkTheme) DarkColors else LightColors
+    val customTextSelectionColors = TextSelectionColors(
+        handleColor = MaterialTheme.colors.secondary,
+        backgroundColor = MaterialTheme.colors.secondary.copy(alpha = 0.4f)
+    )
+    val contextMenuRepresentation = if (isDarkTheme) {
+        DarkDefaultContextMenuRepresentation
+    } else {
+        LightDefaultContextMenuRepresentation
+    }
 
-    MaterialTheme(
-        colors = myColors,
-        typography = briarTypography,
+    CompositionLocalProvider(
+        LocalTextSelectionColors provides customTextSelectionColors,
+        LocalContextMenuRepresentation provides contextMenuRepresentation,
     ) {
-        val customTextSelectionColors = TextSelectionColors(
-            handleColor = MaterialTheme.colors.secondary,
-            backgroundColor = MaterialTheme.colors.secondary.copy(alpha = 0.4f)
-        )
-
-        CompositionLocalProvider(LocalTextSelectionColors provides customTextSelectionColors) {
-            Surface {
-                content()
-            }
+        Surface {
+            content()
         }
     }
 }
