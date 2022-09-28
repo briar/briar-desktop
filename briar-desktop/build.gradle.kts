@@ -28,7 +28,7 @@ plugins {
     id("org.jetbrains.compose") version "1.1.1"
     id("java")
     id("idea")
-    id("org.jlleitschuh.gradle.ktlint") version "10.1.0"
+    id("org.jlleitschuh.gradle.ktlint") version "11.0.0"
     id("org.briarproject.briar.desktop.build-data-gradle-plugin")
 }
 
@@ -41,7 +41,13 @@ buildData {
     packageName = "org.briarproject.briar.desktop"
 }
 
+configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
+    version.set("0.45.2")
+}
+
 dependencies {
+    ktlintRuleset("com.twitter.compose.rules:ktlint:0.0.16")
+
     implementation(compose.desktop.currentOs)
     implementation(compose.materialIconsExtended)
     // needed to access Dispatchers.Swing for EventExecutor
