@@ -25,17 +25,29 @@ import org.briarproject.bramble.api.crypto.DecryptionException
 import org.briarproject.bramble.api.crypto.DecryptionResult
 import org.briarproject.bramble.api.crypto.PasswordStrengthEstimator
 import org.briarproject.bramble.api.crypto.PasswordStrengthEstimator.QUITE_WEAK
+import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.viewmodel.asState
+import javax.inject.Inject
 
-class ChangePasswordSubViewModel(
+class ChangePasswordSubViewModel
+@Inject
+constructor(
+    private val briarExecutors: BriarExecutors,
     private val accountManager: AccountManager,
     private val passwordStrengthEstimator: PasswordStrengthEstimator,
 ) {
 
+    sealed class DialogState {
+        object Idle : DialogState()
+        object Loading : DialogState()
+        object Done : DialogState()
+        class Error(val result: DecryptionResult) : DialogState()
+    }
+
     private val _oldPassword = mutableStateOf("")
     private val _password = mutableStateOf("")
     private val _passwordConfirmation = mutableStateOf("")
-    private val _submitError = mutableStateOf<DecryptionResult?>(null)
+    private val _dialogState = mutableStateOf<DialogState>(DialogState.Idle)
 
     val oldPassword = _oldPassword.asState()
     val password = _password.asState()
@@ -57,7 +69,7 @@ class ChangePasswordSubViewModel(
             !passwordTooWeakError.value && !passwordMatchError.value
     }
 
-    val submitError = _submitError.asState()
+    val dialogState = _dialogState.asState()
 
     fun setOldPassword(password: String) {
         _oldPassword.value = password
@@ -71,15 +83,24 @@ class ChangePasswordSubViewModel(
         _passwordConfirmation.value = passwordConfirmation
     }
 
-    fun confirmChange(): Boolean {
-        if (!buttonEnabled.value) return false
-        return try {
-            accountManager.changePassword(oldPassword.value, _password.value)
-            _submitError.value = null
-            true
-        } catch (e: DecryptionException) {
-            _submitError.value = e.decryptionResult
-            false
+    fun confirmChange() {
+        if (!buttonEnabled.value) return
+
+        _dialogState.value = DialogState.Loading
+        briarExecutors.onIoThread {
+            try {
+                accountManager.changePassword(_oldPassword.value, _password.value)
+                _dialogState.value = DialogState.Done
+            } catch (e: DecryptionException) {
+                _dialogState.value = DialogState.Error(e.decryptionResult)
+            }
         }
+    }
+
+    fun reset() {
+        setOldPassword("")
+        setPassword("")
+        setPasswordConfirmation("")
+        _dialogState.value = DialogState.Idle
     }
 }
