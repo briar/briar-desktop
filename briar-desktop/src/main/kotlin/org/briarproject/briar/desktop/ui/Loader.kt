@@ -19,22 +19,47 @@
 package org.briarproject.briar.desktop.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.material.AlertDialog
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.Center
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun Loader() {
+fun Loader() =
     Box(
-        contentAlignment = Alignment.Center,
+        contentAlignment = Center,
         modifier = Modifier.fillMaxSize().background(MaterialTheme.colors.background).padding(20.dp)
     ) {
         CircularProgressIndicator()
     }
-}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun ModalLoader(text: String? = null) = AlertDialog(
+    modifier = Modifier.padding(top = 16.dp),
+    onDismissRequest = {},
+    buttons = {},
+    text = {
+        Row(
+            horizontalArrangement = spacedBy(16.dp, alignment = CenterHorizontally),
+            verticalAlignment = CenterVertically,
+            modifier = Modifier.widthIn(min = 200.dp)
+        ) {
+            CircularProgressIndicator()
+            text?.let { Text(text) }
+        }
+    },
+)

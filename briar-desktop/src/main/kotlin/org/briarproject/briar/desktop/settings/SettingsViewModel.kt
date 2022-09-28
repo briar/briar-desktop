@@ -19,8 +19,6 @@
 package org.briarproject.briar.desktop.settings
 
 import androidx.compose.runtime.mutableStateOf
-import org.briarproject.bramble.api.account.AccountManager
-import org.briarproject.bramble.api.crypto.PasswordStrengthEstimator
 import org.briarproject.bramble.api.db.TransactionManager
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.briar.desktop.notification.VisualNotificationProvider
@@ -43,13 +41,12 @@ enum class SettingCategory {
 class SettingsViewModel
 @Inject
 constructor(
+    val changePasswordSubViewModel: ChangePasswordSubViewModel,
     private val briarExecutors: BriarExecutors,
     lifecycleManager: LifecycleManager,
     db: TransactionManager,
     private val unencryptedSettings: UnencryptedSettings,
     private val encryptedSettings: EncryptedSettings,
-    private val accountManager: AccountManager,
-    private val passwordStrengthEstimator: PasswordStrengthEstimator,
     private val visualNotificationProvider: VisualNotificationProvider,
 ) : DbViewModel(briarExecutors, lifecycleManager, db) {
     private val _selectedSetting = mutableStateOf(SettingCategory.DISPLAY)
@@ -66,8 +63,6 @@ constructor(
 
     private val _changePasswordDialogVisible = mutableStateOf(false)
     val changePasswordDialogVisible = _changePasswordDialogVisible.asState()
-
-    val changePasswordSubViewModel = ChangePasswordSubViewModel(accountManager, passwordStrengthEstimator)
 
     private val _visualNotifications = mutableStateOf(encryptedSettings.visualNotifications)
     val visualNotifications = _visualNotifications.asState()

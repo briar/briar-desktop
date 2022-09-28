@@ -36,6 +36,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
@@ -43,9 +44,13 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.briarproject.bramble.api.crypto.DecryptionResult
 import org.briarproject.bramble.api.crypto.DecryptionResult.INVALID_PASSWORD
 import org.briarproject.briar.desktop.login.PasswordForm
+import org.briarproject.briar.desktop.settings.ChangePasswordSubViewModel.DialogState
+import org.briarproject.briar.desktop.ui.ModalLoader
 import org.briarproject.briar.desktop.utils.AccessibilityUtils.description
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
@@ -64,17 +69,21 @@ fun main() = preview(
     val passwordTooWeakError = derivedStateOf {
         passwordStrength.value < 0.6f
     }
-    val (submitError, setSubmitError) = remember { mutableStateOf<DecryptionResult?>(null) }
+    val (dialogState, setDialogState) = remember { mutableStateOf<DialogState>(DialogState.Idle) }
+    val scope = rememberCoroutineScope()
     ChangePasswordDialog(
         isVisible = getBooleanParameter("visible"),
         close = { setBooleanParameter("visible", false) },
-        onChange = {
-            // use password with 8 or less to test failure
-            if (password.length <= 8) {
-                setSubmitError(INVALID_PASSWORD)
-                false
-            } else {
-                true
+        confirmChange = {
+            setDialogState(DialogState.Loading)
+            scope.launch {
+                // simulate loading for 1s
+                delay(1000)
+                // use old password with 8 or fewer characters to test failure
+                if (oldPassword.length <= 8)
+                    setDialogState(DialogState.Error(INVALID_PASSWORD))
+                else
+                    setDialogState(DialogState.Done)
             }
         },
         oldPassword = oldPassword,
@@ -87,7 +96,13 @@ fun main() = preview(
         passwordTooWeakError = passwordTooWeakError.value,
         passwordsDontMatchError = password != passwordConfirmation,
         buttonEnabled = !passwordTooWeakError.value && password == passwordConfirmation,
-        submitError = submitError,
+        reset = {
+            setOldPassword("")
+            setPassword("")
+            setPasswordConfirmation("")
+            setDialogState(DialogState.Idle)
+        },
+        dialogState = dialogState,
     )
 }
 
@@ -96,31 +111,30 @@ fun ChangePasswordDialog(
     isVisible: Boolean,
     close: () -> Unit,
     viewHolder: ChangePasswordSubViewModel,
-) {
-    ChangePasswordDialog(
-        isVisible = isVisible,
-        close = close,
-        onChange = viewHolder::confirmChange,
-        oldPassword = viewHolder.oldPassword.value,
-        setOldPassword = viewHolder::setOldPassword,
-        password = viewHolder.password.value,
-        setPassword = viewHolder::setPassword,
-        passwordConfirmation = viewHolder.passwordConfirmation.value,
-        setPasswordConfirmation = viewHolder::setPasswordConfirmation,
-        passwordStrength = viewHolder.passwordStrength.value,
-        passwordTooWeakError = viewHolder.passwordTooWeakError.value,
-        passwordsDontMatchError = viewHolder.passwordMatchError.value,
-        buttonEnabled = viewHolder.buttonEnabled.value,
-        submitError = viewHolder.submitError.value,
-    )
-}
+) = ChangePasswordDialog(
+    isVisible = isVisible,
+    close = close,
+    confirmChange = viewHolder::confirmChange,
+    oldPassword = viewHolder.oldPassword.value,
+    setOldPassword = viewHolder::setOldPassword,
+    password = viewHolder.password.value,
+    setPassword = viewHolder::setPassword,
+    passwordConfirmation = viewHolder.passwordConfirmation.value,
+    setPasswordConfirmation = viewHolder::setPasswordConfirmation,
+    passwordStrength = viewHolder.passwordStrength.value,
+    passwordTooWeakError = viewHolder.passwordTooWeakError.value,
+    passwordsDontMatchError = viewHolder.passwordMatchError.value,
+    buttonEnabled = viewHolder.buttonEnabled.value,
+    reset = viewHolder::reset,
+    dialogState = viewHolder.dialogState.value,
+)
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ChangePasswordDialog(
     isVisible: Boolean,
     close: () -> Unit,
-    onChange: () -> Boolean,
+    confirmChange: () -> Unit,
     oldPassword: String,
     setOldPassword: (String) -> Unit,
     password: String,
@@ -131,21 +145,20 @@ fun ChangePasswordDialog(
     passwordTooWeakError: Boolean,
     passwordsDontMatchError: Boolean,
     buttonEnabled: Boolean,
-    submitError: DecryptionResult?,
+    reset: () -> Unit,
+    dialogState: DialogState,
 ) {
     if (!isVisible) return
 
-    val onClose = {
-        setOldPassword("")
-        setPassword("")
-        setPasswordConfirmation("")
-        close()
+    val onClose = remember {
+        {
+            reset()
+            close()
+        }
     }
 
-    val onSubmit = {
-        if (onChange()) {
-            onClose()
-        }
+    LaunchedEffect(dialogState) {
+        if (dialogState is DialogState.Done) onClose()
     }
 
     AlertDialog(
@@ -168,8 +181,8 @@ fun ChangePasswordDialog(
                 passwordStrength = passwordStrength,
                 passwordTooWeakError = passwordTooWeakError,
                 passwordsDontMatchError = passwordsDontMatchError,
-                onSubmit = onSubmit,
-                submitError = submitError,
+                onSubmit = confirmChange,
+                submitError = (dialogState as? DialogState.Error)?.result,
             )
         },
         dismissButton = {
@@ -181,13 +194,17 @@ fun ChangePasswordDialog(
         },
         confirmButton = {
             DialogButton(
-                onClick = onSubmit,
+                onClick = confirmChange,
                 text = i18n("change"),
                 type = ButtonType.NEUTRAL,
                 enabled = buttonEnabled,
             )
         },
     )
+
+    if (dialogState is DialogState.Loading) {
+        ModalLoader(i18n("settings.security.password.changing"))
+    }
 }
 
 @Composable
