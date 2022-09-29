@@ -41,8 +41,10 @@ class DorkboxNotifications {
 
         val data = NOTIFYICONDATA()
         data.setBalloon(title, message, 10000, NIIF_NONE or NIIF_NOSOUND)
-        data.setIcon(WinDef.HICON(image))
+        val icon = WinDef.HICON(image)
+        data.setIcon(icon)
         val ret = Shell32.Shell_NotifyIcon(Shell32.NIM_ADD, data)
+        User32.INSTANCE.DestroyIcon(icon)
         println("return value: $ret")
     }
 
