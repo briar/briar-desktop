@@ -42,6 +42,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import org.briarproject.briar.desktop.expiration.ExpirationUtils.periodicallyCheckIfExpired
 import org.briarproject.briar.desktop.theme.warningBackground
@@ -112,7 +113,7 @@ fun ExpirationBanner(
             icon = Icons.Filled.Close,
             contentDescription = i18n("hide"),
             onClick = hide,
-            modifier = Modifier.padding(vertical = 4.dp)
+            modifier = Modifier.padding(vertical = 4.dp).testTag("close_expiration")
         )
     }
 }

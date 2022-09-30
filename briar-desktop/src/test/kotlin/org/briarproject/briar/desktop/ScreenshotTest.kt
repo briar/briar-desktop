@@ -18,22 +18,16 @@
 
 package org.briarproject.briar.desktop
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Button
-import androidx.compose.material.Text
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.InternalTestApi
 import androidx.compose.ui.test.junit4.DesktopComposeTestRule
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
-import androidx.compose.ui.unit.dp
+import org.briarproject.bramble.BrambleCoreEagerSingletons
+import org.briarproject.bramble.api.plugin.TorConstants.DEFAULT_CONTROL_PORT
+import org.briarproject.bramble.api.plugin.TorConstants.DEFAULT_SOCKS_PORT
+import org.briarproject.briar.BriarCoreEagerSingletons
+import org.briarproject.briar.desktop.TestUtils.getDataDir
 import org.jetbrains.skia.Color
 import org.jetbrains.skia.Image
 import org.jetbrains.skia.Surface
@@ -50,24 +44,24 @@ class ScreenshotTest {
 
     @Test
     fun makeScreenshot() {
+        val dataDir = getDataDir()
+        val app =
+            DaggerBriarDesktopTestApp.builder().desktopCoreModule(
+                DesktopCoreModule(dataDir, DEFAULT_SOCKS_PORT, DEFAULT_CONTROL_PORT)
+            ).build()
+        // We need to load the eager singletons directly after making the
+        // dependency graphs
+        BrambleCoreEagerSingletons.Helper.injectEagerSingletons(app)
+        BriarCoreEagerSingletons.Helper.injectEagerSingletons(app)
+
+        val ui = app.getBriarUi()
+
         rule.setContent {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.padding(16.dp),
-            ) {
-                var greetingVisible by remember { mutableStateOf(false) }
-                if (greetingVisible) {
-                    Text("Hello!")
-                }
-                Button(onClick = { greetingVisible = true }) {
-                    Text("Show greeting")
-                }
-            }
+            ui.test()
         }
         rule.takeScreenshot("before-click.png")
-        rule
-            .onNodeWithText("Show greeting")
-            .performClick()
+        rule.onNodeWithTag("close_expiration").performClick()
+        rule.waitForIdle()
         rule.takeScreenshot("after-click.png")
     }
 }

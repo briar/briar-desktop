@@ -35,7 +35,6 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.toAwtImage
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.platform.LocalLocalization
 import androidx.compose.ui.platform.PlatformLocalization
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.window.FrameWindowScope
@@ -78,6 +77,9 @@ interface BriarUi {
     fun start(onClose: () -> Unit)
 
     fun stop()
+
+    @Composable
+    fun test()
 }
 
 val LocalWindowScope = staticCompositionLocalOf<FrameWindowScope?> { null }
@@ -178,29 +180,34 @@ constructor(
             }
 
             window.minimumSize = Dimension(800, 600)
-            CompositionLocalProvider(
-                LocalWindowScope provides this,
-                LocalWindowFocusState provides focusState,
-                LocalViewModelProvider provides viewModelProvider,
-                LocalConfiguration provides configuration,
-                LocalLocalization provides platformLocalization,
-            ) {
-                // invalidate whole application window in case the theme or language setting is changed
-                configuration.invalidateScreen.react {
-                    window.title = i18n("main.title")
-                    return@CompositionLocalProvider
-                }
 
-                val isDarkTheme = configuration.theme == DARK ||
-                    (configuration.theme == AUTO && isSystemInDarkTheme())
-                BriarTheme(isDarkTheme) {
-                    Column(Modifier.fillMaxSize()) {
-                        ExpirationBanner { screenState = EXPIRED; stop() }
-                        when (screenState) {
-                            STARTUP -> StartupScreen()
-                            MAIN -> MainScreen()
-                            EXPIRED -> ErrorScreen(i18n("startup.failed.expired"))
-                        }
+        }
+    }
+
+    @Composable
+    override fun test() {
+        CompositionLocalProvider(
+            //LocalWindowScope provides this,
+            //LocalWindowFocusState provides focusState,
+            LocalViewModelProvider provides viewModelProvider,
+            LocalConfiguration provides configuration,
+            //LocalLocalization provides platformLocalization,
+        ) {
+            // invalidate whole application window in case the theme or language setting is changed
+            configuration.invalidateScreen.react {
+                //window.title = i18n("main.title")
+                return@CompositionLocalProvider
+            }
+
+            val isDarkTheme = configuration.theme == DARK ||
+                (configuration.theme == AUTO && isSystemInDarkTheme())
+            BriarTheme(isDarkTheme) {
+                Column(Modifier.fillMaxSize()) {
+                    ExpirationBanner { screenState = EXPIRED; stop() }
+                    when (screenState) {
+                        STARTUP -> StartupScreen()
+                        MAIN -> MainScreen()
+                        EXPIRED -> ErrorScreen(i18n("startup.failed.expired"))
                     }
                 }
             }
