@@ -32,7 +32,7 @@ plugins {
     id("org.briarproject.briar.desktop.build-data-gradle-plugin")
 }
 
-val versionCode = "0.2.1"
+val versionCode = "0.3.0"
 val buildType = if (project.hasProperty("buildType")) project.properties["buildType"] else "snapshot"
 group = "app.briar.desktop"
 version = "$versionCode-$buildType"
