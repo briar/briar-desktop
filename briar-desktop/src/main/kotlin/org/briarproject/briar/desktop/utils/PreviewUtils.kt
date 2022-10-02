@@ -28,7 +28,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
@@ -39,22 +38,24 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.singleWindowApplication
 import org.briarproject.bramble.api.UniqueId
+import org.briarproject.briar.desktop.settings.UnencryptedSettings
 import org.briarproject.briar.desktop.theme.BriarTheme
 import org.briarproject.briar.desktop.ui.LocalWindowFocusState
 import org.briarproject.briar.desktop.ui.LocalWindowScope
 import org.briarproject.briar.desktop.ui.WindowFocusState
+import org.briarproject.briar.desktop.viewmodel.SingleStateEvent
 import kotlin.random.Random
 
 object PreviewUtils {
@@ -107,7 +108,7 @@ object PreviewUtils {
     private fun <T : Any> PreviewScope.addParameter(
         name: String,
         initial: T,
-        editField: @Composable (MutableState<T>) -> Unit
+        editField: @Composable (MutableState<T>) -> Unit,
     ) {
         val value = remember { mutableStateOf(initial) }
 
@@ -168,7 +169,7 @@ object PreviewUtils {
         val initialValue = items[initial.initial]
         var selectedIndex by remember { mutableStateOf(initial.initial) }
         addParameter(name, initialValue) { value ->
-            Box(modifier = Modifier.fillMaxSize().wrapContentSize(Alignment.TopStart)) {
+            Box {
                 Text(
                     items[selectedIndex],
                     modifier = Modifier.fillMaxWidth().clickable(onClick = { expanded = true })
@@ -203,7 +204,7 @@ object PreviewUtils {
     @Suppress("HardCodedStringLiteral")
     fun preview(
         vararg parameters: Pair<String, Any>,
-        content: @Composable PreviewScope.() -> Unit
+        content: @Composable PreviewScope.() -> Unit,
     ) {
         val scope = PreviewScope()
 
@@ -216,6 +217,10 @@ object PreviewUtils {
                 Column {
                     Column(Modifier.padding(10.dp)) {
                         scope.addBooleanParameter("darkTheme", true)
+                        scope.addDropDownParameter(
+                            "language",
+                            DropDownValues(0, UnencryptedSettings.Language.values().toList().map { it.name })
+                        )
                         parameters.forEach { (name, initial) ->
                             when (initial) {
                                 is String -> scope.addStringParameter(name, initial)
@@ -229,6 +234,16 @@ object PreviewUtils {
                             }
                         }
                     }
+
+                    val invalidate = remember { SingleStateEvent<Boolean>() }
+
+                    LaunchedEffect(scope.getStringParameter("language")) {
+                        InternationalizationUtils.locale =
+                            UnencryptedSettings.Language.valueOf(scope.getStringParameter("language")).locale
+                        invalidate.emit(true)
+                    }
+
+                    invalidate.react { return@Column }
 
                     BriarTheme(isDarkTheme = scope.getBooleanParameter("darkTheme")) {
                         Box(Modifier.fillMaxSize(1f)) {
