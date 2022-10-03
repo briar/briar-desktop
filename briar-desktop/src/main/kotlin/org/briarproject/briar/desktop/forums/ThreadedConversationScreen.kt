@@ -28,10 +28,9 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment.Companion.CenterEnd
 import androidx.compose.ui.Modifier
-import kotlinx.coroutines.launch
 import org.briarproject.briar.desktop.ui.Loader
 
 @Composable
@@ -44,9 +43,8 @@ fun ThreadedConversationScreen(
     Loading -> Loader()
     is Loaded -> {
         val scrollState = rememberLazyListState()
-        val coroutineScope = rememberCoroutineScope()
         // scroll to item if needed
-        if (postsState.scrollTo != null) coroutineScope.launch {
+        if (postsState.scrollTo != null) LaunchedEffect(postsState) {
             val index = postsState.posts.indexOfFirst { it.id == postsState.scrollTo }
             if (index != -1) scrollState.scrollToItem(index, -50)
         }
