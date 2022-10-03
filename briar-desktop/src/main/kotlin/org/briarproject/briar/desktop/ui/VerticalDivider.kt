@@ -28,6 +28,6 @@ import androidx.compose.ui.unit.dp
 import org.briarproject.briar.desktop.theme.divider
 
 @Composable
-fun VerticalDivider() {
-    Divider(color = MaterialTheme.colors.divider, modifier = Modifier.fillMaxHeight().width(1.dp))
+fun VerticalDivider(modifier: Modifier = Modifier) {
+    Divider(color = MaterialTheme.colors.divider, modifier = modifier.fillMaxHeight().width(1.dp))
 }

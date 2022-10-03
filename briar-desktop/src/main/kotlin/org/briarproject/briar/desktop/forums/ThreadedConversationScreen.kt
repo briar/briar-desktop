@@ -19,30 +19,19 @@
 package org.briarproject.briar.desktop.forums
 
 import androidx.compose.foundation.VerticalScrollbar
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
-import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment.Companion.CenterEnd
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
-import org.briarproject.briar.desktop.forums.ThreadItem.Companion.UNDEFINED
-import org.briarproject.briar.desktop.theme.selectedCard
-import org.briarproject.briar.desktop.theme.surfaceVariant
-import org.briarproject.briar.desktop.ui.HorizontalDivider
 import org.briarproject.briar.desktop.ui.Loader
 
 @Composable
@@ -68,7 +57,6 @@ fun ThreadedConversationScreen(
             ) {
                 items(postsState.posts) { item ->
                     ThreadItemComposable(item, selectedPost, onPostSelected)
-                    HorizontalDivider()
                 }
             }
             VerticalScrollbar(
@@ -77,33 +65,4 @@ fun ThreadedConversationScreen(
             )
         }
     }
-}
-
-@Composable
-fun ThreadItemComposable(
-    item: ThreadItem,
-    selectedPost: ThreadItem?,
-    onPostSelected: (ThreadItem) -> Unit,
-) {
-    val isSelected = selectedPost == item
-    Text(
-        text = item.text,
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(
-                if (isSelected) {
-                    MaterialTheme.colors.selectedCard
-                } else {
-                    MaterialTheme.colors.surfaceVariant
-                }
-            ).selectable(
-                selected = isSelected,
-                onClick = { onPostSelected(item) }
-            )
-            .padding(4.dp)
-            .padding(
-                start = 4.dp +
-                    if (item.getLevel() == UNDEFINED) 0.dp else (item.getLevel() * 8).dp
-            ),
-    )
 }
