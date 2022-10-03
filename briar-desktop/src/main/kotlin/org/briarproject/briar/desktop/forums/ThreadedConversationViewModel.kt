@@ -36,6 +36,7 @@ import org.briarproject.bramble.api.sync.MessageId
 import org.briarproject.bramble.api.system.Clock
 import org.briarproject.briar.api.client.MessageTracker
 import org.briarproject.briar.api.forum.ForumManager
+import org.briarproject.briar.api.forum.event.ForumPostReceivedEvent
 import org.briarproject.briar.client.MessageTreeImpl
 import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.threading.UiExecutor
@@ -85,7 +86,14 @@ class ThreadedConversationViewModel @Inject constructor(
         loadPosts(groupItem.id)
     }
 
+    @UiExecutor
     override fun eventOccurred(e: Event) {
+        if (e is ForumPostReceivedEvent) {
+            if (e.groupId == groupItem.id) {
+                val item = ForumPostItem(e.header, e.text)
+                addItem(item, null)
+            }
+        }
     }
 
     private fun loadPosts(groupId: GroupId) {
