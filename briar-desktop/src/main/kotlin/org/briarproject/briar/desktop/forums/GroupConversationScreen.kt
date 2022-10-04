@@ -74,7 +74,8 @@ fun GroupConversationScreen(
             )
         },
         bottomBar = {
-            GroupInputComposable(viewModel.selectedPost.value) { text ->
+            val onCloseReply = { viewModel.selectPost(null) }
+            GroupInputComposable(viewModel.selectedPost.value, onCloseReply) { text ->
                 viewModel.createPost(viewModel.groupItem, text, viewModel.selectedPost.value?.id)
             }
         }

@@ -18,11 +18,15 @@
 
 package org.briarproject.briar.desktop.forums
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -30,16 +34,20 @@ import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.TextFieldExt.moveFocusOnTab
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment.Companion.Top
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.input.pointer.PointerIconDefaults
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.unit.dp
 import org.briarproject.briar.api.forum.ForumConstants.MAX_FORUM_POST_TEXT_LENGTH
+import org.briarproject.briar.desktop.theme.divider
 import org.briarproject.briar.desktop.theme.sendButton
 import org.briarproject.briar.desktop.ui.HorizontalDivider
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
@@ -48,6 +56,7 @@ import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 @OptIn(ExperimentalComposeUiApi::class)
 fun GroupInputComposable(
     selectedPost: ThreadItem?,
+    onReplyClosed: () -> Unit,
     onSend: (String) -> Unit,
 ) {
     val postText = rememberSaveable { mutableStateOf("") }
@@ -59,6 +68,36 @@ fun GroupInputComposable(
         }
     }
     Column {
+        if (selectedPost != null) {
+            Row(
+                verticalAlignment = Top,
+                modifier = Modifier.border(1.dp, MaterialTheme.colors.divider),
+            ) {
+                Column(
+                    modifier = Modifier
+                        .padding(start = 8.dp, top = 8.dp, bottom = 8.dp)
+                        .weight(1f),
+                ) {
+                    Text(
+                        text = i18n("forum.message.reply.intro"),
+                        modifier = Modifier.padding(bottom = 8.dp).alpha(0.82f),
+                    )
+                    Column(
+                        modifier = Modifier
+                            .border(1.dp, MaterialTheme.colors.divider)
+                            .background(MaterialTheme.colors.onSurface.copy(alpha = TextFieldDefaults.BackgroundOpacity))
+                    ) {
+                        ThreadItemContentComposable(selectedPost, isPreview = true)
+                    }
+                }
+                IconButton(onClick = onReplyClosed) {
+                    Icon(
+                        imageVector = Icons.Filled.Close,
+                        contentDescription = i18n("access.forums.reply.close"),
+                    )
+                }
+            }
+        }
         HorizontalDivider()
         TextField(
             value = postText.value,

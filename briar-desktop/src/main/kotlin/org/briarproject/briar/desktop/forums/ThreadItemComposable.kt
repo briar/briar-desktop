@@ -22,7 +22,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -33,6 +32,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import org.briarproject.bramble.api.crypto.SignaturePublicKey
 import org.briarproject.bramble.api.identity.Author
@@ -102,29 +103,45 @@ fun ThreadItemComposable(
                     onClick = { onPostSelected(item) }
                 ),
         ) {
-            Row(
-                verticalAlignment = CenterVertically,
-                modifier = Modifier.padding(4.dp),
-            ) {
-                // TODO load and cache profile images, if available
-                ProfileCircle(20.dp, item.author.id.bytes)
-                Text(
-                    text = item.authorName,
-                    fontWeight = if (item.authorInfo.status == OURSELVES) Bold else null,
-                    modifier = Modifier.padding(horizontal = 8.dp),
-                )
-                TrustIndicator(item.authorInfo.status)
-                Spacer(modifier = Modifier.weight(1f))
-                Text(
-                    text = TimeUtils.getFormattedTimestamp(item.timestamp),
-                    style = MaterialTheme.typography.caption,
-                )
-            }
-            Text(
-                text = item.text,
-                modifier = Modifier.padding(4.dp).fillMaxWidth()
-            )
+            ThreadItemContentComposable(item)
             HorizontalDivider()
         }
     }
+}
+
+@Composable
+fun ThreadItemContentComposable(
+    item: ThreadItem,
+    isPreview: Boolean = false,
+) {
+    Row(
+        modifier = Modifier.padding(8.dp).fillMaxWidth(),
+        verticalAlignment = CenterVertically,
+    ) {
+        // TODO load and cache profile images, if available
+        Row(modifier = Modifier.weight(1f)) {
+            ProfileCircle(20.dp, item.author.id.bytes)
+            Text(
+                modifier = Modifier.padding(horizontal = 8.dp).weight(1f, fill = false),
+                text = item.authorName,
+                fontWeight = if (item.authorInfo.status == OURSELVES) Bold else null,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            TrustIndicator(item.authorInfo.status)
+        }
+        Text(
+            modifier = Modifier.padding(start = 8.dp),
+            text = TimeUtils.getFormattedTimestamp(item.timestamp),
+            textAlign = TextAlign.End,
+            style = MaterialTheme.typography.caption,
+            maxLines = 1,
+        )
+    }
+    Text(
+        modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp).fillMaxWidth(),
+        text = item.text,
+        maxLines = if (isPreview) 1 else Int.MAX_VALUE,
+        overflow = TextOverflow.Ellipsis,
+    )
 }
