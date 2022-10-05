@@ -18,37 +18,13 @@
 
 package org.briarproject.briar.desktop
 
-import org.briarproject.bramble.api.contact.Contact
-import org.briarproject.bramble.api.contact.event.ContactAddedEvent
-import org.briarproject.briar.desktop.TestUtils.connectAppsInstantly
+import org.briarproject.briar.desktop.TestUtils.connectAllInstantly
+import org.briarproject.briar.desktop.TestUtils.createForumForAll
 
 fun main() = RunWithMultipleTemporaryAccounts(listOf("alice", "bob", "eve")) { // NON-NLS
-    val alice = this[0]
-    val bob = this[1]
-    val eve = this[2]
-
-    listOf(bob, eve).forEach {
-        it.getDeterministicTestDataCreator().createTestData(1, 2, 0, 0, 0)
-        connectAppsInstantly(alice, it)
+    forEach {
+        it.getDeterministicTestDataCreator().createTestData(5, 20, 50, 10, 20)
     }
-
-    // alice introduces eve to bob
-    alice.run {
-        var eve: Contact? = null
-        var bob: Contact? = null
-        getEventBus().addListener {
-            when (it) {
-                is ContactAddedEvent -> {
-                    val contact = getContactManager().getContact(it.contactId)
-                    when (contact.author.name) {
-                        "eve" -> eve = contact // NON-NLS
-                        "bob" -> bob = contact // NON-NLS
-                    }
-                    if (eve != null && bob != null) {
-                        getIntroductionManager().makeIntroduction(eve!!, bob!!, "Eve and Bob") // NON-NLS
-                    }
-                }
-            }
-        }
-    }
+    connectAllInstantly()
+    createForumForAll()
 }.run()

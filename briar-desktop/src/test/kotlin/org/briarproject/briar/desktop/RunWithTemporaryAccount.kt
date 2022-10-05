@@ -21,7 +21,6 @@ package org.briarproject.briar.desktop
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.window.application
-import kotlinx.coroutines.delay
 import mu.KotlinLogging
 import org.briarproject.bramble.BrambleCoreEagerSingletons
 import org.briarproject.briar.BriarCoreEagerSingletons
@@ -38,7 +37,7 @@ internal class RunWithTemporaryAccount(
     val createAccount: Boolean = true,
     val login: Boolean = true,
     val makeDirUnwritable: Boolean = false,
-    val customization: suspend BriarDesktopTestApp.() -> Unit = {},
+    val customization: BriarDesktopTestApp.() -> Unit = {},
 ) {
 
     companion object {
@@ -88,8 +87,6 @@ internal class RunWithTemporaryAccount(
 
         application {
             LaunchedEffect(Unit) {
-                delay(500)
-
                 if (createAccount && login) {
                     val dbKey = accountManager.databaseKey ?: throw AssertionError()
                     lifecycleManager.startServices(dbKey)

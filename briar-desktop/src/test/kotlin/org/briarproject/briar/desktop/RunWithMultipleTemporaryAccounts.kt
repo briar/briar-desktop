@@ -22,7 +22,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.window.ApplicationScope
 import androidx.compose.ui.window.application
-import kotlinx.coroutines.delay
 import mu.KotlinLogging
 import org.briarproject.bramble.BrambleCoreEagerSingletons
 import org.briarproject.bramble.api.plugin.TorConstants.DEFAULT_CONTROL_PORT
@@ -57,8 +56,6 @@ internal class RunWithMultipleTemporaryAccounts(
 
         application {
             LaunchedEffect(Unit) {
-                delay(500)
-
                 apps.forEach {
                     val accountManager = it.getAccountManager()
                     val lifecycleManager = it.getLifecycleManager()

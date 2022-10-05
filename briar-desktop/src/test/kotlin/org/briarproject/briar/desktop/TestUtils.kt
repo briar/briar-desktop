@@ -27,6 +27,9 @@ import org.briarproject.bramble.api.identity.Author
 import org.briarproject.bramble.api.identity.LocalAuthor
 import org.briarproject.bramble.api.plugin.TransportId
 import org.briarproject.bramble.api.properties.TransportProperties
+import org.briarproject.bramble.api.versioning.event.ClientVersionUpdatedEvent
+import org.briarproject.briar.api.forum.ForumManager
+import org.briarproject.briar.api.forum.event.ForumInvitationRequestReceivedEvent
 import org.briarproject.briar.desktop.utils.FileUtils
 import java.io.IOException
 import java.nio.file.Files
@@ -142,6 +145,36 @@ object TestUtils {
             } catch (e: GeneralSecurityException) {
                 // Pending contact's public key is invalid
                 throw FormatException()
+            }
+        }
+    }
+
+    internal fun List<BriarDesktopTestApp>.createForumForAll() {
+        if (isEmpty()) return
+
+        // create forum
+        val creator = get(0)
+        val forum = creator.getForumManager().addForum("Shared Forum") // NON-NLS
+
+        // invite all contacts
+        creator.getEventBus().addListener { e ->
+            if (e is ClientVersionUpdatedEvent && e.clientVersion.clientId == ForumManager.CLIENT_ID) {
+                creator.getBriarExecutors().onDbThread {
+                    val contact = creator.getContactManager().getContact(e.contactId)
+                    val sharingManager = creator.getForumSharingManager()
+                    if (sharingManager.canBeShared(forum.id, contact))
+                        sharingManager.sendInvitation(forum.id, e.contactId, null)
+                }
+            }
+        }
+
+        // accept invitation at all contacts
+        drop(1).forEach { app ->
+            app.getEventBus().addListener { e ->
+                if (e is ForumInvitationRequestReceivedEvent) {
+                    val contact = app.getContactManager().getContact(e.contactId)
+                    app.getForumSharingManager().respondToInvitation(forum, contact, true)
+                }
             }
         }
     }
