@@ -18,7 +18,7 @@
 
 package org.briarproject.briar.desktop.forums
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -48,8 +48,7 @@ import org.briarproject.briar.api.identity.AuthorInfo.Status.UNKNOWN
 import org.briarproject.briar.api.identity.AuthorInfo.Status.UNVERIFIED
 import org.briarproject.briar.api.identity.AuthorInfo.Status.VERIFIED
 import org.briarproject.briar.desktop.contact.ProfileCircle
-import org.briarproject.briar.desktop.theme.selectedCard
-import org.briarproject.briar.desktop.theme.surfaceVariant
+import org.briarproject.briar.desktop.theme.Blue500
 import org.briarproject.briar.desktop.ui.HorizontalDivider
 import org.briarproject.briar.desktop.ui.TrustIndicator
 import org.briarproject.briar.desktop.ui.VerticalDivider
@@ -92,12 +91,10 @@ fun ThreadItemComposable(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(
+                .then(
                     if (isSelected) {
-                        MaterialTheme.colors.selectedCard
-                    } else {
-                        MaterialTheme.colors.surfaceVariant
-                    }
+                        Modifier.border(3.dp, Blue500)
+                    } else Modifier
                 ).selectable(
                     selected = isSelected,
                     onClick = { onPostSelected(item) }
