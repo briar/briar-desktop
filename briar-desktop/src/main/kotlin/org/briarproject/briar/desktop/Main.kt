@@ -35,6 +35,7 @@ import org.briarproject.briar.desktop.utils.FileUtils
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nF
 import org.briarproject.briar.desktop.utils.KLoggerUtils.i
+import org.briarproject.briar.desktop.utils.KLoggerUtils.w
 import org.briarproject.briar.desktop.utils.LogUtils
 import org.jetbrains.annotations.NonNls
 import java.io.File.separator
@@ -118,6 +119,10 @@ private class Main : CliktCommand(
         // dependency graphs
         BrambleCoreEagerSingletons.Helper.injectEagerSingletons(app)
         BriarCoreEagerSingletons.Helper.injectEagerSingletons(app)
+
+        Thread.setDefaultUncaughtExceptionHandler { t, e ->
+            LOG.w(e) { "Uncaught exception in thread ${t.name}" }
+        }
 
         application {
             app.getBriarUi().start {

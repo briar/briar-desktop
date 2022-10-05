@@ -27,6 +27,7 @@ import org.briarproject.bramble.BrambleCoreEagerSingletons
 import org.briarproject.briar.BriarCoreEagerSingletons
 import org.briarproject.briar.desktop.TestUtils.getDataDir
 import org.briarproject.briar.desktop.utils.KLoggerUtils.i
+import org.briarproject.briar.desktop.utils.KLoggerUtils.w
 import org.briarproject.briar.desktop.utils.LogUtils
 import org.jetbrains.annotations.NonNls
 import java.nio.file.Files
@@ -71,6 +72,10 @@ internal class RunWithTemporaryAccount(
         // dependency graphs
         BrambleCoreEagerSingletons.Helper.injectEagerSingletons(app)
         BriarCoreEagerSingletons.Helper.injectEagerSingletons(app)
+
+        Thread.setDefaultUncaughtExceptionHandler { t, e ->
+            LOG.w(e) { "Uncaught exception in thread ${t.name}" }
+        }
 
         val lifecycleManager = app.getLifecycleManager()
         val accountManager = app.getAccountManager()

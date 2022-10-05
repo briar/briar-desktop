@@ -55,18 +55,18 @@ object KLoggerUtils {
     }
 
     fun KLogger.d(t: Throwable?, @NonNls msg: () -> Any?) {
-        trace(t, msg)
+        debug(t, msg)
     }
 
     fun KLogger.i(t: Throwable?, @NonNls msg: () -> Any?) {
-        trace(t, msg)
+        info(t, msg)
     }
 
     fun KLogger.w(t: Throwable?, @NonNls msg: () -> Any?) {
-        trace(t, msg)
+        warn(t, msg)
     }
 
     fun KLogger.e(t: Throwable?, @NonNls msg: () -> Any?) {
-        trace(t, msg)
+        error(t, msg)
     }
 }

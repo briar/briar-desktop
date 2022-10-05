@@ -30,6 +30,7 @@ import org.briarproject.bramble.api.plugin.TorConstants.DEFAULT_SOCKS_PORT
 import org.briarproject.briar.BriarCoreEagerSingletons
 import org.briarproject.briar.desktop.TestUtils.getDataDir
 import org.briarproject.briar.desktop.utils.KLoggerUtils.i
+import org.briarproject.briar.desktop.utils.KLoggerUtils.w
 import org.briarproject.briar.desktop.utils.LogUtils
 import org.jetbrains.annotations.NonNls
 import java.util.logging.Level.ALL
@@ -93,6 +94,10 @@ internal class RunWithMultipleTemporaryAccounts(
         // dependency graphs
         BrambleCoreEagerSingletons.Helper.injectEagerSingletons(app)
         BriarCoreEagerSingletons.Helper.injectEagerSingletons(app)
+
+        Thread.setDefaultUncaughtExceptionHandler { t, e ->
+            LOG.w(e) { "Uncaught exception in thread ${t.name}" }
+        }
 
         val accountManager = app.getAccountManager()
 
