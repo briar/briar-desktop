@@ -38,12 +38,13 @@ import org.briarproject.bramble.api.plugin.TorSocksPort
 import org.briarproject.bramble.battery.DefaultBatteryManagerModule
 import org.briarproject.bramble.io.DnsModule
 import org.briarproject.bramble.mailbox.MailboxModule
-import org.briarproject.bramble.mailbox.UrlConverterModule
+import org.briarproject.bramble.mailbox.ModularMailboxModule
 import org.briarproject.bramble.network.JavaNetworkModule
 import org.briarproject.bramble.plugin.tor.CircumventionModule
 import org.briarproject.bramble.socks.SocksModule
 import org.briarproject.bramble.system.ClockModule
 import org.briarproject.bramble.system.DefaultTaskSchedulerModule
+import org.briarproject.bramble.system.DefaultThreadFactoryModule
 import org.briarproject.bramble.system.DefaultWakefulIoExecutorModule
 import org.briarproject.bramble.system.DesktopSecureRandomModule
 import org.briarproject.bramble.system.JavaSystemModule
@@ -79,6 +80,8 @@ import javax.inject.Singleton
 
 // corresponding Briar Android class in
 // briar/briar-android/src/main/java/org/briarproject/briar/android/AppModule.java
+// and
+// briar/bramble-android/src/main/java/org/briarproject/bramble/BrambleAndroidModule.java
 @Module(
     includes = [
         AccountModule::class,
@@ -95,7 +98,8 @@ import javax.inject.Singleton
         ViewModelModule::class,
         AttachmentModule::class,
         MailboxModule::class,
-        UrlConverterModule::class,
+        ModularMailboxModule::class,
+        DefaultThreadFactoryModule::class,
         DnsModule::class,
     ]
 )

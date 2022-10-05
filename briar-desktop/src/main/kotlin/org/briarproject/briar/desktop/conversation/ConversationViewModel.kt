@@ -50,6 +50,7 @@ import org.briarproject.briar.api.autodelete.event.ConversationMessagesDeletedEv
 import org.briarproject.briar.api.conversation.ConversationManager
 import org.briarproject.briar.api.conversation.DeletionResult
 import org.briarproject.briar.api.conversation.event.ConversationMessageReceivedEvent
+import org.briarproject.briar.api.forum.ForumSharingManager
 import org.briarproject.briar.api.identity.AuthorManager
 import org.briarproject.briar.api.introduction.IntroductionManager
 import org.briarproject.briar.api.messaging.MessagingManager
@@ -59,9 +60,11 @@ import org.briarproject.briar.api.messaging.PrivateMessageHeader
 import org.briarproject.briar.desktop.DesktopFeatureFlags
 import org.briarproject.briar.desktop.attachment.media.ImageCompressor
 import org.briarproject.briar.desktop.contact.ContactItem
+import org.briarproject.briar.desktop.conversation.ConversationRequestItem.RequestType.FORUM
 import org.briarproject.briar.desktop.conversation.ConversationRequestItem.RequestType.INTRODUCTION
 import org.briarproject.briar.desktop.threading.BriarExecutors
-import org.briarproject.briar.desktop.utils.ImageUtils
+import org.briarproject.briar.desktop.utils.ImageUtils.loadImage
+import org.briarproject.briar.desktop.utils.KLoggerUtils.e
 import org.briarproject.briar.desktop.utils.KLoggerUtils.i
 import org.briarproject.briar.desktop.utils.KLoggerUtils.logDuration
 import org.briarproject.briar.desktop.utils.KLoggerUtils.w
@@ -85,6 +88,7 @@ constructor(
     private val authorManager: AuthorManager,
     private val conversationManager: ConversationManager,
     private val introductionManager: IntroductionManager,
+    private val forumSharingManager: ForumSharingManager,
     private val messagingManager: MessagingManager,
     private val privateMessageFactory: PrivateMessageFactory,
     briarExecutors: BriarExecutors,
@@ -235,7 +239,7 @@ constructor(
     data class UnreadMessagesInfo(
         val amount: Int,
         val firstIndex: Int,
-        val lastIndex: Int
+        val lastIndex: Int,
     )
 
     val onMessageAddedToBottom = SingleStateEvent<MessageAddedType>()
@@ -287,7 +291,7 @@ constructor(
                 authorInfo,
                 connectionRegistry.isConnected(id),
                 conversationManager.getGroupCount(txn, id),
-                authorInfo.avatarHeader?.let { ImageUtils.loadImage(txn, attachmentReader, it) },
+                authorInfo.avatarHeader?.let { loadImage(txn, attachmentReader, it) },
             )
             LOG.logDuration("Loading contact", start)
             txn.attach {
@@ -352,18 +356,21 @@ constructor(
                     }
                 }
             }
+
             is MessagesSentEvent -> {
                 if (e.contactId == _contactId.value) {
                     LOG.i { "Messages sent" }
                     markMessages(e.messageIds, sent = true, seen = false)
                 }
             }
+
             is MessagesAckedEvent -> {
                 if (e.contactId == _contactId.value) {
                     LOG.i { "Messages acked" }
                     markMessages(e.messageIds, sent = true, seen = true)
                 }
             }
+
             is ConversationMessagesDeletedEvent -> {
                 if (e.contactId == _contactId.value) {
                     LOG.i { "Messages auto-deleted" }
@@ -371,18 +378,21 @@ constructor(
                     _messages.removeIf { messages.contains(it.id) }
                 }
             }
+
             is ContactConnectedEvent -> {
                 if (e.contactId == _contactId.value) {
                     LOG.i { "Contact connected" }
                     _contactItem.update { this?.updateIsConnected(true) }
                 }
             }
+
             is ContactDisconnectedEvent -> {
                 if (e.contactId == _contactId.value) {
                     LOG.i { "Contact disconnected" }
                     _contactItem.update { this?.updateIsConnected(false) }
                 }
             }
+
             is ClientVersionUpdatedEvent -> {
                 if (e.contactId == _contactId.value) {
                     // todo: still not implemented
@@ -403,7 +413,7 @@ constructor(
     private fun markMessages(
         messageIds: Collection<MessageId>,
         sent: Boolean,
-        seen: Boolean
+        seen: Boolean,
     ) {
         val messages = HashSet(messageIds)
         _messages.replaceIf({ it.isOutgoing && messages.contains(it.id) }) {
@@ -419,8 +429,22 @@ constructor(
             when (item.requestType) {
                 INTRODUCTION ->
                     introductionManager.respondToIntroduction(txn, _contactId.value!!, item.sessionId, accept)
+
+                FORUM -> {
+                    if (desktopFeatureFlags.shouldEnableForums()) {
+                        forumSharingManager.respondToInvitation(
+                            /* txn = */ txn,
+                            /* c = */ _contactId.value!!,
+                            /* id = */ item.sessionId,
+                            /* accept = */ accept
+                        )
+                    } else {
+                        LOG.e { "Forum requests are not supported for this build." }
+                    }
+                }
+
                 else ->
-                    throw IllegalArgumentException("Only introduction requests are supported for the time being.")
+                    LOG.e { "Only introduction and forum requests are supported for the time being." }
             }
             // reload all messages to also show request response message
             // todo: might be better to have an event to react to, also for (other) outgoing messages
