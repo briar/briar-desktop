@@ -2,7 +2,7 @@ Translation of Briar Desktop is provided by the Localization Lab. To make
 Briar Desktop available in your language, please visit
 https://www.transifex.com/otf/briar/ and ask to join one of the LocLab’s
 language teams. You’ll then be able to contribute on
-https://www.transifex.com/otf/briar/briar-desktop-pot/.
+https://www.transifex.com/otf/briar/briar-desktop/.
 
 The Localization Lab has some instructions and advice for
 translators at https://wiki.localizationlab.org/index.php/Briar.
@@ -11,7 +11,8 @@ translators at https://wiki.localizationlab.org/index.php/Briar.
 
 _This section is of interest only for developers of Briar Desktop_.
 
-To update translations locally, first install `transifex-client`. You can then pull updates with `tx pull -a`.
+To update translations locally, first install `transifex-client`.
+You can then pull updates with `tx pull -a -f`.
 
 If that command added a language that was previously not supported,
 you have to manually insert the language code
