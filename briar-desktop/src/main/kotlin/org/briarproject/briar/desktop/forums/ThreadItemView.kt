@@ -19,6 +19,7 @@
 package org.briarproject.briar.desktop.forums
 
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -53,7 +54,7 @@ import org.briarproject.briar.desktop.ui.HorizontalDivider
 import org.briarproject.briar.desktop.ui.TrustIndicator
 import org.briarproject.briar.desktop.ui.VerticalDivider
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
-import org.briarproject.briar.desktop.utils.TimeUtils
+import org.briarproject.briar.desktop.utils.TimeUtils.getFormattedTimestamp
 import kotlin.random.Random
 
 @Suppress("HardCodedStringLiteral")
@@ -74,11 +75,11 @@ fun main() = preview {
         h = header,
         text = "This is some longer example text for a forum post.",
     ).apply { setLevel(Random.nextInt(0, 6)) }
-    ThreadItemComposable(item, null) {}
+    ThreadItemView(item, null) {}
 }
 
 @Composable
-fun ThreadItemComposable(
+fun ThreadItemView(
     item: ThreadItem,
     selectedPost: ThreadItem?,
     onPostSelected: (ThreadItem) -> Unit,
@@ -100,8 +101,8 @@ fun ThreadItemComposable(
                     onClick = { onPostSelected(item) }
                 ),
         ) {
-            ThreadItemContentComposable(item)
             HorizontalDivider()
+            ThreadItemContentComposable(item)
         }
     }
 }
@@ -109,36 +110,44 @@ fun ThreadItemComposable(
 @Composable
 fun ThreadItemContentComposable(
     item: ThreadItem,
+    modifier: Modifier = Modifier,
     isPreview: Boolean = false,
 ) {
-    Row(
-        modifier = Modifier.padding(8.dp).fillMaxWidth(),
-        verticalAlignment = CenterVertically,
+    Column(
+        modifier = modifier,
     ) {
-        // TODO load and cache profile images, if available
-        Row(modifier = Modifier.weight(1f)) {
-            ProfileCircle(20.dp, item.author.id.bytes)
+        Row(
+            modifier = Modifier.padding(8.dp).fillMaxWidth(),
+        ) {
+            Row(
+                modifier = Modifier.weight(1f),
+                horizontalArrangement = spacedBy(8.dp),
+                verticalAlignment = CenterVertically,
+            ) {
+                // TODO load and cache profile images, if available
+                ProfileCircle(20.dp, item.author.id.bytes)
+                Text(
+                    modifier = Modifier.weight(1f, fill = false),
+                    text = item.authorName,
+                    fontWeight = if (item.authorInfo.status == OURSELVES) Bold else null,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                TrustIndicator(item.authorInfo.status)
+            }
             Text(
-                modifier = Modifier.padding(horizontal = 8.dp).weight(1f, fill = false),
-                text = item.authorName,
-                fontWeight = if (item.authorInfo.status == OURSELVES) Bold else null,
+                modifier = Modifier,
+                text = getFormattedTimestamp(item.timestamp),
+                textAlign = TextAlign.End,
+                style = MaterialTheme.typography.caption,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
             )
-            TrustIndicator(item.authorInfo.status)
         }
         Text(
-            modifier = Modifier.padding(start = 8.dp),
-            text = TimeUtils.getFormattedTimestamp(item.timestamp),
-            textAlign = TextAlign.End,
-            style = MaterialTheme.typography.caption,
-            maxLines = 1,
+            modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp).fillMaxWidth(),
+            text = item.text,
+            maxLines = if (isPreview) 1 else Int.MAX_VALUE,
+            overflow = TextOverflow.Ellipsis,
         )
     }
-    Text(
-        modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp).fillMaxWidth(),
-        text = item.text,
-        maxLines = if (isPreview) 1 else Int.MAX_VALUE,
-        overflow = TextOverflow.Ellipsis,
-    )
 }

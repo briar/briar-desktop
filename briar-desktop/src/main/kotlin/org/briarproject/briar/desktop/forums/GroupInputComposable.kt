@@ -26,7 +26,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -42,7 +41,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment.Companion.Top
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.input.pointer.PointerIconDefaults
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.unit.dp
@@ -80,22 +78,25 @@ fun GroupInputComposable(
                 ) {
                     Text(
                         text = i18n("forum.message.reply.intro"),
-                        modifier = Modifier.padding(bottom = 8.dp).alpha(0.82f),
+                        modifier = Modifier.padding(bottom = 8.dp),
                     )
-                    Column(
+                    ThreadItemContentComposable(
+                        item = selectedPost,
+                        isPreview = true,
                         modifier = Modifier
                             .border(1.dp, MaterialTheme.colors.divider)
-                            .background(MaterialTheme.colors.onSurface.copy(alpha = TextFieldDefaults.BackgroundOpacity))
-                    ) {
-                        ThreadItemContentComposable(selectedPost, isPreview = true)
-                    }
-                }
-                IconButton(onClick = onReplyClosed) {
-                    Icon(
-                        imageVector = Icons.Filled.Close,
-                        contentDescription = i18n("access.forums.reply.close"),
+                            .background(
+                                MaterialTheme.colors.onSurface.copy(
+                                    alpha = TextFieldDefaults.BackgroundOpacity
+                                )
+                            ),
                     )
                 }
+                IconButton(
+                    icon = Icons.Filled.Close,
+                    contentDescription = i18n("access.forums.reply.close"),
+                    onClick = onReplyClosed,
+                )
             }
         }
         HorizontalDivider()

@@ -132,6 +132,10 @@ class ThreadedConversationViewModel @Inject constructor(
             txn.attach {
                 val item = ForumPostItem(header, text)
                 addItem(item, item.id)
+                // unselect post that we just replied to
+                if (parentId != null) {
+                    _selectedPost.value = null
+                }
             }
         }
     }

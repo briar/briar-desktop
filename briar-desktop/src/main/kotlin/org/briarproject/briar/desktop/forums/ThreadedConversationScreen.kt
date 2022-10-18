@@ -54,7 +54,7 @@ fun ThreadedConversationScreen(
                 modifier = Modifier.selectableGroup()
             ) {
                 items(postsState.posts) { item ->
-                    ThreadItemComposable(item, selectedPost, onPostSelected)
+                    ThreadItemView(item, selectedPost, onPostSelected)
                 }
             }
             VerticalScrollbar(
