@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -36,18 +37,7 @@ import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import org.briarproject.bramble.api.crypto.SignaturePublicKey
-import org.briarproject.bramble.api.identity.Author
-import org.briarproject.bramble.api.identity.AuthorId
-import org.briarproject.bramble.api.sync.MessageId
-import org.briarproject.briar.api.forum.ForumPostHeader
-import org.briarproject.briar.api.identity.AuthorInfo
-import org.briarproject.briar.api.identity.AuthorInfo.Status.ANONYMOUS
-import org.briarproject.briar.api.identity.AuthorInfo.Status.NONE
 import org.briarproject.briar.api.identity.AuthorInfo.Status.OURSELVES
-import org.briarproject.briar.api.identity.AuthorInfo.Status.UNKNOWN
-import org.briarproject.briar.api.identity.AuthorInfo.Status.UNVERIFIED
-import org.briarproject.briar.api.identity.AuthorInfo.Status.VERIFIED
 import org.briarproject.briar.desktop.contact.ProfileCircle
 import org.briarproject.briar.desktop.theme.Blue500
 import org.briarproject.briar.desktop.ui.HorizontalDivider
@@ -55,27 +45,25 @@ import org.briarproject.briar.desktop.ui.TrustIndicator
 import org.briarproject.briar.desktop.ui.VerticalDivider
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 import org.briarproject.briar.desktop.utils.TimeUtils.getFormattedTimestamp
+import org.briarproject.briar.desktop.utils.getRandomForumPostHeader
+import org.briarproject.briar.desktop.utils.getRandomString
 import kotlin.random.Random
 
 @Suppress("HardCodedStringLiteral")
 fun main() = preview {
-    val author =
-        Author(AuthorId(getRandomId()), 0, "Hans Wurst", SignaturePublicKey(byteArrayOf(0x00)))
-    val statusList = listOf(NONE, ANONYMOUS, UNKNOWN, UNVERIFIED, VERIFIED, OURSELVES)
-    val authorInfo = AuthorInfo(statusList.random())
-    val header = ForumPostHeader(
-        MessageId(getRandomId()),
-        null,
-        System.currentTimeMillis(),
-        author,
-        authorInfo,
-        true,
-    )
-    val item = ForumPostItem(
-        h = header,
-        text = "This is some longer example text for a forum post.",
-    ).apply { setLevel(Random.nextInt(0, 6)) }
-    ThreadItemView(item, null) {}
+    LazyColumn {
+        for (i in 1..5) {
+            item {
+                ThreadItemView(
+                    item = ForumPostItem(
+                        h = getRandomForumPostHeader(),
+                        text = getRandomString(Random.nextInt(1, 1337)),
+                    ).apply { setLevel(Random.nextInt(0, 6)) },
+                    selectedPost = null,
+                ) {}
+            }
+        }
+    }
 }
 
 @Composable
