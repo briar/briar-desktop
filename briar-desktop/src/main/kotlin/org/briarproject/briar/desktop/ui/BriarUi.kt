@@ -65,6 +65,7 @@ import java.awt.event.WindowFocusListener
 import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.time.Duration.Companion.seconds
 
 enum class Screen {
     STARTUP,
@@ -136,6 +137,9 @@ constructor(
 
             DisposableEffect(Unit) {
 
+                val notificationCoolDown = 5.seconds.inWholeMilliseconds
+                var lastNotification = 0L
+
                 val eventListener = EventListener { e ->
                     when (e) {
                         is LifecycleEvent ->
@@ -150,15 +154,21 @@ constructor(
 
                     override fun windowLostFocus(e: WindowEvent?) {
                         focusState.focused = false
+                        // reset notification cool-down
+                        lastNotification = 0
                     }
                 }
                 val messageCounterListener: MessageCounterListener = { (total, contacts) ->
                     if (total > 0 && !focusState.focused) {
                         window.iconImage = iconBadge
-                        if (configuration.visualNotifications)
-                            visualNotificationProvider.notifyPrivateMessages(total, contacts)
-                        if (configuration.soundNotifications)
-                            soundNotificationProvider.notifyPrivateMessages(total, contacts)
+                        val currentTime = System.currentTimeMillis()
+                        if (currentTime - lastNotification > notificationCoolDown) {
+                            if (configuration.visualNotifications)
+                                visualNotificationProvider.notifyPrivateMessages(total, contacts)
+                            if (configuration.soundNotifications)
+                                soundNotificationProvider.notifyPrivateMessages(total, contacts)
+                            lastNotification = currentTime
+                        }
                     }
                 }
 
