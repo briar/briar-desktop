@@ -54,7 +54,6 @@ fun TrustIndicator(status: AuthorInfo.Status) {
             AuthorInfo.Status.UNKNOWN -> Triple(Red500, gray, gray)
             AuthorInfo.Status.UNVERIFIED -> Triple(Orange500, Orange500, gray)
             AuthorInfo.Status.VERIFIED -> Triple(Lime500, Lime500, Lime500)
-            AuthorInfo.Status.ANONYMOUS -> error("Unexpected status: $status")
             AuthorInfo.Status.OURSELVES -> error("Unexpected status: $status")
         }
         Text(

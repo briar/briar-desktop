@@ -102,10 +102,11 @@ fun ThreadItemContentComposable(
     isPreview: Boolean = false,
 ) {
     Column(
-        modifier = modifier,
+        modifier = modifier.then(Modifier.padding(8.dp)),
+        verticalArrangement = spacedBy(8.dp)
     ) {
         Row(
-            modifier = Modifier.padding(8.dp).fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
         ) {
             Row(
                 modifier = Modifier.weight(1f),
@@ -124,7 +125,6 @@ fun ThreadItemContentComposable(
                 TrustIndicator(item.authorInfo.status)
             }
             Text(
-                modifier = Modifier,
                 text = getFormattedTimestamp(item.timestamp),
                 textAlign = TextAlign.End,
                 style = MaterialTheme.typography.caption,
@@ -132,7 +132,7 @@ fun ThreadItemContentComposable(
             )
         }
         Text(
-            modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp).fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             text = item.text,
             maxLines = if (isPreview) 1 else Int.MAX_VALUE,
             overflow = TextOverflow.Ellipsis,
