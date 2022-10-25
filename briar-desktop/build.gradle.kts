@@ -122,6 +122,9 @@ dependencies {
     testImplementation(project(path = ":bramble-core", configuration = "testOutput"))
     testImplementation("commons-io:commons-io:2.11.0")
     kaptTest("com.google.dagger:dagger-compiler:$daggerVersion")
+
+    @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
+    testImplementation(compose.uiTestJUnit4)
 }
 
 // hacky fix for upstream issue when selecting skiko in gradle
@@ -134,7 +137,9 @@ configurations.all {
 }
 
 tasks.test {
-    useTestNG()
+    // todo: both cannot be used at once, we probably have to split tests into UI (Compose, JUnit) and Kotlin code (testNG)
+    useJUnit()
+    // useTestNG()
 }
 
 tasks.withType<KotlinCompile> {

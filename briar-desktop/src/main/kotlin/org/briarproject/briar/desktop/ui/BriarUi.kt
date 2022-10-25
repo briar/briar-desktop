@@ -83,6 +83,9 @@ interface BriarUi {
     fun start(onClose: () -> Unit)
 
     fun stop()
+
+    @Composable
+    fun content()
 }
 
 val LocalWindowScope = staticCompositionLocalOf<FrameWindowScope?> { null }
@@ -117,7 +120,6 @@ constructor(
         }
     }
 
-    @OptIn(ExperimentalFoundationApi::class)
     @Composable
     override fun start(onClose: () -> Unit) {
         val focusState = remember { WindowFocusState() }
@@ -208,10 +210,6 @@ constructor(
             CompositionLocalProvider(
                 LocalWindowScope provides this,
                 LocalWindowFocusState provides focusState,
-                LocalViewModelProvider provides viewModelProvider,
-                LocalAvatarManager provides avatarManager,
-                LocalConfiguration provides configuration,
-                LocalTextContextMenu provides BriarTextContextMenu,
             ) {
                 // invalidate whole application window in case the theme, language or UI scale
                 // setting is changed
@@ -222,16 +220,29 @@ constructor(
                 window.minimumSize = DensityDimension(800, 600, configuration)
                 window.preferredSize = DensityDimension(800, 600, configuration)
 
-                val isDarkTheme = configuration.theme == DARK ||
-                    (configuration.theme == AUTO && isSystemInDarkTheme())
-                BriarTheme(isDarkTheme, configuration.uiScale) {
-                    Column(Modifier.fillMaxSize()) {
-                        ExpirationBanner { screenState = EXPIRED; stop() }
-                        when (screenState) {
-                            STARTUP -> StartupScreen()
-                            MAIN -> MainScreen()
-                            EXPIRED -> ErrorScreen(i18n("startup.failed.expired"))
-                        }
+                content()
+            }
+        }
+    }
+
+    @OptIn(ExperimentalFoundationApi::class)
+    @Composable
+    override fun content() {
+        CompositionLocalProvider(
+            LocalViewModelProvider provides viewModelProvider,
+            LocalConfiguration provides configuration,
+            LocalAvatarManager provides avatarManager,
+            LocalTextContextMenu provides BriarTextContextMenu,
+        ) {
+            val isDarkTheme = configuration.theme == DARK ||
+                (configuration.theme == AUTO && isSystemInDarkTheme())
+            BriarTheme(isDarkTheme) {
+                Column(Modifier.fillMaxSize()) {
+                    ExpirationBanner { screenState = EXPIRED; stop() }
+                    when (screenState) {
+                        STARTUP -> StartupScreen()
+                        MAIN -> MainScreen()
+                        EXPIRED -> ErrorScreen(i18n("startup.failed.expired"))
                     }
                 }
             }
