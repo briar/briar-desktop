@@ -104,6 +104,7 @@ class LoginSubViewModel(
                     when (e.decryptionResult) {
                         INVALID_PASSWORD -> _passwordInvalidError.value = true
                         KEY_STRENGTHENER_ERROR -> _decryptionFailedError.value = true
+                        else -> {}
                     }
                     _password.value = ""
                     _state.value = SIGNED_OUT

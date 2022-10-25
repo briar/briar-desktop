@@ -18,14 +18,13 @@
 
 @file:Suppress("HardCodedStringLiteral")
 
-import org.jetbrains.compose.compose
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.6.10"
-    kotlin("kapt") version "1.6.10"
-    id("org.jetbrains.compose") version "1.1.1"
+    kotlin("jvm") version "1.7.20"
+    kotlin("kapt") version "1.7.20"
+    id("org.jetbrains.compose") version "1.2.0"
     id("java")
     id("idea")
     id("org.jlleitschuh.gradle.ktlint") version "10.1.0"
@@ -45,7 +44,7 @@ dependencies {
     implementation(compose.desktop.currentOs)
     implementation(compose.materialIconsExtended)
     // needed to access Dispatchers.Swing for EventExecutor
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.6.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.6.4")
 
     implementation("com.github.ajalt.clikt:clikt:3.4.0")
     implementation("com.ibm.icu:icu4j:70.1")
@@ -65,6 +64,15 @@ dependencies {
     testImplementation(project(path = ":bramble-core", configuration = "testOutput"))
     testImplementation("commons-io:commons-io:2.11.0")
     kaptTest("com.google.dagger:dagger-compiler:$daggerVersion")
+}
+
+// hacky fix for upstream issue when selecting skiko in gradle
+// see https://github.com/JetBrains/skiko/issues/547
+// and https://github.com/JetBrains/compose-jb/issues/1404
+configurations.all {
+    attributes {
+        attribute(Attribute.of("ui", String::class.java), "awt")
+    }
 }
 
 tasks.test {

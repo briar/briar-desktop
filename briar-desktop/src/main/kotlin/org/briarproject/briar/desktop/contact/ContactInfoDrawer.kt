@@ -25,8 +25,8 @@ import org.briarproject.briar.desktop.introduction.ContactDrawerMakeIntro
 // Right drawer state
 enum class ContactInfoDrawerState {
     MakeIntro,
-    ConnectBT,
-    ConnectRD
+    /*ConnectBT,
+    ConnectRD*/
 }
 
 @Composable
