@@ -52,7 +52,7 @@ class Loaded(
     val messageTree: MessageTreeImpl<ThreadItem>,
     val scrollTo: MessageId? = null,
 ) : PostsState() {
-    val posts: MutableList<ThreadItem> get() = messageTree.depthFirstOrder()
+    val posts: MutableList<ThreadItem> = messageTree.depthFirstOrder()
 }
 
 class ThreadedConversationViewModel @Inject constructor(
@@ -162,6 +162,14 @@ class ThreadedConversationViewModel @Inject constructor(
         // but that should be fine for this purpose of just decrementing a counter
         eventBus.broadcast(ForumPostReadEvent(groupItem.id))
         _posts.value = Loaded(messageTree)
+    }
+
+    @UiExecutor
+    fun onPostsVisible(ids: List<MessageId>) {
+        // TODO messageTree.get(id) would be nice, but not in briar-core
+        (posts.value as? Loaded)?.posts?.forEach { item ->
+            if (!item.isRead && ids.contains(item.id)) markItemRead(item)
+        }
     }
 
     fun deleteGroup(groupItem: GroupItem) {

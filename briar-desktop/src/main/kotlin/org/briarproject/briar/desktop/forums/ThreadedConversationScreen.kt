@@ -31,13 +31,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment.Companion.CenterEnd
 import androidx.compose.ui.Modifier
+import kotlinx.coroutines.delay
+import org.briarproject.bramble.api.sync.MessageId
+import org.briarproject.briar.desktop.conversation.reallyVisibleItemsInfo
 import org.briarproject.briar.desktop.ui.Loader
+import org.briarproject.briar.desktop.ui.isWindowFocused
 
 @Composable
 fun ThreadedConversationScreen(
     postsState: PostsState,
     selectedPost: ThreadItem?,
     onPostSelected: (ThreadItem) -> Unit,
+    onPostsVisible: (List<MessageId>) -> Unit,
     modifier: Modifier = Modifier,
 ) = when (postsState) {
     Loading -> Loader()
@@ -61,6 +66,21 @@ fun ThreadedConversationScreen(
                 adapter = rememberScrollbarAdapter(scrollState),
                 modifier = Modifier.align(CenterEnd).fillMaxHeight()
             )
+            if (isWindowFocused()) {
+                // if Briar Desktop currently has focus,
+                // mark all posts visible on the screen for more than 1s milliseconds as read
+                LaunchedEffect(
+                    postsState,
+                    scrollState.firstVisibleItemIndex,
+                    scrollState.firstVisibleItemScrollOffset
+                ) {
+                    delay(2_500)
+                    val visibleMessageIds = scrollState.layoutInfo.reallyVisibleItemsInfo.map {
+                        it.key as MessageId
+                    }
+                    onPostsVisible(visibleMessageIds)
+                }
+            }
         }
     }
 }

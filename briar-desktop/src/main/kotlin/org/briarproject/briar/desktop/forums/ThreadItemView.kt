@@ -105,23 +105,24 @@ fun ThreadItemView(
             HorizontalDivider()
             ThreadItemContentComposable(item)
         }
-        AnimatedVisibility(visible = !item.isRead) {
-            TooltipArea(
-                tooltip = {
-                    Surface(
-                        modifier = Modifier.shadow(4.dp),
-                        shape = RoundedCornerShape(4.dp),
-                    ) {
-                        Text(
-                            text = i18n("forum.message.new"),
-                            modifier = Modifier.padding(4.dp)
-                        )
-                    }
-                },
-                // taken from https://ux.stackexchange.com/questions/358/how-long-should-the-delay-be-before-a-tooltip-pops-up
-                delayMillis = 500,
-            ) {
-                Box(modifier = Modifier.width(12.dp).fillMaxSize().background(Blue500))
+        TooltipArea(
+            tooltip = {
+                Surface(
+                    modifier = Modifier.shadow(4.dp),
+                    shape = RoundedCornerShape(4.dp),
+                ) {
+                    Text(
+                        text = i18n("forum.message.new"),
+                        modifier = Modifier.padding(4.dp)
+                    )
+                }
+            },
+            modifier = Modifier.width(8.dp),
+            // taken from https://ux.stackexchange.com/questions/358/how-long-should-the-delay-be-before-a-tooltip-pops-up
+            delayMillis = 500,
+        ) {
+            AnimatedVisibility(visible = !item.isRead) {
+                Box(modifier = Modifier.fillMaxSize().background(Blue500))
             }
         }
     }

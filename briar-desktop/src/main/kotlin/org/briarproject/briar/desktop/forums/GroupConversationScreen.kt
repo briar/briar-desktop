@@ -70,6 +70,7 @@ fun GroupConversationScreen(
                 postsState = viewModel.posts.value,
                 selectedPost = viewModel.selectedPost.value,
                 onPostSelected = viewModel::selectPost,
+                onPostsVisible = viewModel::onPostsVisible,
                 modifier = Modifier.padding(padding)
             )
         },
