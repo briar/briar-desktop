@@ -53,7 +53,7 @@ fun ThreadedConversationScreen(
                 state = scrollState,
                 modifier = Modifier.selectableGroup()
             ) {
-                items(postsState.posts) { item ->
+                items(postsState.posts, key = { item -> item.id }) { item ->
                     ThreadItemView(item, selectedPost, onPostSelected)
                 }
             }

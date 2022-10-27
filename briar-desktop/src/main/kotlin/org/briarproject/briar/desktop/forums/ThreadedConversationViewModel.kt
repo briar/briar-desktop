@@ -63,7 +63,7 @@ class ThreadedConversationViewModel @Inject constructor(
     briarExecutors: BriarExecutors,
     lifecycleManager: LifecycleManager,
     db: TransactionManager,
-    eventBus: EventBus,
+    private val eventBus: EventBus,
 ) : EventListenerDbViewModel(briarExecutors, lifecycleManager, db, eventBus) {
 
     companion object {
@@ -112,6 +112,7 @@ class ThreadedConversationViewModel @Inject constructor(
     @UiExecutor
     fun selectPost(post: ThreadItem?) {
         _selectedPost.value = post
+        if (post != null && !post.isRead) markItemRead(post)
     }
 
     @UiExecutor
@@ -141,12 +142,26 @@ class ThreadedConversationViewModel @Inject constructor(
     }
 
     @UiExecutor
-    private fun addItem(item: ForumPostItem, scrollTo: MessageId? = null) {
+    private fun addItem(item: ThreadItem, scrollTo: MessageId? = null) {
         // If items haven't loaded, we need to wait until they have.
         // Since this was a R/W DB transaction, the load will pick up this item.
         val tree = (posts.value as? Loaded)?.messageTree ?: return
         tree.add(item)
         _posts.value = Loaded(tree, scrollTo)
+    }
+
+    @UiExecutor
+    fun markItemRead(item: ThreadItem) {
+        val messageTree = (posts.value as? Loaded)?.messageTree
+        if (messageTree == null || item.isRead) return
+        item.isRead = true
+        runOnDbThread {
+            forumManager.setReadFlag(groupItem.id, item.id, true)
+        }
+        // we don't attach this to the transaction that actually changes the DB,
+        // but that should be fine for this purpose of just decrementing a counter
+        eventBus.broadcast(ForumPostReadEvent(groupItem.id))
+        _posts.value = Loaded(messageTree)
     }
 
     fun deleteGroup(groupItem: GroupItem) {
