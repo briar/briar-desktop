@@ -46,15 +46,6 @@ import org.slf4j.LoggerFactory.getLogger
 import java.lang.Long.max
 import javax.inject.Inject
 
-sealed class PostsState
-object Loading : PostsState()
-class Loaded(
-    val messageTree: MessageTreeImpl<ThreadItem>,
-    val scrollTo: MessageId? = null,
-) : PostsState() {
-    val posts: MutableList<ThreadItem> = messageTree.depthFirstOrder()
-}
-
 class ThreadedConversationViewModel @Inject constructor(
     private val forumManager: ForumManager,
     private val identityManager: IdentityManager,

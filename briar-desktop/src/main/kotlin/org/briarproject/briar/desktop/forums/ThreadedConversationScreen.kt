@@ -62,6 +62,7 @@ fun ThreadedConversationScreen(
                     ThreadItemView(item, selectedPost, onPostSelected)
                 }
             }
+            UnreadFabs(scrollState, postsState)
             VerticalScrollbar(
                 adapter = rememberScrollbarAdapter(scrollState),
                 modifier = Modifier.align(CenterEnd).fillMaxHeight()
