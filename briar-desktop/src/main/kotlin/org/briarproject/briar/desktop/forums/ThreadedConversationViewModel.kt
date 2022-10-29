@@ -61,6 +61,8 @@ class ThreadedConversationViewModel @Inject constructor(
         private val LOG = getLogger(ThreadedConversationViewModel::class.java)
     }
 
+    lateinit var forumViewModel: ForumViewModel
+
     lateinit var groupItem: GroupItem
         private set
 
@@ -122,6 +124,7 @@ class ThreadedConversationViewModel @Inject constructor(
         runOnDbThreadWithTransaction(false) { txn ->
             val header = forumManager.addLocalPost(txn, post)
             txn.attach {
+                forumViewModel.addOwnPost(header)
                 val item = ForumPostItem(header, text)
                 addItem(item, item.id)
                 // unselect post that we just replied to

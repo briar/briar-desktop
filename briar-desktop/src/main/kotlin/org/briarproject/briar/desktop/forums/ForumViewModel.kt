@@ -30,6 +30,7 @@ import org.briarproject.bramble.api.sync.GroupId
 import org.briarproject.bramble.api.sync.event.GroupAddedEvent
 import org.briarproject.bramble.api.sync.event.GroupRemovedEvent
 import org.briarproject.briar.api.forum.ForumManager
+import org.briarproject.briar.api.forum.ForumPostHeader
 import org.briarproject.briar.api.forum.event.ForumPostReceivedEvent
 import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.utils.clearAndAddAll
@@ -79,6 +80,7 @@ class ForumViewModel @Inject constructor(
 
     override fun onInit() {
         super.onInit()
+        threadViewModel.forumViewModel = this
         loadGroups()
     }
 
@@ -102,7 +104,6 @@ class ForumViewModel @Inject constructor(
             }
 
             e is ForumPostReceivedEvent -> {
-                // todo: better use equivalent to ConversationMessageTrackedEvent to update on new *own* posts as well
                 updateItem(e.groupId) { it.updateOnPostReceived(e.header) }
             }
         }
@@ -133,6 +134,10 @@ class ForumViewModel @Inject constructor(
 
     fun setFilterBy(filter: String) {
         _filterBy.value = filter
+    }
+
+    fun addOwnPost(header: ForumPostHeader) {
+        selectedGroupItem.value?.id?.let { id -> updateItem(id) { it.updateOnPostReceived(header) } }
     }
 
     private fun addItem(forumItem: ForumItem) = _fullForumList.add(forumItem)
