@@ -21,6 +21,8 @@ package org.briarproject.briar.desktop.forums
 import org.briarproject.bramble.api.sync.GroupId
 import org.briarproject.briar.api.client.MessageTracker
 import org.briarproject.briar.api.forum.Forum
+import org.briarproject.briar.api.forum.ForumPostHeader
+import kotlin.math.max
 
 interface GroupItem {
     val id: GroupId
@@ -47,11 +49,10 @@ data class ForumItem(
     override val id: GroupId get() = forum.id
     override val name: String get() = forum.name
 
-    override fun equals(other: Any?): Boolean {
-        return other is ForumItem && other.id == id
-    }
-
-    override fun hashCode(): Int {
-        return forum.hashCode()
-    }
+    fun updateOnPostReceived(header: ForumPostHeader) =
+        copy(
+            msgCount = msgCount + 1,
+            unread = if (header.isRead) unread else unread + 1,
+            timestamp = max(header.timestamp, this.timestamp)
+        )
 }

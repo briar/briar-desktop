@@ -21,6 +21,7 @@ package org.briarproject.briar.desktop.forums
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import mu.KotlinLogging
 import org.briarproject.bramble.api.db.TransactionManager
 import org.briarproject.bramble.api.event.Event
 import org.briarproject.bramble.api.event.EventBus
@@ -29,8 +30,11 @@ import org.briarproject.bramble.api.sync.GroupId
 import org.briarproject.bramble.api.sync.event.GroupAddedEvent
 import org.briarproject.bramble.api.sync.event.GroupRemovedEvent
 import org.briarproject.briar.api.forum.ForumManager
+import org.briarproject.briar.api.forum.event.ForumPostReceivedEvent
 import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.utils.clearAndAddAll
+import org.briarproject.briar.desktop.utils.removeFirst
+import org.briarproject.briar.desktop.utils.replaceFirst
 import org.briarproject.briar.desktop.viewmodel.EventListenerDbViewModel
 import org.briarproject.briar.desktop.viewmodel.asState
 import javax.inject.Inject
@@ -43,6 +47,10 @@ class ForumViewModel @Inject constructor(
     db: TransactionManager,
     eventBus: EventBus,
 ) : EventListenerDbViewModel(briarExecutors, lifecycleManager, db, eventBus) {
+
+    companion object {
+        private val LOG = KotlinLogging.logger {}
+    }
 
     private val _fullForumList = mutableStateListOf<ForumItem>()
     val forumList = derivedStateOf {
@@ -75,31 +83,44 @@ class ForumViewModel @Inject constructor(
     }
 
     override fun eventOccurred(e: Event) {
-        if (e is GroupAddedEvent) {
-            if (e.group.clientId == ForumManager.CLIENT_ID) loadGroups()
-        } else if (e is GroupRemovedEvent) {
-            if (e.group.clientId == ForumManager.CLIENT_ID) {
-                loadGroups()
+        when {
+            e is GroupAddedEvent && e.group.clientId == ForumManager.CLIENT_ID -> {
+                runOnDbThreadWithTransaction(true) { txn ->
+                    val item = ForumItem(
+                        forum = forumManager.getForum(txn, e.group.id),
+                        groupCount = forumManager.getGroupCount(txn, e.group.id),
+                    )
+                    txn.attach {
+                        addItem(item)
+                    }
+                }
+            }
+
+            e is GroupRemovedEvent && e.group.clientId == ForumManager.CLIENT_ID -> {
+                removeItem(e.group.id)
                 if (selectedGroupItem.value?.id == e.group.id) _selectedGroupItem.value = null
+            }
+
+            e is ForumPostReceivedEvent -> {
+                // todo: better use equivalent to ConversationMessageTrackedEvent to update on new *own* posts as well
+                updateItem(e.groupId) { it.updateOnPostReceived(e.header) }
             }
         }
     }
 
-    fun createForum(name: String) {
+    fun createForum(name: String) = runOnDbThread {
         forumManager.addForum(name)
     }
 
-    private fun loadGroups() {
-        runOnDbThreadWithTransaction(true) { txn ->
-            val list = forumManager.getForums(txn).map { forums ->
-                ForumItem(
-                    forum = forums,
-                    groupCount = forumManager.getGroupCount(txn, forums.id),
-                )
-            }
-            txn.attach {
-                _fullForumList.clearAndAddAll(list)
-            }
+    private fun loadGroups() = runOnDbThreadWithTransaction(true) { txn ->
+        val list = forumManager.getForums(txn).map { forums ->
+            ForumItem(
+                forum = forums,
+                groupCount = forumManager.getGroupCount(txn, forums.id),
+            )
+        }
+        txn.attach {
+            _fullForumList.clearAndAddAll(list)
         }
     }
 
@@ -112,5 +133,20 @@ class ForumViewModel @Inject constructor(
 
     fun setFilterBy(filter: String) {
         _filterBy.value = filter
+    }
+
+    private fun addItem(forumItem: ForumItem) = _fullForumList.add(forumItem)
+
+    private fun updateItem(forumId: GroupId, update: (ForumItem) -> ForumItem) {
+        _fullForumList.replaceFirst(
+            { it.id == forumId },
+            update
+        )
+    }
+
+    private fun removeItem(forumId: GroupId) {
+        _fullForumList.removeFirst {
+            it.id == forumId
+        }
     }
 }
