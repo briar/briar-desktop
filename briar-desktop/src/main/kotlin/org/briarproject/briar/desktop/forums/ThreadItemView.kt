@@ -74,7 +74,6 @@ fun main() = preview {
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ThreadItemView(
     item: ThreadItem,
@@ -89,7 +88,6 @@ fun ThreadItemView(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f)
                 .then(
                     if (isSelected) {
                         Modifier.border(3.dp, Blue500)
@@ -102,7 +100,57 @@ fun ThreadItemView(
             HorizontalDivider()
             ThreadItemContentComposable(item)
         }
-        Tooltip(
+    }
+}
+
+@Composable
+@OptIn(ExperimentalFoundationApi::class)
+fun ThreadItemContentComposable(
+    item: ThreadItem,
+    modifier: Modifier = Modifier,
+    isPreview: Boolean = false,
+) {
+    Row(modifier = modifier) {
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .padding(8.dp),
+            verticalArrangement = spacedBy(8.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Row(
+                    modifier = Modifier.weight(1f),
+                    horizontalArrangement = spacedBy(8.dp),
+                    verticalAlignment = CenterVertically,
+                ) {
+                    // TODO load and cache profile images, if available
+                    ProfileCircle(20.dp, item.author.id.bytes)
+                    Text(
+                        modifier = Modifier.weight(1f, fill = false),
+                        text = item.authorName,
+                        fontWeight = if (item.authorInfo.status == OURSELVES) Bold else null,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                    TrustIndicator(item.authorInfo.status)
+                }
+                Text(
+                    text = getFormattedTimestamp(item.timestamp),
+                    textAlign = TextAlign.End,
+                    style = MaterialTheme.typography.caption,
+                    maxLines = 1,
+                )
+            }
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = item.text,
+                maxLines = if (isPreview) 1 else Int.MAX_VALUE,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
+        if (!isPreview) Tooltip(
             text = i18n("forum.message.new"),
             modifier = Modifier.width(8.dp),
         ) {
@@ -110,50 +158,5 @@ fun ThreadItemView(
                 Box(modifier = Modifier.fillMaxSize().background(Blue500))
             }
         }
-    }
-}
-
-@Composable
-fun ThreadItemContentComposable(
-    item: ThreadItem,
-    modifier: Modifier = Modifier,
-    isPreview: Boolean = false,
-) {
-    Column(
-        modifier = modifier.then(Modifier.padding(8.dp)),
-        verticalArrangement = spacedBy(8.dp)
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            Row(
-                modifier = Modifier.weight(1f),
-                horizontalArrangement = spacedBy(8.dp),
-                verticalAlignment = CenterVertically,
-            ) {
-                // TODO load and cache profile images, if available
-                ProfileCircle(20.dp, item.author.id.bytes)
-                Text(
-                    modifier = Modifier.weight(1f, fill = false),
-                    text = item.authorName,
-                    fontWeight = if (item.authorInfo.status == OURSELVES) Bold else null,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-                TrustIndicator(item.authorInfo.status)
-            }
-            Text(
-                text = getFormattedTimestamp(item.timestamp),
-                textAlign = TextAlign.End,
-                style = MaterialTheme.typography.caption,
-                maxLines = 1,
-            )
-        }
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = item.text,
-            maxLines = if (isPreview) 1 else Int.MAX_VALUE,
-            overflow = TextOverflow.Ellipsis,
-        )
     }
 }
