@@ -19,20 +19,17 @@
 package androidx.compose.material
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.TooltipArea
 import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import org.briarproject.briar.desktop.ui.Tooltip
 
 /**
  * IconButton is a clickable icon, used to represent actions. An IconButton has an overall minimum
@@ -64,22 +61,10 @@ fun IconButton(
     iconTint: Color = LocalContentColor.current.copy(alpha = LocalContentAlpha.current),
     enabled: Boolean = true,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-    extraContent: (@Composable () -> Unit)? = null
-) = TooltipArea(
-    tooltip = {
-        Surface(
-            modifier = Modifier.shadow(4.dp),
-            shape = RoundedCornerShape(4.dp),
-        ) {
-            Text(
-                text = contentDescription,
-                modifier = Modifier.padding(4.dp)
-            )
-        }
-    },
-    // taken from https://ux.stackexchange.com/questions/358/how-long-should-the-delay-be-before-a-tooltip-pops-up
-    delayMillis = 500,
-    modifier = modifier
+    extraContent: (@Composable () -> Unit)? = null,
+) = Tooltip(
+    text = contentDescription,
+    modifier = modifier,
 ) {
     IconButton(
         onClick = onClick,

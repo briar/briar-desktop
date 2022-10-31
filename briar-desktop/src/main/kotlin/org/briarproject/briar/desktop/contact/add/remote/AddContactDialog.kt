@@ -19,7 +19,6 @@
 package org.briarproject.briar.desktop.contact.add.remote
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.TooltipArea
 import androidx.compose.foundation.TooltipPlacement
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -62,7 +61,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.pointer.PointerIconDefaults
@@ -100,6 +98,7 @@ import org.briarproject.briar.desktop.theme.Orange500
 import org.briarproject.briar.desktop.theme.Red500
 import org.briarproject.briar.desktop.theme.surfaceVariant
 import org.briarproject.briar.desktop.ui.Constants.DIALOG_WIDTH
+import org.briarproject.briar.desktop.ui.Tooltip
 import org.briarproject.briar.desktop.utils.AccessibilityUtils.description
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nF
@@ -349,18 +348,8 @@ fun OwnLink(
                 bottom = 16.dp
             ),
         )
-        TooltipArea(
-            tooltip = {
-                Surface(
-                    modifier = Modifier.shadow(4.dp),
-                    shape = RoundedCornerShape(4.dp),
-                ) {
-                    Text(
-                        text = i18n("contact.add.remote.copy_tooltip"),
-                        modifier = Modifier.padding(8.dp)
-                    )
-                }
-            },
+        Tooltip(
+            text = i18n("contact.add.remote.copy_tooltip"),
             modifier = Modifier.align(Alignment.CenterEnd),
             delayMillis = 200,
             tooltipPlacement = TooltipPlacement.ComponentRect(

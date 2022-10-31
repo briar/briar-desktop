@@ -20,7 +20,6 @@ package org.briarproject.briar.desktop.forums
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.TooltipArea
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement.spacedBy
@@ -35,14 +34,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.selection.selectable
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -51,6 +47,7 @@ import org.briarproject.briar.api.identity.AuthorInfo.Status.OURSELVES
 import org.briarproject.briar.desktop.contact.ProfileCircle
 import org.briarproject.briar.desktop.theme.Blue500
 import org.briarproject.briar.desktop.ui.HorizontalDivider
+import org.briarproject.briar.desktop.ui.Tooltip
 import org.briarproject.briar.desktop.ui.TrustIndicator
 import org.briarproject.briar.desktop.ui.VerticalDivider
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
@@ -105,21 +102,9 @@ fun ThreadItemView(
             HorizontalDivider()
             ThreadItemContentComposable(item)
         }
-        TooltipArea(
-            tooltip = {
-                Surface(
-                    modifier = Modifier.shadow(4.dp),
-                    shape = RoundedCornerShape(4.dp),
-                ) {
-                    Text(
-                        text = i18n("forum.message.new"),
-                        modifier = Modifier.padding(4.dp)
-                    )
-                }
-            },
+        Tooltip(
+            text = i18n("forum.message.new"),
             modifier = Modifier.width(8.dp),
-            // taken from https://ux.stackexchange.com/questions/358/how-long-should-the-delay-be-before-a-tooltip-pops-up
-            delayMillis = 500,
         ) {
             AnimatedVisibility(visible = !item.isRead) {
                 Box(modifier = Modifier.fillMaxSize().background(Blue500))

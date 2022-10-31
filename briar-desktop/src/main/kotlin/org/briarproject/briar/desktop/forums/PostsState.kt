@@ -40,7 +40,6 @@ class Loaded(
             lastUnread = i
             num++
         }
-
         return UnreadPostInfo(lastUnread, num)
     }
 
