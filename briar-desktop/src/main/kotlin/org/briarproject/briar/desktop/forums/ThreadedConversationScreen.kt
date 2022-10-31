@@ -69,7 +69,7 @@ fun ThreadedConversationScreen(
             )
             if (isWindowFocused()) {
                 // if Briar Desktop currently has focus,
-                // mark all posts visible on the screen for more than 1s milliseconds as read
+                // mark all posts visible on the screen as read after some delay
                 LaunchedEffect(
                     postsState,
                     scrollState.firstVisibleItemIndex,

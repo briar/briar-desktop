@@ -142,24 +142,34 @@ class ThreadedConversationViewModel @Inject constructor(
     }
 
     @UiExecutor
-    fun markItemRead(item: ThreadItem) {
-        val messageTree = (posts.value as? Loaded)?.messageTree
-        if (messageTree == null || item.isRead) return
-        item.isRead = true
+    fun markItemRead(item: ThreadItem) = markItemsRead(listOf(item))
+
+    @UiExecutor
+    fun markItemsRead(items: List<ThreadItem>) {
+        val messageTree = (posts.value as? Loaded)?.messageTree ?: return
+        val itemIds = items.mapNotNull { item ->
+            val isRead = item.isRead
+            item.isRead = true
+            if (isRead) null else item.id
+        }
         runOnDbThread {
-            forumManager.setReadFlag(groupItem.id, item.id, true)
+            itemIds.forEach { id ->
+                forumManager.setReadFlag(groupItem.id, id, true)
+            }
         }
         // we don't attach this to the transaction that actually changes the DB,
         // but that should be fine for this purpose of just decrementing a counter
-        eventBus.broadcast(ForumPostReadEvent(groupItem.id))
+        eventBus.broadcast(ForumPostReadEvent(groupItem.id, itemIds.size))
         _posts.value = Loaded(messageTree)
     }
 
     @UiExecutor
     fun onPostsVisible(ids: List<MessageId>) {
         // TODO messageTree.get(id) would be nice, but not in briar-core
-        (posts.value as? Loaded)?.posts?.forEach { item ->
-            if (!item.isRead && ids.contains(item.id)) markItemRead(item)
+        (posts.value as? Loaded)?.posts?.filter { item ->
+            !item.isRead && ids.contains(item.id)
+        }?.let { items ->
+            markItemsRead(items)
         }
     }
 

@@ -22,8 +22,9 @@ import org.briarproject.bramble.api.event.Event
 import org.briarproject.bramble.api.sync.GroupId
 
 /**
- * An event that is broadcast when a post in a forum was marked as read.
+ * An event that is broadcast when [numMarkedRead] post(s) in a forum was marked as read.
  */
 data class ForumPostReadEvent(
     val groupId: GroupId,
+    val numMarkedRead: Int,
 ) : Event()
