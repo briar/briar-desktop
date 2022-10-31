@@ -62,6 +62,7 @@ fun BoxScope.UnreadFabs(scrollState: LazyListState, postsState: Loaded) {
         UnreadPostsFab(
             imageVector = Icons.Default.ChevronUp,
             numUnread = unreadInfo.numUnread,
+            contentDescription = i18n("access.forums.jump_to_prev_unread"),
             onClick = {
                 coroutineScope.launch {
                     if (unreadInfo.nextUnreadIndex != null) {
@@ -90,6 +91,7 @@ fun BoxScope.UnreadFabs(scrollState: LazyListState, postsState: Loaded) {
         UnreadPostsFab(
             imageVector = Icons.Default.ChevronDown,
             numUnread = bottomUnreadInfo.numUnread,
+            contentDescription = i18n("access.forums.jump_to_next_unread"),
             onClick = {
                 coroutineScope.launch {
                     if (bottomUnreadInfo.nextUnreadIndex != null) scrollState.animateScrollToItem(
@@ -107,11 +109,12 @@ fun BoxScope.UnreadFabs(scrollState: LazyListState, postsState: Loaded) {
 fun UnreadPostsFab(
     imageVector: ImageVector,
     numUnread: Int,
+    contentDescription: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) = Box(modifier) {
     FloatingActionButton(onClick) {
-        Icon(imageVector, i18n("access.message.jump_to_unread"))
+        Icon(imageVector, contentDescription)
     }
     NumberBadge(
         num = numUnread,
