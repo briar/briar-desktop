@@ -22,6 +22,7 @@ import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -31,6 +32,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment.Companion.CenterEnd
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import org.briarproject.bramble.api.sync.MessageId
 import org.briarproject.briar.desktop.conversation.reallyVisibleItemsInfo
@@ -56,10 +58,14 @@ fun ThreadedConversationScreen(
         Box(modifier = modifier.fillMaxSize()) {
             LazyColumn(
                 state = scrollState,
-                modifier = Modifier.selectableGroup()
+                modifier = Modifier.padding(end = 8.dp).selectableGroup()
             ) {
                 items(postsState.posts, key = { item -> item.id }) { item ->
-                    ThreadItemView(item, selectedPost, onPostSelected)
+                    ThreadItemView(
+                        item = item,
+                        selectedPost = selectedPost,
+                        onPostSelected = onPostSelected,
+                    )
                 }
             }
             UnreadFabs(scrollState, postsState)

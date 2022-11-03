@@ -68,7 +68,8 @@ fun main() = preview {
                         text = getRandomString(Random.nextInt(1, 1337)),
                     ).apply { setLevel(Random.nextInt(0, 6)) },
                     selectedPost = null,
-                ) {}
+                    onPostSelected = {},
+                )
             }
         }
     }
@@ -79,8 +80,9 @@ fun ThreadItemView(
     item: ThreadItem,
     selectedPost: ThreadItem?,
     onPostSelected: (ThreadItem) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    Row(modifier = Modifier.height(IntrinsicSize.Min)) {
+    Row(modifier = modifier.height(IntrinsicSize.Min)) {
         for (i in 1..item.getLevel()) {
             VerticalDivider(modifier = Modifier.padding(start = 8.dp))
         }
