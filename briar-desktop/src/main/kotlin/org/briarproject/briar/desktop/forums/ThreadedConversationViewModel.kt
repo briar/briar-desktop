@@ -103,7 +103,7 @@ class ThreadedConversationViewModel @Inject constructor(
     @UiExecutor
     fun selectPost(post: ThreadItem?) {
         _selectedPost.value = post
-        if (post != null && !post.isRead) markItemRead(post)
+        if (post != null && !post.isRead) markPostRead(post.id)
     }
 
     @UiExecutor
@@ -142,34 +142,30 @@ class ThreadedConversationViewModel @Inject constructor(
     }
 
     @UiExecutor
-    fun markItemRead(item: ThreadItem) = markItemsRead(listOf(item))
+    private fun markPostRead(id: MessageId) = markPostsRead(listOf(id))
 
     @UiExecutor
-    fun markItemsRead(items: List<ThreadItem>) {
-        val messageTree = (posts.value as? Loaded)?.messageTree ?: return
-        val itemIds = items.mapNotNull { item ->
-            val isRead = item.isRead
-            item.isRead = true
-            if (isRead) null else item.id
-        }
-        runOnDbThread {
-            itemIds.forEach { id ->
-                forumManager.setReadFlag(groupItem.id, id, true)
-            }
-        }
-        // we don't attach this to the transaction that actually changes the DB,
-        // but that should be fine for this purpose of just decrementing a counter
-        eventBus.broadcast(ForumPostReadEvent(groupItem.id, itemIds.size))
-        _posts.value = Loaded(messageTree)
-    }
-
-    @UiExecutor
-    fun onPostsVisible(ids: List<MessageId>) {
+    fun markPostsRead(ids: List<MessageId>) {
         // TODO messageTree.get(id) would be nice, but not in briar-core
-        (posts.value as? Loaded)?.posts?.filter { item ->
+        val readIds = (posts.value as? Loaded)?.posts?.filter { item ->
             !item.isRead && ids.contains(item.id)
-        }?.let { items ->
-            markItemsRead(items)
+        }?.map { item ->
+            item.isRead = true
+            item.id
+        } ?: emptyList()
+
+        if (readIds.isNotEmpty()) {
+            runOnDbThread {
+                readIds.forEach { id ->
+                    forumManager.setReadFlag(groupItem.id, id, true)
+                }
+            }
+            // we don't attach this to the transaction that actually changes the DB,
+            // but that should be fine for this purpose of just decrementing a counter
+            eventBus.broadcast(ForumPostReadEvent(groupItem.id, readIds.size))
+            // TODO replace immutable ThreadItems instead to avoid recomposing whole list
+            val messageTree = (posts.value as? Loaded)?.messageTree ?: return
+            _posts.value = Loaded(messageTree)
         }
     }
 
