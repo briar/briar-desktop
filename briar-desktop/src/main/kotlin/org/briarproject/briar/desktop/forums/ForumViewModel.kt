@@ -85,17 +85,8 @@ class ForumViewModel @Inject constructor(
 
     override fun eventOccurred(e: Event) {
         when {
-            e is GroupAddedEvent && e.group.clientId == ForumManager.CLIENT_ID -> {
-                runOnDbThreadWithTransaction(true) { txn ->
-                    val item = ForumItem(
-                        forum = forumManager.getForum(txn, e.group.id),
-                        groupCount = forumManager.getGroupCount(txn, e.group.id),
-                    )
-                    txn.attach {
-                        addItem(item)
-                    }
-                }
-            }
+            e is GroupAddedEvent && e.group.clientId == ForumManager.CLIENT_ID ->
+                onGroupAdded(e.group.id)
 
             e is GroupRemovedEvent && e.group.clientId == ForumManager.CLIENT_ID -> {
                 removeItem(e.group.id)
@@ -105,6 +96,16 @@ class ForumViewModel @Inject constructor(
             e is ForumPostReceivedEvent -> {
                 updateItem(e.groupId) { it.updateOnPostReceived(e.header) }
             }
+        }
+    }
+
+    private fun onGroupAdded(id: GroupId) = runOnDbThreadWithTransaction(true) { txn ->
+        val item = ForumItem(
+            forum = forumManager.getForum(txn, id),
+            groupCount = forumManager.getGroupCount(txn, id),
+        )
+        txn.attach {
+            addItem(item)
         }
     }
 
@@ -135,7 +136,7 @@ class ForumViewModel @Inject constructor(
         _filterBy.value = filter
     }
 
-    fun addOwnPost(header: ForumPostHeader) {
+    private fun addOwnPost(header: ForumPostHeader) {
         selectedGroupItem.value?.id?.let { id -> updateItem(id) { it.updateOnPostReceived(header) } }
     }
 
