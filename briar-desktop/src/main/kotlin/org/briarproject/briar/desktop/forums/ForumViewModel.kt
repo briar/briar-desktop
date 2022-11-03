@@ -80,7 +80,6 @@ class ForumViewModel @Inject constructor(
 
     override fun onInit() {
         super.onInit()
-        threadViewModel.forumViewModel = this
         loadGroups()
     }
 
@@ -127,7 +126,7 @@ class ForumViewModel @Inject constructor(
 
     fun selectGroup(groupItem: GroupItem) {
         _selectedGroupItem.value = groupItem
-        threadViewModel.setGroupItem(groupItem)
+        threadViewModel.setGroupItem(groupItem, this::addOwnPost)
     }
 
     fun isSelected(groupId: GroupId) = _selectedGroupItem.value?.id == groupId

@@ -36,6 +36,7 @@ import org.briarproject.bramble.api.sync.MessageId
 import org.briarproject.bramble.api.system.Clock
 import org.briarproject.briar.api.client.MessageTracker
 import org.briarproject.briar.api.forum.ForumManager
+import org.briarproject.briar.api.forum.ForumPostHeader
 import org.briarproject.briar.api.forum.event.ForumPostReceivedEvent
 import org.briarproject.briar.client.MessageTreeImpl
 import org.briarproject.briar.desktop.threading.BriarExecutors
@@ -61,10 +62,10 @@ class ThreadedConversationViewModel @Inject constructor(
         private val LOG = getLogger(ThreadedConversationViewModel::class.java)
     }
 
-    lateinit var forumViewModel: ForumViewModel
-
     lateinit var groupItem: GroupItem
         private set
+
+    private lateinit var onPostAdded: (header: ForumPostHeader) -> Unit
 
     private val _posts = mutableStateOf<PostsState>(Loading)
     val posts = _posts.asState()
@@ -73,8 +74,9 @@ class ThreadedConversationViewModel @Inject constructor(
     val selectedPost = _selectedPost.asState()
 
     @UiExecutor
-    fun setGroupItem(groupItem: GroupItem) {
+    fun setGroupItem(groupItem: GroupItem, onPostAdded: (header: ForumPostHeader) -> Unit) {
         this.groupItem = groupItem
+        this.onPostAdded = onPostAdded
         _selectedPost.value = null
         loadPosts(groupItem.id)
     }
@@ -124,9 +126,9 @@ class ThreadedConversationViewModel @Inject constructor(
         runOnDbThreadWithTransaction(false) { txn ->
             val header = forumManager.addLocalPost(txn, post)
             txn.attach {
-                forumViewModel.addOwnPost(header)
                 val item = ForumPostItem(header, text)
                 addItem(item, item.id)
+                onPostAdded(header)
                 // unselect post that we just replied to
                 if (parentId != null) {
                     _selectedPost.value = null
