@@ -32,7 +32,7 @@ class Loaded(
 
     @UiExecutor
     fun unreadBeforeIndex(index: Int): UnreadPostInfo {
-        if (index <= 0) return UnreadPostInfo(null, 0)
+        if (index <= 0 || index >= posts.size) return UnreadPostInfo(null, 0)
 
         var lastUnread: Int? = null
         var num = 0
@@ -45,7 +45,7 @@ class Loaded(
 
     @UiExecutor
     fun unreadAfterIndex(index: Int): UnreadPostInfo {
-        if (index == -1) return UnreadPostInfo(null, 0)
+        if (index < 0 || index >= posts.size) return UnreadPostInfo(null, 0)
 
         var firstUnread: Int? = null
         var num = 0
