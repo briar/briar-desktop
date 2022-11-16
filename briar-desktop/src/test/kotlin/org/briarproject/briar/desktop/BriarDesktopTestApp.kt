@@ -40,6 +40,7 @@ import org.briarproject.briar.api.test.TestDataCreator
 import org.briarproject.briar.desktop.testdata.DeterministicTestDataCreator
 import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.ui.BriarUi
+import org.briarproject.briar.desktop.viewmodel.ViewModelProvider
 import java.util.concurrent.Executor
 import javax.inject.Singleton
 
@@ -87,4 +88,6 @@ internal interface BriarDesktopTestApp : BrambleCoreEagerSingletons, BriarCoreEa
     fun getForumManager(): ForumManager
 
     fun getForumSharingManager(): ForumSharingManager
+
+    fun getViewModelProvider(): ViewModelProvider
 }

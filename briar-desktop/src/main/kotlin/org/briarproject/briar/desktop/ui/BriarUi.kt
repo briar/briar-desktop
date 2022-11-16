@@ -142,12 +142,6 @@ constructor(
                 var lastNotificationPrivateMessage = 0L
                 var lastNotificationForum = 0L
 
-                val eventListener = EventListener { e ->
-                    when (e) {
-                        is LifecycleEvent ->
-                            if (e.lifecycleState == RUNNING) screenState = MAIN
-                    }
-                }
                 val focusListener = object : WindowFocusListener {
                     override fun windowGainedFocus(e: WindowEvent?) {
                         focusState.focused = true
@@ -194,13 +188,11 @@ constructor(
 
                 visualNotificationProvider.init()
                 soundNotificationProvider.init()
-                eventBus.addListener(eventListener)
                 window.addWindowFocusListener(focusListener)
                 messageCounter.addListener(messageCounterListener)
 
                 onDispose {
                     messageCounter.removeListener(messageCounterListener)
-                    eventBus.removeListener(eventListener)
                     window.removeWindowFocusListener(focusListener)
                     visualNotificationProvider.uninit()
                     soundNotificationProvider.uninit()
@@ -228,6 +220,21 @@ constructor(
     @OptIn(ExperimentalFoundationApi::class)
     @Composable
     override fun content() {
+        DisposableEffect(Unit) {
+            val eventListener = EventListener { e ->
+                when (e) {
+                    is LifecycleEvent -> {
+                        if (e.lifecycleState == RUNNING) screenState = MAIN
+                    }
+                }
+            }
+            eventBus.addListener(eventListener)
+
+            onDispose {
+                eventBus.removeListener(eventListener)
+            }
+        }
+
         CompositionLocalProvider(
             LocalViewModelProvider provides viewModelProvider,
             LocalConfiguration provides configuration,

@@ -24,8 +24,10 @@ originally licensed under the Apache License, Version 2.0
 package org.briarproject.briar.desktop.viewmodel
 
 import javax.inject.Inject
+import javax.inject.Singleton
 import kotlin.reflect.KClass
 
+@Singleton
 class ViewModelProvider
 @Inject
 constructor(

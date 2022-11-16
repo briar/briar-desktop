@@ -139,6 +139,28 @@ tasks.test {
     useJUnit()
 }
 
+// see https://docs.gradle.org/current/userguide/java_testing.html#sec:configuring_java_integration_tests
+sourceSets.create("automatedScreenshots") {
+    kotlin.srcDir("$projectDir/src/automatedScreenshots/kotlin")
+    resources.srcDir("$projectDir/src/automatedScreenshots/resources")
+    compileClasspath += sourceSets.main.get().output + sourceSets.test.get().output
+    runtimeClasspath += sourceSets.main.get().output + sourceSets.test.get().output
+}
+
+configurations["automatedScreenshotsImplementation"].extendsFrom(configurations.testImplementation.get())
+configurations["automatedScreenshotsRuntimeOnly"].extendsFrom(configurations.testRuntimeOnly.get())
+
+task<Test>("automatedScreenshots") {
+    testClassesDirs = sourceSets["automatedScreenshots"].output.classesDirs
+    classpath = sourceSets["automatedScreenshots"].runtimeClasspath
+}
+
+// makes `internal` visible in "automatedScreenshot"
+// see https://kotlinlang.org/docs/gradle-configure-project.html#associate-compiler-tasks
+kotlin.target.compilations.named("automatedScreenshots") {
+    associateWith(kotlin.target.compilations.getByName("test"))
+}
+
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "11"
     kotlinOptions.freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
