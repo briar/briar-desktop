@@ -18,9 +18,9 @@
 
 package org.briarproject.briar.desktop.utils
 
-import kotlin.test.Test
-import kotlin.test.assertContentEquals
-import kotlin.test.assertEquals
+import org.junit.Assert.assertArrayEquals
+import org.junit.Assert.assertEquals
+import org.junit.Test
 
 @Suppress("HardCodedStringLiteral")
 class ListUtilsTest {
@@ -33,22 +33,22 @@ class ListUtilsTest {
         // add to end
         var idx = list.addAfterLast(7) { it < 7 }
         assertEquals(list.lastIndex, idx)
-        assertContentEquals(listOf(1, 3, 5, 7), list, "failed to insert at end")
+        assertArrayEquals("failed to insert at end", arrayOf(1, 3, 5, 7), list.toTypedArray())
 
         // add to start
         idx = list.addAfterLast(0) { it < 0 }
         assertEquals(0, idx)
-        assertContentEquals(listOf(0, 1, 3, 5, 7), list, "failed to insert at start")
+        assertArrayEquals("failed to insert at start", arrayOf(0, 1, 3, 5, 7), list.toTypedArray())
 
         // add in-between
         idx = list.addAfterLast(4) { it < 4 }
         assertEquals(3, idx)
-        assertContentEquals(listOf(0, 1, 3, 4, 5, 7), list, "failed to insert in-between")
+        assertArrayEquals("failed to insert in-between", arrayOf(0, 1, 3, 4, 5, 7), list.toTypedArray())
 
         // add to empty list
         list.clear()
         idx = list.addAfterLast(4) { it < 4 }
         assertEquals(0, idx)
-        assertContentEquals(listOf(4), list, "failed to insert in empty list")
+        assertArrayEquals("failed to insert in empty list", arrayOf(4), list.toTypedArray())
     }
 }

@@ -27,9 +27,9 @@ import org.briarproject.bramble.api.identity.Author
 import org.briarproject.bramble.api.identity.AuthorId
 import org.briarproject.briar.api.client.MessageTracker
 import org.briarproject.briar.api.identity.AuthorInfo
+import org.junit.Assert.assertEquals
+import org.junit.Test
 import kotlin.random.Random
-import kotlin.test.Test
-import kotlin.test.assertEquals
 
 @Suppress("HardCodedStringLiteral")
 class ContactItemTest {

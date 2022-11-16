@@ -18,9 +18,9 @@
 
 package org.briarproject.briar.desktop.attachment.media
 
+import org.junit.Test
 import java.net.URL
 import javax.imageio.ImageIO
-import kotlin.test.Test
 
 @Suppress("HardCodedStringLiteral")
 class ImageCompressorTest {

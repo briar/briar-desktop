@@ -118,7 +118,6 @@ dependencies {
     val daggerVersion = "2.24"
     kapt("com.google.dagger:dagger-compiler:$daggerVersion")
 
-    testImplementation(kotlin("test-testng"))
     testImplementation(project(path = ":bramble-core", configuration = "testOutput"))
     testImplementation("commons-io:commons-io:2.11.0")
     kaptTest("com.google.dagger:dagger-compiler:$daggerVersion")
@@ -137,9 +136,7 @@ configurations.all {
 }
 
 tasks.test {
-    // todo: both cannot be used at once, we probably have to split tests into UI (Compose, JUnit) and Kotlin code (testNG)
     useJUnit()
-    // useTestNG()
 }
 
 tasks.withType<KotlinCompile> {
