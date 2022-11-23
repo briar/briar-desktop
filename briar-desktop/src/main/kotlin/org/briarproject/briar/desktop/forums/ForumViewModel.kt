@@ -105,6 +105,10 @@ class ForumViewModel @Inject constructor(
             e is ForumPostReceivedEvent -> {
                 updateItem(e.groupId) { it.updateOnPostReceived(e.header) }
             }
+
+            e is ForumPostReadEvent -> {
+                updateItem(e.groupId) { it.updateOnPostsRead(e.numMarkedRead) }
+            }
         }
     }
 

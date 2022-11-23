@@ -55,4 +55,7 @@ data class ForumItem(
             unread = if (header.isRead) unread else unread + 1,
             timestamp = max(header.timestamp, this.timestamp)
         )
+
+    fun updateOnPostsRead(num: Int) =
+        copy(unread = unread - num)
 }
