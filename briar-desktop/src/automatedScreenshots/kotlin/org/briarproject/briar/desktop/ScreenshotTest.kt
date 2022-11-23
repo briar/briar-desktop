@@ -16,13 +16,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+// TODO: Remove when https://youtrack.jetbrains.com/issue/KTIJ-23114/ is fixed.
+@file:Suppress("invisible_reference", "invisible_member")
+
 package org.briarproject.briar.desktop
 
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.awt.ComposeWindow
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.test.DesktopComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performMouseInput
 import androidx.compose.ui.test.runDesktopComposeUiTest
 import androidx.compose.ui.window.FrameWindowScope
 import kotlinx.coroutines.delay
@@ -45,8 +52,8 @@ import java.io.FileOutputStream
 
 @OptIn(ExperimentalTestApi::class)
 class ScreenshotTest {
-    @Test
-    fun makeScreenshot() = runDesktopComposeUiTest(700, 700) {
+
+    private fun DesktopComposeUiTest.start(): BriarDesktopTestApp {
         // TODO: unify with interactive tests
         val dataDir = getDataDir()
         val app =
@@ -58,10 +65,10 @@ class ScreenshotTest {
         BrambleCoreEagerSingletons.Helper.injectEagerSingletons(app)
         BriarCoreEagerSingletons.Helper.injectEagerSingletons(app)
 
-        windowScope = object : FrameWindowScope {
+        val windowScope = object : FrameWindowScope {
             override val window: ComposeWindow get() = TODO()
         }
-        windowFocusState = WindowFocusState().apply { focused = true }
+        val windowFocusState = WindowFocusState().apply { focused = true }
 
         setContent {
             CompositionLocalProvider(
@@ -72,13 +79,13 @@ class ScreenshotTest {
             }
         }
 
-        captureToImage().save("before-click.png")
-        onNodeWithTag("close_expiration").performClick()
-        captureToImage().save("after-click.png")
+        return app
+    }
 
+    private fun BriarDesktopTestApp.login() {
         // TODO: unify with interactive tests
-        val lifecycleManager = app.getLifecycleManager()
-        val accountManager = app.getAccountManager()
+        val lifecycleManager = getLifecycleManager()
+        val accountManager = getAccountManager()
 
         @NonNls
         val password = "verySecret123!"
@@ -87,32 +94,48 @@ class ScreenshotTest {
         val dbKey = accountManager.databaseKey ?: throw AssertionError()
         lifecycleManager.startServices(dbKey)
         lifecycleManager.waitForStartup()
+    }
 
+    @Test
+    fun makeScreenshot() = runDesktopComposeUiTest(700, 700) {
         runBlocking {
-            delay(1000)
+            val app = start()
 
-            captureToImage().save("after-login.png")
+            // close expiration banner and move mouse outside of window (to avoid hover effect)
+            // TODO: *sometimes* leads to Compose crash (somehow connected to Tooltip?)
+            onNodeWithTag("close_expiration").performClick()
+            onRoot().performMouseInput { moveTo(Offset(-10f, -10f)) }
 
-            app.getDeterministicTestDataCreator().createTestData(5, 20, 50, 10, 20)
-            app.getContactManager().addPendingContact("briar://aatkjq4seoualafpwh4cfckdzr4vpr4slk3bbvpxklf7y7lv4ajw6", "Faythe")
+            with(app) {
+                login()
+                awaitIdle()
 
-            app.getEventBus().addListener { e ->
-                if (e is ContactAddedEvent) {
-                    if (app.getContactManager().getContact(e.contactId).author.name in listOf("Bob", "Chuck")) // NON-NLS
-                        app.getIoExecutor().execute {
-                            app.getConnectionRegistry().registerIncomingConnection(e.contactId, LanTcpConstants.ID) {}
-                        }
+                getEventBus().addListener { e ->
+                    if (e is ContactAddedEvent)
+                        if (getContactManager().getContact(e.contactId).author.name in listOf("Bob", "Chuck")) // NON-NLS
+                            getIoExecutor().execute {
+                                getConnectionRegistry().registerIncomingConnection(e.contactId, LanTcpConstants.ID) {}
+                            }
                 }
+
+                getDeterministicTestDataCreator().createTestData(5, 20, 50, 10, 20)
+                getContactManager().addPendingContact(
+                    "briar://aatkjq4seoualafpwh4cfckdzr4vpr4slk3bbvpxklf7y7lv4ajw6", // NON-NLS
+                    "Faythe" // NON-NLS
+                )
+
+                val viewModel = getViewModelProvider().get(ContactListViewModel::class)
+
+                // give IO executor some time to add contacts and messages
+                delay(10_000)
+                waitUntil(60_000) { viewModel.contactList.value.size > 2 }
+
+                // select Bob in list of contacts and wait for the chat history to load
+                viewModel.selectContact(viewModel.contactList.value[1])
+                awaitIdle()
+
+                captureToImage().save("contact-list.png")
             }
-
-            delay(1000)
-
-            val viewModel = app.getViewModelProvider().get(ContactListViewModel::class)
-            viewModel.selectContact(viewModel.contactList.value[1])
-
-            delay(1000)
-
-            captureToImage().save("after-contacts.png")
         }
     }
 }

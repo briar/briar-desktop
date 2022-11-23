@@ -222,11 +222,7 @@ constructor(
     override fun content() {
         DisposableEffect(Unit) {
             val eventListener = EventListener { e ->
-                when (e) {
-                    is LifecycleEvent -> {
-                        if (e.lifecycleState == RUNNING) screenState = MAIN
-                    }
-                }
+                if (e is LifecycleEvent && e.lifecycleState == RUNNING) screenState = MAIN
             }
             eventBus.addListener(eventListener)
 
