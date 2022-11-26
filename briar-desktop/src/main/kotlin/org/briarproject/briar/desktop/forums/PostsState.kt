@@ -28,7 +28,7 @@ class Loaded(
     val messageTree: MessageTreeImpl<ThreadItem>,
     val scrollTo: MessageId? = null,
 ) : PostsState() {
-    val posts: MutableList<ThreadItem> = messageTree.depthFirstOrder()
+    val posts: List<ThreadItem> = messageTree.depthFirstOrder()
 
     @UiExecutor
     fun unreadBeforeIndex(index: Int): UnreadPostInfo {

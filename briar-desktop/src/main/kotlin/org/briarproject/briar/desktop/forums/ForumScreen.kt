@@ -63,8 +63,7 @@ fun ForumScreen(
             )
             VerticalDivider()
             Column(modifier = Modifier.weight(1f).fillMaxHeight()) {
-                val item = viewModel.selectedGroupItem.value
-                if (item == null) {
+                if (viewModel.selectedGroupId.value == null) {
                     NoForumSelected()
                 } else {
                     GroupConversationScreen(viewModel.threadViewModel)

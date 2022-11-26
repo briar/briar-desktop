@@ -24,6 +24,7 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import mu.KotlinLogging
 import org.briarproject.bramble.api.crypto.CryptoExecutor
 import org.briarproject.bramble.api.db.TransactionManager
 import org.briarproject.bramble.api.event.Event
@@ -43,7 +44,6 @@ import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.threading.UiExecutor
 import org.briarproject.briar.desktop.viewmodel.EventListenerDbViewModel
 import org.briarproject.briar.desktop.viewmodel.asState
-import org.slf4j.LoggerFactory.getLogger
 import java.lang.Long.max
 import javax.inject.Inject
 
@@ -59,7 +59,7 @@ class ThreadedConversationViewModel @Inject constructor(
 ) : EventListenerDbViewModel(briarExecutors, lifecycleManager, db, eventBus) {
 
     companion object {
-        private val LOG = getLogger(ThreadedConversationViewModel::class.java)
+        private val LOG = KotlinLogging.logger {}
     }
 
     lateinit var groupItem: GroupItem

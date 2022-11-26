@@ -63,14 +63,14 @@ class ForumViewModel @Inject constructor(
 
     val noForumsYet = derivedStateOf { _fullForumList.isEmpty() }
 
-    private val _selectedGroupItem = mutableStateOf<GroupItem?>(null)
-    val selectedGroupItem = derivedStateOf {
+    private val _selectedGroupId = mutableStateOf<GroupId?>(null)
+    val selectedGroupId = derivedStateOf {
         // reset selected group item to null if not part of list after filtering
-        val groupItem = _selectedGroupItem.value
-        if (groupItem == null || forumList.value.any { it.id == groupItem.id }) {
-            groupItem
+        val groupId = _selectedGroupId.value
+        if (groupId == null || forumList.value.any { it.id == groupId }) {
+            groupId
         } else {
-            _selectedGroupItem.value = null
+            _selectedGroupId.value = null
             null
         }
     }
@@ -80,7 +80,16 @@ class ForumViewModel @Inject constructor(
 
     override fun onInit() {
         super.onInit()
+        // since the threadViewModel is tightly coupled to the ForumViewModel
+        // and not injected using the usual `viewModel()` approach,
+        // we have to manually call the functions for (de)initialization
+        threadViewModel.onInit()
         loadGroups()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        threadViewModel.onCleared()
     }
 
     override fun eventOccurred(e: Event) {
@@ -90,7 +99,7 @@ class ForumViewModel @Inject constructor(
 
             e is GroupRemovedEvent && e.group.clientId == ForumManager.CLIENT_ID -> {
                 removeItem(e.group.id)
-                if (selectedGroupItem.value?.id == e.group.id) _selectedGroupItem.value = null
+                if (_selectedGroupId.value == e.group.id) _selectedGroupId.value = null
             }
 
             e is ForumPostReceivedEvent -> {
@@ -126,18 +135,19 @@ class ForumViewModel @Inject constructor(
     }
 
     fun selectGroup(groupItem: GroupItem) {
-        _selectedGroupItem.value = groupItem
+        if (_selectedGroupId.value == groupItem.id) return
+        _selectedGroupId.value = groupItem.id
         threadViewModel.setGroupItem(groupItem, this::addOwnPost)
     }
 
-    fun isSelected(groupId: GroupId) = _selectedGroupItem.value?.id == groupId
+    fun isSelected(groupId: GroupId) = _selectedGroupId.value == groupId
 
     fun setFilterBy(filter: String) {
         _filterBy.value = filter
     }
 
     private fun addOwnPost(header: ForumPostHeader) {
-        selectedGroupItem.value?.id?.let { id -> updateItem(id) { it.updateOnPostReceived(header) } }
+        selectedGroupId.value?.let { id -> updateItem(id) { it.updateOnPostReceived(header) } }
     }
 
     private fun addItem(forumItem: ForumItem) = _fullForumList.add(forumItem)
