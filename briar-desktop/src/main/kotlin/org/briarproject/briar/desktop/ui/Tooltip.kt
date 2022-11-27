@@ -55,6 +55,6 @@ fun Tooltip(
     },
     delayMillis = delayMillis,
     tooltipPlacement = tooltipPlacement,
-    modifier = modifier,
+    modifier = modifier, // todo: use tooltip text for semantic description
     content = content,
 )
