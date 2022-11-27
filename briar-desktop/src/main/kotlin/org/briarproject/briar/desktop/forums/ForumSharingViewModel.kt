@@ -19,6 +19,7 @@
 package org.briarproject.briar.desktop.forums
 
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import mu.KotlinLogging
 import org.briarproject.bramble.api.connection.ConnectionRegistry
 import org.briarproject.bramble.api.contact.ContactManager
@@ -43,6 +44,7 @@ import org.briarproject.briar.desktop.utils.clearAndAddAll
 import org.briarproject.briar.desktop.utils.removeFirst
 import org.briarproject.briar.desktop.utils.replaceFirst
 import org.briarproject.briar.desktop.viewmodel.EventListenerDbViewModel
+import org.briarproject.briar.desktop.viewmodel.asState
 import javax.inject.Inject
 
 class ForumSharingViewModel @Inject constructor(
@@ -67,8 +69,12 @@ class ForumSharingViewModel @Inject constructor(
     private val _currentlySharedWith = mutableStateListOf<ContactItem>()
     val currentlySharedWith: List<ContactItem> = _currentlySharedWith
 
+    private val _sharingInfo = mutableStateOf(SharingInfo(0, 0))
+    val sharingInfo = _sharingInfo.asState()
+
     @UiExecutor
     fun setGroupId(groupId: GroupId) {
+        if (this::groupId.isInitialized && groupId == this.groupId) return
         this.groupId = groupId
         loadSharedWith()
     }
@@ -80,44 +86,76 @@ class ForumSharingViewModel @Inject constructor(
                 runOnDbThreadWithTransaction(false) { txn ->
                     val contact = contactManager.getContact(txn, e.contactId)
                     val authorInfo = authorManager.getAuthorInfo(txn, contact)
+                    val connected = connectionRegistry.isConnected(contact.id)
                     val item = ContactItem(
                         contact,
                         authorInfo,
-                        connectionRegistry.isConnected(contact.id),
+                        connected,
                         conversationManager.getGroupCount(txn, contact.id), // todo: not necessary to be shown here
                         authorInfo.avatarHeader?.let { loadImage(txn, attachmentReader, it) },
                     )
-                    txn.attach { _currentlySharedWith.add(item) }
+                    txn.attach {
+                        _currentlySharedWith.add(item)
+                        _sharingInfo.value = _sharingInfo.value.addContact(connected)
+                    }
                 }
 
-            e is ContactLeftShareableEvent && e.groupId == groupId ->
+            e is ContactLeftShareableEvent && e.groupId == groupId -> {
                 _currentlySharedWith.removeFirst { it.idWrapper.contactId == e.contactId }
+                val connected = connectionRegistry.isConnected(e.contactId)
+                _sharingInfo.value = _sharingInfo.value.removeContact(connected)
+            }
 
-            e is ContactConnectedEvent ->
-                _currentlySharedWith.replaceFirst({ it.idWrapper.contactId == e.contactId }) { it.updateIsConnected(true) }
-
-            e is ContactDisconnectedEvent ->
-                _currentlySharedWith.replaceFirst({ it.idWrapper.contactId == e.contactId }) {
-                    it.updateIsConnected(
-                        false
-                    )
+            e is ContactConnectedEvent -> {
+                val isMember = _currentlySharedWith.replaceFirst({ it.idWrapper.contactId == e.contactId }) {
+                    it.updateIsConnected(true)
                 }
+                if (isMember) _sharingInfo.value = _sharingInfo.value.updateContactConnected(true)
+            }
+
+            e is ContactDisconnectedEvent -> {
+                val isMember = _currentlySharedWith.replaceFirst({ it.idWrapper.contactId == e.contactId }) {
+                    it.updateIsConnected(false)
+                }
+                if (isMember) _sharingInfo.value = _sharingInfo.value.updateContactConnected(false)
+            }
         }
     }
 
     private fun loadSharedWith() = runOnDbThreadWithTransaction(true) { txn ->
+        var online = 0
         val list = forumSharingManager.getSharedWith(txn, groupId).map { contact ->
             val authorInfo = authorManager.getAuthorInfo(txn, contact)
+            val connected = connectionRegistry.isConnected(contact.id)
+            if (connected) online++
             ContactItem(
                 contact,
                 authorInfo,
-                connectionRegistry.isConnected(contact.id),
+                connected,
                 conversationManager.getGroupCount(txn, contact.id), // todo: not necessary to be shown here
                 authorInfo.avatarHeader?.let { loadImage(txn, attachmentReader, it) },
             )
         }
         txn.attach {
             _currentlySharedWith.clearAndAddAll(list)
+            _sharingInfo.value = SharingInfo(list.size, online)
         }
+    }
+
+    data class SharingInfo(val total: Int, val online: Int) {
+        fun addContact(connected: Boolean) = copy(
+            total = total + 1,
+            online = if (connected) online + 1 else online
+        )
+
+        fun removeContact(connected: Boolean) = copy(
+            total = total - 1,
+            online = if (connected) online - 1 else online
+        )
+
+        fun updateContactConnected(connected: Boolean) = copy(
+            total = total,
+            online = if (connected) online + 1 else online - 1
+        )
     }
 }

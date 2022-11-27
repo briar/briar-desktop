@@ -60,15 +60,16 @@ fun <T> MutableList<T>.replaceIfIndexed(predicate: (Int, T) -> Boolean, transfor
     }
 }
 
-inline fun <T, reified U : T> MutableList<T>.replaceFirst(predicate: (U) -> Boolean, transformation: (U) -> U) {
+inline fun <T, reified U : T> MutableList<T>.replaceFirst(predicate: (U) -> Boolean, transformation: (U) -> U): Boolean {
     val li = listIterator()
     while (li.hasNext()) {
         val n = li.next()
         if (n is U && predicate(n)) {
             li.set(transformation(n))
-            break
+            return true
         }
     }
+    return false
 }
 
 inline fun <T, reified U : T> MutableList<T>.removeFirst(predicate: (U) -> Boolean) {

@@ -19,7 +19,9 @@
 package org.briarproject.briar.desktop.forums
 
 import androidx.compose.foundation.layout.Arrangement.SpaceBetween
+import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize.Max
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -41,6 +43,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment.Companion.BottomCenter
@@ -55,6 +58,8 @@ import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
 import org.briarproject.briar.desktop.ui.HorizontalDivider
 import org.briarproject.briar.desktop.ui.getInfoDrawerHandler
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
+import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nF
+import org.briarproject.briar.desktop.viewmodel.viewModel
 
 @Composable
 fun GroupConversationScreen(
@@ -87,8 +92,14 @@ fun GroupConversationScreen(
 @Composable
 private fun GroupConversationHeader(
     groupItem: GroupItem,
+    viewModel: ForumSharingViewModel = viewModel(),
+    // todo: using the same viewModel twice could lead to problems when one of the occurrences goes out of scope
+    //  -> viewModel.onCleared() will be called and it will, e.g., stop listening to events
     onGroupDelete: () -> Unit,
 ) {
+    LaunchedEffect(groupItem) {
+        viewModel.setGroupId(groupItem.id)
+    }
     val deleteGroupDialogVisible = remember { mutableStateOf(false) }
     val menuState = remember { mutableStateOf(CLOSED) }
     val close = { menuState.value = CLOSED }
@@ -103,21 +114,23 @@ private fun GroupConversationHeader(
                     .fillMaxHeight()
                     .padding(start = 8.dp)
                     .weight(1f, fill = false),
+                horizontalArrangement = spacedBy(12.dp),
+                verticalAlignment = CenterVertically
             ) {
-                GroupCircle(
-                    item = groupItem,
-                    modifier = Modifier.align(CenterVertically),
-                )
-                Text(
-                    modifier = Modifier
-                        .align(CenterVertically)
-                        .padding(start = 12.dp)
-                        .weight(1f, fill = false),
-                    text = groupItem.name,
-                    maxLines = 2,
-                    overflow = Ellipsis,
-                    style = MaterialTheme.typography.h2,
-                )
+                GroupCircle(groupItem)
+                Column {
+                    Text(
+                        modifier = Modifier,
+                        text = groupItem.name,
+                        maxLines = 2,
+                        overflow = Ellipsis,
+                        style = MaterialTheme.typography.h2,
+                    )
+                    val sharingInfo = viewModel.sharingInfo.value
+                    Text(
+                        text = i18nF("forum.sharing.status.with", sharingInfo.total, sharingInfo.online)
+                    )
+                }
             }
             IconButton(
                 icon = Icons.Filled.MoreVert,
