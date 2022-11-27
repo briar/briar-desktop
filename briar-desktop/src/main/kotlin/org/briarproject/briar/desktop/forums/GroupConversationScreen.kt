@@ -53,6 +53,7 @@ import org.briarproject.briar.desktop.contact.ContactDropDown.State.CLOSED
 import org.briarproject.briar.desktop.contact.ContactDropDown.State.MAIN
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
 import org.briarproject.briar.desktop.ui.HorizontalDivider
+import org.briarproject.briar.desktop.ui.getInfoDrawerHandler
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 
 @Composable
@@ -91,6 +92,7 @@ private fun GroupConversationHeader(
     val deleteGroupDialogVisible = remember { mutableStateOf(false) }
     val menuState = remember { mutableStateOf(CLOSED) }
     val close = { menuState.value = CLOSED }
+    val infoDrawerHandler = getInfoDrawerHandler()
     Box(modifier = Modifier.fillMaxWidth().height(HEADER_SIZE + 1.dp)) {
         Row(
             horizontalArrangement = SpaceBetween,
@@ -127,6 +129,22 @@ private fun GroupConversationHeader(
                     expanded = menuState.value == MAIN,
                     onDismissRequest = close,
                 ) {
+                    DropdownMenuItem(
+                        onClick = {
+                            close()
+                            infoDrawerHandler.open {
+                                ForumSharingDrawerContent(
+                                    groupId = groupItem.id,
+                                    close = infoDrawerHandler::close,
+                                )
+                            }
+                        }
+                    ) {
+                        Text(
+                            i18n("forum.sharing.status.title"),
+                            style = MaterialTheme.typography.body2,
+                        )
+                    }
                     DropdownMenuItem(
                         onClick = {
                             close()
