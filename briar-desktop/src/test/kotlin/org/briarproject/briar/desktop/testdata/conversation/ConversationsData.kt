@@ -15,8 +15,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+@file:Suppress("nls")
 
-package org.briarproject.briar.desktop.testdata
+package org.briarproject.briar.desktop.testdata.conversation
 
 import java.time.LocalDateTime.of as dt
 

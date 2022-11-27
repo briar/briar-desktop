@@ -16,13 +16,32 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.briarproject.briar.desktop.testdata
+package org.briarproject.briar.desktop.testdata.forum
 
-fun main(args: Array<String>) {
-    for (conversation in conversations.persons) {
-        println("conversation with: ${conversation.name}")
-        for (message in conversation.messages) {
-            println("  ${message.direction} ${message.text} ${message.read} ${message.date}")
-        }
-    }
+import java.time.LocalDateTime
+
+data class Forums(
+    val forums: List<Forum>
+)
+
+data class Forum(
+    val name: String,
+    var members: List<PostAuthor>,
+    var posts: List<Post>,
+)
+
+data class Post(
+    val author: PostAuthor,
+    val text: String,
+    val date: LocalDateTime,
+    val replies: List<Post>,
+)
+
+sealed interface PostAuthor {
+    object Me : PostAuthor
+
+    data class RemoteAuthor(
+        val name: String,
+        val sharedWith: Boolean, // todo: not supported yet
+    ) : PostAuthor
 }

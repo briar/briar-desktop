@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.briarproject.briar.desktop.testdata
+package org.briarproject.briar.desktop.testdata.conversation
 
 import java.time.LocalDateTime
 

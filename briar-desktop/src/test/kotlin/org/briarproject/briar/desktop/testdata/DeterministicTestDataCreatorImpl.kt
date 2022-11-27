@@ -43,12 +43,14 @@ import org.briarproject.bramble.api.properties.TransportPropertyManager
 import org.briarproject.bramble.api.sync.Group
 import org.briarproject.bramble.api.sync.GroupFactory
 import org.briarproject.bramble.api.sync.GroupId
-import org.briarproject.bramble.api.sync.Message
+import org.briarproject.bramble.api.sync.MessageId
 import org.briarproject.bramble.api.system.Clock
 import org.briarproject.briar.api.autodelete.AutoDeleteConstants
 import org.briarproject.briar.api.avatar.AvatarManager
 import org.briarproject.briar.api.avatar.AvatarMessageEncoder
 import org.briarproject.briar.api.conversation.ConversationManager
+import org.briarproject.briar.api.forum.ForumFactory
+import org.briarproject.briar.api.forum.ForumManager
 import org.briarproject.briar.api.messaging.MessagingManager
 import org.briarproject.briar.api.messaging.PrivateMessageFactory
 import org.briarproject.briar.api.privategroup.GroupMessageFactory
@@ -58,6 +60,12 @@ import org.briarproject.briar.api.privategroup.PrivateGroupManager
 import org.briarproject.briar.api.test.TestAvatarCreator
 import org.briarproject.briar.desktop.GroupCountHelper
 import org.briarproject.briar.desktop.attachment.media.ImageCompressor
+import org.briarproject.briar.desktop.testdata.conversation.Direction
+import org.briarproject.briar.desktop.testdata.conversation.Message
+import org.briarproject.briar.desktop.testdata.conversation.conversations
+import org.briarproject.briar.desktop.testdata.forum.Post
+import org.briarproject.briar.desktop.testdata.forum.PostAuthor
+import org.briarproject.briar.desktop.testdata.forum.forums
 import org.briarproject.briar.desktop.utils.KLoggerUtils.i
 import org.briarproject.briar.desktop.utils.KLoggerUtils.w
 import java.io.IOException
@@ -82,6 +90,8 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
     private val contactManager: ContactManager,
     private val privateGroupManager: PrivateGroupManager,
     private val privateGroupFactory: PrivateGroupFactory,
+    private val forumManager: ForumManager,
+    private val forumFactory: ForumFactory,
     private val transportPropertyManager: TransportPropertyManager,
     private val conversationManager: ConversationManager,
     private val messagingManager: MessagingManager,
@@ -141,6 +151,8 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
         for (privateGroup in privateGroups) {
             createRandomPrivateGroupMessages(privateGroup, contacts, numPrivateGroupPosts)
         }
+
+        createForums()
     }
 
     @Throws(DbException::class)
@@ -297,7 +309,7 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
             LOG.w(e) {}
             return
         } ?: return
-        val m: Message = try {
+        val m = try {
             avatarMessageEncoder.encodeUpdateMessage(groupId, 0, "image/jpeg", `is`).first
         } catch (e: IOException) {
             throw DbException(e)
@@ -341,7 +353,7 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
     private fun createPrivateMessage(
         contactId: ContactId,
         groupId: GroupId,
-        message: org.briarproject.briar.desktop.testdata.Message
+        message: Message
     ) {
         val timestamp = message.date.toEpochSecond(ZoneOffset.UTC) * 1000
         val text = message.text
@@ -426,5 +438,34 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
         numPrivateGroupMessages: Int
     ) {
         // TODO
+    }
+
+    private fun createForums() {
+        for (f in forums.forums) {
+            // create forum
+            val forum = forumManager.addForum(f.name)
+
+            val members = f.members.associateWith {
+                if (it is PostAuthor.RemoteAuthor) authorFactory.createLocalAuthor(it.name)
+                else identityManager.localAuthor
+            }
+            // todo: create real contact to also share forum!
+
+            // add posts
+            fun addPost(post: Post, parentId: MessageId?) {
+                val m = forumManager.createLocalPost(
+                    forum.id,
+                    post.text,
+                    post.date.toEpochSecond(ZoneOffset.UTC) * 1000,
+                    parentId,
+                    members[post.author]!!
+                )
+                // todo: add non-local posts using incoming message via some contact this forum is shared with
+                forumManager.addLocalPost(m)
+                post.replies.forEach { addPost(it, m.message.id) }
+            }
+            f.posts.forEach { addPost(it, null) }
+        }
+        LOG.i { "Created ${forums.forums.size} forums." }
     }
 }

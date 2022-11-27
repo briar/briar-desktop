@@ -16,10 +16,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.briarproject.briar.desktop.testdata
+package org.briarproject.briar.desktop.testdata.conversation
 
-import org.briarproject.briar.desktop.testdata.Direction.INCOMING
-import org.briarproject.briar.desktop.testdata.Direction.OUTGOING
+import org.briarproject.briar.desktop.testdata.conversation.Direction.INCOMING
+import org.briarproject.briar.desktop.testdata.conversation.Direction.OUTGOING
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
