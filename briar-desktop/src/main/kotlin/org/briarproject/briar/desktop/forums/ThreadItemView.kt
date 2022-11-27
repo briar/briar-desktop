@@ -48,7 +48,7 @@ import org.briarproject.briar.desktop.contact.ProfileCircle
 import org.briarproject.briar.desktop.theme.Blue500
 import org.briarproject.briar.desktop.ui.HorizontalDivider
 import org.briarproject.briar.desktop.ui.Tooltip
-import org.briarproject.briar.desktop.ui.TrustIndicator
+import org.briarproject.briar.desktop.ui.TrustIndicatorShort
 import org.briarproject.briar.desktop.ui.VerticalDivider
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
@@ -136,7 +136,7 @@ fun ThreadItemContentComposable(
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
-                    TrustIndicator(item.authorInfo.status)
+                    TrustIndicatorShort(item.authorInfo.status)
                 }
                 Text(
                     text = getFormattedTimestamp(item.timestamp),

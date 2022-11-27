@@ -20,24 +20,11 @@ package org.briarproject.briar.desktop.utils
 
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.res.loadImageBitmap
-import org.briarproject.bramble.api.contact.Contact
 import org.briarproject.bramble.api.db.Transaction
 import org.briarproject.briar.api.attachment.AttachmentHeader
 import org.briarproject.briar.api.attachment.AttachmentReader
-import org.briarproject.briar.api.identity.AuthorManager
 
 object ImageUtils {
-
-    fun loadAvatar(
-        authorManager: AuthorManager,
-        attachmentReader: AttachmentReader,
-        txn: Transaction,
-        contact: Contact,
-    ): ImageBitmap? {
-        val authorInfo = authorManager.getAuthorInfo(txn, contact)
-        val avatarHeader = authorInfo.avatarHeader ?: return null
-        return loadImage(txn, attachmentReader, avatarHeader)
-    }
 
     fun loadImage(
         txn: Transaction,

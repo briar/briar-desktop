@@ -22,12 +22,14 @@ import androidx.compose.ui.graphics.ImageBitmap
 import org.briarproject.bramble.api.contact.Contact
 import org.briarproject.bramble.api.identity.AuthorId
 import org.briarproject.briar.api.client.MessageTracker
+import org.briarproject.briar.api.identity.AuthorInfo
 import org.briarproject.briar.desktop.utils.UiUtils.getContactDisplayName
 import kotlin.math.max
 
 data class ContactItem(
     override val idWrapper: RealContactIdWrapper,
     val authorId: AuthorId,
+    val trustLevel: AuthorInfo.Status,
     private val name: String,
     val alias: String?,
     val isConnected: Boolean,
@@ -41,12 +43,14 @@ data class ContactItem(
 
     constructor(
         contact: Contact,
+        authorInfo: AuthorInfo,
         isConnected: Boolean,
         groupCount: MessageTracker.GroupCount,
         avatar: ImageBitmap?
     ) : this(
         idWrapper = RealContactIdWrapper(contact.id),
         authorId = contact.author.id,
+        trustLevel = authorInfo.status,
         name = contact.author.name,
         alias = contact.alias,
         isConnected = isConnected,

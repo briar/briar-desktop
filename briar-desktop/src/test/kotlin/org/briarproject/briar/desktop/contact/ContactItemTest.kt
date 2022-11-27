@@ -26,6 +26,7 @@ import org.briarproject.bramble.api.crypto.SignaturePublicKey
 import org.briarproject.bramble.api.identity.Author
 import org.briarproject.bramble.api.identity.AuthorId
 import org.briarproject.briar.api.client.MessageTracker
+import org.briarproject.briar.api.identity.AuthorInfo
 import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -53,6 +54,7 @@ class ContactItemTest {
         )
         val item = ContactItem(
             contact = contact,
+            authorInfo = AuthorInfo(AuthorInfo.Status.UNKNOWN),
             isConnected = false,
             groupCount = MessageTracker.GroupCount(0, 0, System.currentTimeMillis()),
             avatar = null

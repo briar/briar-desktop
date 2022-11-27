@@ -20,6 +20,7 @@ package org.briarproject.briar.desktop.contact
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -32,6 +33,7 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ProvideTextStyle
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
@@ -49,13 +51,16 @@ import org.briarproject.bramble.api.contact.ContactId
 import org.briarproject.bramble.api.contact.PendingContactId
 import org.briarproject.bramble.api.contact.PendingContactState
 import org.briarproject.bramble.api.identity.AuthorId
+import org.briarproject.briar.api.identity.AuthorInfo.Status
 import org.briarproject.briar.desktop.theme.selectedCard
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
 import org.briarproject.briar.desktop.ui.HorizontalDivider
 import org.briarproject.briar.desktop.ui.NumberBadge
+import org.briarproject.briar.desktop.ui.TrustIndicatorLong
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nF
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nP
+import org.briarproject.briar.desktop.utils.PreviewUtils.DropDownValues
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 import org.briarproject.briar.desktop.utils.TimeUtils.getFormattedTimestamp
 import org.briarproject.briar.desktop.utils.appendCommaSeparated
@@ -66,6 +71,7 @@ import java.time.Instant
 fun main() = preview(
     "name" to "Paul",
     "alias" to "UI Master",
+    "trustLevel" to DropDownValues(0, Status.values().filterNot { it == Status.NONE }.map { it.name }),
     "isConnected" to true,
     "isEmpty" to false,
     "unread" to 3,
@@ -77,6 +83,7 @@ fun main() = preview(
             ContactItem(
                 idWrapper = RealContactIdWrapper(ContactId(0)),
                 authorId = AuthorId(getRandomIdPersistent()),
+                trustLevel = Status.valueOf(getStringParameter("trustLevel")),
                 name = getStringParameter("name"),
                 alias = getStringParameter("alias"),
                 isConnected = getBooleanParameter("isConnected"),
@@ -164,7 +171,8 @@ private fun RealContactRow(contactItem: ContactItem) {
             }
     ) {
         Row(
-            modifier = Modifier.padding(start = 16.dp, end = 8.dp).padding(vertical = 8.dp)
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(start = 16.dp, end = 8.dp).padding(vertical = 8.dp),
         ) {
             Box {
                 ProfileCircle(36.dp, contactItem)
@@ -223,14 +231,20 @@ private fun PendingContactRow(contactItem: PendingContactItem, onRemove: () -> U
 
 @Composable
 private fun RealContactInfo(contactItem: ContactItem, modifier: Modifier = Modifier) {
-    Column(modifier = modifier.padding(start = 12.dp)) {
+    Column(
+        horizontalAlignment = Alignment.Start,
+        verticalArrangement = spacedBy(2.dp),
+        modifier = modifier.padding(start = 12.dp),
+    ) {
         Text(
-            contactItem.displayName,
+            text = contactItem.displayName,
             style = MaterialTheme.typography.body1,
             maxLines = 3,
             overflow = Ellipsis,
-            modifier = Modifier.align(Alignment.Start).padding(bottom = 2.dp)
         )
+        ProvideTextStyle(MaterialTheme.typography.caption) {
+            TrustIndicatorLong(contactItem.trustLevel)
+        }
         Text(
             if (contactItem.isEmpty) i18n("contacts.card.nothing") else getFormattedTimestamp(
                 contactItem.timestamp

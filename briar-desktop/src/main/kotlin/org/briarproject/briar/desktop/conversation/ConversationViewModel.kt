@@ -61,7 +61,7 @@ import org.briarproject.briar.desktop.attachment.media.ImageCompressor
 import org.briarproject.briar.desktop.contact.ContactItem
 import org.briarproject.briar.desktop.conversation.ConversationRequestItem.RequestType.INTRODUCTION
 import org.briarproject.briar.desktop.threading.BriarExecutors
-import org.briarproject.briar.desktop.utils.ImageUtils.loadAvatar
+import org.briarproject.briar.desktop.utils.ImageUtils
 import org.briarproject.briar.desktop.utils.KLoggerUtils.i
 import org.briarproject.briar.desktop.utils.KLoggerUtils.logDuration
 import org.briarproject.briar.desktop.utils.KLoggerUtils.w
@@ -280,12 +280,13 @@ constructor(
             val start = LogUtils.now()
 
             val contact = contactManager.getContact(txn, id)
-
+            val authorInfo = authorManager.getAuthorInfo(txn, contact)
             val contactItem = ContactItem(
                 contact,
+                authorInfo,
                 connectionRegistry.isConnected(id),
                 conversationManager.getGroupCount(txn, id),
-                loadAvatar(authorManager, attachmentReader, txn, contact),
+                authorInfo.avatarHeader?.let { ImageUtils.loadImage(txn, attachmentReader, it) },
             )
             LOG.logDuration("Loading contact", start)
             txn.attach {

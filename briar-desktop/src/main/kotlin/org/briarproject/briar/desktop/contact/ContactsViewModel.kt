@@ -38,7 +38,7 @@ import org.briarproject.briar.api.attachment.AttachmentReader
 import org.briarproject.briar.api.conversation.ConversationManager
 import org.briarproject.briar.api.identity.AuthorManager
 import org.briarproject.briar.desktop.threading.BriarExecutors
-import org.briarproject.briar.desktop.utils.ImageUtils.loadAvatar
+import org.briarproject.briar.desktop.utils.ImageUtils
 import org.briarproject.briar.desktop.utils.KLoggerUtils.i
 import org.briarproject.briar.desktop.utils.clearAndAddAll
 import org.briarproject.briar.desktop.utils.removeFirst
@@ -83,11 +83,13 @@ abstract class ContactsViewModel(
             )
             contactList.addAll(
                 contactManager.getContacts(txn).map { contact ->
+                    val authorInfo = authorManager.getAuthorInfo(txn, contact)
                     ContactItem(
                         contact,
+                        authorInfo,
                         connectionRegistry.isConnected(contact.id),
                         conversationManager.getGroupCount(txn, contact.id),
-                        loadAvatar(authorManager, attachmentReader, txn, contact),
+                        authorInfo.avatarHeader?.let { ImageUtils.loadImage(txn, attachmentReader, it) },
                     )
                 }
             )
