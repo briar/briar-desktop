@@ -18,6 +18,7 @@
 
 package org.briarproject.briar.desktop.ui
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -38,8 +39,17 @@ import org.briarproject.briar.desktop.theme.Orange500
 import org.briarproject.briar.desktop.theme.Red500
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun TrustIndicator(status: AuthorInfo.Status) {
+fun TrustIndicator(status: AuthorInfo.Status) = Tooltip(
+    text = when (status) {
+        AuthorInfo.Status.NONE -> error("Unexpected status: $status")
+        AuthorInfo.Status.UNKNOWN -> i18n("peer.trust.stranger")
+        AuthorInfo.Status.UNVERIFIED -> i18n("peer.trust.unverified")
+        AuthorInfo.Status.VERIFIED -> i18n("peer.trust.verified")
+        AuthorInfo.Status.OURSELVES -> i18n("peer.trust.ourselves")
+    }
+) {
     if (status == AuthorInfo.Status.OURSELVES) {
         Icon(
             imageVector = Icons.Filled.Person,
@@ -50,7 +60,7 @@ fun TrustIndicator(status: AuthorInfo.Status) {
     } else {
         val gray = MaterialTheme.colors.onSurface
         val (first, second, third) = when (status) {
-            AuthorInfo.Status.NONE -> return
+            AuthorInfo.Status.NONE -> error("Unexpected status: $status")
             AuthorInfo.Status.UNKNOWN -> Triple(Red500, gray, gray)
             AuthorInfo.Status.UNVERIFIED -> Triple(Orange500, Orange500, gray)
             AuthorInfo.Status.VERIFIED -> Triple(Lime500, Lime500, Lime500)
