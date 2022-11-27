@@ -19,7 +19,6 @@
 package org.briarproject.briar.desktop.contact
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,7 +27,7 @@ import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material.IconButton
@@ -115,7 +114,8 @@ fun ContactCard(
 ) {
     val bgColor = if (selected) MaterialTheme.colors.selectedCard else Color.Transparent
 
-    Column(
+    Box(
+        contentAlignment = Alignment.Center,
         modifier = Modifier
             .fillMaxWidth()
             .defaultMinSize(minHeight = HEADER_SIZE)
@@ -127,148 +127,150 @@ fun ContactCard(
             }
             .selectable(selected, onClick = onSel, role = Role.Button)
             .background(bgColor),
-        verticalArrangement = Arrangement.Center
     ) {
         when (contactItem) {
             is ContactItem -> {
                 RealContactRow(contactItem)
             }
+
             is PendingContactItem -> {
                 PendingContactRow(contactItem, onRemovePending)
             }
         }
+        HorizontalDivider(Modifier.align(Alignment.BottomStart))
     }
-    HorizontalDivider()
 }
 
 @Composable
-private fun RealContactRow(contactItem: ContactItem) {
+private fun RealContactRow(contactItem: ContactItem) = Row(
+    horizontalArrangement = spacedBy(8.dp),
+    verticalAlignment = Alignment.CenterVertically,
+    modifier = Modifier
+        .fillMaxWidth()
+        .padding(vertical = 8.dp)
+        // makes sure that ConnectionIndicator is aligned with AddContact button
+        .padding(start = 16.dp, end = 20.dp)
+        .semantics {
+            text = getRealContactRowDescription(contactItem)
+        }
+) {
     Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .semantics {
-                text = buildBlankAnnotatedString {
-                    append(i18nF("access.contact.with_name", contactItem.displayName))
-                    appendCommaSeparated(
-                        if (contactItem.isConnected) i18n("access.contact.connected.yes")
-                        else i18n("access.contact.connected.no")
-                    )
-                    if (contactItem.unread > 0)
-                        appendCommaSeparated(i18nP("access.contact.unread_count", contactItem.unread))
-                    if (contactItem.isEmpty)
-                        appendCommaSeparated(i18n("contacts.card.nothing"))
-                    else
-                        appendCommaSeparated(
-                            i18nF(
-                                "access.contact.last_message_timestamp",
-                                getFormattedTimestamp(contactItem.timestamp)
-                            )
-                        )
-                    append('.')
-                }
-            }
+        horizontalArrangement = spacedBy(12.dp),
+        modifier = Modifier.weight(1f, fill = true),
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(start = 16.dp, end = 8.dp).padding(vertical = 8.dp),
-        ) {
-            Box {
-                ProfileCircle(36.dp, contactItem)
-                NumberBadge(
-                    num = contactItem.unread,
-                    modifier = Modifier.align(Alignment.TopEnd).offset(6.dp, (-6).dp)
-                )
-            }
-            RealContactInfo(
-                contactItem = contactItem,
+        Box {
+            ProfileCircle(36.dp, contactItem)
+            NumberBadge(
+                num = contactItem.unread,
+                modifier = Modifier.align(Alignment.TopEnd).offset(6.dp, (-6).dp)
             )
         }
-        ConnectionIndicator(
-            modifier = Modifier.padding(end = (16 + 4).dp).size(16.dp),
-            isConnected = contactItem.isConnected
+        RealContactInfo(
+            contactItem = contactItem,
         )
     }
+    ConnectionIndicator(
+        modifier = Modifier.requiredSize(16.dp),
+        isConnected = contactItem.isConnected
+    )
+}
+
+fun getRealContactRowDescription(contactItem: ContactItem) = buildBlankAnnotatedString {
+    append(i18nF("access.contact.with_name", contactItem.displayName))
+    appendCommaSeparated(
+        if (contactItem.isConnected) i18n("access.contact.connected.yes")
+        else i18n("access.contact.connected.no")
+    )
+    if (contactItem.unread > 0)
+        appendCommaSeparated(i18nP("access.contact.unread_count", contactItem.unread))
+    if (contactItem.isEmpty)
+        appendCommaSeparated(i18n("contacts.card.nothing"))
+    else
+        appendCommaSeparated(
+            i18nF(
+                "access.contact.last_message_timestamp",
+                getFormattedTimestamp(contactItem.timestamp)
+            )
+        )
+    append('.')
 }
 
 @Composable
-private fun PendingContactRow(contactItem: PendingContactItem, onRemove: () -> Unit) {
+private fun PendingContactRow(contactItem: PendingContactItem, onRemove: () -> Unit) = Row(
+    horizontalArrangement = spacedBy(8.dp),
+    verticalAlignment = Alignment.CenterVertically,
+    modifier = Modifier
+        .fillMaxWidth()
+        .padding(vertical = 8.dp)
+        // makes sure that Delete button is aligned with AddContact button
+        .padding(start = 16.dp, end = 4.dp)
+        .semantics {
+            text = getPendingContactRowDescription(contactItem)
+        },
+) {
     Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier
-            .fillMaxWidth()
-            .semantics {
-                text = buildBlankAnnotatedString {
-                    append(i18nF("access.contact.pending.with_name", contactItem.displayName))
-                    // todo: include pending status
-                    appendCommaSeparated(
-                        i18nF(
-                            "access.contact.pending.added_timestamp",
-                            getFormattedTimestamp(contactItem.timestamp)
-                        )
-                    )
-                }
-            },
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = spacedBy(12.dp),
+        modifier = Modifier.weight(1f, fill = true),
     ) {
-        Row(
-            modifier = Modifier.padding(start = 16.dp, end = 8.dp).padding(vertical = 8.dp)
-        ) {
-            ProfileCircle(36.dp)
-            PendingContactInfo(
-                contactItem = contactItem,
-            )
-        }
-        IconButton(
-            icon = Icons.Filled.Delete,
-            contentDescription = i18n("access.contacts.pending.remove"),
-            onClick = onRemove,
-            modifier = Modifier.padding(end = 4.dp)
+        ProfileCircle(36.dp)
+        PendingContactInfo(
+            contactItem = contactItem,
         )
     }
+    IconButton(
+        icon = Icons.Filled.Delete,
+        contentDescription = i18n("access.contacts.pending.remove"),
+        onClick = onRemove,
+    )
+}
+
+fun getPendingContactRowDescription(contactItem: PendingContactItem) = buildBlankAnnotatedString {
+    append(i18nF("access.contact.pending.with_name", contactItem.displayName))
+    // todo: include pending status
+    appendCommaSeparated(
+        i18nF(
+            "access.contact.pending.added_timestamp",
+            getFormattedTimestamp(contactItem.timestamp)
+        )
+    )
 }
 
 @Composable
-private fun RealContactInfo(contactItem: ContactItem, modifier: Modifier = Modifier) {
-    Column(
-        horizontalAlignment = Alignment.Start,
-        verticalArrangement = spacedBy(2.dp),
-        modifier = modifier.padding(start = 12.dp),
-    ) {
-        Text(
-            text = contactItem.displayName,
-            style = MaterialTheme.typography.body1,
-            maxLines = 3,
-            overflow = Ellipsis,
-        )
-        ProvideTextStyle(MaterialTheme.typography.caption) {
-            TrustIndicatorLong(contactItem.trustLevel)
-        }
-        Text(
-            if (contactItem.isEmpty) i18n("contacts.card.nothing") else getFormattedTimestamp(
-                contactItem.timestamp
-            ),
-            style = MaterialTheme.typography.caption,
-            modifier = Modifier.align(Alignment.Start)
-        )
+private fun RealContactInfo(contactItem: ContactItem) = Column(
+    horizontalAlignment = Alignment.Start,
+    verticalArrangement = spacedBy(2.dp),
+) {
+    Text(
+        text = contactItem.displayName,
+        style = MaterialTheme.typography.body1,
+        maxLines = 3,
+        overflow = Ellipsis,
+    )
+    ProvideTextStyle(MaterialTheme.typography.caption) {
+        TrustIndicatorLong(contactItem.trustLevel)
     }
+    Text(
+        text = if (contactItem.isEmpty) i18n("contacts.card.nothing")
+        else getFormattedTimestamp(contactItem.timestamp),
+        style = MaterialTheme.typography.caption,
+    )
 }
 
 @Composable
-private fun PendingContactInfo(contactItem: PendingContactItem, modifier: Modifier = Modifier) {
-    Column(modifier = modifier.padding(start = 12.dp)) {
-        Text(
-            contactItem.displayName,
-            style = MaterialTheme.typography.body1,
-            maxLines = 3,
-            overflow = Ellipsis,
-            modifier = Modifier.align(Alignment.Start).padding(bottom = 2.dp)
-        )
-        Text(
-            getFormattedTimestamp(contactItem.timestamp),
-            modifier = Modifier.align(Alignment.Start),
-            style = MaterialTheme.typography.caption,
-        )
-    }
+private fun PendingContactInfo(contactItem: PendingContactItem) = Column(
+    horizontalAlignment = Alignment.Start,
+    verticalArrangement = spacedBy(2.dp),
+) {
+    Text(
+        text = contactItem.displayName,
+        style = MaterialTheme.typography.body1,
+        maxLines = 3,
+        overflow = Ellipsis,
+    )
+    Text(
+        text = getFormattedTimestamp(contactItem.timestamp),
+        style = MaterialTheme.typography.caption,
+    )
 }

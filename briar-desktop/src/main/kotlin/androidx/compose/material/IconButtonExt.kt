@@ -21,7 +21,7 @@ package androidx.compose.material
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -74,7 +74,7 @@ fun IconButton(
         Icon(
             icon,
             contentDescription,
-            Modifier.size(iconSize),
+            Modifier.requiredSize(iconSize),
             iconTint
         )
         extraContent?.invoke()
