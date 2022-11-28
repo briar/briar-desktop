@@ -48,6 +48,7 @@ import java.lang.Long.max
 import javax.inject.Inject
 
 class ThreadedConversationViewModel @Inject constructor(
+    val forumSharingViewModel: ForumSharingViewModel,
     private val forumManager: ForumManager,
     private val identityManager: IdentityManager,
     private val clock: Clock,
@@ -78,6 +79,7 @@ class ThreadedConversationViewModel @Inject constructor(
         this.groupItem = groupItem
         this.onPostAdded = onPostAdded
         _selectedPost.value = null
+        forumSharingViewModel.setGroupId(groupItem.id)
         loadPosts(groupItem.id)
     }
 
@@ -89,6 +91,16 @@ class ThreadedConversationViewModel @Inject constructor(
                 addItem(item, null)
             }
         }
+    }
+
+    override fun onInit() {
+        super.onInit()
+        forumSharingViewModel.onEnterComposition()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        forumSharingViewModel.onExitComposition()
     }
 
     private fun loadPosts(groupId: GroupId) {

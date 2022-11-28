@@ -72,13 +72,14 @@ inline fun <T, reified U : T> MutableList<T>.replaceFirst(predicate: (U) -> Bool
     return false
 }
 
-inline fun <T, reified U : T> MutableList<T>.removeFirst(predicate: (U) -> Boolean) {
+inline fun <T, reified U : T> MutableList<T>.removeFirst(predicate: (U) -> Boolean): Boolean {
     val li = listIterator()
     while (li.hasNext()) {
         val n = li.next()
         if (n is U && predicate(n)) {
             li.remove()
-            break
+            return true
         }
     }
+    return false
 }

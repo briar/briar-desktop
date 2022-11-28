@@ -59,6 +59,8 @@ inline fun <reified VM : ViewModel> viewModel(
  * It will be automatically initialized as soon as the calling screen is composed
  * for the first time, and cleared when it goes out of scope.
  *
+ * **Therefore, it is not allowed to call [viewModel] with the same type from within multiple Composables.**
+ *
  * @param modelClass The class of the [ViewModel] to create an instance of it if it is not
  * present.
  * @param viewModelProvider The scope that the created [ViewModel] should be associated with.
@@ -76,10 +78,10 @@ fun <VM : ViewModel> viewModel(
     val viewModel = viewModelProvider.get(modelClass, key)
 
     DisposableEffect(key) {
-        viewModel.onInit()
+        viewModel.onEnterComposition()
 
         onDispose {
-            viewModel.onCleared()
+            viewModel.onExitComposition()
         }
     }
 
@@ -95,3 +97,10 @@ fun <T> MutableState<T>.asState(): State<T> = this
  * Returns this [SnapshotStateList] as an immutable [List].
  */
 fun <T> SnapshotStateList<T>.asList(): List<T> = this
+
+/**
+ * Update the [MutableState] with the given [transformation] on its value.
+ */
+inline fun <T> MutableState<T>.update(transformation: T.() -> T) {
+    value = value.run(transformation)
+}

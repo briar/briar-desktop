@@ -83,13 +83,13 @@ class ForumViewModel @Inject constructor(
         // since the threadViewModel is tightly coupled to the ForumViewModel
         // and not injected using the usual `viewModel()` approach,
         // we have to manually call the functions for (de)initialization
-        threadViewModel.onInit()
+        threadViewModel.onEnterComposition()
         loadGroups()
     }
 
     override fun onCleared() {
         super.onCleared()
-        threadViewModel.onCleared()
+        threadViewModel.onExitComposition()
     }
 
     override fun eventOccurred(e: Event) {

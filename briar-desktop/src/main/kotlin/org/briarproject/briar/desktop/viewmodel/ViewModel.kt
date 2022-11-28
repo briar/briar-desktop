@@ -18,17 +18,55 @@
 
 package org.briarproject.briar.desktop.viewmodel
 
-interface ViewModel {
+abstract class ViewModel {
+
+    private var inComposition = false
 
     /**
      * Called to initialize the [ViewModel] as soon as it is first used
      * inside a Composable function.
+     *
+     * If you want to specify initialization code, overwrite [onInit] instead.
      */
-    fun onInit() {}
+    fun onEnterComposition() {
+        if (inComposition)
+            throw RuntimeException("Injecting the same instance of ${this::class.simpleName} in different Composables is not permitted.")
+        inComposition = true
+        onInit()
+    }
 
     /**
      * Called to clear the [ViewModel] as soon as the calling
      * Composable function goes out of scope.
+     *
+     * If you want to specify de-initialization code, overwrite [onCleared] instead.
      */
-    fun onCleared() {}
+    fun onExitComposition() {
+        if (!inComposition)
+            throw RuntimeException("Wrong use of ViewModel.")
+        inComposition = false
+        onCleared()
+    }
+
+    /**
+     * Called to initialize the [ViewModel] as soon as it is first used
+     * inside a Composable function.
+     *
+     * This function can be overridden in child classes,
+     * but implementations should always call `super.onInit()` first.
+     *
+     * Apart from that, **do not call this function manually anywhere.**
+     */
+    open fun onInit() {}
+
+    /**
+     * Called to clear the [ViewModel] as soon as the calling
+     * Composable function goes out of scope.
+     *
+     * This function can be overridden in child classes,
+     * but implementations should always call `super.onInit()` first.
+     *
+     * Apart from that, **do not call this function manually anywhere.**
+     */
+    open fun onCleared() {}
 }

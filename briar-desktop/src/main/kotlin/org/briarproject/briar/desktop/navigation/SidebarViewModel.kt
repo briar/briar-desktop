@@ -30,7 +30,7 @@ class SidebarViewModel
 @Inject
 constructor(
     private val identityManager: IdentityManager,
-) : ViewModel {
+) : ViewModel() {
 
     override fun onInit() {
         loadAccountInfo()

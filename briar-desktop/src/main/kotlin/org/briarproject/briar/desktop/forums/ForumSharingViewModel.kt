@@ -44,7 +44,9 @@ import org.briarproject.briar.desktop.utils.clearAndAddAll
 import org.briarproject.briar.desktop.utils.removeFirst
 import org.briarproject.briar.desktop.utils.replaceFirst
 import org.briarproject.briar.desktop.viewmodel.EventListenerDbViewModel
+import org.briarproject.briar.desktop.viewmodel.asList
 import org.briarproject.briar.desktop.viewmodel.asState
+import org.briarproject.briar.desktop.viewmodel.update
 import javax.inject.Inject
 
 class ForumSharingViewModel @Inject constructor(
@@ -67,7 +69,7 @@ class ForumSharingViewModel @Inject constructor(
     private lateinit var groupId: GroupId
 
     private val _currentlySharedWith = mutableStateListOf<ContactItem>()
-    val currentlySharedWith: List<ContactItem> = _currentlySharedWith
+    val currentlySharedWith = _currentlySharedWith.asList()
 
     private val _sharingInfo = mutableStateOf(SharingInfo(0, 0))
     val sharingInfo = _sharingInfo.asState()
@@ -96,28 +98,28 @@ class ForumSharingViewModel @Inject constructor(
                     )
                     txn.attach {
                         _currentlySharedWith.add(item)
-                        _sharingInfo.value = _sharingInfo.value.addContact(connected)
+                        _sharingInfo.update { addContact(connected) }
                     }
                 }
 
             e is ContactLeftShareableEvent && e.groupId == groupId -> {
                 _currentlySharedWith.removeFirst { it.idWrapper.contactId == e.contactId }
                 val connected = connectionRegistry.isConnected(e.contactId)
-                _sharingInfo.value = _sharingInfo.value.removeContact(connected)
+                _sharingInfo.update { removeContact(connected) }
             }
 
             e is ContactConnectedEvent -> {
                 val isMember = _currentlySharedWith.replaceFirst({ it.idWrapper.contactId == e.contactId }) {
                     it.updateIsConnected(true)
                 }
-                if (isMember) _sharingInfo.value = _sharingInfo.value.updateContactConnected(true)
+                if (isMember) _sharingInfo.update { updateContactConnected(true) }
             }
 
             e is ContactDisconnectedEvent -> {
                 val isMember = _currentlySharedWith.replaceFirst({ it.idWrapper.contactId == e.contactId }) {
                     it.updateIsConnected(false)
                 }
-                if (isMember) _sharingInfo.value = _sharingInfo.value.updateContactConnected(false)
+                if (isMember) _sharingInfo.update { updateContactConnected(false) }
             }
         }
     }

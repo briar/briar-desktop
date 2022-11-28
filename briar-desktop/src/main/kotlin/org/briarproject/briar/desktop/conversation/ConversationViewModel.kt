@@ -73,6 +73,7 @@ import org.briarproject.briar.desktop.viewmodel.EventListenerDbViewModel
 import org.briarproject.briar.desktop.viewmodel.SingleStateEvent
 import org.briarproject.briar.desktop.viewmodel.asList
 import org.briarproject.briar.desktop.viewmodel.asState
+import org.briarproject.briar.desktop.viewmodel.update
 import javax.inject.Inject
 import kotlin.concurrent.thread
 
@@ -373,13 +374,13 @@ constructor(
             is ContactConnectedEvent -> {
                 if (e.contactId == _contactId.value) {
                     LOG.i { "Contact connected" }
-                    _contactItem.value = _contactItem.value!!.updateIsConnected(true)
+                    _contactItem.update { this?.updateIsConnected(true) }
                 }
             }
             is ContactDisconnectedEvent -> {
                 if (e.contactId == _contactId.value) {
                     LOG.i { "Contact disconnected" }
-                    _contactItem.value = _contactItem.value!!.updateIsConnected(false)
+                    _contactItem.update { this?.updateIsConnected(false) }
                 }
             }
             is ClientVersionUpdatedEvent -> {
@@ -459,7 +460,7 @@ constructor(
         val newAlias = _newAlias.value.ifBlank { null }
         if (_contactId.value != null && contactItem.value != null) {
             contactManager.setContactAlias(_contactId.value!!, newAlias)
-            _contactItem.value = contactItem.value!!.updateAlias(newAlias)
+            _contactItem.update { this?.updateAlias(newAlias) }
         }
     }
 

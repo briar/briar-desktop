@@ -165,7 +165,7 @@ private fun PreviewUtils.PreviewScope.mapErrors(name: String?): AddContactError?
 
 @Composable
 fun AddContactDialog(
-    viewModel: AddContactViewModel = viewModel(),
+    viewModel: AddContactViewModel,
 ) = AddContactDialog(
     viewModel::dismissDialog,
     viewModel.visible.value,

@@ -28,7 +28,7 @@ abstract class DbViewModel(
     private val briarExecutors: BriarExecutors,
     private val lifecycleManager: LifecycleManager,
     private val db: TransactionManager,
-) : ViewModel {
+) : ViewModel() {
 
     /**
      * Waits for the DB to open and runs the given [task] on the [DatabaseExecutor].

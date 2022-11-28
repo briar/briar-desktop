@@ -52,7 +52,7 @@ import org.briarproject.briar.desktop.viewmodel.viewModel
 fun ForumSharingDrawerContent(
     groupId: GroupId,
     close: () -> Unit,
-    viewModel: ForumSharingViewModel = viewModel(),
+    viewModel: ForumSharingViewModel,
 ) = Column {
     LaunchedEffect(groupId) {
         viewModel.setGroupId(groupId)

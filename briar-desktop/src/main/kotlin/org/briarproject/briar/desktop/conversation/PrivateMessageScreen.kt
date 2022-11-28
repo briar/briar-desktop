@@ -55,7 +55,7 @@ fun PrivateMessageScreen(
     viewModel: ContactListViewModel = viewModel(),
     addContactViewModel: AddContactViewModel = viewModel(),
 ) {
-    AddContactDialog()
+    AddContactDialog(addContactViewModel)
 
     ConfirmRemovePendingContactDialog(
         viewModel.removePendingContactDialogVisible.value,
