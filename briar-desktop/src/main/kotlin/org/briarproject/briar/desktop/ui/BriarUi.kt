@@ -47,12 +47,15 @@ import org.briarproject.bramble.api.lifecycle.event.LifecycleEvent
 import org.briarproject.briar.desktop.expiration.ExpirationBanner
 import org.briarproject.briar.desktop.login.ErrorScreen
 import org.briarproject.briar.desktop.login.StartupScreen
+import org.briarproject.briar.desktop.notification.NotificationProvider
 import org.briarproject.briar.desktop.notification.SoundNotificationProvider
 import org.briarproject.briar.desktop.notification.VisualNotificationProvider
 import org.briarproject.briar.desktop.settings.Configuration
 import org.briarproject.briar.desktop.settings.UnencryptedSettings.Theme.AUTO
 import org.briarproject.briar.desktop.settings.UnencryptedSettings.Theme.DARK
 import org.briarproject.briar.desktop.theme.BriarTheme
+import org.briarproject.briar.desktop.ui.MessageCounterDataType.Forum
+import org.briarproject.briar.desktop.ui.MessageCounterDataType.PrivateMessage
 import org.briarproject.briar.desktop.ui.Screen.EXPIRED
 import org.briarproject.briar.desktop.ui.Screen.MAIN
 import org.briarproject.briar.desktop.ui.Screen.STARTUP
@@ -136,7 +139,8 @@ constructor(
             DisposableEffect(Unit) {
 
                 val notificationCoolDown = 5.seconds.inWholeMilliseconds
-                var lastNotification = 0L
+                var lastNotificationPrivateMessage = 0L
+                var lastNotificationForum = 0L
 
                 val eventListener = EventListener { e ->
                     when (e) {
@@ -153,19 +157,29 @@ constructor(
                     override fun windowLostFocus(e: WindowEvent?) {
                         focusState.focused = false
                         // reset notification cool-down
-                        lastNotification = 0
+                        lastNotificationPrivateMessage = 0
+                        lastNotificationForum = 0
                     }
                 }
-                val messageCounterListener: MessageCounterListener = { (total, contacts) ->
+                val messageCounterListener: MessageCounterListener = { (type, total, groups) ->
                     if (total > 0 && !focusState.focused) {
+                        val callback: NotificationProvider.() -> Unit = when (type) {
+                            PrivateMessage -> { { notifyPrivateMessages(total, groups) } }
+                            Forum -> { { notifyForumPosts(total, groups) } }
+                        }
+                        val (lastNotification, setLastNotification) = when (type) {
+                            PrivateMessage -> lastNotificationPrivateMessage to { v: Long -> lastNotificationPrivateMessage = v }
+                            Forum -> lastNotificationForum to { v: Long -> lastNotificationForum = v }
+                        }
+
                         window.iconImage = iconBadge
                         val currentTime = System.currentTimeMillis()
                         if (currentTime - lastNotification > notificationCoolDown) {
                             if (configuration.visualNotifications)
-                                visualNotificationProvider.notifyPrivateMessages(total, contacts)
+                                visualNotificationProvider.apply(callback)
                             if (configuration.soundNotifications)
-                                soundNotificationProvider.notifyPrivateMessages(total, contacts)
-                            lastNotification = currentTime
+                                soundNotificationProvider.apply(callback)
+                            setLastNotification(currentTime)
                         }
                     }
                 }

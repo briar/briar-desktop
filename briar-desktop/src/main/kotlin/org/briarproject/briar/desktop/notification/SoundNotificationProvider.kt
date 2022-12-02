@@ -51,7 +51,10 @@ object SoundNotificationProvider : NotificationProvider {
         }
     }
 
-    override fun notifyPrivateMessages(num: Int, contacts: Int) {
+    private fun playSound() {
         if (available) sound.play()
     }
+
+    override fun notifyPrivateMessages(num: Int, contacts: Int) = playSound()
+    override fun notifyForumPosts(num: Int, forums: Int) = playSound()
 }

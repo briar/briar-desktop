@@ -82,7 +82,7 @@ object LibnotifyNotificationProvider : VisualNotificationProvider {
         }
     }
 
-    override fun notifyPrivateMessages(num: Int, contacts: Int) {
+    private fun sendNotification(text: String) {
         if (!available) return
 
         /**
@@ -95,10 +95,6 @@ object LibnotifyNotificationProvider : VisualNotificationProvider {
          * The summary must be encoded using UTF-8.
          */
         // todo: we could use body instead with markup (where supported)
-        val text = if (contacts == 1)
-            i18nP("notifications.message.private.one_chat", num)
-        else
-            i18nF("notifications.message.private.several_chats", num, contacts)
         val notification = libNotify.notify_notification_new(text, null, null)
 
         /**
@@ -134,6 +130,20 @@ object LibnotifyNotificationProvider : VisualNotificationProvider {
             LOG.e { "error code: ${error.code}, message: '${error.message}'" }
         }
     }
+
+    override fun notifyPrivateMessages(num: Int, contacts: Int) = sendNotification(
+        if (contacts == 1)
+            i18nP("notifications.message.private.one_chat", num)
+        else
+            i18nF("notifications.message.private.several_chats", num, contacts)
+    )
+
+    override fun notifyForumPosts(num: Int, forums: Int) = sendNotification(
+        if (forums == 1)
+            i18nP("notifications.message.forum.one_forum", num)
+        else
+            i18nF("notifications.message.forum.several_forums", num, forums)
+    )
 
     /**
      * Functions as defined in the source code at

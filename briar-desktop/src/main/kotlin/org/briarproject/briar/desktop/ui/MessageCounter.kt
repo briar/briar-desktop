@@ -25,9 +25,12 @@ interface MessageCounter {
     fun removeListener(listener: MessageCounterListener): Boolean
 }
 
+enum class MessageCounterDataType { PrivateMessage, Forum }
+
 data class MessageCounterData(
+    val type: MessageCounterDataType,
     val total: Int,
-    val contacts: Int,
+    val groups: Int,
 )
 
 typealias MessageCounterListener = (MessageCounterData) -> Unit

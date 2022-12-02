@@ -24,10 +24,16 @@ import org.briarproject.bramble.api.contact.ContactManager
 import org.briarproject.bramble.api.event.EventBus
 import org.briarproject.bramble.api.lifecycle.LifecycleManager.LifecycleState.RUNNING
 import org.briarproject.bramble.api.lifecycle.event.LifecycleEvent
+import org.briarproject.bramble.api.sync.GroupId
 import org.briarproject.briar.api.conversation.ConversationManager
 import org.briarproject.briar.api.conversation.event.ConversationMessageReceivedEvent
+import org.briarproject.briar.api.forum.ForumManager
+import org.briarproject.briar.api.forum.event.ForumPostReceivedEvent
 import org.briarproject.briar.desktop.conversation.ConversationMessagesReadEvent
+import org.briarproject.briar.desktop.forums.ForumPostReadEvent
 import org.briarproject.briar.desktop.threading.BriarExecutors
+import org.briarproject.briar.desktop.ui.MessageCounterDataType.Forum
+import org.briarproject.briar.desktop.ui.MessageCounterDataType.PrivateMessage
 import javax.inject.Inject
 
 class MessageCounterImpl
@@ -35,11 +41,13 @@ class MessageCounterImpl
 constructor(
     private val contactManager: ContactManager,
     private val conversationManager: ConversationManager,
+    private val forumManager: ForumManager,
     private val briarExecutors: BriarExecutors,
     eventBus: EventBus,
 ) : MessageCounter {
 
-    private val messageCount = Multiset<ContactId>()
+    private val countPrivateMessages = Multiset<ContactId>()
+    private val countForumPosts = Multiset<GroupId>()
 
     private val listeners = mutableListOf<MessageCounterListener>()
 
@@ -52,19 +60,36 @@ constructor(
                             val contacts = contactManager.getContacts(txn)
                             for (c in contacts) {
                                 val unreadMessages = conversationManager.getGroupCount(txn, c.id).unreadCount
-                                messageCount.addCount(c.id, unreadMessages)
+                                countPrivateMessages.addCount(c.id, unreadMessages)
                             }
-                            txn.attach { informListeners() }
+                            val forums = forumManager.getForums(txn)
+                            for (f in forums) {
+                                val unreadMessages = forumManager.getGroupCount(txn, f.id).unreadCount
+                                countForumPosts.addCount(f.id, unreadMessages)
+                            }
+                            txn.attach {
+                                informListeners(PrivateMessage)
+                                informListeners(Forum)
+                            }
                         }
                     }
 
                 is ConversationMessageReceivedEvent<*> -> {
-                    messageCount.add(e.contactId)
-                    informListeners()
+                    countPrivateMessages.add(e.contactId)
+                    informListeners(PrivateMessage)
                 }
 
                 is ConversationMessagesReadEvent -> {
-                    messageCount.removeCount(e.contactId, e.count)
+                    countPrivateMessages.removeCount(e.contactId, e.count)
+                }
+
+                is ForumPostReceivedEvent -> {
+                    countForumPosts.add(e.groupId)
+                    informListeners(Forum)
+                }
+
+                is ForumPostReadEvent -> {
+                    countForumPosts.removeCount(e.groupId, e.numMarkedRead)
                 }
             }
         }
@@ -74,8 +99,12 @@ constructor(
 
     override fun removeListener(listener: MessageCounterListener) = listeners.remove(listener)
 
-    private fun informListeners() = listeners.forEach { l ->
-        l.invoke(MessageCounterData(messageCount.total, messageCount.unique))
+    private fun informListeners(type: MessageCounterDataType) = listeners.forEach { l ->
+        val groupCount = when (type) {
+            PrivateMessage -> countPrivateMessages
+            Forum -> countForumPosts
+        }
+        l.invoke(MessageCounterData(type, groupCount.total, groupCount.unique))
     }
 
     private fun <T> Multiset<T>.removeCount(t: T, count: Int) =
