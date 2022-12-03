@@ -18,29 +18,53 @@
 
 package org.briarproject.briar.desktop.navigation
 
-import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import org.briarproject.bramble.api.identity.IdentityManager
 import org.briarproject.bramble.api.identity.LocalAuthor
+import org.briarproject.briar.desktop.ui.MessageCounter
+import org.briarproject.briar.desktop.ui.MessageCounterData
+import org.briarproject.briar.desktop.ui.MessageCounterDataType.Forum
+import org.briarproject.briar.desktop.ui.MessageCounterDataType.PrivateMessage
 import org.briarproject.briar.desktop.ui.UiMode
 import org.briarproject.briar.desktop.viewmodel.ViewModel
+import org.briarproject.briar.desktop.viewmodel.asState
+import org.briarproject.briar.desktop.viewmodel.update
 import javax.inject.Inject
 
 class SidebarViewModel
 @Inject
 constructor(
     private val identityManager: IdentityManager,
+    private val messageCounter: MessageCounter,
 ) : ViewModel() {
-
     override fun onInit() {
+        super.onInit()
         loadAccountInfo()
+        messageCounter.addListener(this::onMessageCounterUpdated)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        messageCounter.removeListener(this::onMessageCounterUpdated)
+    }
+
+    private fun onMessageCounterUpdated(data: MessageCounterData) {
+        val (type, count) = data
+        when (type) {
+            PrivateMessage -> _messageCount.update { copy(privateMessages = count) }
+            Forum -> _messageCount.update { copy(forumPosts = count) }
+        }
     }
 
     private var _uiMode = mutableStateOf(UiMode.CONTACTS)
     private var _account = mutableStateOf<LocalAuthor?>(null)
 
-    val uiMode: State<UiMode> = _uiMode
-    val account: State<LocalAuthor?> = _account
+    private var _messageCount = mutableStateOf(MessageCount())
+
+    val uiMode = _uiMode.asState()
+    val account = _account.asState()
+
+    val messageCount = _messageCount.asState()
 
     fun setUiMode(uiMode: UiMode) {
         _uiMode.value = uiMode
@@ -49,4 +73,9 @@ constructor(
     fun loadAccountInfo() {
         _account.value = identityManager.localAuthor
     }
+
+    data class MessageCount(
+        val privateMessages: Int = 0,
+        val forumPosts: Int = 0,
+    )
 }

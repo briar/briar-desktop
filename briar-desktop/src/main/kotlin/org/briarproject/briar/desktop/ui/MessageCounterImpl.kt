@@ -68,28 +68,30 @@ constructor(
                                 countForumPosts.addCount(f.id, unreadMessages)
                             }
                             txn.attach {
-                                informListeners(PrivateMessage)
-                                informListeners(Forum)
+                                informListeners(PrivateMessage, true)
+                                informListeners(Forum, true)
                             }
                         }
                     }
 
                 is ConversationMessageReceivedEvent<*> -> {
                     countPrivateMessages.add(e.contactId)
-                    informListeners(PrivateMessage)
+                    informListeners(PrivateMessage, true)
                 }
 
                 is ConversationMessagesReadEvent -> {
                     countPrivateMessages.removeCount(e.contactId, e.count)
+                    informListeners(PrivateMessage, false)
                 }
 
                 is ForumPostReceivedEvent -> {
                     countForumPosts.add(e.groupId)
-                    informListeners(Forum)
+                    informListeners(Forum, true)
                 }
 
                 is ForumPostReadEvent -> {
                     countForumPosts.removeCount(e.groupId, e.numMarkedRead)
+                    informListeners(Forum, false)
                 }
             }
         }
@@ -99,12 +101,12 @@ constructor(
 
     override fun removeListener(listener: MessageCounterListener) = listeners.remove(listener)
 
-    private fun informListeners(type: MessageCounterDataType) = listeners.forEach { l ->
+    private fun informListeners(type: MessageCounterDataType, increment: Boolean) = listeners.forEach { l ->
         val groupCount = when (type) {
             PrivateMessage -> countPrivateMessages
             Forum -> countForumPosts
         }
-        l.invoke(MessageCounterData(type, groupCount.total, groupCount.unique))
+        l.invoke(MessageCounterData(type, groupCount.total, groupCount.unique, increment))
     }
 
     private fun <T> Multiset<T>.removeCount(t: T, count: Int) =

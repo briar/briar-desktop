@@ -18,11 +18,14 @@
 
 package org.briarproject.briar.desktop.navigation
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material.IconButton
@@ -55,20 +58,26 @@ fun BriarSidebar(
     account: LocalAuthor?,
     uiMode: UiMode,
     setUiMode: (UiMode) -> Unit,
+    messageCount: SidebarViewModel.MessageCount,
 ) {
-    val displayButton = @Composable { selectedMode: UiMode, mode: UiMode, icon: ImageVector ->
-        BriarSidebarButton(
-            selectedMode == mode,
-            { setUiMode(mode) },
-            icon,
-            i18n(mode.contentDescriptionKey)
-        )
-    }
+    @Composable
+    fun BriarSidebarButton(
+        mode: UiMode,
+        icon: ImageVector,
+        messageCount: Int = 0,
+    ) = BriarSidebarButton(
+        uiMode == mode,
+        { setUiMode(mode) },
+        icon,
+        i18n(mode.contentDescriptionKey),
+        messageCount
+    )
 
     Surface(
         modifier = Modifier.width(SIDEBAR_WIDTH).fillMaxHeight().selectableGroup(),
         color = MaterialTheme.colors.sidebarSurface
     ) {
+        val configuration = getConfiguration()
         Column(verticalArrangement = Arrangement.Top) {
             // profile button
             Box(
@@ -76,44 +85,19 @@ fun BriarSidebar(
             ) {
                 account?.let { ProfileCircle(size = 45.dp, it.id.bytes) }
             }
-            val modes = buildList {
-                add(Pair(UiMode.CONTACTS, Icons.Filled.Contacts))
-                val configuration = getConfiguration()
-                if (configuration.shouldEnablePrivateGroups()) add(Pair(UiMode.GROUPS, Icons.Filled.Group))
-                if (configuration.shouldEnableForums()) add(Pair(UiMode.FORUMS, Icons.Filled.Forum))
-                if (configuration.shouldEnableBlogs()) add(Pair(UiMode.BLOGS, Icons.Filled.ChromeReaderMode))
-            }
-            modes.forEach { (mode, icon) ->
-                displayButton(uiMode, mode, icon)
-            }
+
+            BriarSidebarButton(UiMode.CONTACTS, Icons.Filled.Contacts, messageCount.privateMessages)
+            if (configuration.shouldEnablePrivateGroups()) BriarSidebarButton(UiMode.GROUPS, Icons.Filled.Group)
+            if (configuration.shouldEnableForums()) BriarSidebarButton(UiMode.FORUMS, Icons.Filled.Forum, messageCount.forumPosts)
+            if (configuration.shouldEnableBlogs()) BriarSidebarButton(UiMode.BLOGS, Icons.Filled.ChromeReaderMode)
         }
         Column(verticalArrangement = Arrangement.Bottom) {
-            val modes = buildList {
-                val configuration = getConfiguration()
-                if (configuration.shouldEnableTransportSettings()) add(
-                    Pair(UiMode.TRANSPORTS, Icons.Filled.WifiTethering)
-                )
-                add(Pair(UiMode.SETTINGS, Icons.Filled.Settings))
-                add(Pair(UiMode.ABOUT, Icons.Filled.Info))
-            }
-            modes.forEach { (mode, icon) ->
-                displayButton(uiMode, mode, icon)
-            }
+            if (configuration.shouldEnableTransportSettings()) BriarSidebarButton(UiMode.TRANSPORTS, Icons.Filled.WifiTethering)
+            BriarSidebarButton(UiMode.SETTINGS, Icons.Filled.Settings)
+            BriarSidebarButton(UiMode.ABOUT, Icons.Filled.Info)
         }
     }
 }
-
-@Composable
-fun BriarSidebarButton(
-    mode: UiMode,
-    currentMode: UiMode,
-    setUiMode: (UiMode) -> Unit,
-) = BriarSidebarButton(
-    currentMode == mode,
-    { setUiMode(mode) },
-    mode.icon,
-    i18n(mode.contentDescriptionKey)
-)
 
 @Composable
 fun BriarSidebarButton(
@@ -121,7 +105,8 @@ fun BriarSidebarButton(
     onClick: () -> Unit,
     icon: ImageVector,
     contentDescription: String,
-) {
+    messageCount: Int,
+) = Box {
     val tint = if (selected) MaterialTheme.colors.primary else MaterialTheme.colors.onSurface
     IconButton(
         icon = icon,
@@ -131,4 +116,10 @@ fun BriarSidebarButton(
         onClick = onClick,
         modifier = Modifier.padding(vertical = 4.dp, horizontal = 12.dp),
     )
+    if (messageCount > 0) {
+        val color = MaterialTheme.colors.secondary
+        Canvas(modifier = Modifier.align(Alignment.TopEnd).requiredSize(12.dp).offset((-12).dp, 12.dp)) {
+            drawCircle(color)
+        }
+    }
 }

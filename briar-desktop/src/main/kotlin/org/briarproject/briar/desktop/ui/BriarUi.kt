@@ -161,8 +161,8 @@ constructor(
                         lastNotificationForum = 0
                     }
                 }
-                val messageCounterListener: MessageCounterListener = { (type, total, groups) ->
-                    if (total > 0 && !focusState.focused) {
+                val messageCounterListener: MessageCounterListener = { (type, total, groups, inc) ->
+                    if (inc && total > 0 && !focusState.focused) {
                         val callback: NotificationProvider.() -> Unit = when (type) {
                             PrivateMessage -> { { notifyPrivateMessages(total, groups) } }
                             Forum -> { { notifyForumPosts(total, groups) } }

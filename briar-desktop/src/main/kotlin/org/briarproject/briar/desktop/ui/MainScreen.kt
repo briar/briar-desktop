@@ -55,6 +55,7 @@ fun MainScreen(viewModel: SidebarViewModel = viewModel()) {
                     viewModel.account.value,
                     viewModel.uiMode.value,
                     viewModel::setUiMode,
+                    viewModel.messageCount.value,
                 )
                 VerticalDivider()
                 when (viewModel.uiMode.value) {

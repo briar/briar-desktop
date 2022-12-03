@@ -27,10 +27,26 @@ interface MessageCounter {
 
 enum class MessageCounterDataType { PrivateMessage, Forum }
 
+/**
+ * Data holder for MessageCounter updates.
+ */
 data class MessageCounterData(
+    /**
+     * Type of unread messages.
+     */
     val type: MessageCounterDataType,
+    /**
+     * Sum of all unread messages of the given [type].
+     */
     val total: Int,
+    /**
+     * Amount of different private chats/groups/forums (depending on [type]) with unread messages.
+     */
     val groups: Int,
+    /**
+     * If `true`, [total] has increased since the last time the listeners were informed.
+     */
+    val increment: Boolean,
 )
 
 typealias MessageCounterListener = (MessageCounterData) -> Unit
