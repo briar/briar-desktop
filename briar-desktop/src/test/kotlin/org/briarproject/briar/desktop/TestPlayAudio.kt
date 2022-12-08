@@ -18,14 +18,11 @@
 
 package org.briarproject.briar.desktop
 
-import org.briarproject.briar.desktop.notification.SoundNotificationProvider
 import org.briarproject.briar.desktop.utils.AudioUtils
 import org.briarproject.briar.desktop.utils.AudioUtils.play
-import javax.sound.sampled.AudioFormat
-import javax.sound.sampled.AudioSystem
 
 fun main() {
-    val sound = AudioUtils.loadAudioFromResource("/audio/example.wav") ?: throw Exception()
+    val sound = AudioUtils.loadAudioFromResource("/audio/test.wav") ?: throw Exception()
     sound.play()
     Thread.sleep(10000)
 }
