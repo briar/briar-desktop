@@ -25,6 +25,7 @@ import javax.sound.sampled.AudioFormat
 import javax.sound.sampled.AudioSystem
 
 fun main() {
-    val sound = AudioUtils.loadAudioFromResource("/audio/notification.wav") ?: throw Exception()
+    val sound = AudioUtils.loadAudioFromResource("/audio/example.wav") ?: throw Exception()
     sound.play()
+    Thread.sleep(10000)
 }
