@@ -39,6 +39,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="1.8">
+      <module name="app.briar.desktop.briar-desktop.briar-desktop.automatedScreenshots" target="17" />
       <module name="briar-desktop.desktop.main" target="17" />
       <module name="briar-desktop.desktop.test" target="17" />
     </bytecodeTargetLevel>

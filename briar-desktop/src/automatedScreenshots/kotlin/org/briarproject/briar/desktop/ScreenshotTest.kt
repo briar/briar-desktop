@@ -16,8 +16,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-// TODO: Remove when https://youtrack.jetbrains.com/issue/KTIJ-23114/ is fixed.
-@file:Suppress("invisible_reference", "invisible_member")
+// TODO: Remove `invisible_reference` and `invisible_member`
+//  when https://youtrack.jetbrains.com/issue/KTIJ-23114/ is fixed.
+@file:Suppress("invisible_reference", "invisible_member", "nls")
 
 package org.briarproject.briar.desktop
 
@@ -34,11 +35,10 @@ import androidx.compose.ui.test.runDesktopComposeUiTest
 import androidx.compose.ui.window.FrameWindowScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
+import org.apache.commons.io.FileUtils.deleteDirectory
 import org.briarproject.bramble.BrambleCoreEagerSingletons
 import org.briarproject.bramble.api.contact.event.ContactAddedEvent
 import org.briarproject.bramble.api.plugin.LanTcpConstants
-import org.briarproject.bramble.api.plugin.TorConstants.DEFAULT_CONTROL_PORT
-import org.briarproject.bramble.api.plugin.TorConstants.DEFAULT_SOCKS_PORT
 import org.briarproject.briar.BriarCoreEagerSingletons
 import org.briarproject.briar.desktop.TestUtils.getDataDir
 import org.briarproject.briar.desktop.contact.ContactListViewModel
@@ -58,14 +58,20 @@ class ScreenshotTest {
         val dataDir = getDataDir()
         val app =
             DaggerBriarDesktopTestApp.builder().desktopCoreModule(
-                DesktopCoreModule(dataDir, DEFAULT_SOCKS_PORT, DEFAULT_CONTROL_PORT)
+                DesktopCoreModule(dataDir)
             ).build()
+
+        app.getShutdownManager().addShutdownHook {
+            deleteDirectory(dataDir.toFile())
+        }
+
         // We need to load the eager singletons directly after making the
         // dependency graphs
         BrambleCoreEagerSingletons.Helper.injectEagerSingletons(app)
         BriarCoreEagerSingletons.Helper.injectEagerSingletons(app)
 
         val windowScope = object : FrameWindowScope {
+            // would be needed for launching dialogs like the image picker
             override val window: ComposeWindow get() = TODO()
         }
         val windowFocusState = WindowFocusState().apply { focused = true }
@@ -112,7 +118,7 @@ class ScreenshotTest {
 
                 getEventBus().addListener { e ->
                     if (e is ContactAddedEvent)
-                        if (getContactManager().getContact(e.contactId).author.name in listOf("Bob", "Chuck")) // NON-NLS
+                        if (getContactManager().getContact(e.contactId).author.name in listOf("Bob", "Chuck"))
                             getIoExecutor().execute {
                                 getConnectionRegistry().registerIncomingConnection(e.contactId, LanTcpConstants.ID) {}
                             }
@@ -120,18 +126,18 @@ class ScreenshotTest {
 
                 getDeterministicTestDataCreator().createTestData(5, 20, 50, 10, 20)
                 getContactManager().addPendingContact(
-                    "briar://aatkjq4seoualafpwh4cfckdzr4vpr4slk3bbvpxklf7y7lv4ajw6", // NON-NLS
-                    "Faythe" // NON-NLS
+                    "briar://aatkjq4seoualafpwh4cfckdzr4vpr4slk3bbvpxklf7y7lv4ajw6",
+                    "Faythe"
                 )
 
                 val viewModel = getViewModelProvider().get(ContactListViewModel::class)
 
                 // give IO executor some time to add contacts and messages
                 delay(10_000)
-                waitUntil(60_000) { viewModel.contactList.value.size > 2 }
+                waitUntil(60_000) { viewModel.combinedContactList.value.size > 2 }
 
                 // select Bob in list of contacts and wait for the chat history to load
-                viewModel.selectContact(viewModel.contactList.value[1])
+                viewModel.selectContact(viewModel.combinedContactList.value[1])
                 awaitIdle()
 
                 captureToImage().save("contact-list.png")

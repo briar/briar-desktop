@@ -141,10 +141,13 @@ tasks.test {
 
 // see https://docs.gradle.org/current/userguide/java_testing.html#sec:configuring_java_integration_tests
 sourceSets.create("automatedScreenshots") {
+    group = "verification"
+    description = "Create screenshots of the app."
+
     kotlin.srcDir("$projectDir/src/automatedScreenshots/kotlin")
     resources.srcDir("$projectDir/src/automatedScreenshots/resources")
-    compileClasspath += sourceSets.main.get().output + sourceSets.test.get().output
-    runtimeClasspath += sourceSets.main.get().output + sourceSets.test.get().output
+    compileClasspath += currentOs + sourceSets.main.get().output + sourceSets.test.get().output
+    runtimeClasspath += currentOs + sourceSets.main.get().output + sourceSets.test.get().output
 }
 
 configurations["automatedScreenshotsImplementation"].extendsFrom(configurations.testImplementation.get())
