@@ -23,13 +23,11 @@ import de.mobanisto.toast4j.Toaster
 import de.mobanisto.wintoast.WinToastTemplate.WinToastTemplateType
 import mu.KotlinLogging
 import org.briarproject.briar.desktop.BuildData
-import org.briarproject.briar.desktop.notification.VisualNotificationProvider
+import org.briarproject.briar.desktop.notification.AbstractNotificationProvider
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
-import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nF
-import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nP
 import org.briarproject.briar.desktop.utils.KLoggerUtils.e
 
-object Toast4jNotificationProvider : VisualNotificationProvider {
+object Toast4jNotificationProvider : AbstractNotificationProvider() {
 
     private val LOG = KotlinLogging.logger {}
 
@@ -62,27 +60,13 @@ object Toast4jNotificationProvider : VisualNotificationProvider {
         currentToast?.hide()
     }
 
-    var currentToast: ToastHandle? = null
+    private var currentToast: ToastHandle? = null
 
-    private fun sendNotification(text: String) {
+    override fun sendNotification(text: String) {
         currentToast?.hide()
         currentToast = toaster.showToast(
             ToastBuilder(WinToastTemplateType.ToastText01).setSilent()
                 .setLine1(text).build()
         )
     }
-
-    override fun notifyPrivateMessages(num: Int, contacts: Int) = sendNotification(
-        if (contacts == 1)
-            i18nP("notifications.message.private.one_chat", num)
-        else
-            i18nF("notifications.message.private.several_chats", num, contacts)
-    )
-
-    override fun notifyForumPosts(num: Int, forums: Int) = sendNotification(
-        if (forums == 1)
-            i18nP("notifications.message.forum.one_forum", num)
-        else
-            i18nF("notifications.message.forum.several_forums", num, forums)
-    )
 }

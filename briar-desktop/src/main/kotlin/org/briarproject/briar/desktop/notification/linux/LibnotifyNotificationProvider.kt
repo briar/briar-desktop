@@ -22,14 +22,12 @@ import com.sun.jna.Native
 import com.sun.jna.Pointer
 import com.sun.jna.ptr.PointerByReference
 import mu.KotlinLogging
-import org.briarproject.briar.desktop.notification.VisualNotificationProvider
+import org.briarproject.briar.desktop.notification.AbstractNotificationProvider
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
-import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nF
-import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nP
 import org.briarproject.briar.desktop.utils.KLoggerUtils.e
 import org.briarproject.briar.desktop.utils.KLoggerUtils.i
 
-object LibnotifyNotificationProvider : VisualNotificationProvider {
+object LibnotifyNotificationProvider : AbstractNotificationProvider() {
 
     private val LOG = KotlinLogging.logger {}
 
@@ -82,7 +80,7 @@ object LibnotifyNotificationProvider : VisualNotificationProvider {
         }
     }
 
-    private fun sendNotification(text: String) {
+    override fun sendNotification(text: String) {
         if (!available) return
 
         /**
@@ -130,20 +128,6 @@ object LibnotifyNotificationProvider : VisualNotificationProvider {
             LOG.e { "error code: ${error.code}, message: '${error.message}'" }
         }
     }
-
-    override fun notifyPrivateMessages(num: Int, contacts: Int) = sendNotification(
-        if (contacts == 1)
-            i18nP("notifications.message.private.one_chat", num)
-        else
-            i18nF("notifications.message.private.several_chats", num, contacts)
-    )
-
-    override fun notifyForumPosts(num: Int, forums: Int) = sendNotification(
-        if (forums == 1)
-            i18nP("notifications.message.forum.one_forum", num)
-        else
-            i18nF("notifications.message.forum.several_forums", num, forums)
-    )
 
     /**
      * Functions as defined in the source code at
