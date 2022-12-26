@@ -18,4 +18,10 @@
 
 package org.briarproject.briar.desktop.contact
 
-sealed interface ContactIdWrapper
+interface ContactListItem {
+    val displayName: String
+    val timestamp: Long
+    val wrapperId: ContactListItemId
+}
+
+interface ContactListItemId

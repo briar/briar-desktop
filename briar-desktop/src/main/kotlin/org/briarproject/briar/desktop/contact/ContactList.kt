@@ -36,22 +36,91 @@ import androidx.compose.material.Surface
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import org.briarproject.bramble.api.contact.ContactId
+import org.briarproject.bramble.api.contact.PendingContactId
+import org.briarproject.bramble.api.contact.PendingContactState
+import org.briarproject.bramble.api.identity.AuthorId
+import org.briarproject.briar.api.identity.AuthorInfo
+import org.briarproject.briar.desktop.contact.add.remote.PendingContactItem
+import org.briarproject.briar.desktop.contact.add.remote.PendingContactItemView
 import org.briarproject.briar.desktop.theme.surfaceVariant
 import org.briarproject.briar.desktop.ui.Constants.COLUMN_WIDTH
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
+import org.briarproject.briar.desktop.ui.ListItemView
 import org.briarproject.briar.desktop.ui.SearchTextField
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
+import org.briarproject.briar.desktop.utils.PreviewUtils.preview
+import java.time.Instant
+
+@Suppress("HardCodedStringLiteral")
+fun main() = preview {
+    val list = remember {
+        listOf(
+            ContactItem(
+                id = ContactId(0),
+                authorId = AuthorId(getRandomId()),
+                trustLevel = AuthorInfo.Status.VERIFIED,
+                name = "Maria",
+                alias = "Mary",
+                isConnected = true,
+                isEmpty = false,
+                unread = 2,
+                timestamp = Instant.now().toEpochMilli(),
+                avatar = null,
+            ),
+            PendingContactItem(
+                id = PendingContactId(getRandomId()),
+                alias = "Thomas",
+                timestamp = (Instant.now().minusSeconds(300)).toEpochMilli(),
+                state = PendingContactState.ADDING_CONTACT,
+            ),
+            ContactItem(
+                id = ContactId(1),
+                authorId = AuthorId(getRandomId()),
+                trustLevel = AuthorInfo.Status.UNVERIFIED,
+                name = "Anna",
+                alias = null,
+                isConnected = false,
+                isEmpty = true,
+                unread = 0,
+                timestamp = (Instant.now().minusSeconds(300)).toEpochMilli(),
+                avatar = null,
+            ),
+        )
+    }
+
+    val (selected, setSelected) = remember { mutableStateOf<ContactListItem?>(null) }
+    val (filterBy, setFilterBy) = remember { mutableStateOf("") }
+
+    val filteredList = remember(filterBy) {
+        list.filter {
+            it.displayName.contains(filterBy, ignoreCase = true)
+        }.sortedByDescending { it.timestamp }
+    }
+
+    ContactList(
+        contactList = filteredList,
+        isSelected = { selected == it },
+        selectContact = setSelected,
+        removePendingContact = {},
+        filterBy = filterBy,
+        setFilterBy = setFilterBy,
+        onContactAdd = {},
+    )
+}
 
 @Composable
 fun ContactList(
-    contactList: List<BaseContactItem>,
-    isSelected: (BaseContactItem) -> Boolean,
-    selectContact: (BaseContactItem) -> Unit,
+    contactList: List<ContactListItem>,
+    isSelected: (ContactListItem) -> Boolean,
+    selectContact: (ContactListItem) -> Unit,
     removePendingContact: (PendingContactItem) -> Unit,
     filterBy: String,
     setFilterBy: (String) -> Unit,
@@ -86,17 +155,30 @@ fun ContactList(
                         }
                         .selectableGroup()
                 ) {
-                    items(contactList) { contactItem ->
-                        ContactCard(
-                            contactItem,
-                            onSel = { selectContact(contactItem) },
-                            selected = isSelected(contactItem),
-                            onRemovePending = {
-                                if (contactItem is PendingContactItem) {
-                                    removePendingContact(contactItem)
+                    items(
+                        items = contactList,
+                        key = { item -> item.wrapperId },
+                        contentType = { item -> item::class }
+                    ) { item ->
+                        ListItemView(
+                            onSelect = { selectContact(item) },
+                            selected = isSelected(item),
+                        ) {
+                            when (item) {
+                                is ContactItem -> {
+                                    ContactItemView(item)
                                 }
-                            },
-                        )
+
+                                is PendingContactItem -> {
+                                    PendingContactItemView(
+                                        contactItem = item,
+                                        onRemove = {
+                                            removePendingContact(item)
+                                        },
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
 

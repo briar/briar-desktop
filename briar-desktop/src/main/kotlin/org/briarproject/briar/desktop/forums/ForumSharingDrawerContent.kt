@@ -42,11 +42,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.briarproject.bramble.api.sync.GroupId
-import org.briarproject.briar.desktop.contact.ContactCard
+import org.briarproject.briar.desktop.contact.ContactItemViewSmall
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
 import org.briarproject.briar.desktop.ui.HorizontalDivider
+import org.briarproject.briar.desktop.ui.ListItemView
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
-import org.briarproject.briar.desktop.viewmodel.viewModel
 
 @Composable
 fun ForumSharingDrawerContent(
@@ -97,12 +97,9 @@ fun ForumSharingDrawerContent(
         } else {
             LazyColumn {
                 items(viewModel.currentlySharedWith) { contactItem ->
-                    ContactCard(
-                        contactItem,
-                        onSel = {},
-                        selected = false,
-                        onRemovePending = {},
-                    )
+                    ListItemView {
+                        ContactItemViewSmall(contactItem)
+                    }
                 }
             }
         }

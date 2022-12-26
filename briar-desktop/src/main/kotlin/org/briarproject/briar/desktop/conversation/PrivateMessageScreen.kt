@@ -37,12 +37,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import org.briarproject.briar.desktop.contact.ConfirmRemovePendingContactDialog
+import org.briarproject.briar.desktop.contact.ContactItem
 import org.briarproject.briar.desktop.contact.ContactList
 import org.briarproject.briar.desktop.contact.ContactListViewModel
-import org.briarproject.briar.desktop.contact.PendingContactIdWrapper
-import org.briarproject.briar.desktop.contact.RealContactIdWrapper
 import org.briarproject.briar.desktop.contact.add.remote.AddContactDialog
 import org.briarproject.briar.desktop.contact.add.remote.AddContactViewModel
+import org.briarproject.briar.desktop.contact.add.remote.PendingContactItem
 import org.briarproject.briar.desktop.ui.BriarLogo
 import org.briarproject.briar.desktop.ui.ColoredIconButton
 import org.briarproject.briar.desktop.ui.Constants.PARAGRAPH_WIDTH
@@ -70,7 +70,7 @@ fun PrivateMessageScreen(
 
     Row(modifier = Modifier.fillMaxWidth()) {
         ContactList(
-            viewModel.contactList.value,
+            viewModel.combinedContactList.value,
             viewModel::isSelected,
             viewModel::selectContact,
             viewModel::removePendingContact,
@@ -80,14 +80,14 @@ fun PrivateMessageScreen(
         )
         VerticalDivider()
         Column(modifier = Modifier.weight(1f).fillMaxHeight()) {
-            val id = viewModel.selectedContactId.value
-            if (id == null) {
+            val wrapperId = viewModel.selectedContactId.value
+            if (wrapperId == null) {
                 NoContactSelected()
-            } else when (id) {
-                is RealContactIdWrapper -> {
-                    ConversationScreen(id.contactId)
+            } else when (wrapperId) {
+                is ContactItem.Id -> {
+                    ConversationScreen(wrapperId.id)
                 }
-                is PendingContactIdWrapper -> {
+                is PendingContactItem.Id -> {
                     PendingContactSelected()
                 }
             }

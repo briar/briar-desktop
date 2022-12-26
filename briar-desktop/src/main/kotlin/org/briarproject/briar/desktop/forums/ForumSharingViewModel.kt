@@ -103,20 +103,20 @@ class ForumSharingViewModel @Inject constructor(
                 }
 
             e is ContactLeftShareableEvent && e.groupId == groupId -> {
-                _currentlySharedWith.removeFirst { it.idWrapper.contactId == e.contactId }
+                _currentlySharedWith.removeFirst { it.id == e.contactId }
                 val connected = connectionRegistry.isConnected(e.contactId)
                 _sharingInfo.update { removeContact(connected) }
             }
 
             e is ContactConnectedEvent -> {
-                val isMember = _currentlySharedWith.replaceFirst({ it.idWrapper.contactId == e.contactId }) {
+                val isMember = _currentlySharedWith.replaceFirst({ it.id == e.contactId }) {
                     it.updateIsConnected(true)
                 }
                 if (isMember) _sharingInfo.update { updateContactConnected(true) }
             }
 
             e is ContactDisconnectedEvent -> {
-                val isMember = _currentlySharedWith.replaceFirst({ it.idWrapper.contactId == e.contactId }) {
+                val isMember = _currentlySharedWith.replaceFirst({ it.id == e.contactId }) {
                     it.updateIsConnected(false)
                 }
                 if (isMember) _sharingInfo.update { updateContactConnected(false) }

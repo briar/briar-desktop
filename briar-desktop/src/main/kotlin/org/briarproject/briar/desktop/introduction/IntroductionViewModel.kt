@@ -18,6 +18,7 @@
 
 package org.briarproject.briar.desktop.introduction
 
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import org.briarproject.bramble.api.connection.ConnectionRegistry
 import org.briarproject.bramble.api.contact.ContactManager
@@ -28,7 +29,6 @@ import org.briarproject.briar.api.attachment.AttachmentReader
 import org.briarproject.briar.api.conversation.ConversationManager
 import org.briarproject.briar.api.identity.AuthorManager
 import org.briarproject.briar.api.introduction.IntroductionManager
-import org.briarproject.briar.desktop.contact.BaseContactItem
 import org.briarproject.briar.desktop.contact.ContactItem
 import org.briarproject.briar.desktop.contact.ContactsViewModel
 import org.briarproject.briar.desktop.threading.BriarExecutors
@@ -70,6 +70,12 @@ constructor(
     val secondScreen = _secondScreen.asState()
     val introductionMessage = _introductionMessage.asState()
 
+    val contactList = derivedStateOf {
+        _contactList.filter {
+            it.id != _firstContact.value?.id
+        }.sortedByDescending { it.displayName }
+    }
+
     fun setFirstContact(contactItem: ContactItem) {
         _firstContact.value = contactItem
         loadContacts()
@@ -90,12 +96,6 @@ constructor(
         _introductionMessage.value = msg
     }
 
-    override fun filterContactItem(contactItem: BaseContactItem): Boolean {
-        return if (contactItem is ContactItem) {
-            _firstContact.value?.idWrapper != contactItem.idWrapper
-        } else false
-    }
-
     fun makeIntroduction() {
         val c1 = requireNotNull(_firstContact.value)
         val c2 = requireNotNull(_secondContact.value)
@@ -104,8 +104,8 @@ constructor(
         val msg = _introductionMessage.value.ifEmpty { null }
 
         runOnDbThread {
-            val c1 = contactManager.getContact(c1.idWrapper.contactId)
-            val c2 = contactManager.getContact(c2.idWrapper.contactId)
+            val c1 = contactManager.getContact(c1.id)
+            val c2 = contactManager.getContact(c2.id)
             introductionManager.makeIntroduction(c1, c2, msg)
         }
     }

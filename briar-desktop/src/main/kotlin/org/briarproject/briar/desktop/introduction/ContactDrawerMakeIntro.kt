@@ -44,12 +44,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import org.briarproject.briar.desktop.contact.ContactCard
 import org.briarproject.briar.desktop.contact.ContactItem
+import org.briarproject.briar.desktop.contact.ContactItemView
 import org.briarproject.briar.desktop.contact.ProfileCircle
 import org.briarproject.briar.desktop.theme.surfaceVariant
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
 import org.briarproject.briar.desktop.ui.HorizontalDivider
+import org.briarproject.briar.desktop.ui.ListItemView
 import org.briarproject.briar.desktop.utils.InternationalizationUtils
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nF
@@ -83,13 +84,12 @@ fun ContactDrawerMakeIntro(
                 HorizontalDivider()
                 LazyColumn {
                     items(viewModel.contactList.value) { contactItem ->
-                        if (contactItem is ContactItem)
-                            ContactCard(
-                                contactItem,
-                                onSel = { viewModel.setSecondContact(contactItem) },
-                                selected = false,
-                                onRemovePending = {},
-                            )
+                        ListItemView(
+                            selected = false,
+                            onSelect = { viewModel.setSecondContact(contactItem) },
+                        ) {
+                            ContactItemView(contactItem)
+                        }
                     }
                 }
             } else {
