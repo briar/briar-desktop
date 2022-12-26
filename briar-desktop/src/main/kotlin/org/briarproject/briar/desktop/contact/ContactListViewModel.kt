@@ -19,26 +19,29 @@
 package org.briarproject.briar.desktop.contact
 
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import mu.KotlinLogging
 import org.briarproject.bramble.api.connection.ConnectionRegistry
 import org.briarproject.bramble.api.contact.ContactManager
 import org.briarproject.bramble.api.contact.PendingContactId
 import org.briarproject.bramble.api.contact.PendingContactState
-import org.briarproject.bramble.api.contact.event.ContactAliasChangedEvent
+import org.briarproject.bramble.api.contact.event.PendingContactAddedEvent
+import org.briarproject.bramble.api.db.Transaction
 import org.briarproject.bramble.api.db.TransactionManager
 import org.briarproject.bramble.api.event.Event
 import org.briarproject.bramble.api.event.EventBus
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.briar.api.attachment.AttachmentReader
-import org.briarproject.briar.api.avatar.event.AvatarUpdatedEvent
 import org.briarproject.briar.api.conversation.ConversationManager
 import org.briarproject.briar.api.conversation.event.ConversationMessageTrackedEvent
 import org.briarproject.briar.api.identity.AuthorManager
+import org.briarproject.briar.desktop.contact.add.remote.PendingContactItem
 import org.briarproject.briar.desktop.conversation.ConversationMessagesReadEvent
 import org.briarproject.briar.desktop.threading.BriarExecutors
-import org.briarproject.briar.desktop.utils.ImageUtils
 import org.briarproject.briar.desktop.utils.KLoggerUtils.i
+import org.briarproject.briar.desktop.utils.clearAndAddAll
+import org.briarproject.briar.desktop.utils.removeFirst
 import org.briarproject.briar.desktop.viewmodel.asState
 import javax.inject.Inject
 
@@ -49,7 +52,7 @@ constructor(
     authorManager: AuthorManager,
     conversationManager: ConversationManager,
     connectionRegistry: ConnectionRegistry,
-    private val attachmentReader: AttachmentReader,
+    attachmentReader: AttachmentReader,
     briarExecutors: BriarExecutors,
     lifecycleManager: LifecycleManager,
     db: TransactionManager,
@@ -75,16 +78,30 @@ constructor(
         loadContacts()
     }
 
+    private val _pendingContactList = mutableStateListOf<PendingContactItem>()
+
     private val _filterBy = mutableStateOf("")
-    private val _selectedContactId = mutableStateOf<ContactIdWrapper?>(null)
+    private val _selectedContactId = mutableStateOf<ContactListItemId?>(null)
     private val _contactIdToBeRemoved = mutableStateOf<PendingContactId?>(null)
+
+    // todo: check impact on performance due to reconstructing whole list on every change
+    val combinedContactList = derivedStateOf {
+        (_contactList + _pendingContactList)
+            .filter {
+                it.displayName.contains(_filterBy.value, ignoreCase = true)
+            }.sortedByDescending { it.timestamp }
+    }
+
+    val noContactsYet = derivedStateOf {
+        _contactList.isEmpty() && _pendingContactList.isEmpty()
+    }
 
     val filterBy = _filterBy.asState()
     val selectedContactId = derivedStateOf {
         // reset selected contact to null if not part of list after filtering
-        val id = _selectedContactId.value
-        if (id == null || contactList.value.map { it.idWrapper }.contains(id)) {
-            id
+        val wrapperId = _selectedContactId.value
+        if (wrapperId == null || combinedContactList.value.find { it.wrapperId == wrapperId } != null) {
+            wrapperId
         } else {
             _selectedContactId.value = null
             null
@@ -92,19 +109,32 @@ constructor(
     }
     val removePendingContactDialogVisible = derivedStateOf { _contactIdToBeRemoved.value != null }
 
-    fun selectContact(contactItem: BaseContactItem) {
-        _selectedContactId.value = contactItem.idWrapper
+    override fun loadContactsWithinTransaction(txn: Transaction) {
+        // load real contacts
+        super.loadContactsWithinTransaction(txn)
+
+        // load pending contacts
+        val pendingContactList = contactManager.getPendingContacts(txn).map { contact ->
+            PendingContactItem(contact.first, contact.second)
+        }
+        txn.attach {
+            _pendingContactList.clearAndAddAll(pendingContactList)
+        }
     }
 
-    fun isSelected(contactItem: BaseContactItem) = _selectedContactId.value == contactItem.idWrapper
+    fun selectContact(contactItem: ContactListItem) {
+        _selectedContactId.value = contactItem.wrapperId
+    }
+
+    fun isSelected(contactItem: ContactListItem) = _selectedContactId.value == contactItem.wrapperId
 
     fun removePendingContact(contactItem: PendingContactItem) {
         if (contactItem.state == PendingContactState.FAILED) {
             // no need to show warning dialog for failed pending contacts
-            removePendingContact(contactItem.idWrapper.contactId)
+            removePendingContact(contactItem.id)
         } else {
             // show warning dialog
-            _contactIdToBeRemoved.value = contactItem.idWrapper.contactId
+            _contactIdToBeRemoved.value = contactItem.id
         }
     }
 
@@ -123,13 +153,10 @@ constructor(
             contactManager.removePendingContact(txn, contactId)
             _contactIdToBeRemoved.value = null
             txn.attach {
-                removeItem(contactId)
+                removePendingContactItem(contactId)
             }
         }
     }
-
-    override fun filterContactItem(contactItem: BaseContactItem) =
-        contactItem.displayName.contains(_filterBy.value, ignoreCase = true)
 
     fun setFilterBy(filter: String) {
         _filterBy.value = filter
@@ -140,28 +167,24 @@ constructor(
         when (e) {
             is ConversationMessageTrackedEvent -> {
                 LOG.i { "Conversation message tracked, updating item" }
-                updateItem(e.contactId) { it.updateTimestampAndUnread(e.timestamp, e.read) }
+                updateContactItem(e.contactId) { it.updateTimestampAndUnread(e.timestamp, e.read) }
             }
-            is ContactAliasChangedEvent -> {
-                updateItem(e.contactId) { it.updateAlias(e.alias) }
-            }
+
             is ConversationMessagesReadEvent -> {
                 LOG.i { "${e.count} conversation messages read, updating item" }
-                updateItem(e.contactId) { it.updateFromMessagesRead(e.count) }
+                updateContactItem(e.contactId) { it.updateFromMessagesRead(e.count) }
             }
-            is AvatarUpdatedEvent -> {
-                LOG.i { "received avatar update: ${e.attachmentHeader}" }
-                if (e.attachmentHeader == null) {
-                    updateItem(e.contactId) { it.updateAvatar(null) }
-                } else {
-                    runOnDbThreadWithTransaction(true) { txn ->
-                        val image = ImageUtils.loadImage(txn, attachmentReader, e.attachmentHeader)
-                        txn.attach {
-                            updateItem(e.contactId) { it.updateAvatar(image) }
-                        }
-                    }
-                }
+
+            is PendingContactAddedEvent -> {
+                LOG.i { "Pending contact added, reloading" }
+                loadContacts()
             }
+
+            // todo: is PendingContactRemovedEvent
+            // todo: is PendingContactStateChangedEvent
         }
     }
+
+    private fun removePendingContactItem(contactId: PendingContactId) =
+        _pendingContactList.removeFirst { it.id == contactId }
 }

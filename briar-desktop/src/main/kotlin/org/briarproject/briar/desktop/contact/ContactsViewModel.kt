@@ -18,16 +18,16 @@
 
 package org.briarproject.briar.desktop.contact
 
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateListOf
 import mu.KotlinLogging
 import org.briarproject.bramble.api.connection.ConnectionRegistry
+import org.briarproject.bramble.api.contact.Contact
 import org.briarproject.bramble.api.contact.ContactId
 import org.briarproject.bramble.api.contact.ContactManager
-import org.briarproject.bramble.api.contact.PendingContactId
 import org.briarproject.bramble.api.contact.event.ContactAddedEvent
+import org.briarproject.bramble.api.contact.event.ContactAliasChangedEvent
 import org.briarproject.bramble.api.contact.event.ContactRemovedEvent
-import org.briarproject.bramble.api.contact.event.PendingContactAddedEvent
+import org.briarproject.bramble.api.db.Transaction
 import org.briarproject.bramble.api.db.TransactionManager
 import org.briarproject.bramble.api.event.Event
 import org.briarproject.bramble.api.event.EventBus
@@ -35,9 +35,11 @@ import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.bramble.api.plugin.event.ContactConnectedEvent
 import org.briarproject.bramble.api.plugin.event.ContactDisconnectedEvent
 import org.briarproject.briar.api.attachment.AttachmentReader
+import org.briarproject.briar.api.avatar.event.AvatarUpdatedEvent
 import org.briarproject.briar.api.conversation.ConversationManager
 import org.briarproject.briar.api.identity.AuthorManager
 import org.briarproject.briar.desktop.threading.BriarExecutors
+import org.briarproject.briar.desktop.threading.UiExecutor
 import org.briarproject.briar.desktop.utils.ImageUtils
 import org.briarproject.briar.desktop.utils.KLoggerUtils.i
 import org.briarproject.briar.desktop.utils.clearAndAddAll
@@ -61,87 +63,66 @@ abstract class ContactsViewModel(
         private val LOG = KotlinLogging.logger {}
     }
 
-    private val _fullContactList = mutableStateListOf<BaseContactItem>()
+    protected val _contactList = mutableStateListOf<ContactItem>()
 
-    val noContactsYet = derivedStateOf {
-        _fullContactList.isEmpty()
-    }
+    @UiExecutor
+    fun loadContacts() = runOnDbThreadWithTransaction(true, ::loadContactsWithinTransaction)
 
-    val contactList = derivedStateOf {
-        _fullContactList.filter(::filterContactItem).sortedByDescending { it.timestamp }
-    }
+    open fun loadContactsWithinTransaction(txn: Transaction) {
+        val contactList = contactManager.getContacts(txn).map { contact ->
+            loadContactItemWithinTransaction(txn, contact)
+        }
 
-    protected open fun filterContactItem(contactItem: BaseContactItem) = true
-
-    open fun loadContacts() {
-        val contactList = mutableListOf<BaseContactItem>()
-        runOnDbThreadWithTransaction(true) { txn ->
-            contactList.addAll(
-                contactManager.getPendingContacts(txn).map { contact ->
-                    PendingContactItem(contact.first, contact.second)
-                }
-            )
-            contactList.addAll(
-                contactManager.getContacts(txn).map { contact ->
-                    val authorInfo = authorManager.getAuthorInfo(txn, contact)
-                    ContactItem(
-                        contact,
-                        authorInfo,
-                        connectionRegistry.isConnected(contact.id),
-                        conversationManager.getGroupCount(txn, contact.id),
-                        authorInfo.avatarHeader?.let { ImageUtils.loadImage(txn, attachmentReader, it) },
-                    )
-                }
-            )
-            txn.attach {
-                _fullContactList.clearAndAddAll(contactList)
-            }
+        txn.attach {
+            _contactList.clearAndAddAll(contactList)
         }
     }
+
+    open fun loadContactItemWithinTransaction(txn: Transaction, contact: Contact) =
+        loadContactItem(txn, contact, authorManager, connectionRegistry, conversationManager, attachmentReader)
 
     override fun eventOccurred(e: Event?) {
         when (e) {
             is ContactAddedEvent -> {
+                // todo: instead, add single new item!
                 LOG.i { "Contact added, reloading" }
                 loadContacts()
             }
-            is PendingContactAddedEvent -> {
-                LOG.i { "Pending contact added, reloading" }
-                loadContacts()
-            }
+
             is ContactConnectedEvent -> {
                 LOG.i { "Contact connected, update state" }
-                updateItem(e.contactId) {
-                    it.updateIsConnected(true)
-                }
+                updateContactItem(e.contactId) { it.updateIsConnected(true) }
             }
+
             is ContactDisconnectedEvent -> {
                 LOG.i { "Contact disconnected, update state" }
-                updateItem(e.contactId) { it.updateIsConnected(false) }
+                updateContactItem(e.contactId) { it.updateIsConnected(false) }
             }
+
             is ContactRemovedEvent -> {
                 LOG.i { "Contact removed, removing item" }
-                removeItem(e.contactId)
+                removeContactItem(e.contactId)
+            }
+
+            is ContactAliasChangedEvent -> {
+                updateContactItem(e.contactId) { it.updateAlias(e.alias) }
+            }
+
+            is AvatarUpdatedEvent -> {
+                LOG.i { "received avatar update: ${e.attachmentHeader}" }
+                runOnDbThreadWithTransaction(true) { txn ->
+                    val image = ImageUtils.loadImage(txn, attachmentReader, e.attachmentHeader)
+                    txn.attach {
+                        updateContactItem(e.contactId) { it.updateAvatar(image) }
+                    }
+                }
             }
         }
     }
 
-    protected open fun updateItem(contactId: ContactId, update: (ContactItem) -> ContactItem) {
-        _fullContactList.replaceFirst(
-            { it.idWrapper.contactId == contactId },
-            update
-        )
-    }
+    protected fun updateContactItem(contactId: ContactId, update: (ContactItem) -> ContactItem) =
+        _contactList.replaceFirst({ it.id == contactId }, update)
 
-    protected open fun removeItem(contactId: ContactId) {
-        _fullContactList.removeFirst<BaseContactItem, ContactItem> {
-            it.idWrapper.contactId == contactId
-        }
-    }
-
-    protected open fun removeItem(contactId: PendingContactId) {
-        _fullContactList.removeFirst<BaseContactItem, PendingContactItem> {
-            it.idWrapper.contactId == contactId
-        }
-    }
+    protected fun removeContactItem(contactId: ContactId) =
+        _contactList.removeFirst { it.id == contactId }
 }

@@ -16,22 +16,27 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.briarproject.briar.desktop.contact
+package org.briarproject.briar.desktop.contact.add.remote
 
 import org.briarproject.bramble.api.contact.PendingContact
+import org.briarproject.bramble.api.contact.PendingContactId
 import org.briarproject.bramble.api.contact.PendingContactState
+import org.briarproject.briar.desktop.contact.ContactListItem
+import org.briarproject.briar.desktop.contact.ContactListItemId
 
 data class PendingContactItem(
-    override val idWrapper: PendingContactIdWrapper,
+    val id: PendingContactId,
     val alias: String,
     override val timestamp: Long,
     val state: PendingContactState,
-) : BaseContactItem {
+) : ContactListItem {
+    data class Id(val id: PendingContactId) : ContactListItemId
 
+    override val wrapperId = Id(id)
     override val displayName = alias
 
     constructor(contact: PendingContact, state: PendingContactState) : this(
-        idWrapper = PendingContactIdWrapper(contact.id),
+        id = contact.id,
         alias = contact.alias,
         timestamp = contact.timestamp,
         state = state,

@@ -60,10 +60,10 @@ import org.briarproject.briar.api.messaging.PrivateMessageHeader
 import org.briarproject.briar.desktop.DesktopFeatureFlags
 import org.briarproject.briar.desktop.attachment.media.ImageCompressor
 import org.briarproject.briar.desktop.contact.ContactItem
+import org.briarproject.briar.desktop.contact.loadContactItem
 import org.briarproject.briar.desktop.conversation.ConversationRequestItem.RequestType.FORUM
 import org.briarproject.briar.desktop.conversation.ConversationRequestItem.RequestType.INTRODUCTION
 import org.briarproject.briar.desktop.threading.BriarExecutors
-import org.briarproject.briar.desktop.utils.ImageUtils.loadImage
 import org.briarproject.briar.desktop.utils.KLoggerUtils.e
 import org.briarproject.briar.desktop.utils.KLoggerUtils.i
 import org.briarproject.briar.desktop.utils.KLoggerUtils.logDuration
@@ -285,14 +285,8 @@ constructor(
             val start = LogUtils.now()
 
             val contact = contactManager.getContact(txn, id)
-            val authorInfo = authorManager.getAuthorInfo(txn, contact)
-            val contactItem = ContactItem(
-                contact,
-                authorInfo,
-                connectionRegistry.isConnected(id),
-                conversationManager.getGroupCount(txn, id),
-                authorInfo.avatarHeader?.let { loadImage(txn, attachmentReader, it) },
-            )
+            val contactItem =
+                loadContactItem(txn, contact, authorManager, connectionRegistry, conversationManager, attachmentReader)
             LOG.logDuration("Loading contact", start)
             txn.attach {
                 _contactItem.value = contactItem
@@ -314,7 +308,7 @@ constructor(
         _loadingMessages.value = true
         try {
             var start = LogUtils.now()
-            val headers = conversationManager.getMessageHeaders(txn, contact.idWrapper.contactId)
+            val headers = conversationManager.getMessageHeaders(txn, contact.id)
             LOG.logDuration("Loading message headers", start)
             // Sort headers by timestamp in *ascending* order
             val sorted = headers.sortedBy { it.timestamp }

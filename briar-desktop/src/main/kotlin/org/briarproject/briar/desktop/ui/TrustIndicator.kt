@@ -96,6 +96,7 @@ private fun TrustIndicatorContent(status: Status) {
                 withStyle(SpanStyle(color = second)) { append("#") }
                 withStyle(SpanStyle(color = third)) { append("#") }
             },
+            maxLines = 1,
             fontFamily = FontFamily.Monospace,
             fontWeight = FontWeight.Bold,
         )

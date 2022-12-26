@@ -19,15 +19,22 @@
 package org.briarproject.briar.desktop.contact
 
 import androidx.compose.ui.graphics.ImageBitmap
+import org.briarproject.bramble.api.connection.ConnectionRegistry
 import org.briarproject.bramble.api.contact.Contact
+import org.briarproject.bramble.api.contact.ContactId
+import org.briarproject.bramble.api.db.Transaction
 import org.briarproject.bramble.api.identity.AuthorId
+import org.briarproject.briar.api.attachment.AttachmentReader
 import org.briarproject.briar.api.client.MessageTracker
+import org.briarproject.briar.api.conversation.ConversationManager
 import org.briarproject.briar.api.identity.AuthorInfo
+import org.briarproject.briar.api.identity.AuthorManager
+import org.briarproject.briar.desktop.utils.ImageUtils
 import org.briarproject.briar.desktop.utils.UiUtils.getContactDisplayName
 import kotlin.math.max
 
 data class ContactItem(
-    override val idWrapper: RealContactIdWrapper,
+    val id: ContactId,
     val authorId: AuthorId,
     val trustLevel: AuthorInfo.Status,
     private val name: String,
@@ -37,8 +44,11 @@ data class ContactItem(
     val unread: Int,
     override val timestamp: Long,
     val avatar: ImageBitmap?,
-) : BaseContactItem {
+) : ContactListItem {
 
+    data class Id(val id: ContactId) : ContactListItemId
+
+    override val wrapperId = Id(id)
     override val displayName = getContactDisplayName(name, alias)
 
     constructor(
@@ -48,7 +58,7 @@ data class ContactItem(
         groupCount: MessageTracker.GroupCount,
         avatar: ImageBitmap?
     ) : this(
-        idWrapper = RealContactIdWrapper(contact.id),
+        id = contact.id,
         authorId = contact.author.id,
         trustLevel = authorInfo.status,
         name = contact.author.name,
@@ -78,4 +88,22 @@ data class ContactItem(
 
     fun updateAvatar(avatar: ImageBitmap?) =
         copy(avatar = avatar)
+}
+
+fun loadContactItem(
+    txn: Transaction,
+    contact: Contact,
+    authorManager: AuthorManager,
+    connectionRegistry: ConnectionRegistry,
+    conversationManager: ConversationManager,
+    attachmentReader: AttachmentReader
+): ContactItem {
+    val authorInfo = authorManager.getAuthorInfo(txn, contact)
+    return ContactItem(
+        contact,
+        authorInfo,
+        connectionRegistry.isConnected(contact.id),
+        conversationManager.getGroupCount(txn, contact.id),
+        authorInfo.avatarHeader?.let { ImageUtils.loadImage(txn, attachmentReader, it) },
+    )
 }
