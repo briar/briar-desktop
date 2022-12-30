@@ -28,6 +28,7 @@ import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.briar.api.attachment.AttachmentReader
 import org.briarproject.briar.api.conversation.ConversationManager
 import org.briarproject.briar.api.identity.AuthorManager
+import org.briarproject.briar.api.introduction.IntroductionConstants.MAX_INTRODUCTION_TEXT_LENGTH
 import org.briarproject.briar.api.introduction.IntroductionManager
 import org.briarproject.briar.desktop.contact.ContactItem
 import org.briarproject.briar.desktop.contact.ContactsViewModel
@@ -93,7 +94,7 @@ constructor(
     }
 
     fun setIntroductionMessage(msg: String) {
-        _introductionMessage.value = msg
+        _introductionMessage.value = msg.take(MAX_INTRODUCTION_TEXT_LENGTH)
     }
 
     fun makeIntroduction() {

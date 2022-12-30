@@ -28,7 +28,6 @@ buildscript {
 
     // keep version here in sync when updating briar
     dependencies {
-        classpath("com.android.tools.build:gradle:4.1.3")
         classpath("ru.vyarus:gradle-animalsniffer-plugin:1.5.3")
         classpath(files("briar/libs/gradle-witness.jar"))
     }
@@ -39,9 +38,11 @@ buildscript {
         set("dagger_version", "2.43.2")
         set("okhttp_version", "3.12.13")
         set("jackson_version", "2.13.4")
-        set("tor_version", "0.4.5.14")
+        set("tor_version", "0.4.7.12")
         set("obfs4proxy_version", "0.0.14-tor1")
         set("snowflake_version", "2.3.1")
+        set("jsoup_version", "1.15.3")
+        set("bouncy_castle_version", "1.71")
         set("junit_version", "4.13.2")
         set("jmock_version", "2.12.0")
     }

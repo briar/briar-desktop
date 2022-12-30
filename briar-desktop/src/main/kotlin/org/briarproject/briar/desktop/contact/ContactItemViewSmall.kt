@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material.MaterialTheme
@@ -82,14 +81,12 @@ fun main() = preview(
 fun ContactItemViewSmall(
     contactItem: ContactItem,
     showConnectionState: Boolean = true,
+    modifier: Modifier = Modifier,
 ) = Row(
     horizontalArrangement = spacedBy(8.dp),
     verticalAlignment = Alignment.CenterVertically,
-    modifier = Modifier
+    modifier = modifier
         .fillMaxWidth()
-        .padding(vertical = 8.dp)
-        // makes sure that ConnectionIndicator is aligned with AddContact button
-        .padding(start = 16.dp, end = 20.dp)
         .semantics {
             text = getDescription(contactItem, showConnectionState)
         }

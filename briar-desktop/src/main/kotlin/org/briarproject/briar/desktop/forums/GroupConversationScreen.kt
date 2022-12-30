@@ -53,6 +53,9 @@ import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.unit.dp
 import org.briarproject.briar.desktop.contact.ContactDropDown.State.CLOSED
 import org.briarproject.briar.desktop.contact.ContactDropDown.State.MAIN
+import org.briarproject.briar.desktop.forums.sharing.ForumSharingActionDrawerContent
+import org.briarproject.briar.desktop.forums.sharing.ForumSharingStatusDrawerContent
+import org.briarproject.briar.desktop.forums.sharing.ForumSharingViewModel
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
 import org.briarproject.briar.desktop.ui.HorizontalDivider
 import org.briarproject.briar.desktop.ui.getInfoDrawerHandler
@@ -139,8 +142,23 @@ private fun GroupConversationHeader(
                         onClick = {
                             close()
                             infoDrawerHandler.open {
-                                ForumSharingDrawerContent(
-                                    groupId = groupItem.id,
+                                ForumSharingActionDrawerContent(
+                                    close = infoDrawerHandler::close,
+                                    viewModel = forumSharingViewModel,
+                                )
+                            }
+                        }
+                    ) {
+                        Text(
+                            i18n("forum.sharing.action.title"),
+                            style = MaterialTheme.typography.body2,
+                        )
+                    }
+                    DropdownMenuItem(
+                        onClick = {
+                            close()
+                            infoDrawerHandler.open {
+                                ForumSharingStatusDrawerContent(
                                     close = infoDrawerHandler::close,
                                     viewModel = forumSharingViewModel,
                                 )

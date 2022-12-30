@@ -23,6 +23,9 @@ import org.briarproject.bramble.api.Bytes.compare
 import org.briarproject.bramble.api.FormatException
 import org.briarproject.bramble.api.contact.PendingContactId
 import org.briarproject.bramble.api.crypto.SecretKey
+import org.briarproject.bramble.api.event.Event
+import org.briarproject.bramble.api.event.EventBus
+import org.briarproject.bramble.api.event.EventListener
 import org.briarproject.bramble.api.identity.Author
 import org.briarproject.bramble.api.identity.LocalAuthor
 import org.briarproject.bramble.api.plugin.TransportId
@@ -30,6 +33,7 @@ import org.briarproject.bramble.api.properties.TransportProperties
 import org.briarproject.bramble.api.versioning.event.ClientVersionUpdatedEvent
 import org.briarproject.briar.api.forum.ForumManager
 import org.briarproject.briar.api.forum.event.ForumInvitationRequestReceivedEvent
+import org.briarproject.briar.api.sharing.SharingManager.SharingStatus.SHAREABLE
 import org.briarproject.briar.desktop.utils.FileUtils
 import java.io.IOException
 import java.nio.file.Files
@@ -162,7 +166,7 @@ object TestUtils {
                 creator.getBriarExecutors().onDbThread {
                     val contact = creator.getContactManager().getContact(e.contactId)
                     val sharingManager = creator.getForumSharingManager()
-                    if (sharingManager.canBeShared(forum.id, contact))
+                    if (sharingManager.getSharingStatus(forum.id, contact) == SHAREABLE)
                         sharingManager.sendInvitation(forum.id, e.contactId, null)
                 }
             }
@@ -170,12 +174,22 @@ object TestUtils {
 
         // accept invitation at all contacts
         drop(1).forEach { app ->
-            app.getEventBus().addListener { e ->
+            app.getEventBus().addListenerOnce { e ->
                 if (e is ForumInvitationRequestReceivedEvent) {
                     val contact = app.getContactManager().getContact(e.contactId)
                     app.getForumSharingManager().respondToInvitation(forum, contact, true)
+                    return@addListenerOnce true
                 }
+                false
             }
         }
     }
 }
+
+fun EventBus.addListenerOnce(listener: (Event) -> Boolean) =
+    addListener(object : EventListener {
+        override fun eventOccurred(e: Event) {
+            if (listener(e))
+                removeListener(this)
+        }
+    })

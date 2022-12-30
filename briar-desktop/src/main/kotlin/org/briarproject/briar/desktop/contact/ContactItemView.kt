@@ -32,8 +32,11 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ProvideTextStyle
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.loadImageBitmap
+import androidx.compose.ui.res.useResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.text
 import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
@@ -65,7 +68,11 @@ fun main() = preview(
     "unread" to 3,
     "timestamp" to Instant.now().toEpochMilli(),
     "selected" to false,
+    "showAvatar" to false,
 ) {
+    val avatar = remember {
+        useResource("images/logo_circle.ico") { loadImageBitmap(it) }
+    }
     Column(Modifier.selectableGroup()) {
         ListItemView(getBooleanParameter("selected")) {
             val item = ContactItem(
@@ -78,7 +85,7 @@ fun main() = preview(
                 isEmpty = getBooleanParameter("isEmpty"),
                 unread = getIntParameter("unread"),
                 timestamp = getLongParameter("timestamp"),
-                avatar = null,
+                avatar = if (getBooleanParameter("showAvatar")) avatar else null,
             )
             ContactItemView(item)
         }

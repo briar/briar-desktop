@@ -97,10 +97,10 @@ fun loadContactItem(
 ): ContactItem {
     val authorInfo = authorManager.getAuthorInfo(txn, contact)
     return ContactItem(
-        contact,
-        authorInfo,
-        connectionRegistry.isConnected(contact.id),
-        conversationManager.getGroupCount(txn, contact.id),
-        authorInfo.avatarHeader?.let { ImageUtils.loadImage(txn, attachmentReader, it) },
+        contact = contact,
+        authorInfo = authorInfo,
+        isConnected = connectionRegistry.isConnected(contact.id),
+        groupCount = conversationManager.getGroupCount(txn, contact.id),
+        avatar = authorInfo.avatarHeader?.let { ImageUtils.loadImage(txn, attachmentReader, it) },
     )
 }

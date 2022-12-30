@@ -40,6 +40,7 @@ import org.briarproject.briar.api.forum.ForumManager
 import org.briarproject.briar.api.forum.ForumPostHeader
 import org.briarproject.briar.api.forum.event.ForumPostReceivedEvent
 import org.briarproject.briar.client.MessageTreeImpl
+import org.briarproject.briar.desktop.forums.sharing.ForumSharingViewModel
 import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.threading.UiExecutor
 import org.briarproject.briar.desktop.viewmodel.EventListenerDbViewModel

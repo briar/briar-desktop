@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -143,6 +144,7 @@ fun ContactDrawerMakeIntro(
                                 style = MaterialTheme.typography.body1,
                             )
                         },
+                        modifier = Modifier.heightIn(max = 200.dp)
                     )
                 }
                 Row(Modifier.padding(8.dp).weight(1f, true)) {

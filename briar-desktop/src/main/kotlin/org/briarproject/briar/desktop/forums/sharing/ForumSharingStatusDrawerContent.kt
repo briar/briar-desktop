@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.briarproject.briar.desktop.forums
+package org.briarproject.briar.desktop.forums.sharing
 
 import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
 import androidx.compose.foundation.layout.Box
@@ -37,11 +37,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import org.briarproject.bramble.api.sync.GroupId
 import org.briarproject.briar.desktop.contact.ContactItemViewSmall
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
 import org.briarproject.briar.desktop.ui.HorizontalDivider
@@ -49,14 +47,10 @@ import org.briarproject.briar.desktop.ui.ListItemView
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 
 @Composable
-fun ForumSharingDrawerContent(
-    groupId: GroupId,
+fun ForumSharingStatusDrawerContent(
     close: () -> Unit,
     viewModel: ForumSharingViewModel,
 ) = Column {
-    LaunchedEffect(groupId) {
-        viewModel.setGroupId(groupId)
-    }
     Row(Modifier.fillMaxWidth().height(HEADER_SIZE)) {
         IconButton(
             icon = Icons.Filled.Close,
@@ -88,7 +82,8 @@ fun ForumSharingDrawerContent(
     }
     HorizontalDivider()
     Box(Modifier.fillMaxSize()) {
-        if (viewModel.currentlySharedWith.isEmpty()) {
+        if (viewModel.currentlySharedWith.value.isEmpty()) {
+            // todo: this might be shown to the user while the list is still loading
             Text(
                 text = i18n("forum.sharing.status.nobody"),
                 style = MaterialTheme.typography.body1,
@@ -96,9 +91,12 @@ fun ForumSharingDrawerContent(
             )
         } else {
             LazyColumn {
-                items(viewModel.currentlySharedWith) { contactItem ->
+                items(viewModel.currentlySharedWith.value) { contactItem ->
                     ListItemView {
-                        ContactItemViewSmall(contactItem)
+                        ContactItemViewSmall(
+                            contactItem,
+                            modifier = Modifier.padding(8.dp)
+                        )
                     }
                 }
             }
