@@ -18,24 +18,22 @@
 
 package org.briarproject.briar.desktop.testdata
 
-import org.briarproject.briar.desktop.testdata.conversation.conversations
+import org.briarproject.briar.desktop.testdata.conversation.defaultConversations
 import org.briarproject.briar.desktop.testdata.forum.Post
-import org.briarproject.briar.desktop.testdata.forum.PostAuthor
-import org.briarproject.briar.desktop.testdata.forum.forums
+import org.briarproject.briar.desktop.testdata.forum.defaultForums
 
 fun main() {
-    for (conversation in conversations.persons) {
-        println("conversation with: ${conversation.name}") // NON-NLS
+    for ((contact, conversation) in TestData.defaultConversations) {
+        println("conversation with: ${contact.name}") // NON-NLS
         for (message in conversation.messages) {
             println("  ${message.direction} ${message.text} ${message.read} ${message.date}")
         }
     }
 
-    for (forum in forums.forums) {
+    for (forum in TestData.defaultForums) {
         println("Forum: ${forum.name}") // NON-NLS
         fun printPost(post: Post, level: Int) {
-            val name = if (post.author is PostAuthor.RemoteAuthor) post.author.name else "me"
-            println("|".repeat(level) + "+ ${post.date} - $name: ${post.text}")
+            println("|".repeat(level) + "+ ${post.date} - ${post.author.name}: ${post.text}")
             post.replies.forEach { printPost(it, level + 1) }
         }
         forum.posts.forEach { printPost(it, 0) }

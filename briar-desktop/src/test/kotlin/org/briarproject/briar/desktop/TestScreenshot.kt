@@ -27,7 +27,7 @@ import org.briarproject.bramble.api.plugin.LanTcpConstants
  * This includes faking connections to two contacts to make them appear as online.
  */
 fun main() = RunWithTemporaryAccount {
-    getDeterministicTestDataCreator().createTestData(5, 20, 50, 10, 20)
+    getDeterministicTestDataCreator().createTestData()
     getContactManager().addPendingContact("briar://aatkjq4seoualafpwh4cfckdzr4vpr4slk3bbvpxklf7y7lv4ajw6", "Faythe")
 
     getEventBus().addListener { e ->

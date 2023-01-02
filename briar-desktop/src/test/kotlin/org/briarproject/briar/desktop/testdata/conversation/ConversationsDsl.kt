@@ -18,6 +18,7 @@
 
 package org.briarproject.briar.desktop.testdata.conversation
 
+import org.briarproject.briar.desktop.testdata.contact.Contact
 import org.briarproject.briar.desktop.testdata.conversation.Direction.INCOMING
 import org.briarproject.briar.desktop.testdata.conversation.Direction.OUTGOING
 import java.time.LocalDateTime
@@ -31,19 +32,18 @@ fun conversations(block: ConversationsBuilder.() -> Unit): Conversations = Conve
 @ConversationsDsl
 class ConversationsBuilder {
 
-    private val conversations = mutableListOf<Conversation>()
+    private val conversations = mutableMapOf<Contact, Conversation>()
 
-    fun conversation(block: ConversationBuilder.() -> Unit) {
-        conversations.add(ConversationBuilder().apply(block).build())
+    fun conversation(contact: Contact, block: ConversationBuilder.() -> Unit) {
+        check(!conversations.contains(contact)) { "A contact cannot be linked to two conversations." } // NON-NLS
+        conversations[contact] = ConversationBuilder().apply(block).build()
     }
 
-    fun build(): Conversations = Conversations(conversations)
+    fun build(): Conversations = conversations
 }
 
 @ConversationsDsl
 class ConversationBuilder {
-
-    var contactName: String = ""
 
     private val messages = mutableListOf<Message>()
 
@@ -55,7 +55,9 @@ class ConversationBuilder {
         messages.add(MessageBuilder(OUTGOING).apply(block).build())
     }
 
-    fun build(): Conversation = Conversation(contactName, messages)
+    fun build(): Conversation {
+        return Conversation(messages)
+    }
 }
 
 var formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")

@@ -28,7 +28,7 @@ fun main() = RunWithMultipleTemporaryAccounts(listOf("alice", "bob", "eve")) { /
     val eve = this[2]
 
     listOf(bob, eve).forEach {
-        it.getDeterministicTestDataCreator().createTestData(1, 2, 0, 0, 0)
+        it.getDeterministicTestDataCreator().createTestData()
         connectAppsInstantly(alice, it)
     }
 

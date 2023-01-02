@@ -19,6 +19,6 @@
 package org.briarproject.briar.desktop
 
 fun main() = RunWithTemporaryAccount {
-    getDeterministicTestDataCreator().createTestData(5, 20, 50, 10, 20)
+    getDeterministicTestDataCreator().createTestData()
     getContactManager().addPendingContact("briar://aatkjq4seoualafpwh4cfckdzr4vpr4slk3bbvpxklf7y7lv4ajw6", "Faythe")
 }.run()

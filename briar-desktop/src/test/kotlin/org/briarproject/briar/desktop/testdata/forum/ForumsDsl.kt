@@ -18,6 +18,7 @@
 
 package org.briarproject.briar.desktop.testdata.forum
 
+import org.briarproject.briar.desktop.testdata.contact.Contact
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.random.Random
@@ -42,7 +43,7 @@ class ForumsBuilder {
         forums.add(ForumBuilder().apply(block).build())
     }
 
-    fun build() = Forums(forums)
+    fun build() = forums
 }
 
 @PostsDsl
@@ -54,15 +55,24 @@ class ForumBuilder : PostHierarchyBuilder() {
      */
     lateinit var name: String
 
-    private var members = mutableListOf<PostAuthor>(PostAuthor.Me)
+    private var memberList = mutableListOf<PostAuthor>(PostAuthor.Me)
     override var lastReplySent: LocalDateTime = LocalDateTime.now()
+    override val members: Set<PostAuthor>
+        get() = memberList.toSet()
 
     /**
      * Create and return a new member for this forum.
      * You can use the return value as the `author` of a [post].
      */
-    fun member(name: String, sharedForum: Boolean = false) =
-        PostAuthor.RemoteAuthor(name, sharedForum).also { members.add(it) }
+    fun memberContact(contact: Contact, sharedForum: Boolean = true) =
+        PostAuthor.ContactAuthor(contact, sharedForum).also { memberList.add(it) }
+
+    /**
+     * Create and return a new member for this forum.
+     * You can use the return value as the `author` of a [post].
+     */
+    fun memberStranger(name: String) =
+        PostAuthor.StrangerAuthor(name).also { memberList.add(it) }
 
     /**
      * Reference to the local author.
@@ -72,19 +82,26 @@ class ForumBuilder : PostHierarchyBuilder() {
 
     fun build(): Forum {
         check(this::name.isInitialized) { "A forum needs a name to be valid." } // NON-NLS
-        return Forum(name, members, posts)
+        check(memberList.isEmpty() || memberList.find { it is PostAuthor.ContactAuthor && it.sharedWith } != null) {
+            "A forum needs to have no other members or at least one member who is a contact and with whom the forum is shared." // NON-NLS
+        }
+        return Forum(name, memberList, posts)
     }
 }
 
 @PostsDsl
-class PostBuilder(parentPostSent: LocalDateTime) : PostHierarchyBuilder() {
+class PostBuilder(override val members: Set<PostAuthor>, parentPostSent: LocalDateTime) : PostHierarchyBuilder() {
 
     /**
      * The author of the post.
-     * You have to create authors using `member` in a forum.
+     * You have to create authors using `memberContact` or `memberStranger` in a forum.
      * If not set, defaults to the local author.
      */
     var author: PostAuthor = PostAuthor.Me
+        set(value) {
+            check(value is PostAuthor.Me || value in members) { "$value is not member of this forum." } // NON-NLS
+            field = value
+        }
 
     /**
      * The text of the post.
@@ -126,12 +143,13 @@ class PostBuilder(parentPostSent: LocalDateTime) : PostHierarchyBuilder() {
 abstract class PostHierarchyBuilder {
     protected val posts = mutableListOf<Post>()
     protected abstract var lastReplySent: LocalDateTime
+    protected abstract val members: Set<PostAuthor>
 
     /**
      * Add a new post to the forum or a new reply to the enclosing post.
      */
     fun post(block: PostBuilder.() -> Unit) {
-        val post = PostBuilder(lastReplySent).apply(block).build()
+        val post = PostBuilder(members, lastReplySent).apply(block).build()
         posts.add(post)
         lastReplySent = post.date
     }

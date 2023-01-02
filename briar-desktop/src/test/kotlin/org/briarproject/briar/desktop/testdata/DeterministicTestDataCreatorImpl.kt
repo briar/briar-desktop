@@ -51,6 +51,8 @@ import org.briarproject.briar.api.avatar.AvatarMessageEncoder
 import org.briarproject.briar.api.conversation.ConversationManager
 import org.briarproject.briar.api.forum.ForumFactory
 import org.briarproject.briar.api.forum.ForumManager
+import org.briarproject.briar.api.forum.ForumPostFactory
+import org.briarproject.briar.api.identity.AuthorManager
 import org.briarproject.briar.api.messaging.MessagingManager
 import org.briarproject.briar.api.messaging.PrivateMessageFactory
 import org.briarproject.briar.api.privategroup.GroupMessageFactory
@@ -60,12 +62,13 @@ import org.briarproject.briar.api.privategroup.PrivateGroupManager
 import org.briarproject.briar.api.test.TestAvatarCreator
 import org.briarproject.briar.desktop.GroupCountHelper
 import org.briarproject.briar.desktop.attachment.media.ImageCompressor
+import org.briarproject.briar.desktop.testdata.contact.Contact
+import org.briarproject.briar.desktop.testdata.conversation.Conversations
 import org.briarproject.briar.desktop.testdata.conversation.Direction
 import org.briarproject.briar.desktop.testdata.conversation.Message
-import org.briarproject.briar.desktop.testdata.conversation.conversations
+import org.briarproject.briar.desktop.testdata.forum.Forums
 import org.briarproject.briar.desktop.testdata.forum.Post
 import org.briarproject.briar.desktop.testdata.forum.PostAuthor
-import org.briarproject.briar.desktop.testdata.forum.forums
 import org.briarproject.briar.desktop.utils.KLoggerUtils.i
 import org.briarproject.briar.desktop.utils.KLoggerUtils.w
 import java.io.IOException
@@ -80,6 +83,7 @@ import javax.inject.Inject
 import kotlin.math.min
 
 class DeterministicTestDataCreatorImpl @Inject internal constructor(
+    private val authorManager: AuthorManager,
     private val authorFactory: AuthorFactory,
     private val clock: Clock,
     private val groupFactory: GroupFactory,
@@ -92,6 +96,7 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
     private val privateGroupFactory: PrivateGroupFactory,
     private val forumManager: ForumManager,
     private val forumFactory: ForumFactory,
+    private val forumPostFactory: ForumPostFactory,
     private val transportPropertyManager: TransportPropertyManager,
     private val conversationManager: ConversationManager,
     private val messagingManager: MessagingManager,
@@ -112,23 +117,12 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
     private val localAuthors: MutableMap<ContactId, LocalAuthor> = HashMap()
 
     override fun createTestData(
-        numContacts: Int,
-        numPrivateMsgs: Int,
-        avatarPercent: Int,
-        numPrivateGroups: Int,
-        numPrivateGroupPosts: Int,
+        conversations: Conversations,
+        forums: Forums,
     ) {
-        require(numContacts != 0 || numPrivateGroups != 0)
-        require(!(avatarPercent < 0 || avatarPercent > 100))
         ioExecutor.execute {
             try {
-                createTestDataOnIoExecutor(
-                    numContacts,
-                    numPrivateMsgs,
-                    avatarPercent,
-                    numPrivateGroups,
-                    numPrivateGroupPosts
-                )
+                createTestDataOnIoExecutor(conversations, forums)
             } catch (e: DbException) {
                 LOG.w(e) { }
             }
@@ -138,35 +132,31 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
     @IoExecutor
     @Throws(DbException::class)
     private fun createTestDataOnIoExecutor(
-        numContacts: Int,
-        numPrivateMsgs: Int,
-        avatarPercent: Int,
-        numPrivateGroups: Int,
-        numPrivateGroupPosts: Int
+        conversations: Conversations,
+        forums: Forums,
     ) {
-        val contacts = createContacts(numContacts, avatarPercent)
-        createPrivateMessages(contacts, numPrivateMsgs)
+        val contacts = createContacts(conversations)
+        createPrivateMessages(contacts, conversations)
 
-        val privateGroups = createPrivateGroups(contacts, numPrivateGroups)
+        /*val privateGroups = createPrivateGroups(contacts, numPrivateGroups)
         for (privateGroup in privateGroups) {
             createRandomPrivateGroupMessages(privateGroup, contacts, numPrivateGroupPosts)
-        }
+        }*/
 
-        createForums()
+        createForums(contacts, forums)
     }
 
     @Throws(DbException::class)
-    private fun createContacts(numContacts: Int, avatarPercent: Int): List<ContactId> {
-        val contacts: MutableList<ContactId> = ArrayList(numContacts)
+    private fun createContacts(conversations: Conversations): Map<Contact, ContactId> {
+        val contacts = mutableMapOf<Contact, ContactId>()
         val localAuthor = identityManager.localAuthor
 
-        for (i in 0 until min(numContacts, conversations.persons.size)) {
-            val person = conversations.persons[i]
+        for ((person, conversation) in conversations) {
             val remote = authorFactory.createLocalAuthor(person.name)
 
-            val date = person.messages.map { it.date }.sorted().last()
-            val contact = addContact(localAuthor.id, remote, null, avatarPercent, date)
-            contacts.add(contact)
+            val date = conversation.messages.map { it.date }.maxOf { it }
+            val contact = addContact(localAuthor.id, remote, person.alias, 100, date)
+            contacts[person] = contact
         }
         return contacts
     }
@@ -331,29 +321,24 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
 
     @Throws(DbException::class)
     private fun createPrivateMessages(
-        contacts: List<ContactId>,
-        numPrivateMsgs: Int
+        contacts: Map<Contact, ContactId>,
+        conversations: Conversations,
     ) {
-        for (i in contacts.indices) {
-            val contactId = contacts[i]
-            // this cannot cause an IndexOutOfBoundsException here with conversation.persons
-            // because we already made sure to only create as many contacts as we have
-            // conversation templates available.
-            val person = conversations.persons[i]
+        for ((person, conversation) in conversations) {
+            val contactId = contacts[person] ?: error("contact for ${person.name} not created")
             val groupId = messagingManager.getConversationId(contactId)
             shareGroup(contactId, groupId)
-            for (k in 0 until min(numPrivateMsgs, person.messages.size)) {
-                createPrivateMessage(contactId, groupId, person.messages[k])
+            for (message in conversation.messages) {
+                createPrivateMessage(contactId, groupId, message)
             }
         }
-        LOG.i { "Created $numPrivateMsgs private messages per contact." }
     }
 
     @Throws(DbException::class)
     private fun createPrivateMessage(
         contactId: ContactId,
         groupId: GroupId,
-        message: Message
+        message: Message,
     ) {
         val timestamp = message.date.toEpochSecond(ZoneOffset.UTC) * 1000
         val text = message.text
@@ -371,7 +356,7 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
         images: List<String>,
         timestamp: Long,
         local: Boolean,
-        autoDelete: Boolean
+        autoDelete: Boolean,
     ) {
         val timer =
             if (autoDelete) AutoDeleteConstants.MIN_AUTO_DELETE_TIMER_MS else AutoDeleteConstants.NO_AUTO_DELETE_TIMER
@@ -431,41 +416,62 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
         return privateGroups
     }
 
-    @Throws(DbException::class)
-    private fun createRandomPrivateGroupMessages(
-        privateGroup: PrivateGroup,
-        contacts: List<ContactId>,
-        numPrivateGroupMessages: Int
+    private fun createForums(
+        contacts: Map<Contact, ContactId>,
+        forums: Forums,
     ) {
-        // TODO
-    }
-
-    private fun createForums() {
-        for (f in forums.forums) {
+        for (f in forums) {
             // create forum
             val forum = forumManager.addForum(f.name)
 
-            val members = f.members.associateWith {
-                if (it is PostAuthor.RemoteAuthor) authorFactory.createLocalAuthor(it.name)
-                else identityManager.localAuthor
+            // handle members
+            var receiveMessagesVia: ContactId? = null
+            val membersStrangers = mutableMapOf<PostAuthor.StrangerAuthor, LocalAuthor>()
+            f.members.forEach { member ->
+                when (member) {
+                    is PostAuthor.ContactAuthor -> {
+                        val contactId = contacts[member.contact] ?: error("Contact not found.")
+                        if (member.sharedWith) {
+                            shareGroup(contactId, forum.id)
+                            if (receiveMessagesVia == null) receiveMessagesVia = contactId
+                        }
+                    }
+
+                    is PostAuthor.StrangerAuthor ->
+                        membersStrangers[member] = authorFactory.createLocalAuthor(member.name)
+
+                    else -> {}
+                }
             }
-            // todo: create real contact to also share forum!
 
             // add posts
             fun addPost(post: Post, parentId: MessageId?) {
+                val author = when (post.author) {
+                    is PostAuthor.Me -> identityManager.localAuthor
+                    is PostAuthor.StrangerAuthor -> membersStrangers[post.author]
+                    is PostAuthor.ContactAuthor -> localAuthors[contacts[post.author.contact]]
+                } ?: error("LocalAuthor not found.")
                 val m = forumManager.createLocalPost(
                     forum.id,
                     post.text,
                     post.date.toEpochSecond(ZoneOffset.UTC) * 1000,
                     parentId,
-                    members[post.author]!!
+                    author
                 )
-                // todo: add non-local posts using incoming message via some contact this forum is shared with
-                forumManager.addLocalPost(m)
+                if (post.author == PostAuthor.Me)
+                    forumManager.addLocalPost(m)
+                else {
+                    val receiveVia =
+                        (if (post.author is PostAuthor.ContactAuthor) contacts[post.author.contact] else receiveMessagesVia)
+                            ?: error("Contact to receive via not found.")
+                    db.transaction<RuntimeException>(false) { txn ->
+                        db.receiveMessage(txn, receiveVia, m.message)
+                    }
+                }
                 post.replies.forEach { addPost(it, m.message.id) }
             }
             f.posts.forEach { addPost(it, null) }
         }
-        LOG.i { "Created ${forums.forums.size} forums." }
+        LOG.i { "Created ${forums.size} forums." }
     }
 }

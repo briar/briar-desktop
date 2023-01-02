@@ -16,13 +16,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.briarproject.briar.desktop
+package org.briarproject.briar.desktop.testdata.contact
 
-import org.briarproject.briar.desktop.TestUtils.connectAllPending
+fun contact(block: ContactBuilder.() -> Unit): Contact = ContactBuilder().apply(block).build()
 
-fun main() = RunWithMultipleTemporaryAccounts(listOf("alice", "bob")) { // NON-NLS
-    forEach {
-        it.getDeterministicTestDataCreator().createTestData()
+class ContactBuilder {
+    lateinit var name: String
+    var alias: String? = null
+    // todo: support avatar
+
+    // todo: contacts are only really created if conversation is called with this contact -> change
+    fun build(): Contact {
+        check(this::name.isInitialized) { "A contact needs a name to be valid." } // NON-NLS
+        return Contact(name, alias)
     }
-    connectAllPending()
-}.run()
+}

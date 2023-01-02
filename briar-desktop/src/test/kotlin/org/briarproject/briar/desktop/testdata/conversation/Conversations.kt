@@ -18,15 +18,13 @@
 
 package org.briarproject.briar.desktop.testdata.conversation
 
+import org.briarproject.briar.desktop.testdata.contact.Contact
 import java.time.LocalDateTime
 
-data class Conversations(
-    val persons: List<Conversation>
-)
+typealias Conversations = Map<Contact, Conversation>
 
 data class Conversation(
-    val name: String,
-    var messages: List<Message>
+    val messages: List<Message>,
 )
 
 data class Message(
@@ -34,7 +32,7 @@ data class Message(
     val images: List<String>,
     val direction: Direction,
     val date: LocalDateTime,
-    val read: Boolean
+    val read: Boolean,
 )
 
 enum class Direction {

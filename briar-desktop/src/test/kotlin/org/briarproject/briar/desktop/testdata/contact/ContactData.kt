@@ -16,13 +16,19 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.briarproject.briar.desktop
+package org.briarproject.briar.desktop.testdata.contact
 
-import org.briarproject.briar.desktop.TestUtils.connectAllPending
+import org.briarproject.briar.desktop.testdata.TestData
 
-fun main() = RunWithMultipleTemporaryAccounts(listOf("alice", "bob")) { // NON-NLS
-    forEach {
-        it.getDeterministicTestDataCreator().createTestData()
-    }
-    connectAllPending()
-}.run()
+val TestData.Contacts.anna: Contact
+    get() = contact { name = "Anna" }
+val TestData.Contacts.bob: Contact
+    get() = contact { name = "Bob" }
+val TestData.Contacts.chuck: Contact
+    get() = contact { name = "Chuck" }
+val TestData.Contacts.polonius: Contact
+    get() = contact { name = "Polonius" }
+val TestData.Contacts.dan: Contact
+    get() = contact { name = "Dan" }
+val TestData.Contacts.george: Contact
+    get() = contact { name = "Georgy Voronoy" }

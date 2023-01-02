@@ -20,6 +20,6 @@ package org.briarproject.briar.desktop
 
 fun main() = RunWithMultipleTemporaryAccounts(listOf("alice", "bob")) { // NON-NLS
     forEach {
-        it.getDeterministicTestDataCreator().createTestData(5, 20, 50, 10, 20)
+        it.getDeterministicTestDataCreator().createTestData()
     }
 }.run()

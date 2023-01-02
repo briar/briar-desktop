@@ -18,16 +18,15 @@
 
 package org.briarproject.briar.desktop.testdata.forum
 
+import org.briarproject.briar.desktop.testdata.contact.Contact
 import java.time.LocalDateTime
 
-data class Forums(
-    val forums: List<Forum>
-)
+typealias Forums = List<Forum>
 
 data class Forum(
     val name: String,
-    var members: List<PostAuthor>,
-    var posts: List<Post>,
+    val members: List<PostAuthor>,
+    val posts: List<Post>,
 )
 
 data class Post(
@@ -38,10 +37,21 @@ data class Post(
 )
 
 sealed interface PostAuthor {
-    object Me : PostAuthor
 
-    data class RemoteAuthor(
-        val name: String,
-        val sharedWith: Boolean, // todo: not supported yet
+    val name: String
+
+    object Me : PostAuthor {
+        override val name: String = "" // todo: real name
+    }
+
+    data class ContactAuthor(
+        val contact: Contact,
+        val sharedWith: Boolean,
+    ) : PostAuthor {
+        override val name: String = contact.name
+    }
+
+    data class StrangerAuthor(
+        override val name: String,
     ) : PostAuthor
 }

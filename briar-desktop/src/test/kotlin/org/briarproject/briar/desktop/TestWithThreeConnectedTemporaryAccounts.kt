@@ -23,7 +23,7 @@ import org.briarproject.briar.desktop.TestUtils.createForumForAll
 
 fun main() = RunWithMultipleTemporaryAccounts(listOf("alice", "bob", "eve")) { // NON-NLS
     forEach {
-        it.getDeterministicTestDataCreator().createTestData(5, 20, 50, 10, 20)
+        it.getDeterministicTestDataCreator().createTestData()
     }
     connectAllInstantly()
     createForumForAll()
