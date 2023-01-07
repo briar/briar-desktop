@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Briar
+Comment=Secure messaging, anywhere
+Exec=/opt/briar-desktop/bin/Briar
+Icon=/opt/briar-desktop/lib/Briar.png
+Terminal=false
+Type=Application
+Categories=Network;Chat;InstantMessaging;
+MimeType=

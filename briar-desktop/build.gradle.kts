@@ -18,17 +18,49 @@
 
 @file:Suppress("HardCodedStringLiteral")
 
-import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm") version "1.7.20"
     kotlin("kapt") version "1.7.20"
     id("org.jetbrains.compose") version "1.2.1"
+    id("de.mobanisto.pinpit") version "0.2.0"
     id("java")
     id("idea")
     id("org.jlleitschuh.gradle.ktlint") version "10.1.0"
     id("org.briarproject.briar.desktop.build-data-gradle-plugin")
+}
+
+val attributeUsage = Attribute.of("org.gradle.usage", String::class.java)
+
+val currentOs: Configuration by configurations.creating {
+    extendsFrom(configurations.implementation.get())
+    attributes { attribute(attributeUsage, "java-runtime") }
+}
+
+val windowsX64: Configuration by configurations.creating {
+    extendsFrom(configurations.implementation.get())
+    attributes { attribute(attributeUsage, "java-runtime") }
+}
+
+val linuxX64: Configuration by configurations.creating {
+    extendsFrom(configurations.implementation.get())
+    attributes { attribute(attributeUsage, "java-runtime") }
+}
+
+sourceSets {
+    main {
+        java {
+            compileClasspath = currentOs
+            runtimeClasspath = currentOs
+        }
+    }
+    test {
+        java {
+            compileClasspath += currentOs
+            runtimeClasspath += currentOs
+        }
+    }
 }
 
 val versionCode = "0.3.1"
@@ -43,7 +75,10 @@ buildData {
 }
 
 dependencies {
-    implementation(compose.desktop.currentOs)
+    currentOs(compose.desktop.currentOs)
+    windowsX64(compose.desktop.windows_x64)
+    linuxX64(compose.desktop.linux_x64)
+
     implementation(compose.materialIconsExtended)
     // needed to access Dispatchers.Swing for EventExecutor
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.6.4")
@@ -97,20 +132,20 @@ tasks.jar {
     exclude("META-INF/BC2048KE.RSA", "META-INF/BC2048KE.SF", "META-INF/BC2048KE.DSA")
 }
 
-compose.desktop {
+pinpit.desktop {
     application {
         mainClass = "org.briarproject.briar.desktop.MainKt"
         nativeDistributions {
-            targetFormats(TargetFormat.Msi, TargetFormat.Exe, TargetFormat.Deb, TargetFormat.Rpm)
+            jvmVendor = "adoptium"
+            jvmVersion = "17.0.5+8"
+
             packageName = "Briar"
+            packageVersion = version.toString()
             description = "Secure messaging, anywhere"
             vendor = "The Briar Project"
-            copyright = "2021-2022 The Briar Project"
+            copyright = "2021-2023 The Briar Project"
             licenseFile.set(project.file("LICENSE.txt"))
             appResourcesRootDir.set(project.layout.projectDirectory.dir("src/appResources"))
-            // As described at https://github.com/JetBrains/compose-jb/tree/master/tutorials/Native_distributions_and_local_execution#configuring-included-jdk-modules
-            // the Gradle plugin does not automatically determine necessary JDK modules to ship
-            // so that we need to define required modules here:
             modules("java.sql")
             modules("java.naming")
             modules("jdk.localedata")
@@ -123,15 +158,55 @@ compose.desktop {
                 // rpm versions may not contain hyphens, so use underscore
                 rpmPackageVersion = "${versionCode}_$buildType"
                 iconFile.set(project.file("src/main/resources/images/logo_circle.png"))
+                debPreInst.set(project.file("src/packagingResources/linux/deb/preinst"))
+                debPostInst.set(project.file("src/packagingResources/linux/deb/postinst"))
+                debPreRm.set(project.file("src/packagingResources/linux/deb/prerm"))
+                debCopyright.set(project.file("src/packagingResources/linux/deb/copyright"))
+                debLauncher.set(project.file("src/packagingResources/linux/launcher.desktop"))
                 debMaintainer = "contact@briarproject.org"
                 appCategory = "comm"
                 menuGroup = "Network;Chat;InstantMessaging;"
+                deb("UbuntuFocalX64") {
+                    qualifier = "ubuntu-20.04"
+                    arch = "x64"
+                    depends(
+                        "libc6", "libexpat1", "libgcc-s1", "libpcre3", "libuuid1", "xdg-utils",
+                        "zlib1g", "libnotify4"
+                    )
+                }
+                deb("UbuntuBionicX64") {
+                    qualifier = "ubuntu-18.04"
+                    arch = "x64"
+                    depends(
+                        "libasound2", "libc6", "libexpat1", "libfontconfig1", "libfreetype6", "libgcc1",
+                        "libglib2.0-0", "libgraphite2-3", "libharfbuzz0b", "libjpeg-turbo8", "liblcms2-2",
+                        "libpcre3", "libpng16-16", "libstdc++6", "xdg-utils", "zlib1g", "libnotify4"
+                    )
+                }
+                deb("DebianBullseyeX64") {
+                    qualifier = "debian-bullseye"
+                    arch = "x64"
+                    depends(
+                        "libasound2", "libbrotli1", "libc6", "libexpat1", "libfontconfig1", "libfreetype6",
+                        "libgcc-s1", "libglib2.0-0", "libgraphite2-3", "libharfbuzz0b", "libjpeg62-turbo",
+                        "liblcms2-2", "libpcre3", "libpng16-16", "libstdc++6", "libuuid1", "xdg-utils", "zlib1g",
+                        "libnotify4"
+                    )
+                }
             }
             windows {
+                dirChooser = true
+                shortcut = true
                 iconFile.set(project.file("src/main/resources/images/logo_circle.ico"))
+                aumid = windowsAumiName
                 upgradeUuid = "cc8b40f7-f190-4cea-bfec-ceb9ef85df09"
                 // Windows doesn't support things like 'nightly' or 'release'. Only numeric versions are acceptable
                 packageVersion = versionCode
+                msi {
+                    arch = "x64"
+                    bitmapBanner.set(project.file("src/packagingResources/windows/banner.bmp"))
+                    bitmapDialog.set(project.file("src/packagingResources/windows/dialog.bmp"))
+                }
             }
         }
     }

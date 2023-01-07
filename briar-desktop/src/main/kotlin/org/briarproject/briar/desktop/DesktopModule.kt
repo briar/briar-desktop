@@ -28,7 +28,6 @@ import org.briarproject.bramble.api.plugin.simplex.SimplexPluginFactory
 import org.briarproject.bramble.plugin.tcp.LanTcpPluginFactory
 import org.briarproject.bramble.plugin.tor.UnixTorPluginFactory
 import org.briarproject.bramble.plugin.tor.WindowsTorPluginFactory
-import org.briarproject.bramble.util.OsUtils
 import org.briarproject.bramble.util.OsUtils.isLinux
 import org.briarproject.bramble.util.OsUtils.isMac
 import org.briarproject.bramble.util.OsUtils.isWindows
