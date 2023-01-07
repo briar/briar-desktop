@@ -25,10 +25,12 @@ Each night a new build is compiled by Briar's GitLab CI.
 
 #### Self-contained Java .jar
 
-The simplest way is to
-[download the nightly briar-desktop.jar](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop.jar?job=b_jar)
+The simplest way is to download the nightly
+[briar-desktop-linux.jar](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop-linux.jar?job=b_package_linux)
+or
+[briar-desktop-windows.jar](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop-windows.jar?job=b_package_windows)
 and execute it from the command-line with
-`java -jar briar-desktop.jar`.
+`java -jar briar-desktop-linux.jar` or `java -jar briar-desktop-windows.jar` respectively.
 Note that you need at least version 17 of the Java Runtime Environment.
 
 #### Self-contained .deb
@@ -36,14 +38,19 @@ Note that you need at least version 17 of the Java Runtime Environment.
 For Debian- and Ubuntu-based Linux distributions, a set of .deb files is available.
 Depending on which version of Debian/Ubuntu your OS is based on,
 you can choose the right .deb file:
-* [Ubuntu 20.04](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop-ubuntu-20.04.deb?job=b_20_ubuntu_deb)
-* [Debian stable (bullseye)](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop-debian-bullseye.deb?job=b_bullseye_deb)
-* [Ubuntu 18.04](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop-ubuntu-18.04.deb?job=b_18_ubuntu_deb)
+* [Ubuntu 20.04](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop-ubuntu-20.04.deb?job=b_package_linux)
+* [Debian stable (bullseye)](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop-debian-bullseye.deb?job=b_package_linux)
+* [Ubuntu 18.04](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop-ubuntu-18.04.deb?job=b_package_linux)
 
 Here are some examples of popular distributions and their respective .deb file:
 * Ubuntu 20.04 and compatible: Linux Mint 20.X (Ulyana, Ulyssa, Uma, Una), elementaryOS 6.X (Odin, Jólnir), Trisquel 10 (Nabia)
 * Debian stable (bullseye) and compatible: MX Linux MX-21
 * Ubuntu 18.04 and compatible: Linux Mint 19.X (Tara, Tessa, Tina, Tricia), elementaryOS 5.X (Juno, Hera), Trisquel 9 (Etiona)
+
+#### Windows installer .msi
+
+For Windows, an .msi installer package is available:
+* [Windows MSI](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/Briar-Desktop.msi?job=b_package_windows)
 
 ## Developers
 
@@ -79,24 +86,25 @@ composable functions without parameters which are annotated with `@Preview`.
 
 In order to build and run the application from the command line, execute this:
 
-    ./gradlew run
+    ./gradlew pinpitRun
 
 You can specify arguments to the app using the `--args` option of the
 Gradle task. For example to show the usage info:
 
-    ./gradlew run --args="--help"
+    ./gradlew pinpitRun --args="--help"
 
 To specify a different data directory and enable the debug output:
 
-    ./gradlew run --args="--debug --data-dir=/tmp/briar-tmp"
+    ./gradlew pinpitRun --args="--debug --data-dir=/tmp/briar-tmp"
 
-In case you want to build a self-contained Debian package, note that you need at least JDK 17 and that you might need to install `binutils` and `fakeroot` before running the respective task:
+In case you want to build a self-contained Debian packages and an MSI installer,
+note that you need at least JDK 17:
 
-    ./gradlew packageDeb
+    ./gradlew pinpitPackageDefault
 
 If you want to use the JDKs downloaded by Intellij IDEA, you can for example specify the path like this:
 
-    ./gradlew packageDeb -Dorg.gradle.java.home=$HOME/.jdks/openjdk-17.0.2
+    ./gradlew pinpitPackageDefault -Dorg.gradle.java.home=$HOME/.jdks/openjdk-17.0.2
 
 Take a look at [_.gitlab-ci.yml_](.gitlab-ci.yml) if you have problems with Kotlin and JDK 17.
 
