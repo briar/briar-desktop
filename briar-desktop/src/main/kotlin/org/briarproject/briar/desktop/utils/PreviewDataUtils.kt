@@ -46,7 +46,7 @@ fun getRandomForumPostHeader() = ForumPostHeader(
     Random.nextBoolean() && Random.nextBoolean(),
 )
 
-private val charPool = ('a'..'z') + ('A'..'Z')
+private val charPool = ('a'..'z') + ('A'..'Z') + ' '
 private val statusList = listOf(
     AuthorInfo.Status.UNKNOWN,
     AuthorInfo.Status.UNVERIFIED,

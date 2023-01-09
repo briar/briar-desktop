@@ -98,6 +98,7 @@ private fun TrustIndicatorContent(status: Status) {
             },
             fontFamily = FontFamily.Monospace,
             fontWeight = FontWeight.Bold,
+            maxLines = 1,
         )
     }
 }

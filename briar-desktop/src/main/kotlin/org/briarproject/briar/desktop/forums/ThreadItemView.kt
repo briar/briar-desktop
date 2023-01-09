@@ -43,6 +43,12 @@ import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import org.briarproject.bramble.api.crypto.CryptoConstants
+import org.briarproject.bramble.api.crypto.SignaturePublicKey
+import org.briarproject.bramble.api.identity.Author
+import org.briarproject.bramble.api.identity.AuthorId
+import org.briarproject.bramble.api.sync.MessageId
+import org.briarproject.briar.api.forum.ForumPostHeader
 import org.briarproject.briar.api.identity.AuthorInfo.Status.OURSELVES
 import org.briarproject.briar.desktop.contact.ProfileCircle
 import org.briarproject.briar.desktop.theme.Blue500
@@ -53,13 +59,39 @@ import org.briarproject.briar.desktop.ui.VerticalDivider
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 import org.briarproject.briar.desktop.utils.TimeUtils.getFormattedTimestamp
+import org.briarproject.briar.desktop.utils.getRandomAuthorInfo
 import org.briarproject.briar.desktop.utils.getRandomForumPostHeader
 import org.briarproject.briar.desktop.utils.getRandomString
 import kotlin.random.Random
 
 @Suppress("HardCodedStringLiteral")
-fun main() = preview {
+fun main() = preview(
+    "author" to "Anna Julia",
+    "text" to "Hallo",
+) {
     LazyColumn {
+        item {
+            ThreadItemView(
+                item = ForumPostItem(
+                    h = ForumPostHeader(
+                        MessageId(getRandomId()),
+                        null,
+                        System.currentTimeMillis(),
+                        Author(
+                            AuthorId(getRandomId()),
+                            0,
+                            getStringParameter("author"),
+                            SignaturePublicKey(Random.nextBytes(CryptoConstants.MAX_SIGNATURE_PUBLIC_KEY_BYTES))
+                        ),
+                        getRandomAuthorInfo(),
+                        Random.nextBoolean() && Random.nextBoolean(),
+                    ),
+                    text = getStringParameter("text"),
+                ),
+                selectedPost = null,
+                onPostSelected = {},
+            )
+        }
         for (i in 1..5) {
             item {
                 ThreadItemView(
@@ -121,21 +153,28 @@ fun ThreadItemContentComposable(
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = spacedBy(8.dp),
             ) {
                 Row(
                     modifier = Modifier.weight(1f),
                     horizontalArrangement = spacedBy(8.dp),
                     verticalAlignment = CenterVertically,
                 ) {
-                    // TODO load and cache profile images, if available
-                    ProfileCircle(20.dp, item.author.id.bytes)
-                    Text(
+                    // extra row is needed to prevent wrapping on TrustIndicator
+                    Row(
                         modifier = Modifier.weight(1f, fill = false),
-                        text = item.authorName,
-                        fontWeight = if (item.authorInfo.status == OURSELVES) Bold else null,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
+                        horizontalArrangement = spacedBy(8.dp),
+                        verticalAlignment = CenterVertically,
+                    ) {
+                        // TODO load and cache profile images, if available
+                        ProfileCircle(20.dp, item.author.id.bytes)
+                        Text(
+                            text = item.authorName,
+                            fontWeight = if (item.authorInfo.status == OURSELVES) Bold else null,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
                     TrustIndicatorShort(item.authorInfo.status)
                 }
                 Text(
