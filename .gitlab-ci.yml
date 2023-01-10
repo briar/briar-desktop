@@ -27,116 +27,14 @@ cache:
     - .gradle/wrapper
     - .gradle/caches
 
-ktlint:
-  stage: test
-  script:
-    - git submodule update
-    - ./gradlew --no-daemon briar-desktop:check
-  rules:
-    - if: '$CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS'
-      when: never # avoids duplicate jobs for branch and MR
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      when: always
-    - when: always
-
-b_package_linux:
+package:
   image: briar/ci-image-android:ubuntu-20-wine
   stage: build
   script:
-    - ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-17-openjdk-amd64 --no-daemon -PbuildType=nightly
-      pinpitPackageDefaultUberJarForLinuxX64
-      pinpitPackageDefaultDebDebianBullseyeX64
-      pinpitPackageDefaultDebUbuntuBionicX64
-      pinpitPackageDefaultDebUbuntuFocalX64
-    - ls -lrth briar-desktop/build/pinpit/jars/Briar-linux-*.jar
-    - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-18.04-x64-*.deb
-    - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-20.04-x64-*.deb
-    - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-debian-bullseye-x64-*.deb
-    - mv briar-desktop/build/pinpit/jars/Briar-linux-*.jar ./briar-linux-desktop.jar
-    - mv briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-18.04-x64-*.deb ./briar-desktop-ubuntu-18.04.deb
-    - mv briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-20.04-x64-*.deb ./briar-desktop-ubuntu-20.04.deb
-    - mv briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-debian-bullseye-x64-*.deb ./briar-desktop-debian-bullseye.deb
+    - dd if=/dev/urandom of=./data.bin bs=1024 count=153553
   artifacts:
     paths:
-      - briar-linux-desktop.jar
-      - briar-desktop-debian-bullseye.deb
-      - briar-desktop-ubuntu-18.04.deb
-      - briar-desktop-ubuntu-20.04.deb
-    expire_in: 2 days
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "schedule"
-
-b_package_windows:
-  image: briar/ci-image-android:ubuntu-20-wine
-  stage: build
-  script:
-    - wine --version
-    - wine uninstaller --list
-    - wget https://dl.winehq.org/wine/wine-mono/7.4.0/wine-mono-7.4.0-x86.msi
-    - wine msiexec /i wine-mono-7.4.0-x86.msi
-    - wine uninstaller --list
-    - ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-17-openjdk-amd64 --no-daemon -PbuildType=nightly
-      pinpitPackageDefaultUberJarForWindowsX64
-      pinpitPackageDefaultMsiX64
-    - ls -lrth briar-desktop/build/pinpit/jars/Briar-windows-*.jar
-    - ls -lrth briar-desktop/build/pinpit/binaries/main-default/windows/x64/msi/Briar-x64-*.msi
-    - mv briar-desktop/build/pinpit/jars/Briar-windows-*.jar ./briar-windows-desktop.jar
-    - mv briar-desktop/build/pinpit/binaries/main-default/windows/x64/msi/Briar-x64-*.msi ./Briar-Desktop.msi
-  artifacts:
-    paths:
-      - briar-windows-desktop.jar
-      - Briar-Desktop.msi
-    expire_in: 2 days
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "schedule"
-
-rb_package_linux:
-  image: briar/ci-image-android:ubuntu-20-wine
-  stage: releasebuild
-  script:
-    - ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-17-openjdk-amd64 --no-daemon -PbuildType=beta
-      pinpitPackageDefaultUberJarForLinuxX64
-      pinpitPackageDefaultDebDebianBullseyeX64
-      pinpitPackageDefaultDebUbuntuBionicX64
-      pinpitPackageDefaultDebUbuntuFocalX64
-    - ls -lrth briar-desktop/build/pinpit/jars/Briar-linux-*.jar
-    - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-18.04-x64-*.deb
-    - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-20.04-x64-*.deb
-    - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-debian-bullseye-x64-*.deb
-    - mv briar-desktop/build/pinpit/jars/Briar-linux-*.jar ./briar-linux-desktop.jar
-    - mv briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-18.04-x64-*.deb ./briar-desktop-ubuntu-18.04.deb
-    - mv briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-20.04-x64-*.deb ./briar-desktop-ubuntu-20.04.deb
-    - mv briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-debian-bullseye-x64-*.deb ./briar-desktop-debian-bullseye.deb
-  artifacts:
-    paths:
-      - briar-linux-desktop.jar
-      - briar-desktop-debian-bullseye.deb
-      - briar-desktop-ubuntu-18.04.deb
-      - briar-desktop-ubuntu-20.04.deb
-    expire_in: 2 days
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "schedule"
-
-rb_package_windows:
-  image: briar/ci-image-android:ubuntu-20-wine
-  stage: releasebuild
-  script:
-    - wine --version
-    - wine uninstaller --list
-    - wget https://dl.winehq.org/wine/wine-mono/7.4.0/wine-mono-7.4.0-x86.msi
-    - wine msiexec /i wine-mono-7.4.0-x86.msi
-    - wine uninstaller --list
-    - ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-17-openjdk-amd64 --no-daemon -PbuildType=beta
-      pinpitPackageDefaultUberJarForWindowsX64
-      pinpitPackageDefaultMsiX64
-    - ls -lrth briar-desktop/build/pinpit/jars/Briar-windows-*.jar
-    - ls -lrth briar-desktop/build/pinpit/binaries/main-default/windows/x64/msi/Briar-x64-*.msi
-    - mv briar-desktop/build/pinpit/jars/Briar-windows-*.jar ./briar-windows-desktop.jar
-    - mv briar-desktop/build/pinpit/binaries/main-default/windows/x64/msi/Briar-x64-*.msi ./Briar-Desktop.msi
-  artifacts:
-    paths:
-      - briar-windows-desktop.jar
-      - Briar-Desktop.msi
+      - data.bin
     expire_in: 2 days
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
