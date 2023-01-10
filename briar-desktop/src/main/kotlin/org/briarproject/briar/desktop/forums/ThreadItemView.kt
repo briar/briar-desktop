@@ -121,6 +121,7 @@ fun ThreadItemContentComposable(
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = spacedBy(8.dp),
             ) {
                 Row(
                     modifier = Modifier.weight(1f),
