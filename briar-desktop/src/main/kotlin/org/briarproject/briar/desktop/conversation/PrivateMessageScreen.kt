@@ -52,6 +52,7 @@ import org.briarproject.briar.desktop.viewmodel.viewModel
 
 @Composable
 fun PrivateMessageScreen(
+    openRequestedShareable: (ConversationRequestItem) -> Unit,
     viewModel: ContactListViewModel = viewModel(),
     addContactViewModel: AddContactViewModel = viewModel(),
 ) {
@@ -85,7 +86,7 @@ fun PrivateMessageScreen(
                 NoContactSelected()
             } else when (id) {
                 is RealContactIdWrapper -> {
-                    ConversationScreen(id.contactId)
+                    ConversationScreen(id.contactId, openRequestedShareable)
                 }
                 is PendingContactIdWrapper -> {
                     PendingContactSelected()

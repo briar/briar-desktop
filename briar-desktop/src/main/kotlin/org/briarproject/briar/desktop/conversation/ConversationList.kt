@@ -155,7 +155,8 @@ fun main() = preview(
                     { _, it -> it.markRead() }
                 )
             },
-            respondToRequest = { _, _ -> },
+            respondToRequest = { _,_ -> },
+            openRequestedShareable = {},
             deleteMessage = {},
         )
     }
@@ -170,6 +171,7 @@ fun ConversationList(
     onMessageAddedToBottom: SingleStateEvent<ConversationViewModel.MessageAddedType>,
     markMessagesRead: (List<Int>) -> Unit,
     respondToRequest: (ConversationRequestItem, Boolean) -> Unit,
+    openRequestedShareable: (ConversationRequestItem) -> Unit,
     deleteMessage: (MessageId) -> Unit,
 ) {
     // we need to make sure the ConversationList is out of composition before showing new messages
@@ -201,6 +203,7 @@ fun ConversationList(
                         ConversationRequestItemView(
                             m,
                             onResponse = { accept -> respondToRequest(m, accept) },
+                            onOpenRequestedShareable = { openRequestedShareable(m) },
                             onDelete = deleteMessage
                         )
                 }

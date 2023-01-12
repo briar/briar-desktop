@@ -27,6 +27,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
+import org.briarproject.briar.desktop.conversation.ConversationRequestItem
+import org.briarproject.briar.desktop.conversation.ConversationRequestItem.RequestType.FORUM
 import org.briarproject.briar.desktop.conversation.PrivateMessageScreen
 import org.briarproject.briar.desktop.forums.ForumScreen
 import org.briarproject.briar.desktop.navigation.BriarSidebar
@@ -58,7 +60,7 @@ fun MainScreen(viewModel: SidebarViewModel = viewModel()) {
                 )
                 VerticalDivider()
                 when (viewModel.uiMode.value) {
-                    UiMode.CONTACTS -> PrivateMessageScreen()
+                    UiMode.CONTACTS -> PrivateMessageScreen(viewModel::openRequestedShareable)
                     UiMode.GROUPS -> PrivateGroupScreen()
                     UiMode.FORUMS -> ForumScreen()
                     UiMode.SETTINGS -> SettingsScreen()

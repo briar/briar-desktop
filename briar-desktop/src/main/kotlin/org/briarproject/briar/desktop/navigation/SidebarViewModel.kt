@@ -20,10 +20,15 @@ package org.briarproject.briar.desktop.navigation
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import mu.KotlinLogging
 import org.briarproject.bramble.api.identity.IdentityManager
 import org.briarproject.bramble.api.identity.LocalAuthor
+import org.briarproject.briar.desktop.conversation.ConversationRequestItem
+import org.briarproject.briar.desktop.conversation.ConversationRequestItem.RequestType.FORUM
 import org.briarproject.briar.desktop.ui.UiMode
+import org.briarproject.briar.desktop.utils.KLoggerUtils.w
 import org.briarproject.briar.desktop.viewmodel.ViewModel
+import org.briarproject.briar.desktop.viewmodel.asState
 import javax.inject.Inject
 
 class SidebarViewModel
@@ -32,6 +37,10 @@ constructor(
     private val identityManager: IdentityManager,
 ) : ViewModel() {
 
+    companion object {
+        private val LOG = KotlinLogging.logger {}
+    }
+
     override fun onInit() {
         loadAccountInfo()
     }
@@ -39,8 +48,8 @@ constructor(
     private var _uiMode = mutableStateOf(UiMode.CONTACTS)
     private var _account = mutableStateOf<LocalAuthor?>(null)
 
-    val uiMode: State<UiMode> = _uiMode
-    val account: State<LocalAuthor?> = _account
+    val uiMode = _uiMode.asState()
+    val account = _account.asState()
 
     fun setUiMode(uiMode: UiMode) {
         _uiMode.value = uiMode
@@ -48,5 +57,12 @@ constructor(
 
     fun loadAccountInfo() {
         _account.value = identityManager.localAuthor
+    }
+
+    fun openRequestedShareable(m: ConversationRequestItem) {
+        when (m.requestType) {
+            FORUM -> setUiMode(UiMode.FORUMS)
+            else -> LOG.w { "Currently only forums are supported." }
+        }
     }
 }

@@ -29,16 +29,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import org.briarproject.bramble.api.contact.ContactId
+import org.briarproject.briar.api.sharing.Shareable
 import org.briarproject.briar.desktop.contact.ContactInfoDrawer
 import org.briarproject.briar.desktop.contact.ContactInfoDrawerState
 import org.briarproject.briar.desktop.ui.Loader
 import org.briarproject.briar.desktop.ui.getInfoDrawerHandler
 import org.briarproject.briar.desktop.viewmodel.viewModel
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ConversationScreen(
     contactId: ContactId,
+    openRequestedShareable: (ConversationRequestItem) -> Unit,
     viewModel: ConversationViewModel = viewModel(),
 ) {
     LaunchedEffect(contactId) {
@@ -103,6 +104,7 @@ fun ConversationScreen(
                     viewModel.onMessageAddedToBottom,
                     viewModel::markMessagesRead,
                     viewModel::respondToRequest,
+                    openRequestedShareable,
                     viewModel::deleteMessage,
                 )
             },
