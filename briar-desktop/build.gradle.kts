@@ -35,11 +35,11 @@ val versionCode = "0.3.1"
 val buildType = if (project.hasProperty("buildType")) project.properties["buildType"] else "snapshot"
 group = "app.briar.desktop"
 version = "$versionCode-$buildType"
-val windowsAumiName = "Briar"
+val appName = "Briar"
 
 buildData {
     packageName = "org.briarproject.briar.desktop"
-    windowsAumi = windowsAumiName
+    windowsAumi = appName
 }
 
 dependencies {
@@ -102,7 +102,7 @@ compose.desktop {
         mainClass = "org.briarproject.briar.desktop.MainKt"
         nativeDistributions {
             targetFormats(TargetFormat.Msi, TargetFormat.Exe, TargetFormat.Deb, TargetFormat.Rpm)
-            packageName = "Briar"
+            packageName = appName
             description = "Secure messaging, anywhere"
             vendor = "The Briar Project"
             copyright = "2021-2022 The Briar Project"
