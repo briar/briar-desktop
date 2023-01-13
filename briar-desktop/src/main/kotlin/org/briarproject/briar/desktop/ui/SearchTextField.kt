@@ -18,22 +18,40 @@
 
 package org.briarproject.briar.desktop.ui
 
+import androidx.compose.animation.Crossfade
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.PointerIconDefaults
+import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.unit.dp
-import org.briarproject.briar.desktop.utils.AccessibilityUtils.description
+import org.briarproject.briar.desktop.theme.surfaceVariant
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -44,8 +62,82 @@ fun SearchTextField(
     searchValue: String,
     addButtonDescription: String,
     onValueChange: (String) -> Unit,
-    onAddButtonClicked: () -> Unit,
+    onAddButtonClicked: () -> Unit
 ) {
+    val (isSearchMode, setSearchMode) = remember { mutableStateOf(false) }
+
+    Box(Modifier.fillMaxSize()) {
+        Crossfade(isSearchMode) {
+            if(it or searchValue.isNotEmpty()) {
+                SearchInput(
+                    searchValue,
+                    onValueChange,
+                    onBack = { setSearchMode(false) },
+                )
+            } else {
+                ContactListTopAppBar(
+                    onAddButtonClicked,
+                    onSearch = { setSearchMode(true) },
+                    icon
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+fun ContactListTopAppBar(
+    onContactAdd: () -> Unit,
+    onSearch: () -> Unit,
+    icon: ImageVector
+) {
+    Surface(
+        color = MaterialTheme.colors.surfaceVariant,
+        contentColor = MaterialTheme.colors.onSurface,
+    ) {
+        Box {
+            Row(
+                Modifier.fillMaxSize(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    i18n("contacts.search.title"),
+                    style = MaterialTheme.typography.h4,
+                    modifier = Modifier.padding(start = 64.dp)
+                )
+                Spacer(Modifier.weight(1f))
+                IconButton(
+                    {
+                        onSearch()
+                    }
+                ) {
+                    Icon(Icons.Filled.Search, i18n("access.contacts.search"))
+                }
+                IconButton(
+                    onClick = onContactAdd,
+                    modifier = Modifier.padding(end = 14.dp).then(Modifier.size(32.dp))
+                ) {
+                    Icon(
+                        icon,
+                        i18n("access.contacts.add"),
+                    )
+                }
+            }
+            HorizontalDivider(modifier = Modifier.align(Alignment.BottomCenter))
+        }
+    }
+}
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+fun SearchInput(
+    searchValue: String,
+    onValueChange: (String) -> Unit,
+    onBack: () -> Unit,
+) {
+    val focusRequester = remember { FocusRequester() }
     TextField(
         value = searchValue,
         onValueChange = onValueChange,
@@ -53,21 +145,24 @@ fun SearchTextField(
         textStyle = LocalTextStyle.current.copy(
             color = MaterialTheme.colors.onSurface
         ),
-        placeholder = { Text(placeholder, style = MaterialTheme.typography.body1) },
+        placeholder = { Text(i18n("contacts.search.placeholder"), style = MaterialTheme.typography.body1) },
         shape = RoundedCornerShape(0.dp),
+        colors = TextFieldDefaults.textFieldColors(backgroundColor = MaterialTheme.colors.surfaceVariant),
         leadingIcon = {
-            val padding = Modifier.padding(top = 8.dp, bottom = 8.dp, start = 32.dp, end = 4.dp)
-            Icon(Icons.Filled.Search, null, padding)
+            IconButton(
+                {
+                    focusRequester.freeFocus()
+                    onValueChange("")
+                    onBack()
+                },
+                Modifier.padding(start = 20.dp, end = 16.dp).size(24.dp).pointerHoverIcon(PointerIconDefaults.Default)
+            ) {
+                Icon(Icons.Filled.ArrowBack, i18n("access.contacts.search"))
+            }
         },
-        trailingIcon = {
-            ColoredIconButton(
-                icon = icon,
-                iconSize = 20.dp,
-                contentDescription = addButtonDescription,
-                onClick = onAddButtonClicked,
-                modifier = Modifier.padding(end = 8.dp)
-            )
-        },
-        modifier = Modifier.fillMaxSize().description(i18n("access.contacts.filter"))
+        modifier = Modifier.fillMaxSize().focusRequester(focusRequester)
     )
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
+    }
 }
