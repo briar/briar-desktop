@@ -68,7 +68,7 @@ fun SearchTextField(
 
     Box(Modifier.fillMaxSize()) {
         Crossfade(isSearchMode) {
-            if(it or searchValue.isNotEmpty()) {
+            if (it or searchValue.isNotEmpty()) {
                 SearchInput(
                     searchValue,
                     onValueChange,
