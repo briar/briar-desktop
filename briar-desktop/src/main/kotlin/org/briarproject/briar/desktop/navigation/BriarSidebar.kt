@@ -18,19 +18,21 @@
 
 package org.briarproject.briar.desktop.navigation
 
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.material.Badge
+import androidx.compose.material.BadgedBox
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChromeReaderMode
 import androidx.compose.material.icons.filled.Contacts
@@ -73,29 +75,37 @@ fun BriarSidebar(
         messageCount
     )
 
-    Surface(
-        modifier = Modifier.width(SIDEBAR_WIDTH).fillMaxHeight().selectableGroup(),
-        color = MaterialTheme.colors.sidebarSurface
+    val configuration = getConfiguration()
+    Column(
+        modifier = Modifier.background(MaterialTheme.colors.sidebarSurface)
+            .width(SIDEBAR_WIDTH).fillMaxHeight()
+            .padding(vertical = 4.dp)
+            .selectableGroup(),
+        verticalArrangement = spacedBy(4.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        val configuration = getConfiguration()
-        Column(verticalArrangement = Arrangement.Top) {
-            // profile button
-            Box(
-                modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 5.dp, bottom = 4.dp)
-            ) {
-                account?.let { ProfileCircle(size = 45.dp, it.id.bytes) }
-            }
+        // profile button
+        account?.let { ProfileCircle(size = 45.dp, it.id.bytes) }
 
-            BriarSidebarButton(UiMode.CONTACTS, Icons.Filled.Contacts, messageCount.privateMessages)
-            if (configuration.shouldEnablePrivateGroups()) BriarSidebarButton(UiMode.GROUPS, Icons.Filled.Group)
-            if (configuration.shouldEnableForums()) BriarSidebarButton(UiMode.FORUMS, Icons.Filled.Forum, messageCount.forumPosts)
-            if (configuration.shouldEnableBlogs()) BriarSidebarButton(UiMode.BLOGS, Icons.Filled.ChromeReaderMode)
-        }
-        Column(verticalArrangement = Arrangement.Bottom) {
-            if (configuration.shouldEnableTransportSettings()) BriarSidebarButton(UiMode.TRANSPORTS, Icons.Filled.WifiTethering)
-            BriarSidebarButton(UiMode.SETTINGS, Icons.Filled.Settings)
-            BriarSidebarButton(UiMode.ABOUT, Icons.Filled.Info)
-        }
+        Spacer(Modifier.height(4.dp))
+
+        BriarSidebarButton(UiMode.CONTACTS, Icons.Filled.Contacts, messageCount.privateMessages)
+        if (configuration.shouldEnablePrivateGroups()) BriarSidebarButton(UiMode.GROUPS, Icons.Filled.Group)
+        if (configuration.shouldEnableForums()) BriarSidebarButton(
+            UiMode.FORUMS,
+            Icons.Filled.Forum,
+            messageCount.forumPosts
+        )
+        if (configuration.shouldEnableBlogs()) BriarSidebarButton(UiMode.BLOGS, Icons.Filled.ChromeReaderMode)
+
+        Spacer(Modifier.weight(1f))
+
+        if (configuration.shouldEnableTransportSettings()) BriarSidebarButton(
+            UiMode.TRANSPORTS,
+            Icons.Filled.WifiTethering
+        )
+        BriarSidebarButton(UiMode.SETTINGS, Icons.Filled.Settings)
+        BriarSidebarButton(UiMode.ABOUT, Icons.Filled.Info)
     }
 }
 
@@ -106,7 +116,16 @@ fun BriarSidebarButton(
     icon: ImageVector,
     contentDescription: String,
     messageCount: Int,
-) = Box {
+) = BadgedBox(
+    badge = {
+        if (messageCount > 0) {
+            Badge(
+                modifier = Modifier.offset((-12).dp, 12.dp),
+                backgroundColor = MaterialTheme.colors.secondary,
+            )
+        }
+    },
+) {
     val tint = if (selected) MaterialTheme.colors.primary else MaterialTheme.colors.onSurface
     IconButton(
         icon = icon,
@@ -114,12 +133,5 @@ fun BriarSidebarButton(
         iconTint = tint,
         contentDescription = contentDescription,
         onClick = onClick,
-        modifier = Modifier.padding(vertical = 4.dp, horizontal = 12.dp),
     )
-    if (messageCount > 0) {
-        val color = MaterialTheme.colors.secondary
-        Canvas(modifier = Modifier.align(Alignment.TopEnd).requiredSize(12.dp).offset((-12).dp, 12.dp)) {
-            drawCircle(color)
-        }
-    }
 }
