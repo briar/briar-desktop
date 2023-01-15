@@ -40,8 +40,8 @@ check:
       when: always
     - when: always
 
-b_package_linux:
-  image: briar/ci-image-android:ubuntu-20-wine
+b_package_linux_x64:
+  image: briar/ci-image-android:ubuntu-20
   stage: build
   script:
     - ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-17-openjdk-amd64 --no-daemon -PbuildType=nightly
@@ -67,6 +67,21 @@ b_package_linux:
       - briar-desktop-ubuntu-18.04.deb
       - briar-desktop-ubuntu-20.04.deb
       - briar-desktop-ubuntu-22.04.deb
+    expire_in: 2 days
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+
+b_package_linux_arm:
+  image: briar/ci-image-android:ubuntu-20
+  stage: build
+  script:
+    - ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-17-openjdk-amd64 --no-daemon -PbuildType=nightly
+      pinpitPackageDefaultDistributableTarGzLinuxArm64
+    - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/arm64/distributableArchive/briar-desktop-arm64-*.tar.gz
+    - mv briar-desktop/build/pinpit/binaries/main-default/linux/arm64/distributableArchive/briar-desktop-arm64-*.tar.gz ./briar-desktop-linux-arm64.tar.gz
+  artifacts:
+    paths:
+      - briar-desktop-linux-arm64.tar.gz
     expire_in: 2 days
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
@@ -95,8 +110,8 @@ b_package_windows:
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
 
-rb_package_linux:
-  image: briar/ci-image-android:ubuntu-20-wine
+rb_package_linux_x64:
+  image: briar/ci-image-android:ubuntu-20
   stage: releasebuild
   script:
     - ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-17-openjdk-amd64 --no-daemon -PbuildType=beta
@@ -122,6 +137,21 @@ rb_package_linux:
       - briar-desktop-ubuntu-18.04.deb
       - briar-desktop-ubuntu-20.04.deb
       - briar-desktop-ubuntu-22.04.deb
+    expire_in: 2 days
+  only:
+    - tags
+
+rb_package_linux_arm:
+  image: briar/ci-image-android:ubuntu-20
+  stage: build
+  script:
+    - ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-17-openjdk-amd64 --no-daemon -PbuildType=beta
+      pinpitPackageDefaultDistributableTarGzLinuxArm64
+    - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/arm64/distributableArchive/briar-desktop-arm64-*.tar.gz
+    - mv briar-desktop/build/pinpit/binaries/main-default/linux/arm64/distributableArchive/briar-desktop-arm64-*.tar.gz ./briar-desktop-linux-arm64.tar.gz
+  artifacts:
+    paths:
+      - briar-desktop-linux-arm64.tar.gz
     expire_in: 2 days
   only:
     - tags

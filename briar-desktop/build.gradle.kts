@@ -25,7 +25,7 @@ plugins {
     kotlin("jvm") version "1.7.20"
     kotlin("kapt") version "1.7.20"
     id("org.jetbrains.compose") version "1.3.0"
-    id("de.mobanisto.pinpit") version "0.3.0"
+    id("de.mobanisto.pinpit") version "0.4.0"
     id("java")
     id("idea")
     id("org.jlleitschuh.gradle.ktlint") version "10.1.0"
@@ -47,6 +47,10 @@ val windowsX64: Configuration by configurations.creating {
 }
 
 val linuxX64: Configuration by configurations.creating {
+    extendsFrom(configurations.implementation.get())
+}
+
+val linuxArm64: Configuration by configurations.creating {
     extendsFrom(configurations.implementation.get())
 }
 
@@ -86,6 +90,7 @@ dependencies {
     currentOs(compose.desktop.currentOs)
     windowsX64(compose.desktop.windows_x64)
     linuxX64(compose.desktop.linux_x64)
+    linuxArm64(compose.desktop.linux_arm64)
 
     currentOs("org.briarproject:tor-${currentOS.id}:$tor_version")
     currentOs("org.briarproject:obfs4proxy-${currentOS.id}:$obfs4proxy_version")
@@ -234,6 +239,10 @@ pinpit.desktop {
                         // manually added
                         "xdg-utils", "libnotify4"
                     )
+                }
+                distributableArchive {
+                    arch = "arm64"
+                    format = "tar.gz"
                 }
             }
             windows {
