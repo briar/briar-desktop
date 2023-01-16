@@ -128,8 +128,7 @@ fun ThreadItemContentComposable(
                     horizontalArrangement = spacedBy(8.dp),
                     verticalAlignment = CenterVertically,
                 ) {
-                    // TODO load and cache profile images, if available
-                    ProfileCircle(20.dp, item.author.id.bytes)
+                    ProfileCircle(27.dp, item.author, item.authorInfo)
                     Text(
                         modifier = Modifier.weight(1f, fill = false),
                         text = item.authorName,

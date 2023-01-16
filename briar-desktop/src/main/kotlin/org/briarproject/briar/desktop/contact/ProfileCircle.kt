@@ -21,6 +21,7 @@ package org.briarproject.briar.desktop.contact
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.MaterialTheme
@@ -32,6 +33,9 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import org.briarproject.bramble.api.identity.Author
+import org.briarproject.briar.api.identity.AuthorInfo
+import org.briarproject.briar.desktop.attachment.media.AvatarProducer
 import org.briarproject.briar.desktop.theme.outline
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 
@@ -63,6 +67,21 @@ fun ProfileCircle(size: Dp, contactItem: ContactItem) {
 }
 
 /**
+ * Display the given [Author]'s avatar, or if it doesn't exist, the [Identicon]
+ * as a profile image within a circle.
+ *
+ * @param size the size of the circle. In order to avoid aliasing effects, pass a multiple
+ *             of 9 here. That helps as the image is based on a 9x9 square grid.
+ */
+@Composable
+fun ProfileCircle(size: Dp, author: Author, authorInfo: AuthorInfo) {
+    val avatar = AvatarProducer(authorInfo)
+    avatar?.let { imageBitmapState ->
+        ProfileCircle(size, imageBitmapState.value)
+    } ?: ProfileCircle(size, author.id.bytes)
+}
+
+/**
  * Display an [Identicon] as a profile image within a circle based on a user's author id.
  *
  * @param size the size of the circle. In order to avoid aliasing effects, pass a multiple
@@ -81,12 +100,17 @@ fun ProfileCircle(size: Dp, input: ByteArray) {
  * @param size the size of the circle.
  */
 @Composable
-fun ProfileCircle(size: Dp, avatar: ImageBitmap) {
-    Image(
+fun ProfileCircle(size: Dp, avatar: ImageBitmap?) {
+    val modifier = Modifier.size(size).clip(CircleShape)
+        .border(1.dp, MaterialTheme.colors.outline, CircleShape)
+    // If avatar is null, it should still be loading, so show empty circle
+    if (avatar == null) Spacer(
+        modifier = modifier,
+    ) else Image(
         bitmap = avatar,
         contentDescription = null,
         contentScale = ContentScale.FillBounds,
-        modifier = Modifier.size(size).clip(CircleShape).border(1.dp, MaterialTheme.colors.outline, CircleShape),
+        modifier = modifier,
     )
 }
 

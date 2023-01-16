@@ -44,6 +44,7 @@ import org.briarproject.bramble.api.event.EventListener
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.bramble.api.lifecycle.LifecycleManager.LifecycleState.RUNNING
 import org.briarproject.bramble.api.lifecycle.event.LifecycleEvent
+import org.briarproject.briar.desktop.attachment.media.AvatarManager
 import org.briarproject.briar.desktop.expiration.ExpirationBanner
 import org.briarproject.briar.desktop.login.ErrorScreen
 import org.briarproject.briar.desktop.login.StartupScreen
@@ -85,6 +86,7 @@ interface BriarUi {
 
 val LocalWindowScope = staticCompositionLocalOf<FrameWindowScope?> { null }
 val LocalViewModelProvider = staticCompositionLocalOf<ViewModelProvider?> { null }
+val LocalAvatarManager = staticCompositionLocalOf<AvatarManager?> { null }
 val LocalConfiguration = staticCompositionLocalOf<Configuration?> { null }
 
 @Immutable
@@ -95,6 +97,7 @@ constructor(
     private val lifecycleManager: LifecycleManager,
     private val eventBus: EventBus,
     private val viewModelProvider: ViewModelProvider,
+    private val avatarManager: AvatarManager,
     private val configuration: Configuration,
     private val visualNotificationProvider: VisualNotificationProvider,
     private val soundNotificationProvider: SoundNotificationProvider,
@@ -204,6 +207,7 @@ constructor(
                 LocalWindowScope provides this,
                 LocalWindowFocusState provides focusState,
                 LocalViewModelProvider provides viewModelProvider,
+                LocalAvatarManager provides avatarManager,
                 LocalConfiguration provides configuration,
                 LocalLocalization provides platformLocalization,
             ) {
