@@ -49,7 +49,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import org.briarproject.briar.desktop.ui.Constants.COLUMN_WIDTH
-import kotlin.math.roundToInt
 
 /**
  * State of the [InfoDrawer] composable.
@@ -154,7 +153,7 @@ fun InfoDrawer(
                 .fillMaxHeight()
                 .requiredWidth(COLUMN_WIDTH)
                 .align(Alignment.CenterEnd)
-                .offset { IntOffset(animatedOffset.value.roundToInt(), 0) },
+                .offset { IntOffset(animatedOffset.roundToPx(), 0) },
             shape = drawerShape,
             color = drawerBackgroundColor,
             contentColor = drawerContentColor,
