@@ -21,7 +21,5 @@ package org.briarproject.briar.desktop.contact
 interface ContactListItem {
     val displayName: String
     val timestamp: Long
-    val wrapperId: ContactListItemId
+    val uniqueId: ByteArray
 }
-
-interface ContactListItemId

@@ -80,14 +80,14 @@ fun PrivateMessageScreen(
         )
         VerticalDivider()
         Column(modifier = Modifier.weight(1f).fillMaxHeight()) {
-            val wrapperId = viewModel.selectedContactId.value
-            if (wrapperId == null) {
+            val item = viewModel.selectedContactListItem.value
+            if (item == null) {
                 NoContactSelected()
-            } else when (wrapperId) {
-                is ContactItem.Id -> {
-                    ConversationScreen(wrapperId.id)
+            } else when (item) {
+                is ContactItem -> {
+                    ConversationScreen(item.id)
                 }
-                is PendingContactItem.Id -> {
+                is PendingContactItem -> {
                     PendingContactSelected()
                 }
             }

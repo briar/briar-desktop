@@ -81,7 +81,7 @@ constructor(
     private val _pendingContactList = mutableStateListOf<PendingContactItem>()
 
     private val _filterBy = mutableStateOf("")
-    private val _selectedContactId = mutableStateOf<ContactListItemId?>(null)
+    private val _selectedContactListItem = mutableStateOf<ContactListItem?>(null)
     private val _contactIdToBeRemoved = mutableStateOf<PendingContactId?>(null)
 
     // todo: check impact on performance due to reconstructing whole list on every change
@@ -97,13 +97,13 @@ constructor(
     }
 
     val filterBy = _filterBy.asState()
-    val selectedContactId = derivedStateOf {
+    val selectedContactListItem = derivedStateOf {
         // reset selected contact to null if not part of list after filtering
-        val wrapperId = _selectedContactId.value
-        if (wrapperId == null || combinedContactList.value.find { it.wrapperId == wrapperId } != null) {
-            wrapperId
+        val item = _selectedContactListItem.value
+        if (item == null || combinedContactList.value.find { it.uniqueId.contentEquals(item.uniqueId) } != null) {
+            item
         } else {
-            _selectedContactId.value = null
+            _selectedContactListItem.value = null
             null
         }
     }
@@ -123,10 +123,11 @@ constructor(
     }
 
     fun selectContact(contactItem: ContactListItem) {
-        _selectedContactId.value = contactItem.wrapperId
+        _selectedContactListItem.value = contactItem
     }
 
-    fun isSelected(contactItem: ContactListItem) = _selectedContactId.value == contactItem.wrapperId
+    fun isSelected(contactItem: ContactListItem) =
+        _selectedContactListItem.value?.uniqueId.contentEquals(contactItem.uniqueId)
 
     fun removePendingContact(contactItem: PendingContactItem) {
         if (contactItem.state == PendingContactState.FAILED) {

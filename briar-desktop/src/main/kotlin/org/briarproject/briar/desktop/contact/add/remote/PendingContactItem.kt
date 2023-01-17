@@ -22,7 +22,6 @@ import org.briarproject.bramble.api.contact.PendingContact
 import org.briarproject.bramble.api.contact.PendingContactId
 import org.briarproject.bramble.api.contact.PendingContactState
 import org.briarproject.briar.desktop.contact.ContactListItem
-import org.briarproject.briar.desktop.contact.ContactListItemId
 
 data class PendingContactItem(
     val id: PendingContactId,
@@ -30,9 +29,8 @@ data class PendingContactItem(
     override val timestamp: Long,
     val state: PendingContactState,
 ) : ContactListItem {
-    data class Id(val id: PendingContactId) : ContactListItemId
 
-    override val wrapperId = Id(id)
+    override val uniqueId: ByteArray = id.bytes
     override val displayName = alias
 
     constructor(contact: PendingContact, state: PendingContactState) : this(

@@ -157,7 +157,7 @@ fun ContactList(
                 ) {
                     items(
                         items = contactList,
-                        key = { item -> item.wrapperId },
+                        key = { item -> item.uniqueId },
                         contentType = { item -> item::class }
                     ) { item ->
                         ListItemView(
