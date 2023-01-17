@@ -45,10 +45,7 @@ data class ContactItem(
     override val timestamp: Long,
     val avatar: ImageBitmap?,
 ) : ContactListItem {
-
-    data class Id(val id: ContactId) : ContactListItemId
-
-    override val wrapperId = Id(id)
+    override val uniqueId: ByteArray = ByteArray(4) { i -> (id.int shr (i * 8)).toByte() }
     override val displayName = getContactDisplayName(name, alias)
 
     constructor(
@@ -56,7 +53,7 @@ data class ContactItem(
         authorInfo: AuthorInfo,
         isConnected: Boolean,
         groupCount: MessageTracker.GroupCount,
-        avatar: ImageBitmap?
+        avatar: ImageBitmap?,
     ) : this(
         id = contact.id,
         authorId = contact.author.id,
@@ -96,7 +93,7 @@ fun loadContactItem(
     authorManager: AuthorManager,
     connectionRegistry: ConnectionRegistry,
     conversationManager: ConversationManager,
-    attachmentReader: AttachmentReader
+    attachmentReader: AttachmentReader,
 ): ContactItem {
     val authorInfo = authorManager.getAuthorInfo(txn, contact)
     return ContactItem(
