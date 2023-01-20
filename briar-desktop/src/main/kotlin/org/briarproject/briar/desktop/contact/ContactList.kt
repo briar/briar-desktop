@@ -137,7 +137,7 @@ fun ContactList(
                 modifier = Modifier.fillMaxWidth().height(HEADER_SIZE + 1.dp),
             ) {
                 SearchTextField(
-                    placeholder = i18n("contacts.search.title"),
+                    title = i18n("contacts.search.title"),
                     icon = Icons.Filled.PersonAdd,
                     searchValue = filterBy,
                     addButtonDescription = i18n("access.contacts.add"),

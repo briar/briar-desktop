@@ -70,15 +70,14 @@ import kotlinx.coroutines.runInterruptible
 import org.briarproject.briar.desktop.theme.surfaceVariant
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun SearchTextField(
-    placeholder: String,
+    title: String,
     icon: ImageVector,
     searchValue: String,
     addButtonDescription: String,
     onValueChange: (String) -> Unit,
-    onAddButtonClicked: () -> Unit
+    onAddButtonClicked: () -> Unit,
 ) {
     val (isSearchMode, setSearchMode) = remember { mutableStateOf(false) }
 
@@ -91,22 +90,25 @@ fun SearchTextField(
                     onBack = { setSearchMode(false) },
                 )
             } else {
-                ContactListTopAppBar(
+                SearchTopAppBar(
+                    title,
                     onAddButtonClicked,
+                    addButtonDescription,
                     onSearch = { setSearchMode(true) },
-                    icon
+                    icon,
                 )
             }
         }
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun ContactListTopAppBar(
+fun SearchTopAppBar(
+    placeholder: String,
     onContactAdd: () -> Unit,
+    addButtonDescription: String,
     onSearch: () -> Unit,
-    icon: ImageVector
+    icon: ImageVector,
 ) {
     Surface(
         color = MaterialTheme.colors.surfaceVariant,
@@ -114,14 +116,12 @@ fun ContactListTopAppBar(
     ) {
         Box {
             Row(
-                Modifier.fillMaxSize(),
-                horizontalArrangement = Arrangement.SpaceBetween,
+                Modifier.fillMaxSize().padding(start = 64.dp, end = 14.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    i18n("contacts.search.title"),
+                    placeholder,
                     style = MaterialTheme.typography.h4,
-                    modifier = Modifier.padding(start = 64.dp)
                 )
                 Spacer(Modifier.weight(1f))
                 IconButton(
@@ -133,7 +133,7 @@ fun ContactListTopAppBar(
                 }
                 IconButton(
                     onClick = onContactAdd,
-                    modifier = Modifier.padding(end = 14.dp).then(Modifier.size(32.dp))
+                    modifier = Modifier.size(32.dp),
                 ) {
                     Icon(
                         icon,
@@ -168,7 +168,7 @@ fun SearchInput(
         textStyle = LocalTextStyle.current.copy(
             color = MaterialTheme.colors.onSurface
         ),
-        placeholder = { Text(i18n("contacts.search.placeholder"), style = MaterialTheme.typography.body1) },
+        placeholder = { Text(i18n("search"), style = MaterialTheme.typography.body1) },
         shape = RoundedCornerShape(0.dp),
         colors = TextFieldDefaults.textFieldColors(backgroundColor = MaterialTheme.colors.surfaceVariant),
         leadingIcon = {
@@ -188,7 +188,7 @@ fun SearchInput(
                     },
                     Modifier.size(24.dp).pointerHoverIcon(PointerIconDefaults.Default)
                 ) {
-                    Icon(Icons.Filled.Close, "clear search text")
+                    Icon(Icons.Filled.Close, i18n("search.clear"))
                 }
             }
         },

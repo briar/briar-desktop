@@ -68,7 +68,7 @@ fun GroupListComposable(
                 modifier = Modifier.fillMaxWidth().height(Constants.HEADER_SIZE + 1.dp),
             ) {
                 SearchTextField(
-                    placeholder = i18n("forum.search.title"),
+                    title = i18n("forum.search.title"),
                     icon = Icons.Filled.AddComment,
                     searchValue = filterBy,
                     addButtonDescription = i18n("forum.add.title"),
