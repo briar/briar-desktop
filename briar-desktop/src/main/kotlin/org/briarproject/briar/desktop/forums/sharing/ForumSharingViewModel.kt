@@ -32,7 +32,6 @@ import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.bramble.api.plugin.event.ContactConnectedEvent
 import org.briarproject.bramble.api.plugin.event.ContactDisconnectedEvent
 import org.briarproject.bramble.api.sync.GroupId
-import org.briarproject.briar.api.attachment.AttachmentReader
 import org.briarproject.briar.api.conversation.ConversationManager
 import org.briarproject.briar.api.forum.ForumSharingManager
 import org.briarproject.briar.api.forum.event.ForumInvitationResponseReceivedEvent
@@ -57,7 +56,6 @@ class ForumSharingViewModel @Inject constructor(
     authorManager: AuthorManager,
     conversationManager: ConversationManager,
     private val connectionRegistry: ConnectionRegistry,
-    attachmentReader: AttachmentReader,
     briarExecutors: BriarExecutors,
     lifecycleManager: LifecycleManager,
     db: TransactionManager,
@@ -67,7 +65,6 @@ class ForumSharingViewModel @Inject constructor(
     authorManager,
     conversationManager,
     connectionRegistry,
-    attachmentReader,
     briarExecutors,
     lifecycleManager,
     db,

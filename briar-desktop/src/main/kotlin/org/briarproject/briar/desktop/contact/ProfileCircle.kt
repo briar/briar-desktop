@@ -34,6 +34,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import org.briarproject.bramble.api.identity.Author
+import org.briarproject.bramble.api.identity.AuthorId
 import org.briarproject.briar.api.identity.AuthorInfo
 import org.briarproject.briar.desktop.attachment.media.AvatarProducer
 import org.briarproject.briar.desktop.theme.outline
@@ -60,10 +61,7 @@ fun main() = preview {
  */
 @Composable
 fun ProfileCircle(size: Dp, contactItem: ContactItem) {
-    if (contactItem.avatar == null)
-        ProfileCircle(size, contactItem.authorId.bytes)
-    else
-        ProfileCircle(size, contactItem.avatar)
+    ProfileCircle(size, contactItem.authorId, contactItem.authorInfo)
 }
 
 /**
@@ -74,11 +72,11 @@ fun ProfileCircle(size: Dp, contactItem: ContactItem) {
  *             of 9 here. That helps as the image is based on a 9x9 square grid.
  */
 @Composable
-fun ProfileCircle(size: Dp, author: Author, authorInfo: AuthorInfo) {
+fun ProfileCircle(size: Dp, authorId: AuthorId, authorInfo: AuthorInfo) {
     val avatar = AvatarProducer(authorInfo)
     avatar?.let { imageBitmapState ->
         ProfileCircle(size, imageBitmapState.value)
-    } ?: ProfileCircle(size, author.id.bytes)
+    } ?: ProfileCircle(size, authorId.bytes)
 }
 
 /**
@@ -89,7 +87,10 @@ fun ProfileCircle(size: Dp, author: Author, authorInfo: AuthorInfo) {
  */
 @Composable
 fun ProfileCircle(size: Dp, input: ByteArray) {
-    Canvas(Modifier.size(size).clip(CircleShape).border(1.dp, MaterialTheme.colors.outline, CircleShape)) {
+    Canvas(
+        Modifier.size(size).clip(CircleShape)
+            .border(1.dp, MaterialTheme.colors.outline, CircleShape)
+    ) {
         Identicon(input, this.size.width, this.size.height).draw(this)
     }
 }

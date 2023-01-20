@@ -54,7 +54,6 @@ constructor(
     authorManager,
     conversationManager,
     connectionRegistry,
-    attachmentReader,
     briarExecutors,
     lifecycleManager,
     db,

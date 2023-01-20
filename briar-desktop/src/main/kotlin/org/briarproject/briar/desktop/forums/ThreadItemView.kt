@@ -128,7 +128,7 @@ fun ThreadItemContentComposable(
                     horizontalArrangement = spacedBy(8.dp),
                     verticalAlignment = CenterVertically,
                 ) {
-                    ProfileCircle(27.dp, item.author, item.authorInfo)
+                    ProfileCircle(27.dp, item.author.id, item.authorInfo)
                     Text(
                         modifier = Modifier.weight(1f, fill = false),
                         text = item.authorName,

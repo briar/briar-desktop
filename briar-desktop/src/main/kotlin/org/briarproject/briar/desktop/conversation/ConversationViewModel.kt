@@ -286,7 +286,7 @@ constructor(
 
             val contact = contactManager.getContact(txn, id)
             val contactItem =
-                loadContactItem(txn, contact, authorManager, connectionRegistry, conversationManager, attachmentReader)
+                loadContactItem(txn, contact, authorManager, connectionRegistry, conversationManager)
             LOG.logDuration("Loading contact", start)
             txn.attach {
                 _contactItem.value = contactItem

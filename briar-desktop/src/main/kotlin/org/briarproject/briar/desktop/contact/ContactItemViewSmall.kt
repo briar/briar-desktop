@@ -44,6 +44,7 @@ import org.briarproject.briar.desktop.utils.PreviewUtils.DropDownValues
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 import org.briarproject.briar.desktop.utils.appendCommaSeparated
 import org.briarproject.briar.desktop.utils.buildBlankAnnotatedString
+import org.briarproject.briar.desktop.utils.getRandomAuthorInfo
 import java.time.Instant
 
 @Suppress("HardCodedStringLiteral")
@@ -63,14 +64,13 @@ fun main() = preview(
                 ContactItem(
                     id = ContactId(0),
                     authorId = AuthorId(getRandomIdPersistent()),
-                    trustLevel = Status.valueOf(getStringParameter("trustLevel")),
+                    authorInfo = getRandomAuthorInfo(Status.valueOf(getStringParameter("trustLevel"))),
                     name = getStringParameter("name"),
                     alias = getStringParameter("alias"),
                     isConnected = getBooleanParameter("isConnected"),
                     isEmpty = getBooleanParameter("isEmpty"),
                     unread = getIntParameter("unread"),
                     timestamp = getLongParameter("timestamp"),
-                    avatar = null,
                 ),
             )
         }

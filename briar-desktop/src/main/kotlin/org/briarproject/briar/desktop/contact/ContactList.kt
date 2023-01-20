@@ -42,7 +42,6 @@ import org.briarproject.bramble.api.contact.ContactId
 import org.briarproject.bramble.api.contact.PendingContactId
 import org.briarproject.bramble.api.contact.PendingContactState
 import org.briarproject.bramble.api.identity.AuthorId
-import org.briarproject.briar.api.identity.AuthorInfo
 import org.briarproject.briar.desktop.contact.add.remote.PendingContactItem
 import org.briarproject.briar.desktop.contact.add.remote.PendingContactItemView
 import org.briarproject.briar.desktop.theme.surfaceVariant
@@ -53,6 +52,7 @@ import org.briarproject.briar.desktop.ui.SearchTextField
 import org.briarproject.briar.desktop.ui.VerticallyScrollableArea
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
+import org.briarproject.briar.desktop.utils.getRandomAuthorInfo
 import java.time.Instant
 
 @Suppress("HardCodedStringLiteral")
@@ -62,14 +62,13 @@ fun main() = preview {
             ContactItem(
                 id = ContactId(0),
                 authorId = AuthorId(getRandomId()),
-                trustLevel = AuthorInfo.Status.VERIFIED,
+                authorInfo = getRandomAuthorInfo(),
                 name = "Maria",
                 alias = "Mary",
                 isConnected = true,
                 isEmpty = false,
                 unread = 2,
                 timestamp = Instant.now().toEpochMilli(),
-                avatar = null,
             ),
             PendingContactItem(
                 id = PendingContactId(getRandomId()),
@@ -80,14 +79,13 @@ fun main() = preview {
             ContactItem(
                 id = ContactId(1),
                 authorId = AuthorId(getRandomId()),
-                trustLevel = AuthorInfo.Status.UNVERIFIED,
+                authorInfo = getRandomAuthorInfo(),
                 name = "Anna",
                 alias = null,
                 isConnected = false,
                 isEmpty = true,
                 unread = 0,
                 timestamp = (Instant.now().minusSeconds(300)).toEpochMilli(),
-                avatar = null,
             ),
         )
     }

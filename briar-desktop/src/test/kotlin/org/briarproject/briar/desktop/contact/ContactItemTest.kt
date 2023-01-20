@@ -57,7 +57,6 @@ class ContactItemTest {
             authorInfo = AuthorInfo(AuthorInfo.Status.UNKNOWN),
             isConnected = false,
             groupCount = MessageTracker.GroupCount(0, 0, System.currentTimeMillis()),
-            avatar = null
         )
         assertEquals("Alice", item.displayName)
 

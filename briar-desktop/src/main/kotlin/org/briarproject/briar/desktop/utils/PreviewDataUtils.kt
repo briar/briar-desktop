@@ -35,7 +35,7 @@ fun getRandomAuthor(): Author = Author(
     SignaturePublicKey(Random.nextBytes(MAX_SIGNATURE_PUBLIC_KEY_BYTES))
 )
 
-fun getRandomAuthorInfo(): AuthorInfo = AuthorInfo(statusList.random())
+fun getRandomAuthorInfo(s: AuthorInfo.Status = statusList.random()): AuthorInfo = AuthorInfo(s)
 
 fun getRandomForumPostHeader() = ForumPostHeader(
     MessageId(getRandomId()),

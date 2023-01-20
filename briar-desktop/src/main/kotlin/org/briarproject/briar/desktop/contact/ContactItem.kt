@@ -18,53 +18,48 @@
 
 package org.briarproject.briar.desktop.contact
 
-import androidx.compose.ui.graphics.ImageBitmap
 import org.briarproject.bramble.api.connection.ConnectionRegistry
 import org.briarproject.bramble.api.contact.Contact
 import org.briarproject.bramble.api.contact.ContactId
 import org.briarproject.bramble.api.db.Transaction
 import org.briarproject.bramble.api.identity.AuthorId
-import org.briarproject.briar.api.attachment.AttachmentReader
 import org.briarproject.briar.api.client.MessageTracker
 import org.briarproject.briar.api.conversation.ConversationManager
 import org.briarproject.briar.api.identity.AuthorInfo
 import org.briarproject.briar.api.identity.AuthorManager
-import org.briarproject.briar.desktop.utils.ImageUtils
 import org.briarproject.briar.desktop.utils.UiUtils.getContactDisplayName
 import kotlin.math.max
 
 data class ContactItem(
     val id: ContactId,
     val authorId: AuthorId,
-    val trustLevel: AuthorInfo.Status,
+    val authorInfo: AuthorInfo,
     private val name: String,
     val alias: String?,
     val isConnected: Boolean,
     val isEmpty: Boolean,
     val unread: Int,
     override val timestamp: Long,
-    val avatar: ImageBitmap?,
 ) : ContactListItem {
     override val uniqueId: ByteArray = ByteArray(4) { i -> (id.int shr (i * 8)).toByte() }
     override val displayName = getContactDisplayName(name, alias)
+    val trustLevel: AuthorInfo.Status = authorInfo.status
 
     constructor(
         contact: Contact,
         authorInfo: AuthorInfo,
         isConnected: Boolean,
         groupCount: MessageTracker.GroupCount,
-        avatar: ImageBitmap?,
     ) : this(
         id = contact.id,
         authorId = contact.author.id,
-        trustLevel = authorInfo.status,
+        authorInfo = authorInfo,
         name = contact.author.name,
         alias = contact.alias,
         isConnected = isConnected,
         isEmpty = groupCount.msgCount == 0,
         unread = groupCount.unreadCount,
         timestamp = groupCount.latestMsgTime,
-        avatar = avatar,
     )
 
     fun updateTimestampAndUnread(timestamp: Long, read: Boolean) =
@@ -83,8 +78,8 @@ data class ContactItem(
     fun updateFromMessagesRead(c: Int) =
         copy(unread = unread - c)
 
-    fun updateAvatar(avatar: ImageBitmap?) =
-        copy(avatar = avatar)
+    fun updateAuthorInfo(authorInfo: AuthorInfo) =
+        copy(authorInfo = authorInfo)
 }
 
 fun loadContactItem(
@@ -93,7 +88,6 @@ fun loadContactItem(
     authorManager: AuthorManager,
     connectionRegistry: ConnectionRegistry,
     conversationManager: ConversationManager,
-    attachmentReader: AttachmentReader,
 ): ContactItem {
     val authorInfo = authorManager.getAuthorInfo(txn, contact)
     return ContactItem(
@@ -101,6 +95,5 @@ fun loadContactItem(
         authorInfo = authorInfo,
         isConnected = connectionRegistry.isConnected(contact.id),
         groupCount = conversationManager.getGroupCount(txn, contact.id),
-        avatar = authorInfo.avatarHeader?.let { ImageUtils.loadImage(txn, attachmentReader, it) },
     )
 }

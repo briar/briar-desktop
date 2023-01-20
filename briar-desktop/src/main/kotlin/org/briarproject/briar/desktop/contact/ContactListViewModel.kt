@@ -32,7 +32,6 @@ import org.briarproject.bramble.api.db.TransactionManager
 import org.briarproject.bramble.api.event.Event
 import org.briarproject.bramble.api.event.EventBus
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
-import org.briarproject.briar.api.attachment.AttachmentReader
 import org.briarproject.briar.api.conversation.ConversationManager
 import org.briarproject.briar.api.conversation.event.ConversationMessageTrackedEvent
 import org.briarproject.briar.api.identity.AuthorManager
@@ -52,7 +51,6 @@ constructor(
     authorManager: AuthorManager,
     conversationManager: ConversationManager,
     connectionRegistry: ConnectionRegistry,
-    attachmentReader: AttachmentReader,
     briarExecutors: BriarExecutors,
     lifecycleManager: LifecycleManager,
     db: TransactionManager,
@@ -62,7 +60,6 @@ constructor(
     authorManager,
     conversationManager,
     connectionRegistry,
-    attachmentReader,
     briarExecutors,
     lifecycleManager,
     db,

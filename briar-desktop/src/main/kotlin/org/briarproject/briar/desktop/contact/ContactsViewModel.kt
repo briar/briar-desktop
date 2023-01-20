@@ -34,13 +34,12 @@ import org.briarproject.bramble.api.event.EventBus
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.bramble.api.plugin.event.ContactConnectedEvent
 import org.briarproject.bramble.api.plugin.event.ContactDisconnectedEvent
-import org.briarproject.briar.api.attachment.AttachmentReader
 import org.briarproject.briar.api.avatar.event.AvatarUpdatedEvent
 import org.briarproject.briar.api.conversation.ConversationManager
+import org.briarproject.briar.api.identity.AuthorInfo
 import org.briarproject.briar.api.identity.AuthorManager
 import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.threading.UiExecutor
-import org.briarproject.briar.desktop.utils.ImageUtils
 import org.briarproject.briar.desktop.utils.KLoggerUtils.i
 import org.briarproject.briar.desktop.utils.clearAndAddAll
 import org.briarproject.briar.desktop.utils.removeFirst
@@ -52,7 +51,6 @@ abstract class ContactsViewModel(
     private val authorManager: AuthorManager,
     private val conversationManager: ConversationManager,
     private val connectionRegistry: ConnectionRegistry,
-    private val attachmentReader: AttachmentReader,
     briarExecutors: BriarExecutors,
     lifecycleManager: LifecycleManager,
     db: TransactionManager,
@@ -79,7 +77,7 @@ abstract class ContactsViewModel(
     }
 
     open fun loadContactItemWithinTransaction(txn: Transaction, contact: Contact) =
-        loadContactItem(txn, contact, authorManager, connectionRegistry, conversationManager, attachmentReader)
+        loadContactItem(txn, contact, authorManager, connectionRegistry, conversationManager)
 
     override fun eventOccurred(e: Event?) {
         when (e) {
@@ -110,11 +108,10 @@ abstract class ContactsViewModel(
 
             is AvatarUpdatedEvent -> {
                 LOG.i { "received avatar update: ${e.attachmentHeader}" }
-                runOnDbThreadWithTransaction(true) { txn ->
-                    val image = ImageUtils.loadImage(txn, attachmentReader, e.attachmentHeader)
-                    txn.attach {
-                        updateContactItem(e.contactId) { it.updateAvatar(image) }
-                    }
+                updateContactItem(e.contactId) {
+                    val authorInfo =
+                        AuthorInfo(it.authorInfo.status, it.authorInfo.alias, e.attachmentHeader)
+                    it.updateAuthorInfo(authorInfo)
                 }
             }
         }

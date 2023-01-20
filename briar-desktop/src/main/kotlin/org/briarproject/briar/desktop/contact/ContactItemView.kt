@@ -32,11 +32,8 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ProvideTextStyle
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.loadImageBitmap
-import androidx.compose.ui.res.useResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.text
 import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
@@ -56,6 +53,7 @@ import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 import org.briarproject.briar.desktop.utils.TimeUtils.getFormattedTimestamp
 import org.briarproject.briar.desktop.utils.appendCommaSeparated
 import org.briarproject.briar.desktop.utils.buildBlankAnnotatedString
+import org.briarproject.briar.desktop.utils.getRandomAuthorInfo
 import java.time.Instant
 
 @Suppress("HardCodedStringLiteral")
@@ -68,24 +66,19 @@ fun main() = preview(
     "unread" to 3,
     "timestamp" to Instant.now().toEpochMilli(),
     "selected" to false,
-    "showAvatar" to false,
 ) {
-    val avatar = remember {
-        useResource("images/logo_circle.ico") { loadImageBitmap(it) }
-    }
     Column(Modifier.selectableGroup()) {
         ListItemView(getBooleanParameter("selected")) {
             val item = ContactItem(
                 id = ContactId(0),
                 authorId = AuthorId(getRandomIdPersistent()),
-                trustLevel = Status.valueOf(getStringParameter("trustLevel")),
+                authorInfo = getRandomAuthorInfo(Status.valueOf(getStringParameter("trustLevel"))),
                 name = getStringParameter("name"),
                 alias = getStringParameter("alias"),
                 isConnected = getBooleanParameter("isConnected"),
                 isEmpty = getBooleanParameter("isEmpty"),
                 unread = getIntParameter("unread"),
                 timestamp = getLongParameter("timestamp"),
-                avatar = if (getBooleanParameter("showAvatar")) avatar else null,
             )
             ContactItemView(item)
         }
