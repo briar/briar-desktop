@@ -48,13 +48,16 @@ b_package_linux:
       pinpitPackageDefaultDebDebianBullseyeX64
       pinpitPackageDefaultDebUbuntuBionicX64
       pinpitPackageDefaultDebUbuntuFocalX64
+      pinpitPackageDefaultDebUbuntuJammyX64
     - ls -lrth briar-desktop/build/pinpit/jars/Briar-linux-*.jar
     - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-18.04-x64-*.deb
     - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-20.04-x64-*.deb
+    - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-22.04-x64-*.deb
     - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-debian-bullseye-x64-*.deb
     - mv briar-desktop/build/pinpit/jars/Briar-linux-*.jar ./briar-desktop-linux.jar
     - mv briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-18.04-x64-*.deb ./briar-desktop-ubuntu-18.04.deb
     - mv briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-20.04-x64-*.deb ./briar-desktop-ubuntu-20.04.deb
+    - mv briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-22.04-x64-*.deb ./briar-desktop-ubuntu-22.04.deb
     - mv briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-debian-bullseye-x64-*.deb ./briar-desktop-debian-bullseye.deb
   artifacts:
     paths:
@@ -99,13 +102,16 @@ rb_package_linux:
       pinpitPackageDefaultDebDebianBullseyeX64
       pinpitPackageDefaultDebUbuntuBionicX64
       pinpitPackageDefaultDebUbuntuFocalX64
+      pinpitPackageDefaultDebUbuntuJammyX64
     - ls -lrth briar-desktop/build/pinpit/jars/Briar-linux-*.jar
     - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-18.04-x64-*.deb
     - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-20.04-x64-*.deb
+    - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-22.04-x64-*.deb
     - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-debian-bullseye-x64-*.deb
     - mv briar-desktop/build/pinpit/jars/Briar-linux-*.jar ./briar-desktop-linux.jar
     - mv briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-18.04-x64-*.deb ./briar-desktop-ubuntu-18.04.deb
     - mv briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-20.04-x64-*.deb ./briar-desktop-ubuntu-20.04.deb
+    - mv briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-22.04-x64-*.deb ./briar-desktop-ubuntu-22.04.deb
     - mv briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-debian-bullseye-x64-*.deb ./briar-desktop-debian-bullseye.deb
   artifacts:
     paths:

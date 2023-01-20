@@ -175,6 +175,16 @@ pinpit.desktop {
                 // This uses a combination of `ldd` and `dpkg -S` on each `.so` file shipped with the app
                 // to find out which other shared libraries this depends on and which Debian package
                 // provides it.
+                deb("UbuntuJammyX64") {
+                    qualifier = "ubuntu-22.04"
+                    arch = "x64"
+                    depends(
+                        // determined by pinpitSuggestDebDependencies
+                        "libc6", "libexpat1", "zlib1g",
+                        // manually added
+                        "xdg-utils", "libnotify4"
+                    )
+                }
                 deb("UbuntuFocalX64") {
                     qualifier = "ubuntu-20.04"
                     arch = "x64"
