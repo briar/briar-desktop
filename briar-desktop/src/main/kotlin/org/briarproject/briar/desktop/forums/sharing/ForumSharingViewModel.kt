@@ -75,7 +75,7 @@ class ForumSharingViewModel @Inject constructor(
         private val LOG = KotlinLogging.logger {}
     }
 
-    private lateinit var groupId: GroupId
+    private var _groupId: GroupId? = null
 
     private val _sharingStatus = mutableStateOf(emptyMap<ContactId, SharingStatus>())
     private val _shareableSelected = mutableStateOf(emptySet<ContactId>())
@@ -113,8 +113,8 @@ class ForumSharingViewModel @Inject constructor(
 
     @UiExecutor
     fun setGroupId(groupId: GroupId) {
-        if (this::groupId.isInitialized && groupId == this.groupId) return
-        this.groupId = groupId
+        if (_groupId == groupId) return
+        _groupId = groupId
         reload()
     }
 
@@ -140,6 +140,7 @@ class ForumSharingViewModel @Inject constructor(
 
     @UiExecutor
     fun shareForum() = runOnDbThreadWithTransaction(false) { txn ->
+        val groupId = _groupId ?: return@runOnDbThreadWithTransaction
         val message = _sharingMessage.value.ifEmpty { null }
         _shareableSelected.value.forEach { contactId ->
             forumSharingManager.sendInvitation(txn, groupId, contactId, message)
@@ -151,6 +152,7 @@ class ForumSharingViewModel @Inject constructor(
     override fun eventOccurred(e: Event?) {
         super.eventOccurred(e)
 
+        val groupId = _groupId ?: return
         when {
             e is ForumInvitationResponseReceivedEvent && e.messageHeader.shareableId == groupId -> {
                 if (e.messageHeader.wasAccepted()) {
@@ -182,13 +184,14 @@ class ForumSharingViewModel @Inject constructor(
 
     override fun loadContactsWithinTransaction(txn: Transaction) {
         super.loadContactsWithinTransaction(txn)
-        if (this::groupId.isInitialized) loadSharingStatus(txn)
+        if (_groupId != null) loadSharingStatus(txn)
     }
 
     private fun loadSharingStatus(): Unit =
         runOnDbThreadWithTransaction(true, this::loadSharingStatus)
 
     private fun loadSharingStatus(txn: Transaction) {
+        val groupId = _groupId ?: return
         val map = contactManager.getContacts(txn).associate { contact ->
             contact.id to forumSharingManager.getSharingStatus(txn, groupId, contact)
         }

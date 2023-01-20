@@ -64,8 +64,8 @@ class ThreadedConversationViewModel @Inject constructor(
         private val LOG = KotlinLogging.logger {}
     }
 
-    lateinit var groupItem: GroupItem
-        private set
+    private val _groupItem = mutableStateOf<GroupItem?>(null)
+    val groupItem = _groupItem.asState()
 
     private lateinit var onPostAdded: (header: ForumPostHeader) -> Unit
 
@@ -77,8 +77,8 @@ class ThreadedConversationViewModel @Inject constructor(
 
     @UiExecutor
     fun setGroupItem(groupItem: GroupItem, onPostAdded: (header: ForumPostHeader) -> Unit) {
-        this.groupItem = groupItem
         this.onPostAdded = onPostAdded
+        _groupItem.value = groupItem
         _selectedPost.value = null
         forumSharingViewModel.setGroupId(groupItem.id)
         loadPosts(groupItem.id)
@@ -87,7 +87,7 @@ class ThreadedConversationViewModel @Inject constructor(
     @UiExecutor
     override fun eventOccurred(e: Event) {
         if (e is ForumPostReceivedEvent) {
-            if (e.groupId == groupItem.id) {
+            if (e.groupId == _groupItem.value?.id) {
                 val item = ForumPostItem(e.header, e.text)
                 addItem(item, null)
             }
@@ -125,16 +125,18 @@ class ThreadedConversationViewModel @Inject constructor(
 
     @UiExecutor
     @OptIn(DelicateCoroutinesApi::class)
-    fun createPost(groupItem: GroupItem, text: String, parentId: MessageId?) = GlobalScope.launch {
+    fun createPost(text: String) = GlobalScope.launch {
+        val groupId = _groupItem.value?.id ?: return@launch
+        val parentId = _selectedPost.value?.id
         val author = runOnDbThreadWithTransaction<LocalAuthor>(false) { txn ->
             identityManager.getLocalAuthor(txn)
         }
         val count = runOnDbThreadWithTransaction<MessageTracker.GroupCount>(false) { txn ->
-            forumManager.getGroupCount(txn, groupItem.id)
+            forumManager.getGroupCount(txn, groupId)
         }
         val timestamp = max(count.latestMsgTime + 1, clock.currentTimeMillis())
         val post = withContext(cryptoDispatcher) {
-            forumManager.createLocalPost(groupItem.id, text, timestamp, parentId, author)
+            forumManager.createLocalPost(groupId, text, timestamp, parentId, author)
         }
         runOnDbThreadWithTransaction(false) { txn ->
             val header = forumManager.addLocalPost(txn, post)
@@ -172,22 +174,23 @@ class ThreadedConversationViewModel @Inject constructor(
             item.id
         } ?: emptyList()
 
-        if (readIds.isNotEmpty()) {
+        val groupId = _groupItem.value?.id
+        if (readIds.isNotEmpty() && groupId != null) {
             runOnDbThread {
                 readIds.forEach { id ->
-                    forumManager.setReadFlag(groupItem.id, id, true)
+                    forumManager.setReadFlag(groupId, id, true)
                 }
             }
             // we don't attach this to the transaction that actually changes the DB,
             // but that should be fine for this purpose of just decrementing a counter
-            eventBus.broadcast(ForumPostReadEvent(groupItem.id, readIds.size))
+            eventBus.broadcast(ForumPostReadEvent(groupId, readIds.size))
             // TODO replace immutable ThreadItems instead to avoid recomposing whole list
             val messageTree = (posts.value as? Loaded)?.messageTree ?: return
             _posts.value = Loaded(messageTree)
         }
     }
 
-    fun deleteGroup(groupItem: GroupItem) {
-        forumManager.removeForum((groupItem as ForumItem).forum)
+    fun deleteGroup() {
+        _groupItem.value?.let { forumManager.removeForum((it as ForumItem).forum) }
     }
 }

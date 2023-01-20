@@ -68,8 +68,12 @@ fun GroupConversationScreen(
 ) {
     Scaffold(
         topBar = {
-            GroupConversationHeader(viewModel.groupItem, viewModel.forumSharingViewModel) {
-                viewModel.deleteGroup(viewModel.groupItem)
+            viewModel.groupItem.value?.let { groupItem ->
+                GroupConversationHeader(
+                    groupItem = groupItem,
+                    forumSharingViewModel = viewModel.forumSharingViewModel,
+                    onGroupDelete = viewModel::deleteGroup,
+                )
             }
         },
         content = { padding ->
@@ -84,7 +88,7 @@ fun GroupConversationScreen(
         bottomBar = {
             val onCloseReply = { viewModel.selectPost(null) }
             GroupInputComposable(viewModel.selectedPost.value, onCloseReply) { text ->
-                viewModel.createPost(viewModel.groupItem, text, viewModel.selectedPost.value?.id)
+                viewModel.createPost(text)
             }
         }
     )
