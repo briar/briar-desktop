@@ -20,8 +20,10 @@ package org.briarproject.briar.desktop.ui
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement.spacedBy
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -50,7 +52,8 @@ import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TrustIndicatorShort(status: Status) = Tooltip(
-    text = getDescription(status)
+    text = getDescription(status),
+    modifier = Modifier.width(IntrinsicSize.Min),
 ) {
     TrustIndicatorContent(status)
 }

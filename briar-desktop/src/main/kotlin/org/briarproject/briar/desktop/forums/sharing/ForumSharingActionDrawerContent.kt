@@ -18,7 +18,7 @@
 
 package org.briarproject.briar.desktop.forums.sharing
 
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -30,7 +30,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Button
-import androidx.compose.material.Checkbox
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -39,6 +38,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.briarproject.briar.api.sharing.SharingManager.SharingStatus.ERROR
@@ -64,11 +64,11 @@ fun ForumSharingActionDrawerContent(
             icon = Icons.Filled.Close,
             contentDescription = i18n("access.forum.sharing.action.close"),
             onClick = close,
-            modifier = Modifier.padding(start = 24.dp).size(24.dp).align(Alignment.CenterVertically)
+            modifier = Modifier.padding(start = 24.dp).size(24.dp).align(CenterVertically)
         )
         Text(
             text = i18n("forum.sharing.action.title"),
-            modifier = Modifier.align(Alignment.CenterVertically).padding(start = 16.dp),
+            modifier = Modifier.align(CenterVertically).padding(start = 16.dp),
             style = MaterialTheme.typography.h3,
         )
     }
@@ -90,7 +90,6 @@ fun ForumSharingActionDrawerContent(
                     ) { shareableContactItem ->
                         ForumSharingActionListItem(
                             shareableContactItem = shareableContactItem,
-                            shareable = shareableContactItem.status == SHAREABLE,
                             selected = viewModel.isShareableSelected(shareableContactItem),
                             onToggle = { viewModel.toggleShareable(shareableContactItem) },
                         )
@@ -100,7 +99,7 @@ fun ForumSharingActionDrawerContent(
         }
     }
     Column(
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = spacedBy(8.dp),
         modifier = Modifier.fillMaxWidth().padding(8.dp),
     ) {
         val shareForum = {
@@ -135,40 +134,33 @@ fun ForumSharingActionDrawerContent(
 @Composable
 private fun ForumSharingActionListItem(
     shareableContactItem: ForumSharingViewModel.ShareableContactItem,
-    shareable: Boolean,
     selected: Boolean,
     onToggle: () -> Unit,
 ) = ListItemView(
-    selected = if (shareable) selected else null,
+    selected = if (shareableContactItem.status == SHAREABLE) selected else null,
     onSelect = onToggle,
+    multiSelectWithCheckbox = true,
 ) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Checkbox(
-            checked = selected,
-            onCheckedChange = { onToggle() },
-            enabled = shareable
+    Column(
+        verticalArrangement = spacedBy(4.dp),
+        modifier = Modifier.padding(vertical = 8.dp).padding(end = 8.dp)
+    ) {
+        ContactItemViewSmall(
+            shareableContactItem.contactItem,
+            showConnectionState = false,
         )
-        Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.padding(8.dp)
-        ) {
-            ContactItemViewSmall(
-                shareableContactItem.contactItem,
-                showConnectionState = false,
+        if (shareableContactItem.status != SHAREABLE) {
+            Text(
+                text = when (shareableContactItem.status) {
+                    SHAREABLE -> ""
+                    SHARING -> i18n("forum.sharing.action.status.already_shared")
+                    INVITE_SENT -> i18n("forum.sharing.action.status.already_invited")
+                    INVITE_RECEIVED -> i18n("forum.sharing.action.status.invite_received")
+                    NOT_SUPPORTED -> i18n("forum.sharing.action.status.not_supported")
+                    ERROR -> i18n("forum.sharing.action.status.error")
+                },
+                style = MaterialTheme.typography.caption,
             )
-            if (!shareable) {
-                Text(
-                    when (shareableContactItem.status) {
-                        SHAREABLE -> ""
-                        SHARING -> i18n("forum.sharing.action.status.already_shared")
-                        INVITE_SENT -> i18n("forum.sharing.action.status.already_invited")
-                        INVITE_RECEIVED -> i18n("forum.sharing.action.status.invite_received")
-                        NOT_SUPPORTED -> i18n("forum.sharing.action.status.not_supported")
-                        ERROR -> i18n("forum.sharing.action.status.error")
-                    },
-                    style = MaterialTheme.typography.caption,
-                )
-            }
         }
     }
 }

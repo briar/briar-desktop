@@ -1,6 +1,6 @@
 /*
  * Briar Desktop
- * Copyright (C) 2021-2022 The Briar Project
+ * Copyright (C) 2021-2023 The Briar Project
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -19,11 +19,9 @@
 package org.briarproject.briar.desktop.contact
 
 import androidx.compose.foundation.layout.Arrangement.spacedBy
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.requiredSize
-import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -36,7 +34,6 @@ import androidx.compose.ui.unit.dp
 import org.briarproject.bramble.api.contact.ContactId
 import org.briarproject.bramble.api.identity.AuthorId
 import org.briarproject.briar.api.identity.AuthorInfo.Status
-import org.briarproject.briar.desktop.ui.ListItemView
 import org.briarproject.briar.desktop.ui.TrustIndicatorShort
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nF
@@ -56,25 +53,20 @@ fun main() = preview(
     "isEmpty" to false,
     "unread" to 3,
     "timestamp" to Instant.now().toEpochMilli(),
-    "selected" to false,
+    "showConnectionState" to false,
 ) {
-    Column(Modifier.selectableGroup()) {
-        ListItemView(getBooleanParameter("selected")) {
-            ContactItemViewSmall(
-                ContactItem(
-                    id = ContactId(0),
-                    authorId = AuthorId(getRandomIdPersistent()),
-                    authorInfo = getRandomAuthorInfo(Status.valueOf(getStringParameter("trustLevel"))),
-                    name = getStringParameter("name"),
-                    alias = getStringParameter("alias"),
-                    isConnected = getBooleanParameter("isConnected"),
-                    isEmpty = getBooleanParameter("isEmpty"),
-                    unread = getIntParameter("unread"),
-                    timestamp = getLongParameter("timestamp"),
-                ),
-            )
-        }
-    }
+    val item = ContactItem(
+        id = ContactId(0),
+        authorId = AuthorId(getRandomIdPersistent()),
+        authorInfo = getRandomAuthorInfo(Status.valueOf(getStringParameter("trustLevel"))),
+        name = getStringParameter("name"),
+        alias = getStringParameter("alias"),
+        isConnected = getBooleanParameter("isConnected"),
+        isEmpty = getBooleanParameter("isEmpty"),
+        unread = getIntParameter("unread"),
+        timestamp = getLongParameter("timestamp"),
+    )
+    ContactItemViewSmall(item, getBooleanParameter("showConnectionState"))
 }
 
 @Composable
@@ -97,8 +89,9 @@ fun ContactItemViewSmall(
         modifier = Modifier.weight(1f, fill = true),
     ) {
         // TODO cache profile images, if available
-        ProfileCircle(20.dp, contactItem)
+        ProfileCircle(27.dp, contactItem)
         Text(
+            modifier = Modifier.weight(1f, fill = false),
             text = contactItem.displayName,
             style = MaterialTheme.typography.body1,
             maxLines = 3,

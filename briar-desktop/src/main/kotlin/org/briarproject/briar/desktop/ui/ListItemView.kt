@@ -19,11 +19,12 @@
 package org.briarproject.briar.desktop.ui
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.material.Checkbox
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -42,12 +43,13 @@ fun ListItemView(
     selected: Boolean? = null,
     onSelect: () -> Unit = {},
     dividerOffsetFromStart: Dp = 0.dp,
+    multiSelectWithCheckbox: Boolean = false,
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) = Column(modifier.fillMaxWidth()) {
     val bgColor = if (selected != null && selected) MaterialTheme.colors.selectedCard else Color.Transparent
-    Box(
-        contentAlignment = Alignment.Center,
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .fillMaxWidth()
             .background(bgColor)
@@ -64,6 +66,13 @@ fun ListItemView(
                 } else Modifier
             )
     ) {
+        if (multiSelectWithCheckbox) {
+            Checkbox(
+                checked = selected ?: false,
+                onCheckedChange = { onSelect() },
+                enabled = selected != null,
+            )
+        }
         content()
     }
     HorizontalDivider(Modifier.padding(start = dividerOffsetFromStart))
