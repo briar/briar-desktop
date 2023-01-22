@@ -21,8 +21,6 @@ package org.briarproject.briar.desktop.contact.add.remote
 import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material.IconButton
@@ -31,7 +29,9 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
+import androidx.compose.ui.Alignment.Companion.Start
+import androidx.compose.ui.Alignment.Companion.Top
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.text
@@ -41,7 +41,6 @@ import org.briarproject.bramble.api.contact.PendingContactId
 import org.briarproject.bramble.api.contact.PendingContactState
 import org.briarproject.briar.api.identity.AuthorInfo.Status
 import org.briarproject.briar.desktop.contact.ProfileCircle
-import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
 import org.briarproject.briar.desktop.ui.ListItemView
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nF
@@ -77,25 +76,24 @@ fun main() = preview(
 }
 
 @Composable
-fun PendingContactItemView(contactItem: PendingContactItem, onRemove: () -> Unit) = Row(
+fun PendingContactItemView(
+    contactItem: PendingContactItem,
+    onRemove: () -> Unit,
+    modifier: Modifier = Modifier,
+) = Row(
     horizontalArrangement = spacedBy(8.dp),
-    verticalAlignment = Alignment.CenterVertically,
-    modifier = Modifier
-        .defaultMinSize(minHeight = HEADER_SIZE)
-        .fillMaxWidth()
-        .padding(vertical = 8.dp)
-        // makes sure that Delete button is aligned with AddContact button
-        .padding(start = 16.dp, end = 4.dp)
+    verticalAlignment = CenterVertically,
+    modifier = modifier
         .semantics {
             text = getDescription(contactItem)
         },
 ) {
     Row(
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = CenterVertically,
         horizontalArrangement = spacedBy(12.dp),
         modifier = Modifier.weight(1f, fill = true),
     ) {
-        ProfileCircle(36.dp)
+        ProfileCircle(36.dp, Modifier.align(Top).padding(top = 6.dp))
         PendingContactItemViewInfo(
             contactItem = contactItem,
         )
@@ -120,7 +118,7 @@ private fun getDescription(contactItem: PendingContactItem) = buildBlankAnnotate
 
 @Composable
 private fun PendingContactItemViewInfo(contactItem: PendingContactItem) = Column(
-    horizontalAlignment = Alignment.Start,
+    horizontalAlignment = Start,
     verticalArrangement = spacedBy(2.dp),
 ) {
     Text(

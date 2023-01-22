@@ -19,10 +19,12 @@
 package org.briarproject.briar.desktop.contact
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -155,10 +157,22 @@ fun ContactList(
                         ListItemView(
                             onSelect = { selectContact(item) },
                             selected = isSelected(item),
+                            // let divider start at horizontal position of text
+                            dividerOffsetFromStart = (16 + 36 + 12).dp,
                         ) {
+                            val modifier = Modifier
+                                .defaultMinSize(minHeight = HEADER_SIZE)
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp)
+
                             when (item) {
                                 is ContactItem -> {
-                                    ContactItemView(item)
+                                    ContactItemView(
+                                        contactItem = item,
+                                        modifier = modifier
+                                            // makes sure that ConnectionIndicator is aligned with AddContact button
+                                            .padding(start = 16.dp, end = 20.dp),
+                                    )
                                 }
 
                                 is PendingContactItem -> {
@@ -167,6 +181,9 @@ fun ContactList(
                                         onRemove = {
                                             removePendingContact(item)
                                         },
+                                        modifier = modifier
+                                            // makes sure that Delete button is aligned with AddContact button
+                                            .padding(start = 16.dp, end = 4.dp)
                                     )
                                 }
                             }

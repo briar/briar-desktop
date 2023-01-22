@@ -25,6 +25,5 @@ import androidx.compose.ui.Modifier
 import org.briarproject.briar.desktop.theme.divider
 
 @Composable
-fun HorizontalDivider(modifier: Modifier = Modifier) {
+fun HorizontalDivider(modifier: Modifier = Modifier) =
     Divider(color = MaterialTheme.colors.divider, modifier = modifier)
-}
