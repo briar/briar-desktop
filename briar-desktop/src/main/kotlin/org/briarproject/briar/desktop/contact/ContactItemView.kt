@@ -22,8 +22,6 @@ import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
@@ -32,7 +30,10 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ProvideTextStyle
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
+import androidx.compose.ui.Alignment.Companion.Start
+import androidx.compose.ui.Alignment.Companion.Top
+import androidx.compose.ui.Alignment.Companion.TopEnd
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.text
@@ -41,7 +42,6 @@ import androidx.compose.ui.unit.dp
 import org.briarproject.bramble.api.contact.ContactId
 import org.briarproject.bramble.api.identity.AuthorId
 import org.briarproject.briar.api.identity.AuthorInfo.Status
-import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
 import org.briarproject.briar.desktop.ui.ListItemView
 import org.briarproject.briar.desktop.ui.NumberBadge
 import org.briarproject.briar.desktop.ui.TrustIndicatorLong
@@ -86,29 +86,27 @@ fun main() = preview(
 }
 
 @Composable
-fun ContactItemView(contactItem: ContactItem) = Row(
+fun ContactItemView(
+    contactItem: ContactItem,
+    modifier: Modifier = Modifier,
+) = Row(
     horizontalArrangement = spacedBy(8.dp),
-    verticalAlignment = Alignment.CenterVertically,
-    modifier = Modifier
-        .defaultMinSize(minHeight = HEADER_SIZE)
-        .fillMaxWidth()
-        .padding(vertical = 8.dp)
-        // makes sure that ConnectionIndicator is aligned with AddContact button
-        .padding(start = 16.dp, end = 20.dp)
+    verticalAlignment = CenterVertically,
+    modifier = modifier
         .semantics {
             text = getDescription(contactItem)
         }
 ) {
     Row(
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = CenterVertically,
         horizontalArrangement = spacedBy(12.dp),
         modifier = Modifier.weight(1f, fill = true),
     ) {
-        Box {
+        Box(Modifier.align(Top).padding(top = 6.dp)) {
             ProfileCircle(36.dp, contactItem)
             NumberBadge(
                 num = contactItem.unread,
-                modifier = Modifier.align(Alignment.TopEnd).offset(6.dp, (-6).dp)
+                modifier = Modifier.align(TopEnd).offset(6.dp, (-6).dp)
             )
         }
         ContactItemViewInfo(
@@ -144,7 +142,7 @@ private fun getDescription(contactItem: ContactItem) = buildBlankAnnotatedString
 
 @Composable
 private fun ContactItemViewInfo(contactItem: ContactItem) = Column(
-    horizontalAlignment = Alignment.Start,
+    horizontalAlignment = Start,
     verticalArrangement = spacedBy(2.dp),
 ) {
     Text(
