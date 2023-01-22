@@ -1,6 +1,6 @@
 /*
  * Briar Desktop
- * Copyright (C) 2021-2022 The Briar Project
+ * Copyright (C) 2021-2023 The Briar Project
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -21,11 +21,11 @@ package org.briarproject.briar.desktop.introduction
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import org.briarproject.bramble.api.connection.ConnectionRegistry
+import org.briarproject.bramble.api.contact.ContactId
 import org.briarproject.bramble.api.contact.ContactManager
 import org.briarproject.bramble.api.db.TransactionManager
 import org.briarproject.bramble.api.event.EventBus
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
-import org.briarproject.briar.api.attachment.AttachmentReader
 import org.briarproject.briar.api.conversation.ConversationManager
 import org.briarproject.briar.api.identity.AuthorManager
 import org.briarproject.briar.api.introduction.IntroductionConstants.MAX_INTRODUCTION_TEXT_LENGTH
@@ -33,6 +33,8 @@ import org.briarproject.briar.api.introduction.IntroductionManager
 import org.briarproject.briar.desktop.contact.ContactItem
 import org.briarproject.briar.desktop.contact.ContactsViewModel
 import org.briarproject.briar.desktop.threading.BriarExecutors
+import org.briarproject.briar.desktop.threading.UiExecutor
+import org.briarproject.briar.desktop.utils.InternationalizationUtils
 import org.briarproject.briar.desktop.utils.StringUtils.takeUtf8
 import org.briarproject.briar.desktop.viewmodel.asState
 import javax.inject.Inject
@@ -45,7 +47,6 @@ constructor(
     authorManager: AuthorManager,
     conversationManager: ConversationManager,
     connectionRegistry: ConnectionRegistry,
-    attachmentReader: AttachmentReader,
     briarExecutors: BriarExecutors,
     lifecycleManager: LifecycleManager,
     db: TransactionManager,
@@ -62,52 +63,91 @@ constructor(
 ) {
 
     private val _firstContact = mutableStateOf<ContactItem?>(null)
-    private val _secondContact = mutableStateOf<ContactItem?>(null)
-    private val _secondScreen = mutableStateOf(false)
-    private val _introductionMessage = mutableStateOf("")
+    private val _secondContactSelected = mutableStateOf(emptySet<ContactId>())
 
-    val firstContact = _firstContact.asState()
-    val secondContact = _secondContact.asState()
-    val secondScreen = _secondScreen.asState()
+    private val _introductionPossible = mutableStateOf(emptyMap<ContactId, Boolean>())
+
+    private val _introductionMessage = mutableStateOf("")
     val introductionMessage = _introductionMessage.asState()
+
+    data class IntroductionContactItem(val introductionPossible: Boolean, val contactItem: ContactItem)
 
     val contactList = derivedStateOf {
         _contactList.filter {
             it.id != _firstContact.value?.id
-        }.sortedByDescending { it.displayName }
+        }.mapNotNull {
+            _introductionPossible.value[it.id]?.let { possible ->
+                IntroductionContactItem(possible, it)
+            }
+        }.sortedWith(
+            // first all items where introduction is possible (false comes before true)
+            // second non-case-sensitive, alphabetical order on displayName
+            compareBy(
+                { !it.introductionPossible },
+                { it.contactItem.displayName.lowercase(InternationalizationUtils.locale) }
+            )
+        )
     }
 
+    val buttonEnabled = derivedStateOf { _secondContactSelected.value.isNotEmpty() }
+
+    override fun onInit() {
+        super.onInit()
+        loadContacts()
+    }
+
+    @UiExecutor
     fun setFirstContact(contactItem: ContactItem) {
         _firstContact.value = contactItem
-        loadContacts()
-        backToFirstScreen()
+        reset()
     }
 
-    fun setSecondContact(contactItem: ContactItem) {
-        _secondContact.value = contactItem
-        _secondScreen.value = true
-    }
-
-    fun backToFirstScreen() {
-        _secondScreen.value = false
+    private fun reset() {
+        _secondContactSelected.value = emptySet()
         _introductionMessage.value = ""
+
+        val c1 = requireNotNull(_firstContact.value)
+        runOnDbThreadWithTransaction(true) { txn ->
+            val c1 = contactManager.getContact(txn, c1.id)
+            val map = contactManager.getContacts(txn).associate { contact ->
+                contact.id to introductionManager.canIntroduce(txn, c1, contact)
+            }
+            txn.attach {
+                _introductionPossible.value = map
+            }
+        }
     }
 
+    @UiExecutor
+    fun isSecondContactSelected(item: IntroductionContactItem) =
+        _secondContactSelected.value.contains(item.contactItem.id)
+
+    @UiExecutor
+    fun toggleSecondContact(item: IntroductionContactItem) =
+        if (isSecondContactSelected(item)) _secondContactSelected.value -= item.contactItem.id
+        else _secondContactSelected.value += item.contactItem.id
+
+    @UiExecutor
     fun setIntroductionMessage(msg: String) {
         _introductionMessage.value = msg.takeUtf8(MAX_INTRODUCTION_TEXT_LENGTH)
     }
 
+    @UiExecutor
     fun makeIntroduction() {
         val c1 = requireNotNull(_firstContact.value)
-        val c2 = requireNotNull(_secondContact.value)
+        val c2s = _secondContactSelected.value
+        require(c2s.isNotEmpty())
         // It's important not to send the empty string here as briar's MessageEncoder for introduction messages throws
         // an IllegalArgumentException in that case. It is however OK to pass null in this case.
         val msg = _introductionMessage.value.ifEmpty { null }
 
-        runOnDbThread {
-            val c1 = contactManager.getContact(c1.id)
-            val c2 = contactManager.getContact(c2.id)
-            introductionManager.makeIntroduction(c1, c2, msg)
+        runOnDbThreadWithTransaction(false) { txn ->
+            val c1 = contactManager.getContact(txn, c1.id)
+            c2s.forEach { c2 ->
+                val c2 = contactManager.getContact(txn, c2)
+                introductionManager.makeIntroduction(txn, c1, c2, msg)
+            }
         }
+        reset()
     }
 }

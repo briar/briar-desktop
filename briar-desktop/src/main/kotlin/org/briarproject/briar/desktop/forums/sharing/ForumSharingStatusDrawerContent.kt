@@ -91,7 +91,10 @@ fun ForumSharingStatusDrawerContent(
             )
         } else {
             LazyColumn {
-                items(viewModel.currentlySharedWith.value) { contactItem ->
+                items(
+                    items = viewModel.currentlySharedWith.value,
+                    key = { it.id },
+                ) { contactItem ->
                     ListItemView {
                         ContactItemViewSmall(
                             contactItem,

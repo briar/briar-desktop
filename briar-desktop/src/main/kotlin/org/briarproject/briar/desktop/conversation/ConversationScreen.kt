@@ -24,13 +24,11 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import org.briarproject.bramble.api.contact.ContactId
-import org.briarproject.briar.desktop.contact.ContactInfoDrawer
-import org.briarproject.briar.desktop.contact.ContactInfoDrawerState
+import org.briarproject.briar.desktop.introduction.IntroductionDrawerContent
 import org.briarproject.briar.desktop.ui.Loader
 import org.briarproject.briar.desktop.ui.getInfoDrawerHandler
 import org.briarproject.briar.desktop.viewmodel.viewModel
@@ -65,9 +63,9 @@ fun ConversationScreen(
                     contactItem,
                     onMakeIntroduction = {
                         infoDrawerHandler.open {
-                            ContactInfoDrawer(
+                            IntroductionDrawerContent(
                                 contactItem,
-                                closeInfoDrawer = { reload ->
+                                close = { reload ->
                                     infoDrawerHandler.close()
                                     if (reload) {
                                         // reload all messages to also show introduction message
@@ -75,7 +73,6 @@ fun ConversationScreen(
                                         viewModel.reloadMessages()
                                     }
                                 },
-                                ContactInfoDrawerState.MakeIntro
                             )
                         }
                     },

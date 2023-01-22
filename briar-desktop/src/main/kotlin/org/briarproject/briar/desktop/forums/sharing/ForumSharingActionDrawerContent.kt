@@ -59,16 +59,19 @@ fun ForumSharingActionDrawerContent(
     close: () -> Unit,
     viewModel: ForumSharingViewModel,
 ) = Column {
-    Row(Modifier.fillMaxWidth().height(HEADER_SIZE)) {
+    Row(
+        verticalAlignment = CenterVertically,
+        modifier = Modifier.fillMaxWidth().height(HEADER_SIZE),
+    ) {
         IconButton(
             icon = Icons.Filled.Close,
             contentDescription = i18n("access.forum.sharing.action.close"),
             onClick = close,
-            modifier = Modifier.padding(start = 24.dp).size(24.dp).align(CenterVertically)
+            modifier = Modifier.padding(start = 24.dp).size(24.dp)
         )
         Text(
             text = i18n("forum.sharing.action.title"),
-            modifier = Modifier.align(CenterVertically).padding(start = 16.dp),
+            modifier = Modifier.padding(start = 16.dp),
             style = MaterialTheme.typography.h3,
         )
     }
