@@ -21,11 +21,14 @@ package org.briarproject.briar.desktop.contact
 import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
-import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ProvideTextStyle
 import androidx.compose.material.Text
@@ -42,7 +45,6 @@ import androidx.compose.ui.unit.dp
 import org.briarproject.bramble.api.contact.ContactId
 import org.briarproject.bramble.api.identity.AuthorId
 import org.briarproject.briar.api.identity.AuthorInfo.Status
-import org.briarproject.briar.desktop.ui.ListItemView
 import org.briarproject.briar.desktop.ui.NumberBadge
 import org.briarproject.briar.desktop.ui.TrustIndicatorLong
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
@@ -65,24 +67,19 @@ fun main() = preview(
     "isEmpty" to false,
     "unread" to 3,
     "timestamp" to Instant.now().toEpochMilli(),
-    "selected" to false,
 ) {
-    Column(Modifier.selectableGroup()) {
-        ListItemView(getBooleanParameter("selected")) {
-            val item = ContactItem(
-                id = ContactId(0),
-                authorId = AuthorId(getRandomIdPersistent()),
-                authorInfo = getRandomAuthorInfo(Status.valueOf(getStringParameter("trustLevel"))),
-                name = getStringParameter("name"),
-                alias = getStringParameter("alias"),
-                isConnected = getBooleanParameter("isConnected"),
-                isEmpty = getBooleanParameter("isEmpty"),
-                unread = getIntParameter("unread"),
-                timestamp = getLongParameter("timestamp"),
-            )
-            ContactItemView(item)
-        }
-    }
+    val item = ContactItem(
+        id = ContactId(0),
+        authorId = AuthorId(getRandomIdPersistent()),
+        authorInfo = getRandomAuthorInfo(Status.valueOf(getStringParameter("trustLevel"))),
+        name = getStringParameter("name"),
+        alias = getStringParameter("alias"),
+        isConnected = getBooleanParameter("isConnected"),
+        isEmpty = getBooleanParameter("isEmpty"),
+        unread = getIntParameter("unread"),
+        timestamp = getLongParameter("timestamp"),
+    )
+    ContactItemView(item)
 }
 
 @Composable
@@ -93,6 +90,8 @@ fun ContactItemView(
     horizontalArrangement = spacedBy(8.dp),
     verticalAlignment = CenterVertically,
     modifier = modifier
+        // allows content to be bottom-aligned
+        .height(IntrinsicSize.Min)
         .semantics {
             text = getDescription(contactItem)
         }
@@ -143,17 +142,19 @@ private fun getDescription(contactItem: ContactItem) = buildBlankAnnotatedString
 @Composable
 private fun ContactItemViewInfo(contactItem: ContactItem) = Column(
     horizontalAlignment = Start,
-    verticalArrangement = spacedBy(2.dp),
 ) {
+    Spacer(Modifier.weight(1f, fill = true))
     Text(
         text = contactItem.displayName,
         style = MaterialTheme.typography.body1,
         maxLines = 3,
         overflow = Ellipsis,
     )
+    Spacer(Modifier.weight(1f, fill = true).heightIn(min = 4.dp))
     ProvideTextStyle(MaterialTheme.typography.caption) {
         TrustIndicatorLong(contactItem.trustLevel)
     }
+    Spacer(Modifier.height(4.dp))
     Text(
         text = if (contactItem.isEmpty) i18n("contacts.card.nothing")
         else getFormattedTimestamp(contactItem.timestamp),
