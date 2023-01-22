@@ -53,7 +53,7 @@ fun ForumScreen(
         NoForumsYet { addDialogVisible.value = true }
     } else {
         Row(modifier = Modifier.fillMaxWidth()) {
-            GroupListComposable(
+            GroupList(
                 list = viewModel.forumList.value,
                 isSelected = viewModel::isSelected,
                 filterBy = viewModel.filterBy.value,

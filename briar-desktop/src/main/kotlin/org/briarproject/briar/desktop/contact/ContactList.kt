@@ -18,19 +18,19 @@
 
 package org.briarproject.briar.desktop.contact
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.runtime.Composable
@@ -121,72 +121,66 @@ fun ContactList(
     filterBy: String,
     setFilterBy: (String) -> Unit,
     onContactAdd: () -> Unit,
+) = Column(
+    modifier = Modifier.fillMaxHeight().width(COLUMN_WIDTH).background(MaterialTheme.colors.surfaceVariant),
 ) {
-    Surface(
-        modifier = Modifier.fillMaxHeight().width(COLUMN_WIDTH),
-        color = MaterialTheme.colors.surfaceVariant
+    Column(
+        // Align height to top bar on the right (incl. divider)
+        modifier = Modifier.fillMaxWidth().height(HEADER_SIZE + 1.dp),
     ) {
-        Column {
-            Column(
-                modifier = Modifier.fillMaxWidth().height(HEADER_SIZE + 1.dp),
-            ) {
-                SearchTextField(
-                    placeholder = i18n("contacts.search.title"),
-                    icon = Icons.Filled.PersonAdd,
-                    searchValue = filterBy,
-                    addButtonDescription = i18n("access.contacts.add"),
-                    onValueChange = setFilterBy,
-                    onAddButtonClicked = onContactAdd,
-                )
-            }
+        SearchTextField(
+            placeholder = i18n("contacts.search.title"),
+            icon = Icons.Filled.PersonAdd,
+            searchValue = filterBy,
+            addButtonDescription = i18n("access.contacts.add"),
+            onValueChange = setFilterBy,
+            onAddButtonClicked = onContactAdd,
+        )
+    }
 
-            VerticallyScrollableArea(modifier = Modifier.fillMaxSize()) { scrollState ->
-                LazyColumn(
-                    state = scrollState,
-                    modifier = Modifier
-                        .semantics {
-                            contentDescription = i18n("access.contact.list")
-                        }
-                        .selectableGroup()
+    VerticallyScrollableArea(modifier = Modifier.fillMaxSize()) { scrollState ->
+        LazyColumn(
+            state = scrollState,
+            modifier = Modifier
+                .semantics {
+                    contentDescription = i18n("access.contact.list")
+                }
+                .selectableGroup()
+        ) {
+            items(
+                items = contactList,
+                key = { item -> item.uniqueId },
+                contentType = { item -> item::class }
+            ) { item ->
+                ListItemView(
+                    onSelect = { selectContact(item) },
+                    selected = isSelected(item),
+                    // let divider start at horizontal position of text
+                    dividerOffsetFromStart = (16 + 36 + 12).dp,
                 ) {
-                    items(
-                        items = contactList,
-                        key = { item -> item.uniqueId },
-                        contentType = { item -> item::class }
-                    ) { item ->
-                        ListItemView(
-                            onSelect = { selectContact(item) },
-                            selected = isSelected(item),
-                            // let divider start at horizontal position of text
-                            dividerOffsetFromStart = (16 + 36 + 12).dp,
-                        ) {
-                            val modifier = Modifier
-                                .defaultMinSize(minHeight = HEADER_SIZE)
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp)
+                    val modifier = Modifier
+                        .heightIn(min = HEADER_SIZE)
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp)
+                        // makes sure that ConnectionIndicator and Delete button are aligned with AddContact button
+                        .padding(start = 16.dp, end = 4.dp)
 
-                            when (item) {
-                                is ContactItem -> {
-                                    ContactItemView(
-                                        contactItem = item,
-                                        modifier = modifier
-                                            // makes sure that ConnectionIndicator is aligned with AddContact button
-                                            .padding(start = 16.dp, end = 20.dp),
-                                    )
-                                }
+                    when (item) {
+                        is ContactItem -> {
+                            ContactItemView(
+                                contactItem = item,
+                                modifier = modifier
+                            )
+                        }
 
-                                is PendingContactItem -> {
-                                    PendingContactItemView(
-                                        contactItem = item,
-                                        onRemove = {
-                                            removePendingContact(item)
-                                        },
-                                        modifier = modifier
-                                            // makes sure that Delete button is aligned with AddContact button
-                                            .padding(start = 16.dp, end = 4.dp)
-                                    )
-                                }
-                            }
+                        is PendingContactItem -> {
+                            PendingContactItemView(
+                                contactItem = item,
+                                onRemove = {
+                                    removePendingContact(item)
+                                },
+                                modifier = modifier
+                            )
                         }
                     }
                 }
