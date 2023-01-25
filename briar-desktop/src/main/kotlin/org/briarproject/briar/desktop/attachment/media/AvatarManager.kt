@@ -20,6 +20,7 @@ package org.briarproject.briar.desktop.attachment.media
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.res.loadImageBitmap
@@ -31,6 +32,7 @@ import org.briarproject.briar.api.attachment.AttachmentHeader
 import org.briarproject.briar.api.attachment.AttachmentReader
 import org.briarproject.briar.api.identity.AuthorInfo
 import org.briarproject.briar.desktop.threading.BriarExecutors
+import org.briarproject.briar.desktop.threading.UiExecutor
 import org.briarproject.briar.desktop.ui.LocalAvatarManager
 import javax.inject.Inject
 
@@ -39,9 +41,14 @@ class AvatarManager @Inject constructor(
     private val executors: BriarExecutors,
 ) {
 
-    // access only on Dispatchers.Swing
+    @UiExecutor // access only on Dispatchers.Swing
     // TODO we may want to monitor cache size and evict cache entries again
     private val cache = HashMap<MessageId, ImageBitmap>()
+
+    @UiExecutor
+    fun getAvatarFromCache(attachmentHeader: AttachmentHeader): ImageBitmap? {
+        return cache[attachmentHeader.messageId]
+    }
 
     suspend fun loadAvatar(
         attachmentHeader: AttachmentHeader,
@@ -51,8 +58,12 @@ class AvatarManager @Inject constructor(
         executors.runOnDbThreadWithTransaction(true) { txn ->
             attachmentReader.getAttachment(txn, attachmentHeader).stream.use { inputStream ->
                 loadImageBitmap(inputStream)
+            }.also {
+                txn.attach {
+                    cache[attachmentHeader.messageId] = it
+                }
             }
-        }.also { cache[attachmentHeader.messageId] = it }
+        }
     }
 }
 
@@ -68,6 +79,11 @@ fun AvatarProducer(authorInfo: AuthorInfo): State<ImageBitmap?>? {
         null
     } else {
         val avatarManager = checkNotNull(LocalAvatarManager.current)
+        // if avatar is cached, return it directly to avoid recomposition with produceState
+        avatarManager.getAvatarFromCache(avatarHeader)?.let {
+            return mutableStateOf(it)
+        }
+        // avatar is not cached, so load it
         produceState<ImageBitmap?>(null, avatarHeader.messageId) {
             value = avatarManager.loadAvatar(avatarHeader)
         }
