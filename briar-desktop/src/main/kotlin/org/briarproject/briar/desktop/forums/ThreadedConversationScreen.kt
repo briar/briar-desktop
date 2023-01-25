@@ -55,6 +55,7 @@ fun ThreadedConversationScreen(
             val index = postsState.posts.indexOfFirst { it.id == postsState.scrollTo }
             if (index != -1) scrollState.scrollToItem(index, -50)
         }
+        val maxNestingLevel = getMaxNestingLevel()
         Box(modifier = modifier.fillMaxSize()) {
             LazyColumn(
                 state = scrollState,
@@ -63,6 +64,7 @@ fun ThreadedConversationScreen(
                 items(postsState.posts, key = { item -> item.id }) { item ->
                     ThreadItemView(
                         item = item,
+                        maxNestingLevel = maxNestingLevel,
                         selectedPost = selectedPost,
                         onPostSelected = onPostSelected,
                     )
