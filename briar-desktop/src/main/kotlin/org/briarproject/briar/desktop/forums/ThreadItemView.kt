@@ -51,7 +51,9 @@ import org.briarproject.briar.api.identity.AuthorInfo.Status.OURSELVES
 import org.briarproject.briar.desktop.contact.ProfileCircle
 import org.briarproject.briar.desktop.theme.Blue500
 import org.briarproject.briar.desktop.theme.divider
+import org.briarproject.briar.desktop.ui.Constants.COLUMN_WIDTH
 import org.briarproject.briar.desktop.ui.HorizontalDivider
+import org.briarproject.briar.desktop.ui.LocalWindowScope
 import org.briarproject.briar.desktop.ui.Tooltip
 import org.briarproject.briar.desktop.ui.TrustIndicatorShort
 import org.briarproject.briar.desktop.ui.VerticalDivider
@@ -73,6 +75,7 @@ fun main() = preview {
                         h = getRandomForumPostHeader(),
                         text = getRandomString(Random.nextInt(1, 1337)),
                     ).apply { setLevel(Random.nextInt(0, 6)) },
+                    maxNestingLevel = 3,
                     selectedPost = null,
                     onPostSelected = {},
                 )
@@ -84,7 +87,7 @@ fun main() = preview {
 @Composable
 fun ThreadItemView(
     item: ThreadItem,
-    maxNestingLevel: Int = 5,
+    maxNestingLevel: Int,
     selectedPost: ThreadItem?,
     onPostSelected: (ThreadItem) -> Unit,
     modifier: Modifier = Modifier,
@@ -195,4 +198,12 @@ fun NestingLevelView(
             Text(itemLevel.toString())
         }
     }
+}
+
+@Composable
+fun getMaxNestingLevel(): Int = when (LocalWindowScope.current!!.window.width.dp) {
+    in (0.dp..COLUMN_WIDTH * 2) -> 5
+    in (COLUMN_WIDTH * 2..COLUMN_WIDTH * 3) -> 10
+    in (COLUMN_WIDTH * 2..COLUMN_WIDTH * 4) -> 25
+    else -> 100
 }
