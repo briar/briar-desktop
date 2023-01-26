@@ -44,14 +44,21 @@ object InternationalizationUtils {
     /**
      * Returns the translated text of the string identified with `key`
      */
-    fun i18n(key: String): String =
+    fun i18n(key: String): String {
         try {
-            val resourceBundle = createResourceBundle()
+            val resourceBundle = createNonTranslatableResourceBundle()
+            return resourceBundle.getString(key)
+        } catch (e: MissingResourceException) {
+            // just try translated resources instead
+        }
+        return try {
+            val resourceBundle = createTranslatableResourceBundle()
             resourceBundle.getString(key)
         } catch (e: MissingResourceException) {
             LOG.w { "Missing string resource for key '$key'" }
             ""
         }
+    }
 
     /**
      * Returns the translated text of a string with plurals identified with `key`
@@ -83,9 +90,15 @@ object InternationalizationUtils {
         }
 
     /**
+     * Returns the resource bundle used for non-translatable string in Briar Desktop
+     */
+    private fun createNonTranslatableResourceBundle() =
+        ResourceBundle.getBundle("strings.BriarDesktopNonTranslated", Locale.ROOT)
+
+    /**
      * Returns the resource bundle used for i18n at Briar Desktop
      */
-    private fun createResourceBundle() =
+    private fun createTranslatableResourceBundle() =
         ResourceBundle.getBundle(
             "strings.BriarDesktop",
             if (locale.toLanguageTag() == "en") Locale.ROOT // NON-NLS

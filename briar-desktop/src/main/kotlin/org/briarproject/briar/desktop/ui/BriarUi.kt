@@ -209,7 +209,6 @@ constructor(
             ) {
                 // invalidate whole application window in case the theme or language setting is changed
                 configuration.invalidateScreen.react {
-                    window.title = i18n("main.title")
                     return@CompositionLocalProvider
                 }
 
