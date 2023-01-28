@@ -31,11 +31,12 @@ abstract class EventListenerDbViewModel(
     private val eventBus: EventBus
 ) : EventListener, DbViewModel(briarExecutors, lifecycleManager, db) {
 
-    override fun onInit() {
-        eventBus.addListener(this)
-    }
+    private var isSubscribed = false
 
-    override fun onCleared() {
-        eventBus.removeListener(this)
+    override fun onInit() {
+        if (!isSubscribed) {
+            eventBus.addListener(this)
+            isSubscribed = true
+        }
     }
 }
