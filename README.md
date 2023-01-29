@@ -38,11 +38,13 @@ Note that you need at least version 17 of the Java Runtime Environment.
 For Debian- and Ubuntu-based Linux distributions, a set of .deb files is available.
 Depending on which version of Debian/Ubuntu your OS is based on,
 you can choose the right .deb file:
+* [Ubuntu 22.04](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop-ubuntu-22.04.deb?job=b_package_linux)
 * [Ubuntu 20.04](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop-ubuntu-20.04.deb?job=b_package_linux)
 * [Debian stable (bullseye)](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop-debian-bullseye.deb?job=b_package_linux)
 * [Ubuntu 18.04](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop-ubuntu-18.04.deb?job=b_package_linux)
 
 Here are some examples of popular distributions and their respective .deb file:
+* Ubuntu 22.04 and compatible: Linux Mint 21.X (Vanessa, Vera), elementaryOS 7.X (Horus), Trisquel 11 (Aramo)
 * Ubuntu 20.04 and compatible: Linux Mint 20.X (Ulyana, Ulyssa, Uma, Una), elementaryOS 6.X (Odin, Jólnir), Trisquel 10 (Nabia)
 * Debian stable (bullseye) and compatible: MX Linux MX-21
 * Ubuntu 18.04 and compatible: Linux Mint 19.X (Tara, Tessa, Tina, Tricia), elementaryOS 5.X (Juno, Hera), Trisquel 9 (Etiona)
