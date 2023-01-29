@@ -34,6 +34,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import org.briarproject.briar.desktop.BuildData
+import org.briarproject.briar.desktop.Strings
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 import java.time.Instant
@@ -73,8 +74,8 @@ fun AboutScreen(modifier: Modifier = Modifier.padding(16.dp)) {
 
     // rows displayed in table
     val lines = buildList {
-        add(Entry(i18n("about.copyright"), "The Briar Project")) // NON-NLS
-        add(Entry(i18n("about.license"), "GNU Affero General Public License v3")) // NON-NLS
+        add(Entry(i18n("about.copyright"), Strings.APP_AUTHORS))
+        add(Entry(i18n("about.license"), Strings.LICENSE))
         add(Entry(i18n("about.version"), BuildData.VERSION))
         add(Entry(i18n("about.version.core"), BuildData.CORE_VERSION))
         if (BuildData.GIT_BRANCH != null) add(Entry("Git branch", BuildData.GIT_BRANCH)) // NON-NLS
@@ -83,8 +84,8 @@ fun AboutScreen(modifier: Modifier = Modifier.padding(16.dp)) {
             add(Entry("Git branch/tag", "None detected")) // NON-NLS
         add(Entry("Git hash", BuildData.GIT_HASH)) // NON-NLS
         add(Entry("Commit time", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(buildTime))) // NON-NLS
-        add(Entry(i18n("about.website"), "https://briarproject.org", true))
-        add(Entry(i18n("about.contact"), "desktop@briarproject.org", true)) // NON-NLS
+        add(Entry(i18n("about.website"), Strings.WEBSITE, true))
+        add(Entry(i18n("about.contact"), Strings.EMAIL, true))
     }
 
     Column(modifier) {
@@ -95,7 +96,7 @@ fun AboutScreen(modifier: Modifier = Modifier.padding(16.dp)) {
         ) {
             BriarLogo(modifier = Modifier.height(48.dp))
             Text(
-                i18n("main.title"),
+                Strings.APP_NAME,
                 style = MaterialTheme.typography.h4,
                 modifier = Modifier.padding(start = 16.dp),
                 overflow = TextOverflow.Ellipsis,

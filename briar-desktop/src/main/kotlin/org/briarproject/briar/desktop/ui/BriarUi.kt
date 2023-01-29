@@ -44,6 +44,7 @@ import org.briarproject.bramble.api.event.EventListener
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.bramble.api.lifecycle.LifecycleManager.LifecycleState.RUNNING
 import org.briarproject.bramble.api.lifecycle.event.LifecycleEvent
+import org.briarproject.briar.desktop.Strings
 import org.briarproject.briar.desktop.attachment.media.AvatarManager
 import org.briarproject.briar.desktop.expiration.ExpirationBanner
 import org.briarproject.briar.desktop.login.ErrorScreen
@@ -118,7 +119,6 @@ constructor(
 
     @Composable
     override fun start(onClose: () -> Unit) {
-        val title = i18n("main.title")
         val platformLocalization = object : PlatformLocalization {
             override val copy = i18n("copy")
             override val cut = i18n("cut")
@@ -128,7 +128,7 @@ constructor(
         val focusState = remember { WindowFocusState() }
 
         Window(
-            title = title,
+            title = Strings.APP_NAME,
             onCloseRequest = onClose,
         ) {
             // changing the icon in the Composable itself automatically brings the window to front
@@ -213,7 +213,6 @@ constructor(
             ) {
                 // invalidate whole application window in case the theme or language setting is changed
                 configuration.invalidateScreen.react {
-                    window.title = i18n("main.title")
                     return@CompositionLocalProvider
                 }
 

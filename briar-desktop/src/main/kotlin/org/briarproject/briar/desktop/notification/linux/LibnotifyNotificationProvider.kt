@@ -22,6 +22,7 @@ import com.sun.jna.Native
 import com.sun.jna.Pointer
 import com.sun.jna.ptr.PointerByReference
 import mu.KotlinLogging
+import org.briarproject.briar.desktop.Strings
 import org.briarproject.briar.desktop.notification.AbstractNotificationProvider
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.KLoggerUtils.e
@@ -56,7 +57,7 @@ object LibnotifyNotificationProvider : AbstractNotificationProvider() {
             return
         }
 
-        available = libNotify.notify_init(i18n("main.title"))
+        available = libNotify.notify_init(Strings.APP_NAME)
         if (!available) {
             error = Error.INIT
             LOG.e { "unable to initialize libnotify" }
