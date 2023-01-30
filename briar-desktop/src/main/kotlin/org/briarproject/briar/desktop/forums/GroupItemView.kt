@@ -16,36 +16,37 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.briarproject.briar.desktop.contact.add.remote
+package org.briarproject.briar.desktop.forums
 
+import androidx.compose.foundation.layout.Arrangement.SpaceBetween
 import androidx.compose.foundation.layout.Arrangement.spacedBy
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Alignment.Companion.Start
 import androidx.compose.ui.Alignment.Companion.Top
+import androidx.compose.ui.Alignment.Companion.TopEnd
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.text
-import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import org.briarproject.bramble.api.contact.PendingContactId
-import org.briarproject.bramble.api.contact.PendingContactState
-import org.briarproject.briar.desktop.contact.ProfileCircle
+import org.briarproject.bramble.api.sync.GroupId
+import org.briarproject.briar.desktop.ui.NumberBadge
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nF
-import org.briarproject.briar.desktop.utils.PreviewUtils.DropDownValues
+import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nP
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 import org.briarproject.briar.desktop.utils.TimeUtils.getFormattedTimestamp
 import org.briarproject.briar.desktop.utils.appendCommaSeparated
@@ -54,77 +55,85 @@ import java.time.Instant
 
 @Suppress("HardCodedStringLiteral")
 fun main() = preview(
-    "name" to "Paul",
-    "alias" to "UI Master",
-    "state" to DropDownValues(PendingContactState.ADDING_CONTACT.ordinal, PendingContactState.values().map { it.name }),
+    "name" to "This is a test forum! This is a test forum! This is a test forum! This is a test forum!",
+    "msgCount" to 42,
+    "unread" to 23,
     "timestamp" to Instant.now().toEpochMilli(),
 ) {
-    val item = PendingContactItem(
-        id = PendingContactId(getRandomId()),
-        alias = getStringParameter("alias"),
-        timestamp = getLongParameter("timestamp"),
-        state = PendingContactState.valueOf(getStringParameter("state")),
-    )
-    PendingContactItemView(item, onRemove = {})
+    val item = object : GroupItem {
+        override val id: GroupId = GroupId(getRandomIdPersistent())
+        override val name: String = getStringParameter("name")
+        override val msgCount: Int = getIntParameter("msgCount")
+        override val unread: Int = getIntParameter("unread")
+        override val timestamp: Long = getLongParameter("timestamp")
+    }
+    GroupItemView(item)
 }
 
 @Composable
-fun PendingContactItemView(
-    contactItem: PendingContactItem,
-    onRemove: () -> Unit,
+fun GroupItemView(
+    groupItem: GroupItem,
     modifier: Modifier = Modifier,
 ) = Row(
-    horizontalArrangement = spacedBy(8.dp),
+    horizontalArrangement = spacedBy(12.dp),
     verticalAlignment = CenterVertically,
     modifier = modifier
         // allows content to be bottom-aligned
         .height(IntrinsicSize.Min)
         .semantics {
-            text = getDescription(contactItem)
+            text = getDescription(groupItem)
         },
 ) {
-    Row(
-        verticalAlignment = CenterVertically,
-        horizontalArrangement = spacedBy(12.dp),
-        modifier = Modifier.weight(1f, fill = true),
+    Box(
+        modifier = Modifier.align(Top).padding(vertical = 6.dp), // todo: or 8? same with contact!
     ) {
-        ProfileCircle(36.dp, Modifier.align(Top).padding(top = 6.dp))
-        PendingContactItemViewInfo(
-            contactItem = contactItem,
+        GroupCircle(groupItem)
+        NumberBadge(
+            num = groupItem.unread,
+            modifier = Modifier.align(TopEnd).offset(6.dp, (-6).dp)
         )
     }
-    IconButton(
-        icon = Icons.Filled.Delete,
-        contentDescription = i18n("access.contacts.pending.remove"),
-        onClick = onRemove,
-    )
+    GroupItemViewInfo(groupItem)
 }
 
-private fun getDescription(contactItem: PendingContactItem) = buildBlankAnnotatedString {
-    append(i18nF("access.contact.pending.with_name", contactItem.alias))
-    // todo: include pending status
-    appendCommaSeparated(
+private fun getDescription(item: GroupItem) = buildBlankAnnotatedString {
+    append(item.name)
+    if (item.unread > 0) appendCommaSeparated(i18nP("access.forums.unread_count", item.unread))
+    if (item.msgCount == 0) appendCommaSeparated(i18n("group.card.no_posts"))
+    else appendCommaSeparated(
         i18nF(
-            "access.contact.pending.added_timestamp",
-            getFormattedTimestamp(contactItem.timestamp)
+            "access.forums.last_post_timestamp",
+            getFormattedTimestamp(item.timestamp)
         )
     )
 }
 
 @Composable
-private fun PendingContactItemViewInfo(contactItem: PendingContactItem) = Column(
+private fun GroupItemViewInfo(groupItem: GroupItem) = Column(
     horizontalAlignment = Start,
 ) {
     Spacer(Modifier.weight(1f, fill = true))
     Text(
-        text = contactItem.alias,
+        text = groupItem.name,
         style = MaterialTheme.typography.body1,
         maxLines = 3,
-        overflow = Ellipsis,
+        overflow = TextOverflow.Ellipsis,
     )
     Spacer(Modifier.heightIn(min = 4.dp).weight(1f, fill = true))
-    Text(
-        text = getFormattedTimestamp(contactItem.timestamp),
-        style = MaterialTheme.typography.caption,
-    )
+    Row(
+        horizontalArrangement = SpaceBetween,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text(
+            text = if (groupItem.msgCount > 0) i18nP("group.card.posts", groupItem.msgCount)
+            else i18nP("group.card.no_posts", groupItem.msgCount),
+            style = MaterialTheme.typography.caption
+        )
+        if (groupItem.msgCount > 0) {
+            Text(
+                text = getFormattedTimestamp(groupItem.timestamp),
+                style = MaterialTheme.typography.caption
+            )
+        }
+    }
 }

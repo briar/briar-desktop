@@ -20,7 +20,9 @@ package org.briarproject.briar.desktop.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -30,18 +32,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import org.briarproject.briar.desktop.theme.selectedCard
-import org.briarproject.briar.desktop.utils.InternationalizationUtils
+import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 
 @Composable
 fun ListItemView(
     selected: Boolean? = null,
     onSelect: () -> Unit = {},
+    dividerOffsetFromStart: Dp = 0.dp,
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
-) {
+) = Column(modifier.fillMaxWidth()) {
     val bgColor = if (selected != null && selected) MaterialTheme.colors.selectedCard else Color.Transparent
-
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
@@ -51,8 +55,8 @@ fun ListItemView(
                 if (selected != null) {
                     Modifier
                         .semantics {
-                            contentDescription = if (selected) InternationalizationUtils.i18n("access.list.selected.yes")
-                            else InternationalizationUtils.i18n("access.list.selected.no")
+                            contentDescription = if (selected) i18n("access.list.selected.yes")
+                            else i18n("access.list.selected.no")
                             // todo: stateDescription apparently not used
                             // stateDescription = if (selected) "selected" else "not selected"
                         }
@@ -61,6 +65,6 @@ fun ListItemView(
             )
     ) {
         content()
-        HorizontalDivider(Modifier.align(Alignment.BottomStart))
     }
+    HorizontalDivider(Modifier.padding(start = dividerOffsetFromStart))
 }
