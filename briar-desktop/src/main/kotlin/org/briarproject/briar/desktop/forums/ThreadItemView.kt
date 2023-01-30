@@ -31,14 +31,20 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -46,7 +52,10 @@ import androidx.compose.ui.unit.dp
 import org.briarproject.briar.api.identity.AuthorInfo.Status.OURSELVES
 import org.briarproject.briar.desktop.contact.ProfileCircle
 import org.briarproject.briar.desktop.theme.Blue500
+import org.briarproject.briar.desktop.theme.divider
+import org.briarproject.briar.desktop.ui.Constants.COLUMN_WIDTH
 import org.briarproject.briar.desktop.ui.HorizontalDivider
+import org.briarproject.briar.desktop.ui.LocalWindowScope
 import org.briarproject.briar.desktop.ui.Tooltip
 import org.briarproject.briar.desktop.ui.TrustIndicatorShort
 import org.briarproject.briar.desktop.ui.VerticalDivider
@@ -55,22 +64,28 @@ import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 import org.briarproject.briar.desktop.utils.TimeUtils.getFormattedTimestamp
 import org.briarproject.briar.desktop.utils.getRandomForumPostHeader
 import org.briarproject.briar.desktop.utils.getRandomString
+import kotlin.math.min
 import kotlin.random.Random
 
 @Suppress("HardCodedStringLiteral")
 fun main() = preview {
+    val list = remember {
+        (0..8).map { i ->
+            ForumPostItem(
+                h = getRandomForumPostHeader(),
+                text = getRandomString(Random.nextInt(1, 1337)),
+            ).apply { setLevel(i % 7) }
+        }
+    }
+
     LazyColumn {
-        for (i in 1..5) {
-            item {
-                ThreadItemView(
-                    item = ForumPostItem(
-                        h = getRandomForumPostHeader(),
-                        text = getRandomString(Random.nextInt(1, 1337)),
-                    ).apply { setLevel(Random.nextInt(0, 6)) },
-                    selectedPost = null,
-                    onPostSelected = {},
-                )
-            }
+        items(list) { item ->
+            ThreadItemView(
+                item = item,
+                maxNestingLevel = 3,
+                selectedPost = null,
+                onPostSelected = {},
+            )
         }
     }
 }
@@ -78,14 +93,16 @@ fun main() = preview {
 @Composable
 fun ThreadItemView(
     item: ThreadItem,
+    maxNestingLevel: Int,
     selectedPost: ThreadItem?,
     onPostSelected: (ThreadItem) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(modifier = modifier.height(IntrinsicSize.Min)) {
-        for (i in 1..item.getLevel()) {
-            VerticalDivider(modifier = Modifier.padding(start = 8.dp))
-        }
+        NestingLevelView(
+            itemLevel = item.getLevel(),
+            maxNestingLevel = maxNestingLevel,
+        )
         val isSelected = selectedPost == item
         Column(
             modifier = Modifier
@@ -161,4 +178,38 @@ fun ThreadItemContentComposable(
             }
         }
     }
+}
+
+@Composable
+fun NestingLevelView(
+    itemLevel: Int,
+    maxNestingLevel: Int,
+    modifier: Modifier = Modifier,
+) {
+    val level = min(itemLevel, maxNestingLevel)
+    Box(modifier = modifier.width(9.dp * level)) {
+        Row {
+            for (i in 1..level) {
+                VerticalDivider(modifier = Modifier.padding(start = 8.dp))
+            }
+        }
+        if (itemLevel > maxNestingLevel) Box(
+            contentAlignment = Center,
+            modifier = Modifier.size(24.dp)
+                .background(MaterialTheme.colors.background)
+                .align(Center)
+                .clip(CircleShape)
+                .border(1.dp, MaterialTheme.colors.divider, CircleShape),
+        ) {
+            Text(itemLevel.toString())
+        }
+    }
+}
+
+@Composable
+fun getMaxNestingLevel(): Int = when (LocalWindowScope.current!!.window.width.dp) {
+    in (0.dp..COLUMN_WIDTH * 2) -> 5
+    in (COLUMN_WIDTH * 2..COLUMN_WIDTH * 3) -> 10
+    in (COLUMN_WIDTH * 2..COLUMN_WIDTH * 4) -> 25
+    else -> 100
 }
