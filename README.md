@@ -5,7 +5,8 @@
 
 A desktop program for [Briar](https://briar.app), bringing secure messaging to your desktop and mobile devices.
 
-![Screenshot showing private chat with a test contact 'Polonius', containing a text by Shakespeare](/utils/screenshots/briar-desktop-1.png)
+![Screenshot showing a private chat](./utils/screenshots/briar-desktop-1.png)
+![Screenshot showing a forum](./utils/screenshots/briar-desktop-2.png)
 
 ## Installation
 
@@ -38,20 +39,28 @@ Note that you need at least version 17 of the Java Runtime Environment.
 For Debian- and Ubuntu-based Linux distributions, a set of .deb files is available.
 Depending on which version of Debian/Ubuntu your OS is based on,
 you can choose the right .deb file:
+
 * [Ubuntu 22.04](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop-ubuntu-22.04.deb?job=b_package_linux)
 * [Ubuntu 20.04](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop-ubuntu-20.04.deb?job=b_package_linux)
 * [Debian stable (bullseye)](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop-debian-bullseye.deb?job=b_package_linux)
 * [Ubuntu 18.04](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop-ubuntu-18.04.deb?job=b_package_linux)
 
 Here are some examples of popular distributions and their respective .deb file:
-* Ubuntu 22.04 and compatible: Linux Mint 21.X (Vanessa, Vera), elementaryOS 7.X (Horus), Trisquel 11 (Aramo)
-* Ubuntu 20.04 and compatible: Linux Mint 20.X (Ulyana, Ulyssa, Uma, Una), elementaryOS 6.X (Odin, Jólnir), Trisquel 10 (Nabia)
-* Debian stable (bullseye) and compatible: MX Linux MX-21
-* Ubuntu 18.04 and compatible: Linux Mint 19.X (Tara, Tessa, Tina, Tricia), elementaryOS 5.X (Juno, Hera), Trisquel 9 (Etiona)
+
+* Ubuntu 22.04 and compatible:
+  Linux Mint 21.X (Vanessa, Vera), elementaryOS 7.X (Horus), Trisquel 11 (Aramo)
+* Ubuntu 20.04 and compatible:
+  Linux Mint 20.X (Ulyana, Ulyssa, Uma, Una), elementaryOS 6.X (Odin, Jólnir), Trisquel 10 (Nabia)
+* Debian stable (bullseye) and compatible:
+  MX Linux MX-21
+* Ubuntu 18.04 and compatible:
+  Linux Mint 19.X (Tara, Tessa, Tina, Tricia), elementaryOS 5.X (Juno, Hera), Trisquel 9 (
+  Etiona)
 
 #### Windows installer .msi
 
 For Windows, an .msi installer package is available:
+
 * [Windows MSI](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/Briar-Desktop.msi?job=b_package_windows)
 
 ## Developers
@@ -143,5 +152,5 @@ License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 [GNU Affero General Public License](LICENSE.md) for more details.
