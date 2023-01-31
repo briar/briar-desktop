@@ -89,7 +89,7 @@ fun ContactDrawerMakeIntro(
                             selected = false,
                             onSelect = { viewModel.setSecondContact(contactItem) },
                         ) {
-                            ContactItemView(contactItem)
+                            ContactItemView(contactItem, Modifier.padding(vertical = 8.dp).padding(start = 16.dp))
                         }
                     }
                 }
