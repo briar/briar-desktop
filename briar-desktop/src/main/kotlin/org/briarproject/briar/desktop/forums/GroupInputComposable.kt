@@ -49,6 +49,7 @@ import org.briarproject.briar.desktop.theme.divider
 import org.briarproject.briar.desktop.theme.sendButton
 import org.briarproject.briar.desktop.ui.HorizontalDivider
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
+import org.briarproject.briar.desktop.utils.StringUtils.takeUtf8
 
 @Composable
 @OptIn(ExperimentalComposeUiApi::class)
@@ -102,7 +103,7 @@ fun GroupInputComposable(
         HorizontalDivider()
         TextField(
             value = postText.value,
-            onValueChange = { postText.value = it },
+            onValueChange = { postText.value = it.takeUtf8(MAX_FORUM_POST_TEXT_LENGTH) },
             onEnter = onSendAction,
             maxLines = 10,
             textStyle = MaterialTheme.typography.body1,

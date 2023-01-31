@@ -33,6 +33,7 @@ import org.briarproject.briar.api.introduction.IntroductionManager
 import org.briarproject.briar.desktop.contact.ContactItem
 import org.briarproject.briar.desktop.contact.ContactsViewModel
 import org.briarproject.briar.desktop.threading.BriarExecutors
+import org.briarproject.briar.desktop.utils.StringUtils.takeUtf8
 import org.briarproject.briar.desktop.viewmodel.asState
 import javax.inject.Inject
 
@@ -93,7 +94,7 @@ constructor(
     }
 
     fun setIntroductionMessage(msg: String) {
-        _introductionMessage.value = msg.take(MAX_INTRODUCTION_TEXT_LENGTH)
+        _introductionMessage.value = msg.takeUtf8(MAX_INTRODUCTION_TEXT_LENGTH)
     }
 
     fun makeIntroduction() {

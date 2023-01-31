@@ -46,6 +46,7 @@ import org.briarproject.briar.desktop.contact.ContactsViewModel
 import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.threading.UiExecutor
 import org.briarproject.briar.desktop.utils.InternationalizationUtils
+import org.briarproject.briar.desktop.utils.StringUtils.takeUtf8
 import org.briarproject.briar.desktop.viewmodel.asState
 import org.briarproject.briar.desktop.viewmodel.update
 import javax.inject.Inject
@@ -95,7 +96,10 @@ class ForumSharingViewModel @Inject constructor(
         }.sortedWith(
             // first all items that are SHAREABLE (false comes before true)
             // second non-case-sensitive, alphabetical order on displayName
-            compareBy({ it.status != SHAREABLE }, { it.contactItem.displayName.lowercase(InternationalizationUtils.locale) })
+            compareBy(
+                { it.status != SHAREABLE },
+                { it.contactItem.displayName.lowercase(InternationalizationUtils.locale) }
+            )
         )
     }
 
@@ -135,7 +139,7 @@ class ForumSharingViewModel @Inject constructor(
 
     @UiExecutor
     fun setSharingMessage(message: String) {
-        _sharingMessage.value = message.take(MAX_INVITATION_TEXT_LENGTH)
+        _sharingMessage.value = message.takeUtf8(MAX_INVITATION_TEXT_LENGTH)
     }
 
     @UiExecutor

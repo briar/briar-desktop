@@ -53,6 +53,7 @@ import org.briarproject.briar.api.conversation.event.ConversationMessageReceived
 import org.briarproject.briar.api.forum.ForumSharingManager
 import org.briarproject.briar.api.identity.AuthorManager
 import org.briarproject.briar.api.introduction.IntroductionManager
+import org.briarproject.briar.api.messaging.MessagingConstants.MAX_PRIVATE_MESSAGE_TEXT_LENGTH
 import org.briarproject.briar.api.messaging.MessagingManager
 import org.briarproject.briar.api.messaging.PrivateMessage
 import org.briarproject.briar.api.messaging.PrivateMessageFactory
@@ -68,6 +69,7 @@ import org.briarproject.briar.desktop.utils.KLoggerUtils.e
 import org.briarproject.briar.desktop.utils.KLoggerUtils.i
 import org.briarproject.briar.desktop.utils.KLoggerUtils.logDuration
 import org.briarproject.briar.desktop.utils.KLoggerUtils.w
+import org.briarproject.briar.desktop.utils.StringUtils.takeUtf8
 import org.briarproject.briar.desktop.utils.addAfterLast
 import org.briarproject.briar.desktop.utils.clearAndAddAll
 import org.briarproject.briar.desktop.utils.replaceIf
@@ -145,7 +147,7 @@ constructor(
     }
 
     fun setNewMessage(msg: String) {
-        _newMessage.value = msg
+        _newMessage.value = msg.takeUtf8(MAX_PRIVATE_MESSAGE_TEXT_LENGTH)
     }
 
     fun setNewMessageImage(image: ImageBitmap?) {
