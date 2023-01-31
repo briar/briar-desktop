@@ -38,7 +38,7 @@ buildscript {
         set("dagger_version", "2.43.2")
         set("okhttp_version", "3.12.13")
         set("jackson_version", "2.13.4")
-        set("tor_version", "0.4.7.12")
+        set("tor_version", "0.4.7.13")
         set("obfs4proxy_version", "0.0.14-tor1")
         set("snowflake_version", "2.3.1")
         set("jsoup_version", "1.15.3")
