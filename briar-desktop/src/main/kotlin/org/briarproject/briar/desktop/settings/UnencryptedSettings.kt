@@ -18,6 +18,7 @@
 
 package org.briarproject.briar.desktop.settings
 
+import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.viewmodel.SingleStateEvent
 import java.util.Locale
 
@@ -37,13 +38,21 @@ interface UnencryptedSettings : UnencryptedSettingsReadOnly {
         DEFAULT, EN,
 
         // languages as present in resources
-        AR, BG, CA, DE, ES, FA, FR, GL, HE, HU, IS, IT, JA, KA, KO, LT, MY, NB_NO,
-        NL, PL, PT_BR, RO, RU, SK, SQ, SV, TR, UK, ZH_CN;
+        AR, BG, CA, DE, ES, FA, FR, GL, HE, HU, IS, IT, JA, KA, KO, LT, MY, NB,
+        NL, PL, PT_BR, RO, RU, SK, SQ, SV, TR, UK, ZH_CN, ZH_TW;
 
-        val locale: Locale
-            get() = if (this == DEFAULT)
+        val locale: Locale by lazy {
+            if (this == DEFAULT)
                 Locale.getDefault()
             else Locale.forLanguageTag(name.replace('_', '-'))
+        }
+
+        private val _displayName: String by lazy { locale.getDisplayName(locale) }
+
+        val displayName: String
+            get() = if (this == DEFAULT)
+                i18n("settings.display.language.auto")
+            else _displayName
     }
 
     override var theme: Theme

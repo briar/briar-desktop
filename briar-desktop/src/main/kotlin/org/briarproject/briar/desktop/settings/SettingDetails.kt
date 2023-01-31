@@ -45,7 +45,6 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import org.briarproject.briar.desktop.settings.SettingsViewModel.NotificationProviderState
-import org.briarproject.briar.desktop.settings.UnencryptedSettings.Language
 import org.briarproject.briar.desktop.theme.warningBackground
 import org.briarproject.briar.desktop.theme.warningForeground
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
@@ -80,19 +79,11 @@ fun SettingDetails(viewModel: SettingsViewModel) {
                 DetailItem(
                     label = i18n("settings.display.language.title"),
                     description = "${i18n("access.settings.current_value")}: " +
-                        viewModel.selectedLanguage.value.let {
-                            if (it == Language.DEFAULT)
-                                i18n("settings.display.language.auto")
-                            else it.locale.getDisplayLanguage(it.locale)
-                        } +
+                        viewModel.selectedLanguage.value.displayName +
                         ", " + i18n("access.settings.click_to_change_value")
                 ) {
                     OutlinedExposedDropDownMenu(
-                        values = viewModel.languageList.map {
-                            if (it == Language.DEFAULT)
-                                i18n("settings.display.language.auto")
-                            else it.locale.getDisplayLanguage(it.locale)
-                        },
+                        values = viewModel.languageList.map { it.displayName },
                         selectedIndex = viewModel.selectedLanguage.value.ordinal,
                         onChange = { viewModel.selectLanguage(viewModel.languageList[it]) },
                         modifier = Modifier.widthIn(min = 200.dp)

@@ -1,6 +1,6 @@
 [main]
 host = https://www.transifex.com
-lang_map = zh-Hans: zh_CN, zh-Hant: zh_TW
+lang_map = zh-Hans: zh_CN, zh-Hant: zh_TW, nb_NO: nb
 
 [briar.briar-desktop]
 file_filter = briar-desktop/src/main/resources/strings/BriarDesktop_<lang>.properties
