@@ -65,6 +65,7 @@ b_package_linux:
       - briar-desktop-debian-bullseye.deb
       - briar-desktop-ubuntu-18.04.deb
       - briar-desktop-ubuntu-20.04.deb
+      - briar-desktop-ubuntu-22.04.deb
     expire_in: 2 days
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
@@ -119,6 +120,7 @@ rb_package_linux:
       - briar-desktop-debian-bullseye.deb
       - briar-desktop-ubuntu-18.04.deb
       - briar-desktop-ubuntu-20.04.deb
+      - briar-desktop-ubuntu-22.04.deb
     expire_in: 2 days
   only:
     - tags
