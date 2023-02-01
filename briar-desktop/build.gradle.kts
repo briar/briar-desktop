@@ -27,7 +27,6 @@ plugins {
     id("org.jetbrains.compose") version "1.3.0"
     id("de.mobanisto.pinpit") version "0.3.0"
     id("java")
-    // id("idea")
     id("org.jlleitschuh.gradle.ktlint") version "10.1.0"
     id("org.briarproject.briar.desktop.build-data-gradle-plugin")
 }
