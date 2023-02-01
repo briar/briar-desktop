@@ -1,6 +1,6 @@
 /*
  * Briar Desktop
- * Copyright (C) 2021-2023 The Briar Project
+ * Copyright (C) 2023 The Briar Project
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -16,12 +16,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.briarproject.briar.desktop.login
+package org.briarproject.briar.desktop
 
-class ErrorSubViewModel(
-    private val viewModel: StartupViewModel,
-    val error: Error,
-    val onBackButton: (() -> Unit)? = null,
-) : StartupViewModel.SubViewModel {
-    sealed interface Error
-}
+/*
+ * Running this scenario will show an error message after account creation.
+ */
+fun main() = RunWithTemporaryAccount(
+    createAccount = false,
+    addBrokenService = true,
+).run()

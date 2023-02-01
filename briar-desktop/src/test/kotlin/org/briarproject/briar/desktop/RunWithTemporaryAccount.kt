@@ -1,6 +1,6 @@
 /*
  * Briar Desktop
- * Copyright (C) 2021-2022 The Briar Project
+ * Copyright (C) 2021-2023 The Briar Project
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -17,6 +17,7 @@
  */
 
 @file:Suppress("HardCodedStringLiteral")
+
 package org.briarproject.briar.desktop
 
 import androidx.compose.runtime.LaunchedEffect
@@ -24,6 +25,8 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.window.application
 import mu.KotlinLogging
 import org.briarproject.bramble.BrambleCoreEagerSingletons
+import org.briarproject.bramble.api.lifecycle.Service
+import org.briarproject.bramble.api.lifecycle.ServiceException
 import org.briarproject.briar.BriarCoreEagerSingletons
 import org.briarproject.briar.desktop.TestUtils.getDataDir
 import org.briarproject.briar.desktop.utils.KLoggerUtils.i
@@ -37,6 +40,7 @@ internal class RunWithTemporaryAccount(
     val createAccount: Boolean = true,
     val login: Boolean = true,
     val makeDirUnwritable: Boolean = false,
+    val addBrokenService: Boolean = false,
     val customization: BriarDesktopTestApp.() -> Unit = {},
 ) {
 
@@ -77,6 +81,16 @@ internal class RunWithTemporaryAccount(
 
         val lifecycleManager = app.getLifecycleManager()
         val accountManager = app.getAccountManager()
+
+        if (addBrokenService) {
+            lifecycleManager.registerService(object : Service {
+                override fun startService() {
+                    throw ServiceException()
+                }
+
+                override fun stopService() {}
+            })
+        }
 
         if (createAccount) {
             val password = "verySecret123!"

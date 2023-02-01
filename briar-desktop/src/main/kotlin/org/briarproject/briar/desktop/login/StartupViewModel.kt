@@ -1,6 +1,6 @@
 /*
  * Briar Desktop
- * Copyright (C) 2021-2022 The Briar Project
+ * Copyright (C) 2021-2023 The Briar Project
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -82,12 +82,16 @@ constructor(
         _currentSubViewModel.value = makeRegistration()
     }
 
-    private fun makeError(error: ErrorSubViewModel.Error) = ErrorSubViewModel(
-        this, error, onBackButton = { _currentSubViewModel.value = decideSubViewModel() }
-    )
+    private fun makeError(error: ErrorSubViewModel.Error, allowBackNavigation: Boolean): ErrorSubViewModel {
+        return if (allowBackNavigation) {
+            ErrorSubViewModel(this, error, onBackButton = { _currentSubViewModel.value = decideSubViewModel() })
+        } else {
+            ErrorSubViewModel(this, error)
+        }
+    }
 
-    fun showError(error: ErrorSubViewModel.Error) {
-        _currentSubViewModel.value = makeError(error)
+    fun showError(error: ErrorSubViewModel.Error, allowBackNavigation: Boolean) {
+        _currentSubViewModel.value = makeError(error, allowBackNavigation)
     }
 
     private fun makeAbout(previous: SubViewModel) =
@@ -110,7 +114,7 @@ constructor(
             ALREADY_RUNNING -> LOG.i { "Already running" }
             else -> {
                 LOG.w { "Startup failed: $result" }
-                showError(StartingError(result))
+                showError(StartingError(result), false)
             }
         }
     }
