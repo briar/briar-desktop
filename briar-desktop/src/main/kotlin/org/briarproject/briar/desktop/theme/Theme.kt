@@ -90,11 +90,11 @@ val LightColors = lightColors(
 )
 
 val robotoRegular = FontFamily(
-    Font(resource = "fonts/Roboto-Regular.ttf"),
+    Font(resource = "fonts/Roboto-Regular.ttf"), // NON-NLS
 )
 
 val robotoMedium = FontFamily(
-    Font(resource = "fonts/Roboto-Medium.ttf"),
+    Font(resource = "fonts/Roboto-Medium.ttf"), // NON-NLS
 )
 
 val spacing = 0.3.sp

@@ -16,6 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+@file:Suppress("HardCodedStringLiteral")
 package org.briarproject.briar.desktop.testdata.conversation
 
 import org.briarproject.briar.desktop.testdata.conversation.Direction.INCOMING

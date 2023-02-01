@@ -31,6 +31,7 @@ import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
+@Suppress("HardCodedStringLiteral")
 class ContactItemTest {
 
     @Test

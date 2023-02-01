@@ -18,6 +18,7 @@
 
 package org.briarproject.briar.desktop.testdata
 
+@Suppress("HardCodedStringLiteral")
 var GROUP_NAMES = arrayOf(
     "The Undiscovered Country",
     "The Place to Be",

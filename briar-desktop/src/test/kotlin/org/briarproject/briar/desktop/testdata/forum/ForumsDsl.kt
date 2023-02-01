@@ -16,6 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+@file:Suppress("HardCodedStringLiteral")
 package org.briarproject.briar.desktop.testdata.forum
 
 import java.time.LocalDateTime
@@ -71,7 +72,7 @@ class ForumBuilder : PostHierarchyBuilder() {
     fun myself() = PostAuthor.Me
 
     fun build(): Forum {
-        check(this::name.isInitialized) { "A forum needs a name to be valid." } // NON-NLS
+        check(this::name.isInitialized) { "A forum needs a name to be valid." }
         return Forum(name, members, posts)
     }
 }
@@ -117,7 +118,7 @@ class PostBuilder(parentPostSent: LocalDateTime) : PostHierarchyBuilder() {
     override var lastReplySent: LocalDateTime = _date
 
     fun build(): Post {
-        check(this::text.isInitialized) { "A forum post needs to contain a text to be valid." } // NON-NLS
+        check(this::text.isInitialized) { "A forum post needs to contain a text to be valid." }
         return Post(author, text, _date, posts)
     }
 }

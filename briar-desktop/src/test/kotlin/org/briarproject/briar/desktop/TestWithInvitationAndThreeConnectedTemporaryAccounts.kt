@@ -16,13 +16,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+@file:Suppress("HardCodedStringLiteral")
 package org.briarproject.briar.desktop
 
 import org.briarproject.bramble.api.contact.Contact
 import org.briarproject.bramble.api.contact.event.ContactAddedEvent
 import org.briarproject.briar.desktop.TestUtils.connectAppsInstantly
 
-fun main() = RunWithMultipleTemporaryAccounts(listOf("alice", "bob", "eve")) { // NON-NLS
+fun main() = RunWithMultipleTemporaryAccounts(listOf("alice", "bob", "eve")) {
     val alice = this[0]
     val bob = this[1]
     val eve = this[2]
@@ -41,11 +42,11 @@ fun main() = RunWithMultipleTemporaryAccounts(listOf("alice", "bob", "eve")) { /
                 is ContactAddedEvent -> {
                     val contact = getContactManager().getContact(it.contactId)
                     when (contact.author.name) {
-                        "eve" -> eve = contact // NON-NLS
-                        "bob" -> bob = contact // NON-NLS
+                        "eve" -> eve = contact
+                        "bob" -> bob = contact
                     }
                     if (eve != null && bob != null) {
-                        getIntroductionManager().makeIntroduction(eve!!, bob!!, "Eve and Bob") // NON-NLS
+                        getIntroductionManager().makeIntroduction(eve!!, bob!!, "Eve and Bob")
                     }
                 }
             }

@@ -16,6 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+@file:Suppress("HardCodedStringLiteral")
 package org.briarproject.briar.desktop
 
 import androidx.compose.runtime.LaunchedEffect
@@ -28,7 +29,6 @@ import org.briarproject.briar.desktop.TestUtils.getDataDir
 import org.briarproject.briar.desktop.utils.KLoggerUtils.i
 import org.briarproject.briar.desktop.utils.KLoggerUtils.w
 import org.briarproject.briar.desktop.utils.LogUtils
-import org.jetbrains.annotations.NonNls
 import java.nio.file.Files
 import java.nio.file.attribute.PosixFilePermissions
 import java.util.logging.Level.ALL
@@ -52,7 +52,6 @@ internal class RunWithTemporaryAccount(
         LOG.i { "Using data directory '$dataDir'" }
 
         if (makeDirUnwritable) {
-            @NonNls
             val permissions = PosixFilePermissions.fromString("r--r--r--")
             Files.setPosixFilePermissions(dataDir, permissions)
         }
@@ -80,7 +79,6 @@ internal class RunWithTemporaryAccount(
         val accountManager = app.getAccountManager()
 
         if (createAccount) {
-            @NonNls
             val password = "verySecret123!"
             accountManager.createAccount("alice", password)
         }

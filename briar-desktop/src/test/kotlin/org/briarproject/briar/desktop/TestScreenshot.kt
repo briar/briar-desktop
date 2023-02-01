@@ -16,6 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+@file:Suppress("HardCodedStringLiteral")
 package org.briarproject.briar.desktop
 
 import org.briarproject.bramble.api.contact.event.ContactAddedEvent

@@ -16,6 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+@file:Suppress("HardCodedStringLiteral")
 package org.briarproject.briar.desktop
 
 import mu.KotlinLogging
@@ -46,7 +47,7 @@ object TestUtils {
     private val LOG = KotlinLogging.logger {}
 
     fun getDataDir(): Path {
-        val dataDir = Files.createTempDirectory("briar") // NON-NLS
+        val dataDir = Files.createTempDirectory("briar")
         if (!Files.exists(dataDir)) {
             throw IOException("Could not create directory: ${dataDir.absolute()}")
         } else if (!Files.isDirectory(dataDir)) {
@@ -122,7 +123,7 @@ object TestUtils {
         )
 
         // Contact exchange succeeded
-        LOG.info("Contact exchange succeeded") // NON-NLS
+        LOG.info("Contact exchange succeeded")
     }
 
     private fun addContact(
@@ -158,7 +159,7 @@ object TestUtils {
 
         // create forum
         val creator = get(0)
-        val forum = creator.getForumManager().addForum("Shared Forum") // NON-NLS
+        val forum = creator.getForumManager().addForum("Shared Forum")
 
         // invite all contacts
         creator.getEventBus().addListener { e ->

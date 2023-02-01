@@ -79,6 +79,7 @@ import javax.imageio.ImageIO
 import javax.inject.Inject
 import kotlin.math.min
 
+@Suppress("HardCodedStringLiteral")
 class DeterministicTestDataCreatorImpl @Inject internal constructor(
     private val authorFactory: AuthorFactory,
     private val clock: Clock,

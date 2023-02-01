@@ -16,6 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+@file:Suppress("HardCodedStringLiteral")
 package org.briarproject.briar.desktop.testdata
 
 import org.briarproject.briar.desktop.testdata.conversation.conversations
@@ -25,14 +26,14 @@ import org.briarproject.briar.desktop.testdata.forum.forums
 
 fun main() {
     for (conversation in conversations.persons) {
-        println("conversation with: ${conversation.name}") // NON-NLS
+        println("conversation with: ${conversation.name}")
         for (message in conversation.messages) {
             println("  ${message.direction} ${message.text} ${message.read} ${message.date}")
         }
     }
 
     for (forum in forums.forums) {
-        println("Forum: ${forum.name}") // NON-NLS
+        println("Forum: ${forum.name}")
         fun printPost(post: Post, level: Int) {
             val name = if (post.author is PostAuthor.RemoteAuthor) post.author.name else "me"
             println("|".repeat(level) + "+ ${post.date} - $name: ${post.text}")
