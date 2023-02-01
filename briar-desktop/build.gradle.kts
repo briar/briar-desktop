@@ -153,6 +153,8 @@ configurations["automatedScreenshotsImplementation"].extendsFrom(configurations.
 configurations["automatedScreenshotsRuntimeOnly"].extendsFrom(configurations.testRuntimeOnly.get())
 
 task<Test>("automatedScreenshots") {
+    group = "documentation"
+    description = "Creates screenshots of the app automatically."
     testClassesDirs = sourceSets["automatedScreenshots"].output.classesDirs
     classpath = sourceSets["automatedScreenshots"].runtimeClasspath
 }

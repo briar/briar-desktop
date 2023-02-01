@@ -61,6 +61,15 @@ quicker. In `RendezvousConstants`, change
 to something lower such as
 `long POLLING_INTERVAL_MS = SECONDS.toMillis(10);`.
 
+## Creating screenshots automatically
+
+You can create screenshots automatically from the command line by calling this:
+
+    ./gradlew cleanAutomatedScreenshots automatedScreenshots
+
+It's also possible to run that from the IDE. Navigate to the `ScreenshotTest`
+file and run any test from there.
+
 ## Updating Copyright headers
 
 In IntelliJ, right click the root of the project tree and select
