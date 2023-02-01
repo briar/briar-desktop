@@ -160,7 +160,7 @@ constructor(
         _filterBy.value = filter
     }
 
-    override fun eventOccurred(e: Event?) {
+    override fun eventOccurred(e: Event) {
         super.eventOccurred(e)
         when (e) {
             is ConversationMessageTrackedEvent -> {

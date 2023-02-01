@@ -82,7 +82,7 @@ constructor(
 
     fun isSelected(privateGroupId: GroupId) = _selectedContactId.value == privateGroupId
 
-    override fun eventOccurred(e: Event?) {
+    override fun eventOccurred(e: Event) {
         // TODO
     }
 }

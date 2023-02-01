@@ -48,7 +48,7 @@ constructor(
         private val LOG = Logger.getLogger(ThreadedConversationViewModel::class.java.name)
     }
 
-    override fun eventOccurred(e: Event?) {
+    override fun eventOccurred(e: Event) {
         // TODO
     }
 }

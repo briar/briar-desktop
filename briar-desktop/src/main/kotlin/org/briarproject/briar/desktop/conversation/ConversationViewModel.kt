@@ -331,7 +331,7 @@ constructor(
         }
     }
 
-    override fun eventOccurred(e: Event?) {
+    override fun eventOccurred(e: Event) {
         when (e) {
             is ConversationMessageReceivedEvent<*> -> {
                 if (e.contactId == _contactId.value) {

@@ -153,7 +153,7 @@ class ForumSharingViewModel @Inject constructor(
     }
 
     @UiExecutor
-    override fun eventOccurred(e: Event?) {
+    override fun eventOccurred(e: Event) {
         super.eventOccurred(e)
 
         val groupId = _groupId ?: return

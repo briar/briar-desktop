@@ -79,7 +79,7 @@ abstract class ContactsViewModel(
     open fun loadContactItemWithinTransaction(txn: Transaction, contact: Contact) =
         loadContactItem(txn, contact, authorManager, connectionRegistry, conversationManager)
 
-    override fun eventOccurred(e: Event?) {
+    override fun eventOccurred(e: Event) {
         when (e) {
             is ContactAddedEvent -> {
                 // todo: instead, add single new item!
