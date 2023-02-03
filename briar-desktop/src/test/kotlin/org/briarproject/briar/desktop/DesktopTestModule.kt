@@ -51,13 +51,13 @@ internal class DesktopTestModule {
         override fun shouldEnablePrivateGroupsInCore() = desktopFeatureFlags.shouldEnablePrivateGroups()
         override fun shouldEnableForumsInCore() = desktopFeatureFlags.shouldEnableForums()
         override fun shouldEnableBlogsInCore() = desktopFeatureFlags.shouldEnableBlogs()
-        override fun shouldEnableMailbox() = false
+        override fun shouldEnableMailbox() = true
     }
 
     @Provides
     @Singleton
     internal fun provideDesktopFeatureFlags() = object : DesktopFeatureFlags {
-        override fun shouldEnablePrivateGroups() = false
+        override fun shouldEnablePrivateGroups() = true
         override fun shouldEnableForums() = true
         override fun shouldEnableBlogs() = false
         override fun shouldEnableTransportSettings() = false
