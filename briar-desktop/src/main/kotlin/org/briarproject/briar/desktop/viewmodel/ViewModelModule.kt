@@ -29,6 +29,7 @@ import org.briarproject.briar.desktop.forums.ForumViewModel
 import org.briarproject.briar.desktop.forums.sharing.ForumSharingViewModel
 import org.briarproject.briar.desktop.introduction.IntroductionViewModel
 import org.briarproject.briar.desktop.login.StartupViewModel
+import org.briarproject.briar.desktop.mailbox.MailboxViewModel
 import org.briarproject.briar.desktop.navigation.SidebarViewModel
 import org.briarproject.briar.desktop.privategroups.PrivateGroupListViewModel
 import org.briarproject.briar.desktop.privategroups.ThreadedConversationViewModel
@@ -89,6 +90,11 @@ abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(ForumSharingViewModel::class)
     abstract fun bindForumSharingViewModel(forumSharingViewModel: ForumSharingViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(MailboxViewModel::class)
+    abstract fun bindMailboxViewModel(mailboxViewModel: MailboxViewModel): ViewModel
 
     @Binds
     @IntoMap

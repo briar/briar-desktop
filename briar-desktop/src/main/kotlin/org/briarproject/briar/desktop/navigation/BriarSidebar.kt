@@ -26,7 +26,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material.Badge
@@ -65,7 +64,7 @@ fun BriarSidebar(
     @Composable
     fun BriarSidebarButton(
         mode: UiMode,
-        icon: ImageVector,
+        icon: ImageVector = mode.icon,
         messageCount: Int = 0,
     ) = BriarSidebarButton(
         uiMode == mode,
@@ -104,6 +103,7 @@ fun BriarSidebar(
             UiMode.TRANSPORTS,
             Icons.Filled.WifiTethering
         )
+        if (configuration.shouldEnableMailbox()) BriarSidebarButton(UiMode.MAILBOX)
         BriarSidebarButton(UiMode.SETTINGS, Icons.Filled.Settings)
         BriarSidebarButton(UiMode.ABOUT, Icons.Filled.Info)
     }

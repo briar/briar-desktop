@@ -29,6 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import org.briarproject.briar.desktop.conversation.PrivateMessageScreen
 import org.briarproject.briar.desktop.forums.ForumScreen
+import org.briarproject.briar.desktop.mailbox.MailboxScreen
 import org.briarproject.briar.desktop.navigation.BriarSidebar
 import org.briarproject.briar.desktop.navigation.SidebarViewModel
 import org.briarproject.briar.desktop.privategroups.PrivateGroupScreen
@@ -62,6 +63,7 @@ fun MainScreen(viewModel: SidebarViewModel = viewModel()) {
                     UiMode.CONTACTS -> PrivateMessageScreen()
                     UiMode.GROUPS -> PrivateGroupScreen()
                     UiMode.FORUMS -> ForumScreen()
+                    UiMode.MAILBOX -> MailboxScreen()
                     UiMode.SETTINGS -> SettingsScreen()
                     UiMode.ABOUT -> AboutScreen()
                     else -> UiPlaceholder()
