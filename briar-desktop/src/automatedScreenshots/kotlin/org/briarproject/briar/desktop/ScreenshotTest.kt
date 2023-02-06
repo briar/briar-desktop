@@ -1,6 +1,6 @@
 /*
  * Briar Desktop
- * Copyright (C) 2021-2022 The Briar Project
+ * Copyright (C) 2021-2023 The Briar Project
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -42,9 +42,11 @@ import org.briarproject.bramble.api.plugin.LanTcpConstants
 import org.briarproject.briar.BriarCoreEagerSingletons
 import org.briarproject.briar.desktop.TestUtils.getDataDir
 import org.briarproject.briar.desktop.contact.ContactListViewModel
-import org.briarproject.briar.desktop.ui.LocalWindowFocusState
-import org.briarproject.briar.desktop.ui.LocalWindowScope
-import org.briarproject.briar.desktop.ui.WindowFocusState
+import org.briarproject.briar.desktop.forums.ForumViewModel
+import org.briarproject.briar.desktop.navigation.SidebarViewModel
+import org.briarproject.briar.desktop.ui.LocalWindowInfo
+import org.briarproject.briar.desktop.ui.UiMode
+import org.briarproject.briar.desktop.ui.WindowInfo
 import org.jetbrains.annotations.NonNls
 import org.jetbrains.skia.Image
 import org.junit.Test
@@ -53,7 +55,7 @@ import java.io.FileOutputStream
 @OptIn(ExperimentalTestApi::class)
 class ScreenshotTest {
 
-    private fun DesktopComposeUiTest.start(): BriarDesktopTestApp {
+    private fun DesktopComposeUiTest.start(windowWidth: Int): BriarDesktopTestApp {
         // TODO: unify with interactive tests
         val dataDir = getDataDir()
         val app =
@@ -70,16 +72,19 @@ class ScreenshotTest {
         BrambleCoreEagerSingletons.Helper.injectEagerSingletons(app)
         BriarCoreEagerSingletons.Helper.injectEagerSingletons(app)
 
-        val windowScope = object : FrameWindowScope {
-            // would be needed for launching dialogs like the image picker
-            override val window: ComposeWindow get() = TODO()
+        val windowInfo = object : WindowInfo {
+            override val windowScope = object : FrameWindowScope {
+                override val window: ComposeWindow
+                    // would be needed for launching dialogs like the image picker
+                    get() = error("no ComposeWindow available in automatedScreenshots")
+            }
+            override val windowWidth: Int = windowWidth
+            override var focused: Boolean = true
         }
-        val windowFocusState = WindowFocusState().apply { focused = true }
 
         setContent {
             CompositionLocalProvider(
-                LocalWindowScope provides windowScope,
-                LocalWindowFocusState provides windowFocusState,
+                LocalWindowInfo provides windowInfo,
             ) {
                 app.getBriarUi().content()
             }
@@ -105,7 +110,7 @@ class ScreenshotTest {
     @Test
     fun makeScreenshot() = runDesktopComposeUiTest(700, 700) {
         runBlocking {
-            val app = start()
+            val app = start(windowWidth = 700)
 
             // close expiration banner and move mouse outside of window (to avoid hover effect)
             // TODO: *sometimes* leads to Compose crash (somehow connected to Tooltip?)
@@ -130,21 +135,37 @@ class ScreenshotTest {
                     "Faythe"
                 )
 
-                val viewModel = getViewModelProvider().get(ContactListViewModel::class)
+                val sidebarViewModel = getViewModelProvider().get(SidebarViewModel::class)
+                val contactListViewModel = getViewModelProvider().get(ContactListViewModel::class)
+                val forumViewModel = getViewModelProvider().get(ForumViewModel::class)
 
                 // give IO executor some time to add contacts and messages
                 delay(10_000)
-                waitUntil(60_000) { viewModel.combinedContactList.value.size > 2 }
+                waitUntil(60_000) { contactListViewModel.combinedContactList.value.size >= 2 }
 
                 // select Bob in list of contacts and wait for the chat history to load
-                viewModel.selectContact(viewModel.combinedContactList.value[1])
+                contactListViewModel.selectContact(contactListViewModel.combinedContactList.value[1])
                 awaitIdle()
 
-                captureToImage().save("contact-list.png")
+                // contact list screenshot
+                captureToImage().saveAsScreenshot("contact-list")
+
+                sidebarViewModel.setUiMode(UiMode.FORUMS)
+                waitUntil(60_000) { forumViewModel.forumList.value.size >= 2 }
+
+                // select the second forum in the list and wait for the forum posts to load
+                forumViewModel.selectGroup(forumViewModel.forumList.value[1])
+                awaitIdle()
+
+                // forum list screenshot
+                captureToImage().saveAsScreenshot("forum-list")
             }
         }
     }
 }
+
+private fun Image.saveAsScreenshot(name: String) =
+    save("../utils/screenshots/$name.png")
 
 private fun Image.save(file: String) {
     encodeToData()?.bytes?.let { bytes ->

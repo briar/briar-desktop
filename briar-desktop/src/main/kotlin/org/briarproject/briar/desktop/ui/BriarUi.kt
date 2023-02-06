@@ -28,7 +28,6 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
@@ -37,7 +36,6 @@ import androidx.compose.ui.graphics.toAwtImage
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.window.FrameWindowScope
 import androidx.compose.ui.window.Window
 import org.briarproject.bramble.api.event.EventBus
 import org.briarproject.bramble.api.event.EventListener
@@ -88,7 +86,6 @@ interface BriarUi {
     fun content()
 }
 
-val LocalWindowScope = staticCompositionLocalOf<FrameWindowScope?> { null }
 val LocalViewModelProvider = staticCompositionLocalOf<ViewModelProvider?> { null }
 val LocalAvatarManager = staticCompositionLocalOf<AvatarManager?> { null }
 val LocalConfiguration = staticCompositionLocalOf<Configuration?> { null }
@@ -122,12 +119,12 @@ constructor(
 
     @Composable
     override fun start(onClose: () -> Unit) {
-        val focusState = remember { WindowFocusState() }
-
         Window(
             title = Strings.APP_NAME,
             onCloseRequest = onClose,
         ) {
+            val windowInfo = rememberWindowInfo(this)
+
             // changing the icon in the Composable itself automatically brings the window to front
             // see https://github.com/JetBrains/compose-jb/issues/1861
             // therefore the icon is set here on the AWT Window
@@ -144,19 +141,19 @@ constructor(
 
                 val focusListener = object : WindowFocusListener {
                     override fun windowGainedFocus(e: WindowEvent?) {
-                        focusState.focused = true
+                        windowInfo.focused = true
                         window.iconImage = iconNormal
                     }
 
                     override fun windowLostFocus(e: WindowEvent?) {
-                        focusState.focused = false
+                        windowInfo.focused = false
                         // reset notification cool-down
                         lastNotificationPrivateMessage = 0
                         lastNotificationForum = 0
                     }
                 }
                 val messageCounterListener: MessageCounterListener = { (type, total, groups, inc) ->
-                    if (inc && total > 0 && !focusState.focused) {
+                    if (inc && total > 0 && !windowInfo.focused) {
                         val callback: NotificationProvider.() -> Unit = when (type) {
                             PrivateMessage -> {
                                 { notifyPrivateMessages(total, groups) }
@@ -200,8 +197,7 @@ constructor(
             }
 
             CompositionLocalProvider(
-                LocalWindowScope provides this,
-                LocalWindowFocusState provides focusState,
+                LocalWindowInfo provides windowInfo,
             ) {
                 // invalidate whole application window in case the theme, language or UI scale
                 // setting is changed

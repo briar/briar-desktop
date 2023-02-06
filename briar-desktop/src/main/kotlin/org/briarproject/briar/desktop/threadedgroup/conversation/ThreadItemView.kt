@@ -58,10 +58,10 @@ import org.briarproject.briar.desktop.theme.Blue500
 import org.briarproject.briar.desktop.theme.divider
 import org.briarproject.briar.desktop.ui.Constants.COLUMN_WIDTH
 import org.briarproject.briar.desktop.ui.HorizontalDivider
-import org.briarproject.briar.desktop.ui.LocalWindowScope
 import org.briarproject.briar.desktop.ui.Tooltip
 import org.briarproject.briar.desktop.ui.TrustIndicatorShort
 import org.briarproject.briar.desktop.ui.VerticalDivider
+import org.briarproject.briar.desktop.ui.getWindowWidth
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 import org.briarproject.briar.desktop.utils.TimeUtils.getFormattedTimestamp
@@ -221,7 +221,7 @@ fun NestingLevelView(
 }
 
 @Composable
-fun getMaxNestingLevel(): Int = when (LocalWindowScope.current!!.window.width.dp) {
+fun getMaxNestingLevel(): Int = when (getWindowWidth()) {
     in (0.dp..COLUMN_WIDTH * 2) -> 5
     in (COLUMN_WIDTH * 2..COLUMN_WIDTH * 3) -> 10
     in (COLUMN_WIDTH * 2..COLUMN_WIDTH * 4) -> 25

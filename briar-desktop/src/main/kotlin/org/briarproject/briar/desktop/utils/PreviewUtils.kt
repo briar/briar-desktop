@@ -54,9 +54,8 @@ import androidx.compose.ui.window.singleWindowApplication
 import org.briarproject.bramble.api.UniqueId
 import org.briarproject.briar.desktop.settings.UnencryptedSettings
 import org.briarproject.briar.desktop.theme.BriarTheme
-import org.briarproject.briar.desktop.ui.LocalWindowFocusState
-import org.briarproject.briar.desktop.ui.LocalWindowScope
-import org.briarproject.briar.desktop.ui.WindowFocusState
+import org.briarproject.briar.desktop.ui.LocalWindowInfo
+import org.briarproject.briar.desktop.ui.rememberWindowInfo
 import org.briarproject.briar.desktop.utils.UiUtils.DensityDimension
 import org.briarproject.briar.desktop.viewmodel.SingleStateEvent
 import org.jetbrains.annotations.NonNls
@@ -217,10 +216,9 @@ object PreviewUtils {
         val settingsDensity: Float? = prefs.get("previewsUiScale", null)?.toFloat()
 
         singleWindowApplication(title = "Interactive Preview") {
-            val focusState = remember { WindowFocusState() }
+            val windowInfo = rememberWindowInfo(this)
             CompositionLocalProvider(
-                LocalWindowScope provides this,
-                LocalWindowFocusState provides focusState
+                LocalWindowInfo provides windowInfo
             ) {
                 Column {
                     val density = settingsDensity ?: LocalDensity.current.density

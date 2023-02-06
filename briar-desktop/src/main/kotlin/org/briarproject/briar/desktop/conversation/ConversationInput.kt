@@ -1,6 +1,6 @@
 /*
  * Briar Desktop
- * Copyright (C) 2021-2022 The Briar Project
+ * Copyright (C) 2021-2023 The Briar Project
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -53,7 +53,7 @@ import androidx.compose.ui.unit.dp
 import org.briarproject.briar.desktop.theme.sendButton
 import org.briarproject.briar.desktop.ui.ColoredIconButton
 import org.briarproject.briar.desktop.ui.HorizontalDivider
-import org.briarproject.briar.desktop.ui.LocalWindowScope
+import org.briarproject.briar.desktop.ui.getWindowScope
 import org.briarproject.briar.desktop.utils.ImagePicker.pickImageUsingDialog
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
@@ -112,7 +112,7 @@ fun ConversationInput(
                 unfocusedIndicatorColor = MaterialTheme.colors.background
             ),
             leadingIcon = {
-                val windowScope = LocalWindowScope.current!!
+                val windowScope = getWindowScope()
                 ColoredIconButton(
                     icon = if (image == null) Icons.Filled.Add else Icons.Filled.Close,
                     contentDescription = if (image == null) i18n("access.attachment_add") else i18n("access.attachment_remove"),
