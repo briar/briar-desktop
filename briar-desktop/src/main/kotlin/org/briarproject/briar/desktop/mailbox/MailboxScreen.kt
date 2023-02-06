@@ -40,15 +40,15 @@ fun MailboxScreen(viewModel: MailboxViewModel = viewModel()) {
     when (val state = viewModel.pairingState.value) {
         Unknown -> Loader()
         NotSetup -> MailboxSetupScreen(viewModel, false)
-        is Pairing -> when (val pairingState = state.pairingState) {
+        is Pairing -> when (state.pairingState) {
             is Pending -> MailboxSetupScreen(viewModel, false)
             is InvalidQrCode, is MailboxAlreadyPaired, is ConnectionError, is UnexpectedError -> {
                 MailboxSetupScreen(viewModel, true)
             }
-            is Paired -> UiPlaceholder()
+            is Paired -> MailboxStatusScreen(viewModel.status.value)
         }
         OfflineWhenPairing -> MailboxSetupScreen(viewModel, true)
-        is IsPaired -> UiPlaceholder()
-        is WasUnpaired -> UiPlaceholder()
+        is IsPaired -> MailboxStatusScreen(viewModel.status.value)
+        is WasUnpaired -> UiPlaceholder() // TODO
     }
 }
