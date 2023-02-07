@@ -20,12 +20,19 @@ package org.briarproject.briar.desktop.mailbox
 
 import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize.Max
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
+import androidx.compose.material.ButtonType.DESTRUCTIVE
+import androidx.compose.material.ButtonType.NEUTRAL
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.DialogButton
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
@@ -35,6 +42,8 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.QuestionMark
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -62,6 +71,7 @@ fun main() = preview(
         listOf("error", "problem", "mailbox too old", "briar too old", "ok")
     ),
     "isCheckingConnection" to false,
+    "isWiping" to false,
 ) {
     val now = System.currentTimeMillis()
     val status = when (getStringParameter("status")) {
@@ -71,7 +81,13 @@ fun main() = preview(
         "briar too old" -> MailboxStatus(now, now, 0, listOf(MailboxVersion(42, 0)))
         else -> MailboxStatus(now, now - 18_354, 0, CLIENT_SUPPORTS)
     }
-    MailboxStatusScreen(status, getBooleanParameter("isCheckingConnection")) {}
+    MailboxStatusScreen(
+        status = status,
+        isCheckingConnection = getBooleanParameter("isCheckingConnection"),
+        onCheckConnection = {},
+        isWiping = getBooleanParameter("isWiping"),
+        onWipe = {},
+    )
 }
 
 @Composable
@@ -79,8 +95,11 @@ fun MailboxStatusScreen(
     status: MailboxStatus?,
     isCheckingConnection: Boolean,
     onCheckConnection: () -> Unit,
+    isWiping: Boolean,
+    onWipe: () -> Unit,
 ) {
     if (status == null) return // not expected to happen (for a noticeable amount of time)
+    val deleteGroupDialogVisible = remember { mutableStateOf(false) }
     Column(
         verticalArrangement = spacedBy(16.dp),
         horizontalAlignment = CenterHorizontally,
@@ -129,20 +148,27 @@ fun MailboxStatusScreen(
         }
         if (isCheckingConnection) CircularProgressIndicator()
         else Button(
-            onClick = onCheckConnection
+            onClick = onCheckConnection,
+            enabled = !isWiping,
         ) {
             Text(
                 text = i18n("mailbox.status.check.connection.button"),
             )
         }
         Spacer(modifier = Modifier.weight(1f))
-        OutlinedButton(
-            onClick = { /* TODO */ },
+        if (isWiping) CircularProgressIndicator()
+        else OutlinedButton(
+            onClick = { deleteGroupDialogVisible.value = true },
+            enabled = !isCheckingConnection,
         ) {
             Text(
                 text = i18n("mailbox.status.unlink.button"),
             )
         }
+        if (deleteGroupDialogVisible.value) MailboxWipeDialog(
+            close = { deleteGroupDialogVisible.value = false },
+            onWipe = onWipe,
+        )
     }
 }
 
@@ -172,5 +198,46 @@ private fun MailboxStatusView(
         text = lastSuccessText,
         style = MaterialTheme.typography.body1,
         modifier = Modifier.alpha(0.56f)
+    )
+}
+
+@Composable
+@OptIn(ExperimentalMaterialApi::class)
+fun MailboxWipeDialog(
+    close: () -> Unit,
+    onWipe: () -> Unit = {},
+) {
+    AlertDialog(
+        onDismissRequest = close,
+        title = {
+            Text(
+                text = i18n("mailbox.unlink.dialog.title"),
+                modifier = Modifier.width(Max),
+                style = MaterialTheme.typography.h6,
+            )
+        },
+        text = {
+            Column(verticalArrangement = spacedBy(16.dp)) {
+                Text(i18n("mailbox.unlink.dialog.question"))
+                Text(i18n("mailbox.unlink.dialog.warning"))
+            }
+        },
+        dismissButton = {
+            DialogButton(
+                onClick = { close() },
+                text = i18n("cancel"),
+                type = NEUTRAL,
+            )
+        },
+        confirmButton = {
+            DialogButton(
+                onClick = {
+                    close()
+                    onWipe()
+                },
+                text = i18n("mailbox.unlink.dialog.button"),
+                type = DESTRUCTIVE,
+            )
+        },
     )
 }

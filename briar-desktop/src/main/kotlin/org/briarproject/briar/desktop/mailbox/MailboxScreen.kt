@@ -32,7 +32,6 @@ import org.briarproject.briar.desktop.mailbox.MailboxPairingUiState.Pairing
 import org.briarproject.briar.desktop.mailbox.MailboxPairingUiState.Unknown
 import org.briarproject.briar.desktop.mailbox.MailboxPairingUiState.WasUnpaired
 import org.briarproject.briar.desktop.ui.Loader
-import org.briarproject.briar.desktop.ui.UiPlaceholder
 import org.briarproject.briar.desktop.viewmodel.viewModel
 
 @Composable
@@ -49,6 +48,8 @@ fun MailboxScreen(viewModel: MailboxViewModel = viewModel()) {
                 status = viewModel.status.value,
                 isCheckingConnection = false, // we just paired, there was no time to trigger a connection check
                 onCheckConnection = viewModel::checkConnection,
+                onWipe = viewModel::unlink,
+                isWiping = false, // same as above, just paired
             )
         }
         OfflineWhenPairing -> MailboxSetupScreen(viewModel, true)
@@ -56,7 +57,10 @@ fun MailboxScreen(viewModel: MailboxViewModel = viewModel()) {
             status = viewModel.status.value,
             isCheckingConnection = state.connectionCheckRunning,
             onCheckConnection = viewModel::checkConnection,
+            onWipe = viewModel::unlink,
+            isWiping = state.isWiping,
         )
-        is WasUnpaired -> UiPlaceholder() // TODO
+        // the unpair success message will be shown like an error dialog
+        is WasUnpaired -> MailboxSetupScreen(viewModel, true)
     }
 }

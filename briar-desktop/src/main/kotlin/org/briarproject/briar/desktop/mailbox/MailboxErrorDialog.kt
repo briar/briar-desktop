@@ -34,6 +34,8 @@ import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.rememberDialogState
 import org.briarproject.bramble.api.mailbox.MailboxPairingState
 import org.briarproject.briar.desktop.mailbox.MailboxPairingUiState.OfflineWhenPairing
+import org.briarproject.briar.desktop.mailbox.MailboxPairingUiState.Pairing
+import org.briarproject.briar.desktop.mailbox.MailboxPairingUiState.WasUnpaired
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 import java.awt.Dimension
@@ -86,7 +88,7 @@ fun MailboxErrorDialog(
 private fun MailboxPairingUiState.getError(): String = when (this) {
     is OfflineWhenPairing -> i18n("mailbox.setup.offline_error_title") + "\n\n" +
         i18n("mailbox.setup.offline_error_description")
-    is MailboxPairingUiState.Pairing -> when (val s = pairingState) {
+    is Pairing -> when (val s = pairingState) {
         is MailboxPairingState.InvalidQrCode -> i18n("mailbox.setup.link.error")
         is MailboxPairingState.MailboxAlreadyPaired -> i18n("mailbox.setup.already_paired_title") +
             "\n\n" + i18n("mailbox.setup.already_paired_description")
@@ -95,5 +97,7 @@ private fun MailboxPairingUiState.getError(): String = when (this) {
         is MailboxPairingState.UnexpectedError -> i18n("mailbox.setup.assertion_error_description")
         else -> error("Unhandled pairing state: ${s::class.simpleName}")
     }
+    is WasUnpaired -> if (tellUserToWipeMailbox) i18n("mailbox.unlink.no_wipe.title") +
+        "\n\n" + i18n("mailbox.unlink.no_wipe.message") else i18n("mailbox.unlink.no_wipe.title")
     else -> error("Unhandled state: ${this::class.simpleName}")
 }

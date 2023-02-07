@@ -40,6 +40,7 @@ import org.briarproject.briar.desktop.mailbox.MailboxPairingUiState.NotSetup
 import org.briarproject.briar.desktop.mailbox.MailboxPairingUiState.OfflineWhenPairing
 import org.briarproject.briar.desktop.mailbox.MailboxPairingUiState.Pairing
 import org.briarproject.briar.desktop.mailbox.MailboxPairingUiState.Unknown
+import org.briarproject.briar.desktop.mailbox.MailboxPairingUiState.WasUnpaired
 import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.threading.UiExecutor
 import org.briarproject.briar.desktop.utils.KLoggerUtils.i
@@ -53,7 +54,7 @@ sealed class MailboxPairingUiState {
     object NotSetup : MailboxPairingUiState()
     class Pairing(val pairingState: MailboxPairingState) : MailboxPairingUiState()
     object OfflineWhenPairing : MailboxPairingUiState()
-    class IsPaired(val connectionCheckRunning: Boolean) : MailboxPairingUiState()
+    class IsPaired(val connectionCheckRunning: Boolean, val isWiping: Boolean) : MailboxPairingUiState()
     class WasUnpaired(val tellUserToWipeMailbox: Boolean) : MailboxPairingUiState()
 }
 
@@ -93,7 +94,7 @@ class MailboxViewModel @Inject constructor(
             if (isPaired) {
                 val mailboxStatus = mailboxManager.getMailboxStatus(txn)
                 briarExecutors.onUiThread {
-                    _pairingState.value = IsPaired(false)
+                    _pairingState.value = IsPaired(connectionCheckRunning = false, isWiping = false)
                     _status.value = mailboxStatus
                 }
             } else briarExecutors.onUiThread {
@@ -160,15 +161,26 @@ class MailboxViewModel @Inject constructor(
     @UiExecutor
     fun checkConnection() {
         // we can only check the connection when we are already paired (or just finished pairing)
-        _pairingState.value = IsPaired(true)
+        _pairingState.value = IsPaired(connectionCheckRunning = true, isWiping = false)
         briarExecutors.onIoThread {
             // this check updates _status state via an Event
             val success = mailboxManager.checkConnection()
             LOG.i { "Got result from connection check: $success" }
             briarExecutors.onUiThread {
                 val s = pairingState.value
-                if (s is IsPaired) _pairingState.value = IsPaired(false)
+                if (s is IsPaired) _pairingState.value = IsPaired(connectionCheckRunning = false, isWiping = false)
                 else LOG.w { "Unexpected state: ${s::class.simpleName}" }
+            }
+        }
+    }
+
+    @UiExecutor
+    fun unlink() {
+        _pairingState.value = IsPaired(connectionCheckRunning = false, isWiping = true)
+        briarExecutors.onIoThread {
+            val wasWiped = mailboxManager.unPair()
+            briarExecutors.onUiThread {
+                _pairingState.value = WasUnpaired(!wasWiped)
             }
         }
     }
