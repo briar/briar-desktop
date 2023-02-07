@@ -23,6 +23,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.Button
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
@@ -55,9 +58,10 @@ import org.briarproject.briar.desktop.utils.TimeUtils.getFormattedTimestamp
 @Suppress("HardCodedStringLiteral")
 fun main() = preview(
     "status" to DropDownValues(
-        0,
+        4,
         listOf("error", "problem", "mailbox too old", "briar too old", "ok")
-    )
+    ),
+    "isCheckingConnection" to false,
 ) {
     val now = System.currentTimeMillis()
     val status = when (getStringParameter("status")) {
@@ -67,11 +71,15 @@ fun main() = preview(
         "briar too old" -> MailboxStatus(now, now, 0, listOf(MailboxVersion(42, 0)))
         else -> MailboxStatus(now, now - 18_354, 0, CLIENT_SUPPORTS)
     }
-    MailboxStatusScreen(status)
+    MailboxStatusScreen(status, getBooleanParameter("isCheckingConnection")) {}
 }
 
 @Composable
-fun MailboxStatusScreen(status: MailboxStatus?) {
+fun MailboxStatusScreen(
+    status: MailboxStatus?,
+    isCheckingConnection: Boolean,
+    onCheckConnection: () -> Unit,
+) {
     if (status == null) return // not expected to happen (for a noticeable amount of time)
     Column(
         verticalArrangement = spacedBy(16.dp),
@@ -119,6 +127,14 @@ fun MailboxStatusScreen(status: MailboxStatus?) {
                 lastSuccess = status.timeOfLastSuccess,
             )
         }
+        if (isCheckingConnection) CircularProgressIndicator()
+        else Button(
+            onClick = onCheckConnection
+        ) {
+            Text(
+                text = i18n("mailbox.status.check.connection.button"),
+            )
+        }
         Spacer(modifier = Modifier.weight(1f))
         OutlinedButton(
             onClick = { /* TODO */ },
@@ -141,6 +157,7 @@ private fun MailboxStatusView(
         imageVector = icon,
         contentDescription = "", // not important, we have a title
         tint = iconTint,
+        modifier = Modifier.size(64.dp)
     )
     Text(
         text = title,

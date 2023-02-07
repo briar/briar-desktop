@@ -45,10 +45,18 @@ fun MailboxScreen(viewModel: MailboxViewModel = viewModel()) {
             is InvalidQrCode, is MailboxAlreadyPaired, is ConnectionError, is UnexpectedError -> {
                 MailboxSetupScreen(viewModel, true)
             }
-            is Paired -> MailboxStatusScreen(viewModel.status.value)
+            is Paired -> MailboxStatusScreen(
+                status = viewModel.status.value,
+                isCheckingConnection = false, // we just paired, there was no time to trigger a connection check
+                onCheckConnection = viewModel::checkConnection,
+            )
         }
         OfflineWhenPairing -> MailboxSetupScreen(viewModel, true)
-        is IsPaired -> MailboxStatusScreen(viewModel.status.value)
+        is IsPaired -> MailboxStatusScreen(
+            status = viewModel.status.value,
+            isCheckingConnection = state.connectionCheckRunning,
+            onCheckConnection = viewModel::checkConnection,
+        )
         is WasUnpaired -> UiPlaceholder() // TODO
     }
 }

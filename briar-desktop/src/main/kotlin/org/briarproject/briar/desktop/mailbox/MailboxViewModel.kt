@@ -42,6 +42,8 @@ import org.briarproject.briar.desktop.mailbox.MailboxPairingUiState.Pairing
 import org.briarproject.briar.desktop.mailbox.MailboxPairingUiState.Unknown
 import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.threading.UiExecutor
+import org.briarproject.briar.desktop.utils.KLoggerUtils.i
+import org.briarproject.briar.desktop.utils.KLoggerUtils.w
 import org.briarproject.briar.desktop.viewmodel.EventListenerDbViewModel
 import org.briarproject.briar.desktop.viewmodel.asState
 import javax.inject.Inject
@@ -51,7 +53,7 @@ sealed class MailboxPairingUiState {
     object NotSetup : MailboxPairingUiState()
     class Pairing(val pairingState: MailboxPairingState) : MailboxPairingUiState()
     object OfflineWhenPairing : MailboxPairingUiState()
-    class IsPaired(val isOnline: Boolean) : MailboxPairingUiState()
+    class IsPaired(val connectionCheckRunning: Boolean) : MailboxPairingUiState()
     class WasUnpaired(val tellUserToWipeMailbox: Boolean) : MailboxPairingUiState()
 }
 
@@ -90,9 +92,8 @@ class MailboxViewModel @Inject constructor(
             val isPaired = mailboxManager.isPaired(txn)
             if (isPaired) {
                 val mailboxStatus = mailboxManager.getMailboxStatus(txn)
-                val isOnline = isTorActive()
                 briarExecutors.onUiThread {
-                    _pairingState.value = IsPaired(isOnline)
+                    _pairingState.value = IsPaired(false)
                     _status.value = mailboxStatus
                 }
             } else briarExecutors.onUiThread {
@@ -116,10 +117,7 @@ class MailboxViewModel @Inject constructor(
     @UiExecutor
     private fun onTorInactive() {
         val lastState = _pairingState.value
-        if (lastState is IsPaired) {
-            // we are already paired, so use IsPaired state
-            _pairingState.value = IsPaired(false)
-        } else if (lastState is Pairing) {
+        if (lastState is Pairing) {
             // check that we not just finished pairing (showing success screen)
             if (lastState.pairingState !is Paired) _pairingState.value = OfflineWhenPairing
             // else ignore offline event as user will be leaving UI flow anyway
@@ -128,8 +126,7 @@ class MailboxViewModel @Inject constructor(
 
     @UiExecutor
     override fun accept(t: MailboxPairingState) {
-        @Suppress("HardCodedStringLiteral")
-        LOG.info { "New pairing state: ${t::class.simpleName}" }
+        LOG.i { "New pairing state: ${t::class.simpleName}" }
         _pairingState.value = Pairing(t)
     }
 
@@ -158,5 +155,21 @@ class MailboxViewModel @Inject constructor(
     @UiExecutor
     fun onPairingErrorSeen() {
         _pairingState.value = NotSetup
+    }
+
+    @UiExecutor
+    fun checkConnection() {
+        // we can only check the connection when we are already paired (or just finished pairing)
+        _pairingState.value = IsPaired(true)
+        briarExecutors.onIoThread {
+            // this check updates _status state via an Event
+            val success = mailboxManager.checkConnection()
+            LOG.i { "Got result from connection check: $success" }
+            briarExecutors.onUiThread {
+                val s = pairingState.value
+                if (s is IsPaired) _pairingState.value = IsPaired(false)
+                else LOG.w { "Unexpected state: ${s::class.simpleName}" }
+            }
+        }
     }
 }
