@@ -27,6 +27,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -135,7 +136,6 @@ fun ThreadItemContentComposable(
             modifier = Modifier
                 .weight(1f)
                 .padding(8.dp),
-            verticalArrangement = spacedBy(8.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -163,6 +163,9 @@ fun ThreadItemContentComposable(
                     maxLines = 1,
                 )
             }
+            // should be changed back to verticalArrangement = spacedBy(8.dp) on the containing Column
+            // when https://github.com/JetBrains/compose-jb/issues/2729 is fixed
+            Spacer(Modifier.height(8.dp))
             if (!isPreview) {
                 SelectionContainer {
                     Text(
