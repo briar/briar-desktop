@@ -1,6 +1,6 @@
 /*
  * Briar Desktop
- * Copyright (C) 2021-2022 The Briar Project
+ * Copyright (C) 2021-2023 The Briar Project
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.briarproject.briar.desktop.forums
+package org.briarproject.briar.desktop.group
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -45,6 +45,8 @@ import androidx.compose.ui.input.pointer.PointerIconDefaults
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.unit.dp
 import org.briarproject.briar.api.forum.ForumConstants.MAX_FORUM_POST_TEXT_LENGTH
+import org.briarproject.briar.desktop.forums.ThreadItem
+import org.briarproject.briar.desktop.forums.ThreadItemContentComposable
 import org.briarproject.briar.desktop.theme.divider
 import org.briarproject.briar.desktop.theme.sendButton
 import org.briarproject.briar.desktop.ui.HorizontalDivider

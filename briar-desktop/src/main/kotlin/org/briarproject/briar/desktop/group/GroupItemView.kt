@@ -1,6 +1,6 @@
 /*
  * Briar Desktop
- * Copyright (C) 2021-2022 The Briar Project
+ * Copyright (C) 2021-2023 The Briar Project
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.briarproject.briar.desktop.forums
+package org.briarproject.briar.desktop.group
 
 import androidx.compose.foundation.layout.Arrangement.SpaceBetween
 import androidx.compose.foundation.layout.Arrangement.spacedBy
@@ -43,10 +43,8 @@ import androidx.compose.ui.semantics.text
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import org.briarproject.bramble.api.sync.GroupId
+import org.briarproject.briar.desktop.forums.ForumStrings
 import org.briarproject.briar.desktop.ui.NumberBadge
-import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
-import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nF
-import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nP
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 import org.briarproject.briar.desktop.utils.TimeUtils.getFormattedTimestamp
 import org.briarproject.briar.desktop.utils.appendCommaSeparated
@@ -67,11 +65,12 @@ fun main() = preview(
         override val unread: Int = getIntParameter("unread")
         override val timestamp: Long = getLongParameter("timestamp")
     }
-    GroupItemView(item)
+    GroupItemView(ForumStrings, item)
 }
 
 @Composable
 fun GroupItemView(
+    strings: GroupStrings,
     groupItem: GroupItem,
     modifier: Modifier = Modifier,
 ) = Row(
@@ -81,7 +80,7 @@ fun GroupItemView(
         // allows content to be bottom-aligned
         .height(IntrinsicSize.Min)
         .semantics {
-            text = getDescription(groupItem)
+            text = getDescription(strings, groupItem)
         },
 ) {
     Box(Modifier.align(Top).padding(vertical = 8.dp)) {
@@ -91,23 +90,18 @@ fun GroupItemView(
             modifier = Modifier.align(TopEnd).offset(6.dp, (-6).dp)
         )
     }
-    GroupItemViewInfo(groupItem)
+    GroupItemViewInfo(strings, groupItem)
 }
 
-private fun getDescription(item: GroupItem) = buildBlankAnnotatedString {
+private fun getDescription(strings: GroupStrings, item: GroupItem) = buildBlankAnnotatedString {
     append(item.name)
-    if (item.unread > 0) appendCommaSeparated(i18nP("access.forums.unread_count", item.unread))
-    if (item.msgCount == 0) appendCommaSeparated(i18n("group.card.no_posts"))
-    else appendCommaSeparated(
-        i18nF(
-            "access.forums.last_post_timestamp",
-            getFormattedTimestamp(item.timestamp)
-        )
-    )
+    if (item.unread > 0) appendCommaSeparated(strings.unreadCount(item.unread))
+    appendCommaSeparated(strings.messageCount(item.msgCount))
+    if (item.msgCount > 0) appendCommaSeparated(strings.lastMessage(getFormattedTimestamp(item.timestamp)))
 }
 
 @Composable
-private fun GroupItemViewInfo(groupItem: GroupItem) = Column(
+private fun GroupItemViewInfo(strings: GroupStrings, groupItem: GroupItem) = Column(
     horizontalAlignment = Start,
 ) {
     Spacer(Modifier.weight(1f, fill = true))
@@ -123,8 +117,7 @@ private fun GroupItemViewInfo(groupItem: GroupItem) = Column(
         modifier = Modifier.fillMaxWidth()
     ) {
         Text(
-            text = if (groupItem.msgCount > 0) i18nP("group.card.posts", groupItem.msgCount)
-            else i18nP("group.card.no_posts", groupItem.msgCount),
+            text = strings.messageCount(groupItem.msgCount),
             style = MaterialTheme.typography.caption
         )
         if (groupItem.msgCount > 0) {

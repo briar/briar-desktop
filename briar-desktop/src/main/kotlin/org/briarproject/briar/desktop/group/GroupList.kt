@@ -1,6 +1,6 @@
 /*
  * Briar Desktop
- * Copyright (C) 2021-2022 The Briar Project
+ * Copyright (C) 2021-2023 The Briar Project
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.briarproject.briar.desktop.forums
+package org.briarproject.briar.desktop.group
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -41,13 +41,13 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import org.briarproject.bramble.api.sync.GroupId
+import org.briarproject.briar.desktop.forums.ForumStrings
 import org.briarproject.briar.desktop.theme.surfaceVariant
 import org.briarproject.briar.desktop.ui.Constants.COLUMN_WIDTH
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
 import org.briarproject.briar.desktop.ui.ListItemView
 import org.briarproject.briar.desktop.ui.SearchTextField
 import org.briarproject.briar.desktop.ui.VerticallyScrollableArea
-import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 import java.time.Instant
 
@@ -90,6 +90,7 @@ fun main() = preview {
     }
 
     GroupList(
+        strings = ForumStrings,
         list = filteredList,
         isSelected = { selected?.id == it },
         filterBy = filterBy,
@@ -101,6 +102,7 @@ fun main() = preview {
 
 @Composable
 fun GroupList(
+    strings: GroupStrings,
     list: List<GroupItem>,
     isSelected: (GroupId) -> Boolean,
     filterBy: String,
@@ -115,10 +117,10 @@ fun GroupList(
         modifier = Modifier.fillMaxWidth().height(HEADER_SIZE + 1.dp),
     ) {
         SearchTextField(
-            placeholder = i18n("forum.search.title"),
+            placeholder = strings.listTitle,
             icon = Icons.Filled.AddComment,
             searchValue = filterBy,
-            addButtonDescription = i18n("forum.add.title"),
+            addButtonDescription = strings.addButtonDescription,
             onValueChange = onFilterSet,
             onAddButtonClicked = onAddButtonClicked,
         )
@@ -128,7 +130,7 @@ fun GroupList(
             state = scrollState,
             modifier = Modifier
                 .semantics {
-                    contentDescription = i18n("access.forums.list")
+                    contentDescription = strings.listDescription
                 }.selectableGroup()
         ) {
             items(
@@ -142,6 +144,7 @@ fun GroupList(
                     dividerOffsetFromStart = (16 + 36 + 12).dp,
                 ) {
                     GroupItemView(
+                        strings = strings,
                         groupItem = item,
                         modifier = Modifier
                             .heightIn(min = HEADER_SIZE)

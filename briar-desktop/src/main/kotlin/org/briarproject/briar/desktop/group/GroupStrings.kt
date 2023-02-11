@@ -16,27 +16,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.briarproject.briar.desktop.forums
+package org.briarproject.briar.desktop.group
 
-import androidx.compose.runtime.Composable
-import org.briarproject.briar.desktop.group.GroupScreen
-import org.briarproject.briar.desktop.viewmodel.viewModel
-
-@Composable
-fun ForumScreen(
-    viewModel: ForumListViewModel = viewModel(),
-) = GroupScreen(
-    strings = ForumStrings,
-    viewModel = viewModel,
-    addGroupDialog = { visible ->
-        AddForumDialog(
-            visible = visible.value,
-            onCreate = { name ->
-                viewModel.createForum(name)
-                visible.value = false
-            },
-            onCancelButtonClicked = { visible.value = false }
-        )
-    },
-    conversationScreen = { GroupConversationScreen(viewModel.threadViewModel) }
+abstract class GroupStrings(
+    val listTitle: String,
+    val listDescription: String,
+    val addButtonDescription: String,
+    val noGroupsYet: String,
+    val noGroupSelectedTitle: String,
+    val noGroupSelectedText: String,
+    val messageCount: (Int) -> String,
+    val unreadCount: (Int) -> String,
+    val lastMessage: (String) -> String,
 )

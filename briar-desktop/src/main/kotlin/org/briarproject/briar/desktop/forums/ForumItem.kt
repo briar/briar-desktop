@@ -1,6 +1,6 @@
 /*
  * Briar Desktop
- * Copyright (C) 2021-2022 The Briar Project
+ * Copyright (C) 2021-2023 The Briar Project
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -20,17 +20,10 @@ package org.briarproject.briar.desktop.forums
 
 import org.briarproject.bramble.api.sync.GroupId
 import org.briarproject.briar.api.client.MessageTracker
+import org.briarproject.briar.api.client.PostHeader
 import org.briarproject.briar.api.forum.Forum
-import org.briarproject.briar.api.forum.ForumPostHeader
+import org.briarproject.briar.desktop.group.GroupItem
 import kotlin.math.max
-
-interface GroupItem {
-    val id: GroupId
-    val name: String
-    val msgCount: Int
-    val unread: Int
-    val timestamp: Long
-}
 
 data class ForumItem(
     val forum: Forum,
@@ -46,10 +39,10 @@ data class ForumItem(
         timestamp = groupCount.latestMsgTime,
     )
 
-    override val id: GroupId get() = forum.id
-    override val name: String get() = forum.name
+    override val id: GroupId = forum.id
+    override val name: String = forum.name
 
-    fun updateOnPostReceived(header: ForumPostHeader) =
+    fun updateOnPostReceived(header: PostHeader) =
         copy(
             msgCount = msgCount + 1,
             unread = if (header.isRead) unread else unread + 1,

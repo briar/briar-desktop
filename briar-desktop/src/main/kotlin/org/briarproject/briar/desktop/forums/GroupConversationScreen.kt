@@ -1,6 +1,6 @@
 /*
  * Briar Desktop
- * Copyright (C) 2021-2022 The Briar Project
+ * Copyright (C) 2021-2023 The Briar Project
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -56,6 +56,9 @@ import org.briarproject.briar.desktop.contact.ContactDropDown.State.MAIN
 import org.briarproject.briar.desktop.forums.sharing.ForumSharingActionDrawerContent
 import org.briarproject.briar.desktop.forums.sharing.ForumSharingStatusDrawerContent
 import org.briarproject.briar.desktop.forums.sharing.ForumSharingViewModel
+import org.briarproject.briar.desktop.group.GroupCircle
+import org.briarproject.briar.desktop.group.GroupInputComposable
+import org.briarproject.briar.desktop.group.GroupItem
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
 import org.briarproject.briar.desktop.ui.HorizontalDivider
 import org.briarproject.briar.desktop.ui.getInfoDrawerHandler

@@ -1,6 +1,6 @@
 /*
  * Briar Desktop
- * Copyright (C) 2021-2022 The Briar Project
+ * Copyright (C) 2021-2023 The Briar Project
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -16,13 +16,21 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.briarproject.briar.desktop.privategroups
+package org.briarproject.briar.desktop.privategroup
 
 import androidx.compose.runtime.Composable
-import org.briarproject.bramble.api.sync.GroupId
+import org.briarproject.briar.desktop.group.GroupScreen
 import org.briarproject.briar.desktop.ui.UiPlaceholder
+import org.briarproject.briar.desktop.viewmodel.viewModel
 
 @Composable
-fun ThreadedConversationScreen(
-    groupId: GroupId,
-) = UiPlaceholder()
+fun PrivateGroupScreen(
+    viewModel: PrivateGroupListViewModel = viewModel(),
+) = GroupScreen(
+    strings = PrivateGroupStrings,
+    viewModel = viewModel,
+    addGroupDialog = { visible ->
+        // TODO
+    },
+    conversationScreen = { UiPlaceholder() }
+)

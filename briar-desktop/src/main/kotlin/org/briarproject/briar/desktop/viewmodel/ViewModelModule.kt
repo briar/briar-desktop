@@ -1,6 +1,6 @@
 /*
  * Briar Desktop
- * Copyright (C) 2021-2022 The Briar Project
+ * Copyright (C) 2021-2023 The Briar Project
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -25,14 +25,13 @@ import dagger.multibindings.IntoMap
 import org.briarproject.briar.desktop.contact.ContactListViewModel
 import org.briarproject.briar.desktop.contact.add.remote.AddContactViewModel
 import org.briarproject.briar.desktop.conversation.ConversationViewModel
-import org.briarproject.briar.desktop.forums.ForumViewModel
+import org.briarproject.briar.desktop.forums.ForumListViewModel
 import org.briarproject.briar.desktop.forums.sharing.ForumSharingViewModel
 import org.briarproject.briar.desktop.introduction.IntroductionViewModel
 import org.briarproject.briar.desktop.login.StartupViewModel
 import org.briarproject.briar.desktop.mailbox.MailboxViewModel
 import org.briarproject.briar.desktop.navigation.SidebarViewModel
-import org.briarproject.briar.desktop.privategroups.PrivateGroupListViewModel
-import org.briarproject.briar.desktop.privategroups.ThreadedConversationViewModel
+import org.briarproject.briar.desktop.privategroup.PrivateGroupListViewModel
 import org.briarproject.briar.desktop.settings.SettingsViewModel
 import kotlin.reflect.KClass
 
@@ -78,13 +77,8 @@ abstract class ViewModelModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(ForumViewModel::class)
-    abstract fun bindForumsViewModel(forumViewModel: ForumViewModel): ViewModel
-
-    @Binds
-    @IntoMap
-    @ViewModelKey(ThreadedConversationViewModel::class)
-    abstract fun bindThreadedConversationViewModel(threadedConversationViewModel: ThreadedConversationViewModel): ViewModel
+    @ViewModelKey(ForumListViewModel::class)
+    abstract fun bindForumListViewModel(forumListViewModel: ForumListViewModel): ViewModel
 
     @Binds
     @IntoMap

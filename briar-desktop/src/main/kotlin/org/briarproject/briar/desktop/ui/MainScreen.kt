@@ -32,7 +32,7 @@ import org.briarproject.briar.desktop.forums.ForumScreen
 import org.briarproject.briar.desktop.mailbox.MailboxScreen
 import org.briarproject.briar.desktop.navigation.BriarSidebar
 import org.briarproject.briar.desktop.navigation.SidebarViewModel
-import org.briarproject.briar.desktop.privategroups.PrivateGroupScreen
+import org.briarproject.briar.desktop.privategroup.PrivateGroupScreen
 import org.briarproject.briar.desktop.settings.SettingsScreen
 import org.briarproject.briar.desktop.viewmodel.viewModel
 

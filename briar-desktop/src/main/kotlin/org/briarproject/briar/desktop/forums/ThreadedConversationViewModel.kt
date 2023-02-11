@@ -1,6 +1,6 @@
 /*
  * Briar Desktop
- * Copyright (C) 2021-2022 The Briar Project
+ * Copyright (C) 2021-2023 The Briar Project
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -41,6 +41,7 @@ import org.briarproject.briar.api.forum.ForumPostHeader
 import org.briarproject.briar.api.forum.event.ForumPostReceivedEvent
 import org.briarproject.briar.client.MessageTreeImpl
 import org.briarproject.briar.desktop.forums.sharing.ForumSharingViewModel
+import org.briarproject.briar.desktop.group.GroupItem
 import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.threading.UiExecutor
 import org.briarproject.briar.desktop.viewmodel.EventListenerDbViewModel
