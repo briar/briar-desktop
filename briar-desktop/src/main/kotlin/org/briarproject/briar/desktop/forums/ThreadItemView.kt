@@ -1,6 +1,6 @@
 /*
  * Briar Desktop
- * Copyright (C) 2021-2022 The Briar Project
+ * Copyright (C) 2021-2023 The Briar Project
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -37,6 +37,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -162,12 +163,21 @@ fun ThreadItemContentComposable(
                     maxLines = 1,
                 )
             }
-            Text(
-                modifier = Modifier.fillMaxWidth(),
-                text = item.text,
-                maxLines = if (isPreview) 1 else Int.MAX_VALUE,
-                overflow = TextOverflow.Ellipsis,
-            )
+            if (!isPreview) {
+                SelectionContainer {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = item.text,
+                    )
+                }
+            } else {
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = item.text,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
         }
         if (!isPreview) Tooltip(
             text = i18n("forum.message.new"),
