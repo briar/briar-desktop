@@ -1,6 +1,6 @@
 /*
  * Briar Desktop
- * Copyright (C) 2021-2022 The Briar Project
+ * Copyright (C) 2021-2023 The Briar Project
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -19,7 +19,6 @@
 package org.briarproject.briar.desktop.conversation
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.ContextMenuArea
 import androidx.compose.foundation.ContextMenuItem
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
@@ -55,6 +54,7 @@ import org.briarproject.briar.desktop.theme.msgOut
 import org.briarproject.briar.desktop.theme.msgStroke
 import org.briarproject.briar.desktop.theme.privateMessageDate
 import org.briarproject.briar.desktop.theme.textPrimary
+import org.briarproject.briar.desktop.ui.ContextMenuAreaDataProvider
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 import org.briarproject.briar.desktop.utils.TimeUtils.getFormattedTimestamp
@@ -175,7 +175,7 @@ fun ConversationItemView(
     item: ConversationItem,
     onDelete: (MessageId) -> Unit = {},
     conversationItemDescription: String,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     val arrangement = if (item.isIncoming) Arrangement.Start else Arrangement.End
     val alignment = if (item.isIncoming) Alignment.CenterStart else Alignment.CenterEnd
@@ -187,7 +187,7 @@ fun ConversationItemView(
 
     Row(Modifier.fillMaxWidth(), arrangement) {
         Box(Modifier.fillMaxWidth(0.8f), contentAlignment = alignment) {
-            ContextMenuArea(
+            ContextMenuAreaDataProvider(
                 items = {
                     listOf(
                         ContextMenuItem(i18n("conversation.delete.single")) { onDelete(item.id) }
