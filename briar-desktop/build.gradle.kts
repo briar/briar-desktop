@@ -23,7 +23,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     kotlin("jvm") version "1.7.20"
     kotlin("kapt") version "1.7.20"
-    id("org.jetbrains.compose") version "1.2.1"
+    id("org.jetbrains.compose") version "1.3.0"
     id("de.mobanisto.pinpit") version "0.3.0"
     id("java")
     id("idea")
