@@ -1,6 +1,6 @@
 /*
  * Briar Desktop
- * Copyright (C) 2021-2022 The Briar Project
+ * Copyright (C) 2021-2023 The Briar Project
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -18,9 +18,11 @@
 
 package org.briarproject.briar.desktop.ui
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.text.LocalTextContextMenu
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
@@ -34,8 +36,6 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.toAwtImage
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.platform.LocalLocalization
-import androidx.compose.ui.platform.PlatformLocalization
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.window.FrameWindowScope
 import androidx.compose.ui.window.Window
@@ -117,14 +117,9 @@ constructor(
         }
     }
 
+    @OptIn(ExperimentalFoundationApi::class)
     @Composable
     override fun start(onClose: () -> Unit) {
-        val platformLocalization = object : PlatformLocalization {
-            override val copy = i18n("copy")
-            override val cut = i18n("cut")
-            override val paste = i18n("paste")
-            override val selectAll = i18n("select_all")
-        }
         val focusState = remember { WindowFocusState() }
 
         Window(
@@ -167,11 +162,19 @@ constructor(
                 val messageCounterListener: MessageCounterListener = { (type, total, groups, inc) ->
                     if (inc && total > 0 && !focusState.focused) {
                         val callback: NotificationProvider.() -> Unit = when (type) {
-                            PrivateMessage -> { { notifyPrivateMessages(total, groups) } }
-                            Forum -> { { notifyForumPosts(total, groups) } }
+                            PrivateMessage -> {
+                                { notifyPrivateMessages(total, groups) }
+                            }
+
+                            Forum -> {
+                                { notifyForumPosts(total, groups) }
+                            }
                         }
                         val (lastNotification, setLastNotification) = when (type) {
-                            PrivateMessage -> lastNotificationPrivateMessage to { v: Long -> lastNotificationPrivateMessage = v }
+                            PrivateMessage -> lastNotificationPrivateMessage to { v: Long ->
+                                lastNotificationPrivateMessage = v
+                            }
+
                             Forum -> lastNotificationForum to { v: Long -> lastNotificationForum = v }
                         }
 
@@ -209,7 +212,7 @@ constructor(
                 LocalViewModelProvider provides viewModelProvider,
                 LocalAvatarManager provides avatarManager,
                 LocalConfiguration provides configuration,
-                LocalLocalization provides platformLocalization,
+                LocalTextContextMenu provides BriarTextContextMenu,
             ) {
                 // invalidate whole application window in case the theme or language setting is changed
                 configuration.invalidateScreen.react {
