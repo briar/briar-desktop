@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.briarproject.briar.desktop.forums
+package org.briarproject.briar.desktop.group.conversation
 
 import androidx.compose.foundation.layout.Arrangement.SpaceBetween
 import androidx.compose.foundation.layout.Arrangement.spacedBy
@@ -33,8 +33,6 @@ import androidx.compose.material.AlertDialog
 import androidx.compose.material.ButtonType.DESTRUCTIVE
 import androidx.compose.material.ButtonType.NEUTRAL
 import androidx.compose.material.DialogButton
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -53,29 +51,32 @@ import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.unit.dp
 import org.briarproject.briar.desktop.contact.ContactDropDown.State.CLOSED
 import org.briarproject.briar.desktop.contact.ContactDropDown.State.MAIN
-import org.briarproject.briar.desktop.forums.sharing.ForumSharingActionDrawerContent
-import org.briarproject.briar.desktop.forums.sharing.ForumSharingStatusDrawerContent
+import org.briarproject.briar.desktop.forums.ThreadedConversationScreen
+import org.briarproject.briar.desktop.forums.ThreadedConversationViewModel
 import org.briarproject.briar.desktop.forums.sharing.ForumSharingViewModel
 import org.briarproject.briar.desktop.group.GroupCircle
 import org.briarproject.briar.desktop.group.GroupInputComposable
 import org.briarproject.briar.desktop.group.GroupItem
+import org.briarproject.briar.desktop.group.GroupStrings
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
 import org.briarproject.briar.desktop.ui.HorizontalDivider
-import org.briarproject.briar.desktop.ui.getInfoDrawerHandler
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
-import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nF
 
 @Composable
 fun GroupConversationScreen(
+    strings: GroupStrings,
     viewModel: ThreadedConversationViewModel,
+    dropdownMenu: GroupDropdownMenu,
 ) {
     Scaffold(
         topBar = {
             viewModel.groupItem.value?.let { groupItem ->
                 GroupConversationHeader(
+                    strings = strings,
                     groupItem = groupItem,
                     forumSharingViewModel = viewModel.forumSharingViewModel,
                     onGroupDelete = viewModel::deleteGroup,
+                    dropdownMenu = dropdownMenu,
                 )
             }
         },
@@ -99,14 +100,15 @@ fun GroupConversationScreen(
 
 @Composable
 private fun GroupConversationHeader(
+    strings: GroupStrings,
     groupItem: GroupItem,
     forumSharingViewModel: ForumSharingViewModel,
     onGroupDelete: () -> Unit,
+    dropdownMenu: GroupDropdownMenu,
 ) {
     val deleteGroupDialogVisible = remember { mutableStateOf(false) }
     val menuState = remember { mutableStateOf(CLOSED) }
     val close = { menuState.value = CLOSED }
-    val infoDrawerHandler = getInfoDrawerHandler()
     Box(modifier = Modifier.fillMaxWidth().height(HEADER_SIZE + 1.dp)) {
         Row(
             horizontalArrangement = SpaceBetween,
@@ -131,7 +133,7 @@ private fun GroupConversationHeader(
                     )
                     val sharingInfo = forumSharingViewModel.sharingInfo.value
                     Text(
-                        text = i18nF("forum.sharing.status.with", sharingInfo.total, sharingInfo.online)
+                        text = strings.sharedWith(sharingInfo.total, sharingInfo.online)
                     )
                 }
             }
@@ -141,60 +143,18 @@ private fun GroupConversationHeader(
                 onClick = { menuState.value = MAIN },
                 modifier = Modifier.align(CenterVertically).padding(end = 16.dp),
             ) {
-                DropdownMenu(
-                    expanded = menuState.value == MAIN,
-                    onDismissRequest = close,
-                ) {
-                    DropdownMenuItem(
-                        onClick = {
-                            close()
-                            infoDrawerHandler.open {
-                                ForumSharingActionDrawerContent(
-                                    close = infoDrawerHandler::close,
-                                    viewModel = forumSharingViewModel,
-                                )
-                            }
-                        }
-                    ) {
-                        Text(
-                            i18n("forum.sharing.action.title"),
-                            style = MaterialTheme.typography.body2,
-                        )
-                    }
-                    DropdownMenuItem(
-                        onClick = {
-                            close()
-                            infoDrawerHandler.open {
-                                ForumSharingStatusDrawerContent(
-                                    close = infoDrawerHandler::close,
-                                    viewModel = forumSharingViewModel,
-                                )
-                            }
-                        }
-                    ) {
-                        Text(
-                            i18n("forum.sharing.status.title"),
-                            style = MaterialTheme.typography.body2,
-                        )
-                    }
-                    DropdownMenuItem(
-                        onClick = {
-                            close()
-                            deleteGroupDialogVisible.value = true
-                        }
-                    ) {
-                        Text(
-                            i18n("forum.leave.title"),
-                            style = MaterialTheme.typography.body2,
-                        )
-                    }
-                }
+                dropdownMenu(
+                    forumSharingViewModel,
+                    menuState.value == MAIN,
+                    close
+                ) { deleteGroupDialogVisible.value = true }
             }
         }
         HorizontalDivider(modifier = Modifier.align(BottomCenter))
     }
     if (deleteGroupDialogVisible.value) {
-        DeleteForumDialog(
+        DeleteGroupDialog(
+            strings = strings,
             close = { deleteGroupDialogVisible.value = false },
             onDelete = onGroupDelete,
         )
@@ -203,7 +163,8 @@ private fun GroupConversationHeader(
 
 @Composable
 @OptIn(ExperimentalMaterialApi::class)
-fun DeleteForumDialog(
+private fun DeleteGroupDialog(
+    strings: GroupStrings,
     close: () -> Unit,
     onDelete: () -> Unit = {},
 ) {
@@ -211,13 +172,13 @@ fun DeleteForumDialog(
         onDismissRequest = close,
         title = {
             Text(
-                text = i18n("forum.delete.dialog.title"),
+                text = strings.deleteDialogTitle,
                 modifier = Modifier.width(Max),
                 style = MaterialTheme.typography.h6,
             )
         },
         text = {
-            Text(i18n("forum.delete.dialog.message"))
+            Text(strings.deleteDialogMessage)
         },
         dismissButton = {
             DialogButton(
@@ -232,7 +193,7 @@ fun DeleteForumDialog(
                     close()
                     onDelete()
                 },
-                text = i18n("forum.delete.dialog.button"),
+                text = strings.deleteDialogButton,
                 type = DESTRUCTIVE,
             )
         },

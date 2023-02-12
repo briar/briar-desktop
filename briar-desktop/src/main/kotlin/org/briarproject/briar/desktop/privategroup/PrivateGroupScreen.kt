@@ -19,8 +19,8 @@
 package org.briarproject.briar.desktop.privategroup
 
 import androidx.compose.runtime.Composable
+import org.briarproject.briar.desktop.forums.conversation.ForumDropdownMenu
 import org.briarproject.briar.desktop.group.GroupScreen
-import org.briarproject.briar.desktop.ui.UiPlaceholder
 import org.briarproject.briar.desktop.viewmodel.viewModel
 
 @Composable
@@ -29,5 +29,7 @@ fun PrivateGroupScreen(
 ) = GroupScreen(
     strings = PrivateGroupStrings,
     viewModel = viewModel,
-    conversationScreen = { UiPlaceholder() }
+    dropdownMenu = { forumSharingViewModel, expanded, onClose, onLeaveForumClick ->
+        ForumDropdownMenu(forumSharingViewModel, expanded, onClose, onLeaveForumClick)
+    }
 )

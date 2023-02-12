@@ -1,6 +1,6 @@
 /*
  * Briar Desktop
- * Copyright (C) 2021-2022 The Briar Project
+ * Copyright (C) 2021-2023 The Briar Project
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -36,6 +36,9 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import org.briarproject.bramble.api.sync.MessageId
 import org.briarproject.briar.desktop.conversation.reallyVisibleItemsInfo
+import org.briarproject.briar.desktop.group.conversation.ThreadItem
+import org.briarproject.briar.desktop.group.conversation.ThreadItemView
+import org.briarproject.briar.desktop.group.conversation.getMaxNestingLevel
 import org.briarproject.briar.desktop.ui.Loader
 import org.briarproject.briar.desktop.ui.isWindowFocused
 

@@ -1,6 +1,6 @@
 /*
  * Briar Desktop
- * Copyright (C) 2021-2022 The Briar Project
+ * Copyright (C) 2021-2023 The Briar Project
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -16,26 +16,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.briarproject.briar.desktop.forums
+package org.briarproject.briar.desktop.group.conversation
 
 import org.briarproject.bramble.api.identity.Author
 import org.briarproject.bramble.api.sync.MessageId
 import org.briarproject.briar.api.client.MessageTree
-import org.briarproject.briar.api.forum.ForumPostHeader
 import org.briarproject.briar.api.identity.AuthorInfo
 import org.briarproject.briar.desktop.utils.UiUtils.getContactDisplayName
 import javax.annotation.concurrent.NotThreadSafe
-
-@NotThreadSafe
-class ForumPostItem(h: ForumPostHeader, text: String?) : ThreadItem(
-    messageId = h.id,
-    parentId = h.parentId,
-    text = text ?: "",
-    timestamp = h.timestamp,
-    author = h.author,
-    authorInfo = h.authorInfo,
-    isRead = h.isRead
-)
 
 // TODO the mutable state here might need to be made immutable later
 //  and copy on data classes used to trigger recompositions when items update

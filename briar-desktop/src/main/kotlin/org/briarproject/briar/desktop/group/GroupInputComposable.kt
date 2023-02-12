@@ -45,8 +45,8 @@ import androidx.compose.ui.input.pointer.PointerIconDefaults
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.unit.dp
 import org.briarproject.briar.api.forum.ForumConstants.MAX_FORUM_POST_TEXT_LENGTH
-import org.briarproject.briar.desktop.forums.ThreadItem
-import org.briarproject.briar.desktop.forums.ThreadItemContentComposable
+import org.briarproject.briar.desktop.group.conversation.ThreadItem
+import org.briarproject.briar.desktop.group.conversation.ThreadItemContentComposable
 import org.briarproject.briar.desktop.theme.divider
 import org.briarproject.briar.desktop.theme.sendButton
 import org.briarproject.briar.desktop.ui.HorizontalDivider

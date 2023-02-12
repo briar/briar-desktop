@@ -16,24 +16,19 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.briarproject.briar.desktop.group
+package org.briarproject.briar.desktop.forums.conversation
 
-abstract class GroupStrings(
-    val listTitle: String,
-    val listDescription: String,
-    val addGroupTitle: String,
-    val addGroupHint: String,
-    val addGroupButton: String,
-    val noGroupsYet: String,
-    val noGroupSelectedTitle: String,
-    val noGroupSelectedText: String,
-    val messageCount: (Int) -> String,
-    val unreadCount: (Int) -> String,
-    val lastMessage: (String) -> String,
-    val groupNameMaxLength: Int,
-    val sharedWith: (total: Int, online: Int) -> String,
-    // todo: will need to be different for private groups depending on creator or not
-    val deleteDialogTitle: String,
-    val deleteDialogMessage: String,
-    val deleteDialogButton: String,
+import org.briarproject.briar.api.forum.ForumPostHeader
+import org.briarproject.briar.desktop.group.conversation.ThreadItem
+import javax.annotation.concurrent.NotThreadSafe
+
+@NotThreadSafe
+class ForumPostItem(h: ForumPostHeader, text: String?) : ThreadItem(
+    messageId = h.id,
+    parentId = h.parentId,
+    text = text ?: "",
+    timestamp = h.timestamp,
+    author = h.author,
+    authorInfo = h.authorInfo,
+    isRead = h.isRead
 )

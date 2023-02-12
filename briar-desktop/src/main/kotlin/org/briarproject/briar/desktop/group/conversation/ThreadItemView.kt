@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.briarproject.briar.desktop.forums
+package org.briarproject.briar.desktop.group.conversation
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -53,6 +53,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import org.briarproject.briar.api.identity.AuthorInfo.Status.OURSELVES
 import org.briarproject.briar.desktop.contact.ProfileCircle
+import org.briarproject.briar.desktop.forums.conversation.ForumPostItem
 import org.briarproject.briar.desktop.theme.Blue500
 import org.briarproject.briar.desktop.theme.divider
 import org.briarproject.briar.desktop.ui.Constants.COLUMN_WIDTH

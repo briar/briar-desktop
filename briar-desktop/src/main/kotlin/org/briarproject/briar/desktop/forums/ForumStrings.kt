@@ -44,4 +44,10 @@ object ForumStrings : GroupStrings(
         i18nF("access.forums.last_post_timestamp", timestamp)
     },
     groupNameMaxLength = MAX_FORUM_NAME_LENGTH,
+    sharedWith = { total, online ->
+        i18nF("forum.sharing.status.with", total, online)
+    },
+    deleteDialogTitle = i18n("forum.delete.dialog.title"),
+    deleteDialogMessage = i18n("forum.delete.dialog.message"),
+    deleteDialogButton = i18n("forum.delete.dialog.button"),
 )

@@ -32,6 +32,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.briarproject.briar.desktop.conversation.Explainer
+import org.briarproject.briar.desktop.group.conversation.GroupConversationScreen
+import org.briarproject.briar.desktop.group.conversation.GroupDropdownMenu
 import org.briarproject.briar.desktop.ui.ColoredIconButton
 import org.briarproject.briar.desktop.ui.VerticalDivider
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
@@ -40,7 +42,7 @@ import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 fun <T : GroupItem> GroupScreen(
     strings: GroupStrings,
     viewModel: GroupListViewModel<T>,
-    conversationScreen: @Composable () -> Unit,
+    dropdownMenu: GroupDropdownMenu,
 ) {
     var addDialogVisible by remember { mutableStateOf(false) }
     AddGroupDialog(
@@ -71,7 +73,7 @@ fun <T : GroupItem> GroupScreen(
                 if (viewModel.selectedGroupId.value == null) {
                     NoGroupSelected(strings)
                 } else {
-                    conversationScreen()
+                    GroupConversationScreen(strings, viewModel.threadViewModel, dropdownMenu)
                 }
             }
         }
