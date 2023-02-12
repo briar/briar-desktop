@@ -79,6 +79,7 @@ import java.io.File
 import java.nio.file.Path
 import java.util.concurrent.Executor
 import javax.inject.Singleton
+import javax.swing.SwingUtilities.isEventDispatchThread
 
 // corresponding Briar Android class in
 // briar/briar-android/src/main/java/org/briarproject/briar/android/AppModule.java
@@ -149,7 +150,16 @@ internal class DesktopCoreModule(
     @Provides
     @Singleton
     @UiExecutor
-    fun provideUiExecutor(): Executor = Dispatchers.Swing.asExecutor()
+    fun provideUiExecutor(): Executor {
+        val swingExecutor = Dispatchers.Swing.asExecutor()
+        return Executor { command ->
+            if (isEventDispatchThread()) {
+                command.run()
+            } else {
+                swingExecutor.execute(command)
+            }
+        }
+    }
 
     @Provides
     @Singleton
