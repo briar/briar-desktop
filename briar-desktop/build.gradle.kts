@@ -140,7 +140,7 @@ pinpit.desktop {
         mainClass = "org.briarproject.briar.desktop.MainKt"
         nativeDistributions {
             jvmVendor = "adoptium"
-            jvmVersion = "17.0.5+8"
+            jvmVersion = "17.0.6+10"
 
             packageName = appName
             packageVersion = version.toString()
