@@ -18,6 +18,7 @@
 
 package org.briarproject.briar.desktop.privategroup
 
+import org.briarproject.briar.api.privategroup.PrivateGroupConstants.MAX_GROUP_NAME_LENGTH
 import org.briarproject.briar.desktop.group.GroupStrings
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nF
@@ -27,7 +28,9 @@ import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nP
 object PrivateGroupStrings : GroupStrings(
     listTitle = i18n("forum.search.title"),
     listDescription = i18n("access.forums.list"),
-    addButtonDescription = i18n("forum.add.title"),
+    addGroupTitle = i18n("forum.add.title"),
+    addGroupHint = i18n("forum.add.hint"),
+    addGroupButton = i18n("forum.add.button"),
     noGroupsYet = i18n("forum.empty_state.text"),
     noGroupSelectedTitle = i18n("forum.none_selected.title"),
     noGroupSelectedText = i18n("forum.none_selected.hint"),
@@ -41,4 +44,5 @@ object PrivateGroupStrings : GroupStrings(
     lastMessage = { timestamp ->
         i18nF("access.forums.last_post_timestamp", timestamp)
     },
+    groupNameMaxLength = MAX_GROUP_NAME_LENGTH,
 )

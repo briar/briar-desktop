@@ -72,7 +72,7 @@ class ForumListViewModel
         groupCount = forumManager.getGroupCount(txn, id),
     )
 
-    fun createForum(name: String) = runOnDbThread {
+    override fun createGroup(name: String) = runOnDbThread {
         forumManager.addForum(name)
     }
 

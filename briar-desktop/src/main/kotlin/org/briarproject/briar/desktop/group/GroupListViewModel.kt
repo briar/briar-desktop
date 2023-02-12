@@ -52,7 +52,7 @@ abstract class GroupListViewModel<T : GroupItem>(
 
     protected abstract val clientId: ClientId
 
-    protected abstract val _groupList: MutableList<T> //todo: check internal
+    protected abstract val _groupList: MutableList<T> // todo: check internal
     val list = derivedStateOf {
         val filter = _filterBy.value
         _groupList.filter { item ->
@@ -122,6 +122,8 @@ abstract class GroupListViewModel<T : GroupItem>(
             _groupList.clearAndAddAll(list)
         }
     }
+
+    abstract fun createGroup(name: String)
 
     protected abstract fun addOwnMessage(header: PostHeader)
 

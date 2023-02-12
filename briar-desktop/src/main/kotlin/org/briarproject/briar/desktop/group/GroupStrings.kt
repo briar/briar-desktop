@@ -21,11 +21,14 @@ package org.briarproject.briar.desktop.group
 abstract class GroupStrings(
     val listTitle: String,
     val listDescription: String,
-    val addButtonDescription: String,
+    val addGroupTitle: String,
+    val addGroupHint: String,
+    val addGroupButton: String,
     val noGroupsYet: String,
     val noGroupSelectedTitle: String,
     val noGroupSelectedText: String,
     val messageCount: (Int) -> String,
     val unreadCount: (Int) -> String,
     val lastMessage: (String) -> String,
+    val groupNameMaxLength: Int,
 )

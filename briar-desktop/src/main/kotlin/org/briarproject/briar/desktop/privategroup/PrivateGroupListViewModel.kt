@@ -23,11 +23,15 @@ import org.briarproject.bramble.api.db.Transaction
 import org.briarproject.bramble.api.db.TransactionManager
 import org.briarproject.bramble.api.event.Event
 import org.briarproject.bramble.api.event.EventBus
+import org.briarproject.bramble.api.identity.IdentityManager
+import org.briarproject.bramble.api.identity.LocalAuthor
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.bramble.api.sync.ClientId
 import org.briarproject.bramble.api.sync.GroupId
+import org.briarproject.bramble.api.system.Clock
 import org.briarproject.briar.api.client.PostHeader
-import org.briarproject.briar.api.forum.ForumManager
+import org.briarproject.briar.api.privategroup.GroupMessageFactory
+import org.briarproject.briar.api.privategroup.PrivateGroupFactory
 import org.briarproject.briar.api.privategroup.PrivateGroupManager
 import org.briarproject.briar.api.privategroup.event.GroupMessageAddedEvent
 import org.briarproject.briar.desktop.forums.ThreadedConversationViewModel
@@ -39,7 +43,11 @@ import javax.inject.Inject
 
 class PrivateGroupListViewModel
 @Inject constructor(
+    private val clock: Clock,
+    private val identityManager: IdentityManager,
     private val privateGroupManager: PrivateGroupManager,
+    private val privateGroupFactory: PrivateGroupFactory,
+    private val privateGroupMessageFactory: GroupMessageFactory,
     threadViewModel: ThreadedConversationViewModel, // todo: subclass
     briarExecutors: BriarExecutors,
     lifecycleManager: LifecycleManager,
@@ -47,7 +55,7 @@ class PrivateGroupListViewModel
     eventBus: EventBus,
 ) : GroupListViewModel<PrivateGroupItem>(threadViewModel, briarExecutors, lifecycleManager, db, eventBus) {
 
-    override val clientId: ClientId = ForumManager.CLIENT_ID
+    override val clientId: ClientId = PrivateGroupManager.CLIENT_ID
 
     override val _groupList = mutableStateListOf<PrivateGroupItem>()
 
@@ -70,9 +78,14 @@ class PrivateGroupListViewModel
         groupCount = privateGroupManager.getGroupCount(txn, id),
     )
 
-    fun createPrivateGroup(name: String) = runOnDbThread {
-        TODO()
-        //privateGroupManager.addForum(name)
+    override fun createGroup(name: String) = runOnDbThread {
+        val author: LocalAuthor = identityManager.localAuthor
+        // in Android, the following two actions are done on the cryptoExecutor
+        val group = privateGroupFactory.createPrivateGroup(name, author)
+        val joinMsg = privateGroupMessageFactory.createJoinMessage(
+            group.id, clock.currentTimeMillis(), author
+        )
+        privateGroupManager.addPrivateGroup(group, joinMsg, true)
     }
 
     override fun loadGroups(txn: Transaction) =

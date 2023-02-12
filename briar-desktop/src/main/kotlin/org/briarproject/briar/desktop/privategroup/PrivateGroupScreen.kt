@@ -29,8 +29,5 @@ fun PrivateGroupScreen(
 ) = GroupScreen(
     strings = PrivateGroupStrings,
     viewModel = viewModel,
-    addGroupDialog = { visible ->
-        // TODO
-    },
     conversationScreen = { UiPlaceholder() }
 )

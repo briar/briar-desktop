@@ -28,15 +28,5 @@ fun ForumScreen(
 ) = GroupScreen(
     strings = ForumStrings,
     viewModel = viewModel,
-    addGroupDialog = { visible ->
-        AddForumDialog(
-            visible = visible.value,
-            onCreate = { name ->
-                viewModel.createForum(name)
-                visible.value = false
-            },
-            onCancelButtonClicked = { visible.value = false }
-        )
-    },
     conversationScreen = { GroupConversationScreen(viewModel.threadViewModel) }
 )

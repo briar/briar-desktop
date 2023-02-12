@@ -25,9 +25,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddComment
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.briarproject.briar.desktop.conversation.Explainer
@@ -39,14 +40,21 @@ import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 fun <T : GroupItem> GroupScreen(
     strings: GroupStrings,
     viewModel: GroupListViewModel<T>,
-    addGroupDialog: @Composable (MutableState<Boolean>) -> Unit,
     conversationScreen: @Composable () -> Unit,
 ) {
-    val addDialogVisible = remember { mutableStateOf(false) }
-    addGroupDialog(addDialogVisible)
+    var addDialogVisible by remember { mutableStateOf(false) }
+    AddGroupDialog(
+        strings = strings,
+        visible = addDialogVisible,
+        onCreate = { name ->
+            viewModel.createGroup(name)
+            addDialogVisible = false
+        },
+        onCancelButtonClicked = { addDialogVisible = false }
+    )
 
     if (viewModel.noGroupsYet.value) {
-        NoGroupsYet(strings) { addDialogVisible.value = true }
+        NoGroupsYet(strings) { addDialogVisible = true }
     } else {
         Row(modifier = Modifier.fillMaxWidth()) {
             GroupList(
@@ -56,7 +64,7 @@ fun <T : GroupItem> GroupScreen(
                 filterBy = viewModel.filterBy.value,
                 onFilterSet = viewModel::setFilterBy,
                 onGroupItemSelected = viewModel::selectGroup,
-                onAddButtonClicked = { addDialogVisible.value = true },
+                onAddButtonClicked = { addDialogVisible = true },
             )
             VerticalDivider()
             Column(modifier = Modifier.weight(1f).fillMaxHeight()) {
@@ -78,7 +86,7 @@ fun NoGroupsYet(strings: GroupStrings, onAdd: () -> Unit) = Explainer(
     ColoredIconButton(
         icon = Icons.Filled.AddComment,
         iconSize = 20.dp,
-        contentDescription = strings.addButtonDescription,
+        contentDescription = strings.addGroupTitle,
         onClick = onAdd,
     )
 }

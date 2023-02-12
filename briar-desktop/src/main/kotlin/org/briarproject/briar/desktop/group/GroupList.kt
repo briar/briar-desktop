@@ -120,7 +120,7 @@ fun GroupList(
             placeholder = strings.listTitle,
             icon = Icons.Filled.AddComment,
             searchValue = filterBy,
-            addButtonDescription = strings.addButtonDescription,
+            addButtonDescription = strings.addGroupTitle,
             onValueChange = onFilterSet,
             onAddButtonClicked = onAddButtonClicked,
         )

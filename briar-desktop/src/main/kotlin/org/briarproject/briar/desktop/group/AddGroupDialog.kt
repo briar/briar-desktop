@@ -1,6 +1,6 @@
 /*
  * Briar Desktop
- * Copyright (C) 2021-2022 The Briar Project
+ * Copyright (C) 2021-2023 The Briar Project
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.briarproject.briar.desktop.forums
+package org.briarproject.briar.desktop.group
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -49,7 +49,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.rememberDialogState
-import org.briarproject.briar.api.forum.ForumConstants.MAX_FORUM_NAME_LENGTH
+import org.briarproject.bramble.util.StringUtils.utf8IsTooLong
+import org.briarproject.briar.desktop.forums.ForumStrings
 import org.briarproject.briar.desktop.utils.AccessibilityUtils.description
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
@@ -57,11 +58,12 @@ import org.briarproject.briar.desktop.utils.UiUtils.DensityDimension
 
 fun main() = preview {
     val visible = mutableStateOf(true)
-    AddForumDialog(visible.value, {}, { visible.value = false })
+    AddGroupDialog(ForumStrings, visible.value, {}, { visible.value = false })
 }
 
 @Composable
-fun AddForumDialog(
+fun AddGroupDialog(
+    strings: GroupStrings,
     visible: Boolean,
     onCreate: (String) -> Unit,
     onCancelButtonClicked: () -> Unit,
@@ -69,7 +71,7 @@ fun AddForumDialog(
     if (!visible) return
     val density = LocalDensity.current
     Dialog(
-        title = i18n("forum.add.title"),
+        title = strings.addGroupTitle,
         onCloseRequest = onCancelButtonClicked,
         state = rememberDialogState(
             position = WindowPosition(Alignment.Center),
@@ -82,7 +84,7 @@ fun AddForumDialog(
             val name = rememberSaveable { mutableStateOf("") }
             val onNameChanged = { changedName: String ->
                 // not checking for blank here, so user can still remove all characters
-                if (changedName.length <= MAX_FORUM_NAME_LENGTH) name.value = changedName
+                if (!utf8IsTooLong(changedName, strings.groupNameMaxLength)) name.value = changedName
             }
             Surface {
                 Scaffold(
@@ -93,19 +95,19 @@ fun AddForumDialog(
                     topBar = {
                         Box(Modifier.fillMaxWidth()) {
                             Text(
-                                text = i18n("forum.add.title"),
+                                text = strings.addGroupTitle,
                                 style = MaterialTheme.typography.h6,
                                 modifier = Modifier.padding(bottom = 12.dp)
                             )
                         }
                     },
                     content = {
-                        AddForumContent(name.value, onNameChanged, onCreate)
+                        AddGroupContent(name.value, onNameChanged, strings.addGroupHint, onCreate)
                     },
                     bottomBar = {
                         OkCancelBottomBar(
-                            okButtonLabel = i18n("forum.add.button"),
-                            okButtonEnabled = isValidForumName(name.value),
+                            okButtonLabel = strings.addGroupButton,
+                            okButtonEnabled = isValidGroupName(name.value, strings.groupNameMaxLength),
                             onOkButtonClicked = {
                                 onCreate(name.value)
                                 onNameChanged("")
@@ -119,17 +121,16 @@ fun AddForumDialog(
     }
 }
 
-private fun isValidForumName(name: String): Boolean {
-    return name.isNotBlank() && name.length <= MAX_FORUM_NAME_LENGTH
-}
+private fun isValidGroupName(name: String, maxLength: Int) =
+    name.isNotBlank() && !utf8IsTooLong(name, maxLength)
 
 @Composable
-fun AddForumContent(name: String, onNameChanged: (String) -> Unit, onCreate: (String) -> Unit) {
+fun AddGroupContent(name: String, onNameChanged: (String) -> Unit, description: String, onCreate: (String) -> Unit) {
     val focusRequester = remember { FocusRequester() }
     OutlinedTextField(
         value = name,
         onValueChange = onNameChanged,
-        label = { Text(i18n("forum.add.hint")) },
+        label = { Text(description) },
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
         singleLine = true,
         onEnter = {
@@ -139,7 +140,7 @@ fun AddForumContent(name: String, onNameChanged: (String) -> Unit, onCreate: (St
         modifier = Modifier
             .fillMaxWidth()
             .focusRequester(focusRequester)
-            .description(i18n("forum.add.hint")),
+            .description(description),
     )
     LaunchedEffect(Unit) {
         focusRequester.requestFocus()
