@@ -51,10 +51,10 @@ import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.unit.dp
 import org.briarproject.briar.desktop.contact.ContactDropDown.State.CLOSED
 import org.briarproject.briar.desktop.contact.ContactDropDown.State.MAIN
-import org.briarproject.briar.desktop.forum.sharing.ForumSharingViewModel
 import org.briarproject.briar.desktop.threadedgroup.ThreadedGroupCircle
 import org.briarproject.briar.desktop.threadedgroup.ThreadedGroupItem
 import org.briarproject.briar.desktop.threadedgroup.ThreadedGroupStrings
+import org.briarproject.briar.desktop.threadedgroup.sharing.ThreadedGroupSharingViewModel
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
 import org.briarproject.briar.desktop.ui.HorizontalDivider
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
@@ -71,7 +71,7 @@ fun ThreadedGroupConversationScreen(
                 ThreadedGroupConversationHeader(
                     strings = strings,
                     threadedGroupItem = groupItem,
-                    forumSharingViewModel = viewModel.forumSharingViewModel,
+                    sharingViewModel = viewModel.sharingViewModel,
                     onGroupDelete = viewModel::deleteGroup,
                     dropdownMenu = dropdownMenu,
                 )
@@ -100,7 +100,7 @@ fun ThreadedGroupConversationScreen(
 private fun ThreadedGroupConversationHeader(
     strings: ThreadedGroupStrings,
     threadedGroupItem: ThreadedGroupItem,
-    forumSharingViewModel: ForumSharingViewModel,
+    sharingViewModel: ThreadedGroupSharingViewModel,
     onGroupDelete: () -> Unit,
     dropdownMenu: ThreadedGroupDropdownMenu,
 ) {
@@ -129,7 +129,7 @@ private fun ThreadedGroupConversationHeader(
                         overflow = Ellipsis,
                         style = MaterialTheme.typography.h2,
                     )
-                    val sharingInfo = forumSharingViewModel.sharingInfo.value
+                    val sharingInfo = sharingViewModel.sharingInfo.value
                     Text(
                         text = strings.sharedWith(sharingInfo.total, sharingInfo.online)
                     )
@@ -142,7 +142,7 @@ private fun ThreadedGroupConversationHeader(
                 modifier = Modifier.align(CenterVertically).padding(end = 16.dp),
             ) {
                 dropdownMenu(
-                    forumSharingViewModel,
+                    sharingViewModel,
                     menuState.value == MAIN,
                     close
                 ) { deleteGroupDialogVisible.value = true }

@@ -19,6 +19,8 @@
 package org.briarproject.briar.desktop.privategroup
 
 import androidx.compose.runtime.Composable
+import org.briarproject.briar.desktop.privategroup.conversation.PrivateGroupDropdownMenu
+import org.briarproject.briar.desktop.privategroup.sharing.PrivateGroupSharingViewModel
 import org.briarproject.briar.desktop.threadedgroup.ThreadedGroupScreen
 import org.briarproject.briar.desktop.viewmodel.viewModel
 
@@ -28,8 +30,8 @@ fun PrivateGroupScreen(
 ) = ThreadedGroupScreen(
     strings = PrivateGroupStrings,
     viewModel = viewModel,
-    dropdownMenu = { forumSharingViewModel, expanded, onClose, onLeaveForumClick ->
-        // todo: uncomment when adapted to groups
-        // ForumDropdownMenu(forumSharingViewModel, expanded, onClose, onLeaveForumClick)
+    dropdownMenu = { sharingViewModel, expanded, onClose, onLeaveForumClick ->
+        val privateGroupSharingViewModel = sharingViewModel as PrivateGroupSharingViewModel
+        PrivateGroupDropdownMenu(privateGroupSharingViewModel, expanded, onClose, onLeaveForumClick)
     }
 )

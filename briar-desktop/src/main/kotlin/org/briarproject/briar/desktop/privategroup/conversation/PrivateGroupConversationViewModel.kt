@@ -39,7 +39,7 @@ import org.briarproject.briar.api.client.MessageTracker
 import org.briarproject.briar.api.privategroup.GroupMessageFactory
 import org.briarproject.briar.api.privategroup.JoinMessageHeader
 import org.briarproject.briar.api.privategroup.PrivateGroupManager
-import org.briarproject.briar.desktop.forum.sharing.ForumSharingViewModel
+import org.briarproject.briar.desktop.privategroup.sharing.PrivateGroupSharingViewModel
 import org.briarproject.briar.desktop.threadedgroup.conversation.ThreadedConversationViewModel
 import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.threading.UiExecutor
@@ -47,7 +47,7 @@ import java.lang.Long.max
 import javax.inject.Inject
 
 class PrivateGroupConversationViewModel @Inject constructor(
-    forumSharingViewModel: ForumSharingViewModel,
+    sharingViewModel: PrivateGroupSharingViewModel,
     private val privateGroupManager: PrivateGroupManager,
     private val privateGroupMessageFactory: GroupMessageFactory,
     private val identityManager: IdentityManager,
@@ -58,7 +58,7 @@ class PrivateGroupConversationViewModel @Inject constructor(
     db: TransactionManager,
     eventBus: EventBus,
 ) : ThreadedConversationViewModel(
-    forumSharingViewModel,
+    sharingViewModel,
     briarExecutors,
     lifecycleManager,
     db,

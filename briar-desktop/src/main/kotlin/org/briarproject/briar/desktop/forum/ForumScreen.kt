@@ -20,6 +20,7 @@ package org.briarproject.briar.desktop.forum
 
 import androidx.compose.runtime.Composable
 import org.briarproject.briar.desktop.forum.conversation.ForumDropdownMenu
+import org.briarproject.briar.desktop.forum.sharing.ForumSharingViewModel
 import org.briarproject.briar.desktop.threadedgroup.ThreadedGroupScreen
 import org.briarproject.briar.desktop.viewmodel.viewModel
 
@@ -29,7 +30,8 @@ fun ForumScreen(
 ) = ThreadedGroupScreen(
     strings = ForumStrings,
     viewModel = viewModel,
-    dropdownMenu = { forumSharingViewModel, expanded, onClose, onLeaveForumClick ->
+    dropdownMenu = { sharingViewModel, expanded, onClose, onLeaveForumClick ->
+        val forumSharingViewModel = sharingViewModel as ForumSharingViewModel
         ForumDropdownMenu(forumSharingViewModel, expanded, onClose, onLeaveForumClick)
     }
 )

@@ -16,11 +16,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.briarproject.briar.desktop.forum.sharing
+package org.briarproject.briar.desktop.privategroup.sharing
 
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
-import mu.KotlinLogging
 import org.briarproject.bramble.api.connection.ConnectionRegistry
 import org.briarproject.bramble.api.contact.ContactId
 import org.briarproject.bramble.api.contact.ContactManager
@@ -50,7 +49,7 @@ import org.briarproject.briar.desktop.viewmodel.asState
 import org.briarproject.briar.desktop.viewmodel.update
 import javax.inject.Inject
 
-class ForumSharingViewModel @Inject constructor(
+class PrivateGroupSharingViewModel @Inject constructor(
     private val forumSharingManager: ForumSharingManager,
     contactManager: ContactManager,
     authorManager: AuthorManager,
@@ -70,10 +69,6 @@ class ForumSharingViewModel @Inject constructor(
     db,
     eventBus,
 ) {
-
-    companion object {
-        private val LOG = KotlinLogging.logger {}
-    }
 
     private val _sharingStatus = mutableStateOf(emptyMap<ContactId, SharingStatus>())
     private val _shareableSelected = mutableStateOf(emptySet<ContactId>())
@@ -136,9 +131,6 @@ class ForumSharingViewModel @Inject constructor(
         _shareableSelected.value.forEach { contactId ->
             forumSharingManager.sendInvitation(txn, groupId, contactId, message)
         }
-        // send custom event to force message reload if private chat is open for contactId
-        // todo: switch to a more generic approach where every locally sent message broadcasts an event per default
-        txn.attach(ForumInvitationSentEvent(_shareableSelected.value.toList()))
         txn.attach { reload() }
     }
 

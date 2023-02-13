@@ -32,6 +32,7 @@ import org.briarproject.briar.desktop.login.StartupViewModel
 import org.briarproject.briar.desktop.mailbox.MailboxViewModel
 import org.briarproject.briar.desktop.navigation.SidebarViewModel
 import org.briarproject.briar.desktop.privategroup.PrivateGroupListViewModel
+import org.briarproject.briar.desktop.privategroup.sharing.PrivateGroupSharingViewModel
 import org.briarproject.briar.desktop.settings.SettingsViewModel
 import kotlin.reflect.KClass
 
@@ -84,6 +85,11 @@ abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(ForumSharingViewModel::class)
     abstract fun bindForumSharingViewModel(forumSharingViewModel: ForumSharingViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(PrivateGroupSharingViewModel::class)
+    abstract fun bindPrivateGroupSharingViewModel(privateGroupSharingViewModel: PrivateGroupSharingViewModel): ViewModel
 
     @Binds
     @IntoMap

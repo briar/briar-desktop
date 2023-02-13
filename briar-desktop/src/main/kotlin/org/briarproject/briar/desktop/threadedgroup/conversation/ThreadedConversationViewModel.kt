@@ -30,15 +30,15 @@ import org.briarproject.bramble.api.sync.MessageId
 import org.briarproject.briar.api.client.PostHeader
 import org.briarproject.briar.client.MessageTreeImpl
 import org.briarproject.briar.desktop.forum.ForumPostReadEvent
-import org.briarproject.briar.desktop.forum.sharing.ForumSharingViewModel
 import org.briarproject.briar.desktop.threadedgroup.ThreadedGroupItem
+import org.briarproject.briar.desktop.threadedgroup.sharing.ThreadedGroupSharingViewModel
 import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.threading.UiExecutor
 import org.briarproject.briar.desktop.viewmodel.EventListenerDbViewModel
 import org.briarproject.briar.desktop.viewmodel.asState
 
 abstract class ThreadedConversationViewModel(
-    val forumSharingViewModel: ForumSharingViewModel,
+    val sharingViewModel: ThreadedGroupSharingViewModel,
     briarExecutors: BriarExecutors,
     lifecycleManager: LifecycleManager,
     db: TransactionManager,
@@ -61,18 +61,18 @@ abstract class ThreadedConversationViewModel(
         this.onThreadItemLocallyAdded = onThreadItemLocallyAdded
         _threadedGroupItem.value = threadedGroupItem
         _selectedThreadItem.value = null
-        forumSharingViewModel.setGroupId(threadedGroupItem.id)
+        sharingViewModel.setGroupId(threadedGroupItem.id)
         loadThreadItems(threadedGroupItem.id)
     }
 
     override fun onInit() {
         super.onInit()
-        forumSharingViewModel.onEnterComposition()
+        sharingViewModel.onEnterComposition()
     }
 
     override fun onCleared() {
         super.onCleared()
-        forumSharingViewModel.onExitComposition()
+        sharingViewModel.onExitComposition()
     }
 
     protected abstract fun loadThreadItems(txn: Transaction, groupId: GroupId): List<ThreadItem>

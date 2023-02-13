@@ -19,10 +19,10 @@
 package org.briarproject.briar.desktop.threadedgroup.conversation
 
 import androidx.compose.runtime.Composable
-import org.briarproject.briar.desktop.forum.sharing.ForumSharingViewModel
+import org.briarproject.briar.desktop.threadedgroup.sharing.ThreadedGroupSharingViewModel
 
 typealias ThreadedGroupDropdownMenu = @Composable (
-    forumSharingViewModel: ForumSharingViewModel,
+    sharingViewModel: ThreadedGroupSharingViewModel,
     expanded: Boolean,
     onClose: () -> Unit,
     onLeaveGroupClick: () -> Unit,
