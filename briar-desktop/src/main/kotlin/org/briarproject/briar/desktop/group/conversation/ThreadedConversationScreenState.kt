@@ -16,19 +16,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.briarproject.briar.desktop.forums
+package org.briarproject.briar.desktop.group.conversation
 
 import org.briarproject.bramble.api.sync.MessageId
 import org.briarproject.briar.client.MessageTreeImpl
-import org.briarproject.briar.desktop.group.conversation.ThreadItem
 import org.briarproject.briar.desktop.threading.UiExecutor
 
-sealed class PostsState
-object Loading : PostsState()
+sealed class ThreadedConversationScreenState
+object Loading : ThreadedConversationScreenState()
 class Loaded(
     val messageTree: MessageTreeImpl<ThreadItem>,
     val scrollTo: MessageId? = null,
-) : PostsState() {
+) : ThreadedConversationScreenState() {
     val posts: List<ThreadItem> = messageTree.depthFirstOrder()
 
     @UiExecutor

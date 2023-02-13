@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.briarproject.briar.desktop.forums
+package org.briarproject.briar.desktop.group.conversation
 
 import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.layout.Box
@@ -36,26 +36,25 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import org.briarproject.bramble.api.sync.MessageId
 import org.briarproject.briar.desktop.conversation.reallyVisibleItemsInfo
-import org.briarproject.briar.desktop.group.conversation.ThreadItem
-import org.briarproject.briar.desktop.group.conversation.ThreadItemView
-import org.briarproject.briar.desktop.group.conversation.getMaxNestingLevel
+import org.briarproject.briar.desktop.group.GroupStrings
 import org.briarproject.briar.desktop.ui.Loader
 import org.briarproject.briar.desktop.ui.isWindowFocused
 
 @Composable
 fun ThreadedConversationScreen(
-    postsState: PostsState,
-    selectedPost: ThreadItem?,
-    onPostSelected: (ThreadItem) -> Unit,
-    onPostsVisible: (List<MessageId>) -> Unit,
+    strings: GroupStrings,
+    state: ThreadedConversationScreenState,
+    selectedThreadItem: ThreadItem?,
+    onThreadItemSelected: (ThreadItem) -> Unit,
+    onThreadItemsVisible: (List<MessageId>) -> Unit,
     modifier: Modifier = Modifier,
-) = when (postsState) {
+) = when (state) {
     Loading -> Loader()
     is Loaded -> {
         val scrollState = rememberLazyListState()
         // scroll to item if needed
-        if (postsState.scrollTo != null) LaunchedEffect(postsState) {
-            val index = postsState.posts.indexOfFirst { it.id == postsState.scrollTo }
+        if (state.scrollTo != null) LaunchedEffect(state) {
+            val index = state.posts.indexOfFirst { it.id == state.scrollTo }
             if (index != -1) scrollState.scrollToItem(index, -50)
         }
         val maxNestingLevel = getMaxNestingLevel()
@@ -64,16 +63,16 @@ fun ThreadedConversationScreen(
                 state = scrollState,
                 modifier = Modifier.padding(end = 8.dp).selectableGroup()
             ) {
-                items(postsState.posts, key = { item -> item.id }) { item ->
+                items(state.posts, key = { item -> item.id }) { item ->
                     ThreadItemView(
                         item = item,
                         maxNestingLevel = maxNestingLevel,
-                        selectedPost = selectedPost,
-                        onPostSelected = onPostSelected,
+                        selectedPost = selectedThreadItem,
+                        onPostSelected = onThreadItemSelected,
                     )
                 }
             }
-            UnreadFabs(scrollState, postsState)
+            UnreadFabs(strings, scrollState, state)
             VerticalScrollbar(
                 adapter = rememberScrollbarAdapter(scrollState),
                 modifier = Modifier.align(CenterEnd).fillMaxHeight()
@@ -82,7 +81,7 @@ fun ThreadedConversationScreen(
                 // if Briar Desktop currently has focus,
                 // mark all posts visible on the screen as read after some delay
                 LaunchedEffect(
-                    postsState,
+                    state,
                     scrollState.firstVisibleItemIndex,
                     scrollState.firstVisibleItemScrollOffset
                 ) {
@@ -90,7 +89,7 @@ fun ThreadedConversationScreen(
                     val visibleMessageIds = scrollState.layoutInfo.reallyVisibleItemsInfo.map {
                         it.key as MessageId
                     }
-                    onPostsVisible(visibleMessageIds)
+                    onThreadItemsVisible(visibleMessageIds)
                 }
             }
         }

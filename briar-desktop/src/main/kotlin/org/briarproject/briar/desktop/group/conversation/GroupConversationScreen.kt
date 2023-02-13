@@ -51,8 +51,6 @@ import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.unit.dp
 import org.briarproject.briar.desktop.contact.ContactDropDown.State.CLOSED
 import org.briarproject.briar.desktop.contact.ContactDropDown.State.MAIN
-import org.briarproject.briar.desktop.forums.ThreadedConversationScreen
-import org.briarproject.briar.desktop.forums.ThreadedConversationViewModel
 import org.briarproject.briar.desktop.forums.sharing.ForumSharingViewModel
 import org.briarproject.briar.desktop.group.GroupCircle
 import org.briarproject.briar.desktop.group.GroupInputComposable
@@ -82,17 +80,18 @@ fun GroupConversationScreen(
         },
         content = { padding ->
             ThreadedConversationScreen(
-                postsState = viewModel.posts.value,
-                selectedPost = viewModel.selectedPost.value,
-                onPostSelected = viewModel::selectPost,
-                onPostsVisible = viewModel::markPostsRead,
+                strings = strings,
+                state = viewModel.state.value,
+                selectedThreadItem = viewModel.selectedThreadItem.value,
+                onThreadItemSelected = viewModel::selectThreadItem,
+                onThreadItemsVisible = viewModel::markThreadItemsRead,
                 modifier = Modifier.padding(padding)
             )
         },
         bottomBar = {
-            val onCloseReply = { viewModel.selectPost(null) }
-            GroupInputComposable(viewModel.selectedPost.value, onCloseReply) { text ->
-                viewModel.createPost(text)
+            val onCloseReply = { viewModel.selectThreadItem(null) }
+            GroupInputComposable(viewModel.selectedThreadItem.value, onCloseReply) { text ->
+                viewModel.createThreadItem(text)
             }
         }
     )

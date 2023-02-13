@@ -1,6 +1,6 @@
 /*
  * Briar Desktop
- * Copyright (C) 2021-2022 The Briar Project
+ * Copyright (C) 2021-2023 The Briar Project
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -48,6 +48,14 @@ abstract class DbViewModel(
         readOnly: Boolean,
         task: (Transaction) -> Unit,
     ) = briarExecutors.onDbThreadWithTransaction(readOnly, task)
+
+    /**
+     * Waits for the DB to open and runs the given [task] on the [DatabaseExecutor],
+     * returning its result.
+     */
+    protected suspend fun <T> runOnDbThread(
+        @DatabaseExecutor task: () -> T,
+    ): T = briarExecutors.runOnDbThread(task)
 
     /**
      * Waits for the DB to open and runs the given [task] on the [DatabaseExecutor],

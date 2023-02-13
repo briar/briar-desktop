@@ -30,6 +30,7 @@ import org.briarproject.bramble.api.sync.GroupId
 import org.briarproject.briar.api.client.PostHeader
 import org.briarproject.briar.api.forum.ForumManager
 import org.briarproject.briar.api.forum.event.ForumPostReceivedEvent
+import org.briarproject.briar.desktop.forums.conversation.ForumConversationViewModel
 import org.briarproject.briar.desktop.group.GroupListViewModel
 import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.utils.removeFirst
@@ -39,7 +40,7 @@ import javax.inject.Inject
 class ForumListViewModel
 @Inject constructor(
     private val forumManager: ForumManager,
-    threadViewModel: ThreadedConversationViewModel,
+    threadViewModel: ForumConversationViewModel,
     briarExecutors: BriarExecutors,
     lifecycleManager: LifecycleManager,
     db: TransactionManager,
@@ -85,7 +86,7 @@ class ForumListViewModel
         }
 
     override fun addOwnMessage(header: PostHeader) {
-        selectedGroupId.value?.let { id -> updateItem(id) { it.updateOnPostReceived(header) } }
+        // no-op since GroupMessageAddedEvent is also sent on locally added message
     }
 
     private fun updateItem(groupId: GroupId, update: (ForumItem) -> ForumItem) =

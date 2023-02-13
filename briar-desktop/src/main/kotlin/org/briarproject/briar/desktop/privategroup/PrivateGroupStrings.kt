@@ -48,6 +48,8 @@ object PrivateGroupStrings : GroupStrings(
     sharedWith = { total, online ->
         i18nF("forum.sharing.status.with", total, online)
     },
+    unreadJumpToPrevious = i18n("access.forums.jump_to_prev_unread"),
+    unreadJumpToNext = i18n("access.forums.jump_to_next_unread"),
     deleteDialogTitle = i18n("forum.delete.dialog.title"),
     deleteDialogMessage = i18n("forum.delete.dialog.message"),
     deleteDialogButton = i18n("forum.delete.dialog.button"),

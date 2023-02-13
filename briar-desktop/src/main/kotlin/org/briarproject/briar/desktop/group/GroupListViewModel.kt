@@ -32,7 +32,7 @@ import org.briarproject.bramble.api.sync.GroupId
 import org.briarproject.bramble.api.sync.event.GroupAddedEvent
 import org.briarproject.bramble.api.sync.event.GroupRemovedEvent
 import org.briarproject.briar.api.client.PostHeader
-import org.briarproject.briar.desktop.forums.ThreadedConversationViewModel
+import org.briarproject.briar.desktop.group.conversation.ThreadedConversationViewModel
 import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.utils.clearAndAddAll
 import org.briarproject.briar.desktop.viewmodel.EventListenerDbViewModel

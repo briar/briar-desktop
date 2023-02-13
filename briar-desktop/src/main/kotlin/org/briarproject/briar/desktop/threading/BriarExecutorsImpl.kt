@@ -1,6 +1,6 @@
 /*
  * Briar Desktop
- * Copyright (C) 2021-2022 The Briar Project
+ * Copyright (C) 2021-2023 The Briar Project
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -57,6 +57,16 @@ constructor(
         }
     }
 
+    override suspend fun <T> runOnDbThread(@DatabaseExecutor task: () -> T) =
+        suspendCoroutine { cont ->
+            // The coroutine suspends until the DatabaseExecutor has finished the task
+            // and ended the transaction. It then resumes with the returned value.
+            onDbThread {
+                val t = task()
+                cont.resume(t)
+            }
+        }
+
     override fun onDbThreadWithTransaction(
         readOnly: Boolean,
         @DatabaseExecutor task: (Transaction) -> Unit,
@@ -80,7 +90,7 @@ constructor(
 
     override suspend fun <T> runOnDbThreadWithTransaction(
         readOnly: Boolean,
-        @DatabaseExecutor task: (Transaction) -> T
+        @DatabaseExecutor task: (Transaction) -> T,
     ) = suspendCoroutine<T> { cont ->
         // The coroutine suspends until the DatabaseExecutor has finished the task
         // and ended the transaction. It then resumes with the returned value.

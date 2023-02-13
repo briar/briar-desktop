@@ -32,6 +32,8 @@ abstract class GroupStrings(
     val lastMessage: (String) -> String,
     val groupNameMaxLength: Int,
     val sharedWith: (total: Int, online: Int) -> String,
+    val unreadJumpToPrevious: String,
+    val unreadJumpToNext: String,
     // todo: will need to be different for private groups depending on creator or not
     val deleteDialogTitle: String,
     val deleteDialogMessage: String,

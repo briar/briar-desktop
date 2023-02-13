@@ -34,8 +34,8 @@ import org.briarproject.briar.api.privategroup.GroupMessageFactory
 import org.briarproject.briar.api.privategroup.PrivateGroupFactory
 import org.briarproject.briar.api.privategroup.PrivateGroupManager
 import org.briarproject.briar.api.privategroup.event.GroupMessageAddedEvent
-import org.briarproject.briar.desktop.forums.ThreadedConversationViewModel
 import org.briarproject.briar.desktop.group.GroupListViewModel
+import org.briarproject.briar.desktop.privategroup.conversation.PrivateGroupConversationViewModel
 import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.utils.removeFirst
 import org.briarproject.briar.desktop.utils.replaceFirst
@@ -48,7 +48,7 @@ class PrivateGroupListViewModel
     private val privateGroupManager: PrivateGroupManager,
     private val privateGroupFactory: PrivateGroupFactory,
     private val privateGroupMessageFactory: GroupMessageFactory,
-    threadViewModel: ThreadedConversationViewModel, // todo: subclass
+    threadViewModel: PrivateGroupConversationViewModel,
     briarExecutors: BriarExecutors,
     lifecycleManager: LifecycleManager,
     db: TransactionManager,

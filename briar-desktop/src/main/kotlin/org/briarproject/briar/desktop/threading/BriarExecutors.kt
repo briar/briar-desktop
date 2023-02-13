@@ -1,6 +1,6 @@
 /*
  * Briar Desktop
- * Copyright (C) 2021-2022 The Briar Project
+ * Copyright (C) 2021-2023 The Briar Project
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -24,6 +24,8 @@ import org.briarproject.bramble.api.lifecycle.IoExecutor
 
 interface BriarExecutors {
     fun onDbThread(@DatabaseExecutor task: () -> Unit)
+
+    suspend fun <T> runOnDbThread(@DatabaseExecutor task: () -> T): T
 
     fun onDbThreadWithTransaction(
         readOnly: Boolean,

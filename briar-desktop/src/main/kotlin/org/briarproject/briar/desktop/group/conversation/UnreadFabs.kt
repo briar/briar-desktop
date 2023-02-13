@@ -1,6 +1,6 @@
 /*
  * Briar Desktop
- * Copyright (C) 2021-2022 The Briar Project
+ * Copyright (C) 2021-2023 The Briar Project
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.briarproject.briar.desktop.forums
+package org.briarproject.briar.desktop.group.conversation
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
@@ -38,13 +38,13 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.briarproject.briar.desktop.conversation.firstReallyVisibleItemIndex
 import org.briarproject.briar.desktop.conversation.lastReallyVisibleItemIndex
+import org.briarproject.briar.desktop.group.GroupStrings
 import org.briarproject.briar.desktop.theme.ChevronDown
 import org.briarproject.briar.desktop.theme.ChevronUp
 import org.briarproject.briar.desktop.ui.NumberBadge
-import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 
 @Composable
-fun BoxScope.UnreadFabs(scrollState: LazyListState, postsState: Loaded) {
+fun BoxScope.UnreadFabs(strings: GroupStrings, scrollState: LazyListState, postsState: Loaded) {
     val coroutineScope = rememberCoroutineScope()
 
     // remember first really visible item index based on scroll offset
@@ -59,10 +59,10 @@ fun BoxScope.UnreadFabs(scrollState: LazyListState, postsState: Loaded) {
         visible = unreadInfo.numUnread > 0,
         modifier = Modifier.align(TopEnd).padding(16.dp),
     ) {
-        UnreadPostsFab(
+        UnreadFab(
             imageVector = Icons.Default.ChevronUp,
             numUnread = unreadInfo.numUnread,
-            contentDescription = i18n("access.forums.jump_to_prev_unread"),
+            contentDescription = strings.unreadJumpToPrevious,
             onClick = {
                 coroutineScope.launch {
                     if (unreadInfo.nextUnreadIndex != null) {
@@ -88,10 +88,10 @@ fun BoxScope.UnreadFabs(scrollState: LazyListState, postsState: Loaded) {
         visible = bottomUnreadInfo.numUnread > 0,
         modifier = Modifier.align(BottomEnd).padding(16.dp),
     ) {
-        UnreadPostsFab(
+        UnreadFab(
             imageVector = Icons.Default.ChevronDown,
             numUnread = bottomUnreadInfo.numUnread,
-            contentDescription = i18n("access.forums.jump_to_next_unread"),
+            contentDescription = strings.unreadJumpToNext,
             onClick = {
                 coroutineScope.launch {
                     if (bottomUnreadInfo.nextUnreadIndex != null) scrollState.animateScrollToItem(
@@ -106,7 +106,7 @@ fun BoxScope.UnreadFabs(scrollState: LazyListState, postsState: Loaded) {
 }
 
 @Composable
-fun UnreadPostsFab(
+private fun UnreadFab(
     imageVector: ImageVector,
     numUnread: Int,
     contentDescription: String,
