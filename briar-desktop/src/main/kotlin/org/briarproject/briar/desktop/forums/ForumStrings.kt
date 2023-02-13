@@ -19,6 +19,7 @@
 package org.briarproject.briar.desktop.forums
 
 import org.briarproject.briar.api.forum.ForumConstants.MAX_FORUM_NAME_LENGTH
+import org.briarproject.briar.api.forum.ForumConstants.MAX_FORUM_POST_TEXT_LENGTH
 import org.briarproject.briar.desktop.group.GroupStrings
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nF
@@ -52,4 +53,9 @@ object ForumStrings : GroupStrings(
     deleteDialogTitle = i18n("forum.delete.dialog.title"),
     deleteDialogMessage = i18n("forum.delete.dialog.message"),
     deleteDialogButton = i18n("forum.delete.dialog.button"),
+    messageMaxLength = MAX_FORUM_POST_TEXT_LENGTH,
+    messageReplyIntro = i18n("forum.message.reply.intro"),
+    messageReplyClose = i18n("access.forums.reply.close"),
+    messageReplyHint = i18n("forum.message.reply.hint"),
+    messageHint = i18n("forum.message.hint"),
 )

@@ -53,7 +53,6 @@ import org.briarproject.briar.desktop.contact.ContactDropDown.State.CLOSED
 import org.briarproject.briar.desktop.contact.ContactDropDown.State.MAIN
 import org.briarproject.briar.desktop.forums.sharing.ForumSharingViewModel
 import org.briarproject.briar.desktop.group.GroupCircle
-import org.briarproject.briar.desktop.group.GroupInputComposable
 import org.briarproject.briar.desktop.group.GroupItem
 import org.briarproject.briar.desktop.group.GroupStrings
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
@@ -90,7 +89,7 @@ fun GroupConversationScreen(
         },
         bottomBar = {
             val onCloseReply = { viewModel.selectThreadItem(null) }
-            GroupInputComposable(viewModel.selectedThreadItem.value, onCloseReply) { text ->
+            ThreadedConversationInput(strings, viewModel.selectedThreadItem.value, onCloseReply) { text ->
                 viewModel.createThreadItem(text)
             }
         }

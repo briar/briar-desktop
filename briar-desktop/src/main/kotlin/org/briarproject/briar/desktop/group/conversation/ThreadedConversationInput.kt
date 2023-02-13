@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.briarproject.briar.desktop.group
+package org.briarproject.briar.desktop.group.conversation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -44,9 +44,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.PointerIconDefaults
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.unit.dp
+import org.briarproject.bramble.util.StringUtils.utf8IsTooLong
 import org.briarproject.briar.api.forum.ForumConstants.MAX_FORUM_POST_TEXT_LENGTH
-import org.briarproject.briar.desktop.group.conversation.ThreadItem
-import org.briarproject.briar.desktop.group.conversation.ThreadItemContentComposable
+import org.briarproject.briar.desktop.group.GroupStrings
 import org.briarproject.briar.desktop.theme.divider
 import org.briarproject.briar.desktop.theme.sendButton
 import org.briarproject.briar.desktop.ui.HorizontalDivider
@@ -55,21 +55,22 @@ import org.briarproject.briar.desktop.utils.StringUtils.takeUtf8
 
 @Composable
 @OptIn(ExperimentalComposeUiApi::class)
-fun GroupInputComposable(
-    selectedPost: ThreadItem?,
+fun ThreadedConversationInput(
+    strings: GroupStrings,
+    selectedThreadItem: ThreadItem?,
     onReplyClosed: () -> Unit,
     onSend: (String) -> Unit,
 ) {
-    val postText = rememberSaveable { mutableStateOf("") }
+    val messageText = rememberSaveable { mutableStateOf("") }
     val onSendAction = {
-        val text = postText.value
-        if (text.isNotBlank() && postText.value.length <= MAX_FORUM_POST_TEXT_LENGTH) {
+        val text = messageText.value
+        if (text.isNotBlank() && !utf8IsTooLong(messageText.value, strings.messageMaxLength)) {
             onSend(text)
-            postText.value = ""
+            messageText.value = ""
         }
     }
     Column {
-        if (selectedPost != null) {
+        if (selectedThreadItem != null) {
             Row(
                 verticalAlignment = Top,
                 modifier = Modifier.border(1.dp, MaterialTheme.colors.divider),
@@ -80,11 +81,11 @@ fun GroupInputComposable(
                         .weight(1f),
                 ) {
                     Text(
-                        text = i18n("forum.message.reply.intro"),
+                        text = strings.messageReplyIntro,
                         modifier = Modifier.padding(bottom = 8.dp),
                     )
                     ThreadItemContentComposable(
-                        item = selectedPost,
+                        item = selectedThreadItem,
                         isPreview = true,
                         modifier = Modifier
                             .border(1.dp, MaterialTheme.colors.divider)
@@ -97,24 +98,24 @@ fun GroupInputComposable(
                 }
                 IconButton(
                     icon = Icons.Filled.Close,
-                    contentDescription = i18n("access.forums.reply.close"),
+                    contentDescription = strings.messageReplyClose,
                     onClick = onReplyClosed,
                 )
             }
         }
         HorizontalDivider()
         TextField(
-            value = postText.value,
-            onValueChange = { postText.value = it.takeUtf8(MAX_FORUM_POST_TEXT_LENGTH) },
+            value = messageText.value,
+            onValueChange = { messageText.value = it.takeUtf8(MAX_FORUM_POST_TEXT_LENGTH) },
             onEnter = onSendAction,
             maxLines = 10,
             textStyle = MaterialTheme.typography.body1,
             placeholder = {
                 Text(
-                    text = if (selectedPost == null) {
-                        i18n("forum.message.hint")
+                    text = if (selectedThreadItem == null) {
+                        strings.messageHint
                     } else {
-                        i18n("forum.message.reply.hint")
+                        strings.messageReplyHint
                     },
                     style = MaterialTheme.typography.body1,
                 )

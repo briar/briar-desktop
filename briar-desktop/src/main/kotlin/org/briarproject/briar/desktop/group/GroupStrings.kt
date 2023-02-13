@@ -38,4 +38,9 @@ abstract class GroupStrings(
     val deleteDialogTitle: String,
     val deleteDialogMessage: String,
     val deleteDialogButton: String,
+    val messageMaxLength: Int,
+    val messageReplyIntro: String,
+    val messageReplyClose: String,
+    val messageReplyHint: String,
+    val messageHint: String,
 )
