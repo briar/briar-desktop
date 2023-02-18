@@ -25,7 +25,7 @@ plugins {
     kotlin("jvm") version "1.7.20"
     kotlin("kapt") version "1.7.20"
     id("org.jetbrains.compose") version "1.3.0"
-    id("de.mobanisto.pinpit") version "0.4.0"
+    id("de.mobanisto.pinpit") version "0.5.0"
     id("java")
     id("idea")
     id("org.jlleitschuh.gradle.ktlint") version "10.1.0"
@@ -54,6 +54,14 @@ val linuxArm64: Configuration by configurations.creating {
     extendsFrom(configurations.implementation.get())
 }
 
+val macosArm64: Configuration by configurations.creating {
+    extendsFrom(configurations.implementation.get())
+}
+
+val macosX64: Configuration by configurations.creating {
+    extendsFrom(configurations.implementation.get())
+}
+
 sourceSets {
     main {
         java {
@@ -72,7 +80,7 @@ sourceSets {
 val versionCode = "0.4.2"
 val buildType = if (project.hasProperty("buildType")) project.properties["buildType"] else "snapshot"
 group = "app.briar.desktop"
-version = "$versionCode-$buildType"
+version = "$versionCode"
 val appVendor = "The Briar Project"
 val appName = "Briar"
 val appDescription = "Secure messaging, anywhere"
@@ -91,6 +99,8 @@ dependencies {
     windowsX64(compose.desktop.windows_x64)
     linuxX64(compose.desktop.linux_x64)
     linuxArm64(compose.desktop.linux_arm64)
+    macosArm64(compose.desktop.macos_arm64)
+    macosX64(compose.desktop.macos_x64)
 
     currentOs("org.briarproject:tor-${currentOS.id}:$tor_version")
     currentOs("org.briarproject:obfs4proxy-${currentOS.id}:$obfs4proxy_version")
@@ -103,6 +113,14 @@ dependencies {
     windowsX64("org.briarproject:tor-windows:$tor_version")
     windowsX64("org.briarproject:obfs4proxy-windows:$obfs4proxy_version")
     windowsX64("org.briarproject:snowflake-windows:$snowflake_version")
+
+    macosArm64("org.briarproject:tor-macos:$tor_version")
+    macosArm64("org.briarproject:obfs4proxy-macos:$obfs4proxy_version")
+    macosArm64("org.briarproject:snowflake-macos:$snowflake_version")
+
+    macosX64("org.briarproject:tor-macos:$tor_version")
+    macosX64("org.briarproject:obfs4proxy-macos:$obfs4proxy_version")
+    macosX64("org.briarproject:snowflake-macos:$snowflake_version")
 
     implementation(compose.materialIconsExtended)
     // needed to access Dispatchers.Swing for EventExecutor
