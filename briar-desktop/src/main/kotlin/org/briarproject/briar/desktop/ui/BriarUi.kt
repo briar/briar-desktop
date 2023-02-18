@@ -222,7 +222,8 @@ constructor(
                 LocalConfiguration provides configuration,
                 LocalTextContextMenu provides BriarTextContextMenu,
             ) {
-                // invalidate whole application window in case the theme or language setting is changed
+                // invalidate whole application window in case the theme, language or UI scale
+                // setting is changed
                 configuration.invalidateScreen.react {
                     return@CompositionLocalProvider
                 }

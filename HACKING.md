@@ -93,3 +93,11 @@ those preferences is not as straightforward. There is however a
 platform-independent UI tool called [JPUI](http://jpui.sourceforge.net/) that
 allows you to inspect and edit them easily. Last release is from 2004, but it
 still works ;)
+
+There's a setting for UI previews in a separate settings node
+(`~/.java/.userPrefs/org/briarproject/briar/desktop/utils/prefs.xml` on Linux).
+In order to scale UI previews up on high-density devices, run
+`org.briarproject.briar.desktop.SetPreviewUtilsDensity` from the test sources
+once with a custom UI scale value that works on your machine.
+That will persist the UI scale in the settings node so that all previews are
+scaled using that factor from then on.
