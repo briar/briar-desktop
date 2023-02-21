@@ -46,20 +46,18 @@ class UnencryptedSettingsImpl @Inject internal constructor() : UnencryptedSettin
 
     override val invalidateScreen = SingleStateEvent<Unit>()
 
-    override var theme by EnumEntry(PREF_THEME, AUTO, Theme::class.java, invalidateScreenOnChange = true)
+    override var theme by EnumEntry(PREF_THEME, AUTO, Theme::class.java)
 
     override var language by EnumEntry(
         PREF_LANG,
         DEFAULT,
         Language::class.java,
         onChange = ::updateLocale,
-        invalidateScreenOnChange = true
     )
 
     override var uiScale by FloatEntry(
         PREF_UI_SCALE,
         null,
-        invalidateScreenOnChange = true
     )
 
     init {
@@ -76,7 +74,6 @@ class UnencryptedSettingsImpl @Inject internal constructor() : UnencryptedSettin
         private val deserialize: (string: String) -> T?,
         private val serialize: (value: T) -> String = { it.toString() },
         private val onChange: (value: T) -> Unit = {},
-        private val invalidateScreenOnChange: Boolean = false,
     ) {
         private lateinit var current: T
 
@@ -96,7 +93,7 @@ class UnencryptedSettingsImpl @Inject internal constructor() : UnencryptedSettin
             thisRef.prefs.put(key, serialize(value))
             thisRef.prefs.flush() // write preferences to disk
             onChange(value)
-            if (invalidateScreenOnChange) thisRef.invalidateScreen.emit(Unit)
+            thisRef.invalidateScreen.emit(Unit)
         }
     }
 
@@ -106,7 +103,6 @@ class UnencryptedSettingsImpl @Inject internal constructor() : UnencryptedSettin
         private val deserialize: (string: String?) -> T?,
         private val serialize: (value: T?) -> String? = { it.toString() },
         private val onChange: (value: T?) -> Unit = {},
-        private val invalidateScreenOnChange: Boolean = false,
     ) {
         private var read = false
         private var current: T? = null
@@ -131,7 +127,7 @@ class UnencryptedSettingsImpl @Inject internal constructor() : UnencryptedSettin
             }
             thisRef.prefs.flush() // write preferences to disk
             onChange(value)
-            if (invalidateScreenOnChange) thisRef.invalidateScreen.emit(Unit)
+            thisRef.invalidateScreen.emit(Unit)
         }
     }
 
@@ -149,9 +145,8 @@ class UnencryptedSettingsImpl @Inject internal constructor() : UnencryptedSettin
             }
         },
         onChange: (value: T) -> Unit = {},
-        invalidateScreenOnChange: Boolean = false,
     ) : Entry<T>(
-        key, default, deserialize, serialize, onChange, invalidateScreenOnChange
+        key, default, deserialize, serialize, onChange
     )
 
     private class FloatEntry(
@@ -160,8 +155,7 @@ class UnencryptedSettingsImpl @Inject internal constructor() : UnencryptedSettin
         deserialize: (string: String?) -> Float? = { it?.toFloatOrNull() },
         serialize: (value: Float?) -> String? = { it?.toString() },
         onChange: (value: Float?) -> Unit = {},
-        invalidateScreenOnChange: Boolean = false,
     ) : NullableEntry<Float>(
-        key, default, deserialize, serialize, onChange, invalidateScreenOnChange
+        key, default, deserialize, serialize, onChange
     )
 }
