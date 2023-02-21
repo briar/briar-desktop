@@ -204,7 +204,6 @@ fun AddContactDialog(
         onCloseRequest = onClose,
         state = rememberDialogState(
             position = WindowPosition(Alignment.Center),
-            size = DpSize(width = 560.dp, height = 520.dp),
         ),
     ) {
         CompositionLocalProvider(LocalDensity provides density) {

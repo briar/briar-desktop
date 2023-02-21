@@ -34,6 +34,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,6 +43,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -51,7 +53,7 @@ import org.briarproject.briar.api.forum.ForumConstants.MAX_FORUM_NAME_LENGTH
 import org.briarproject.briar.desktop.utils.AccessibilityUtils.description
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
-import java.awt.Dimension
+import org.briarproject.briar.desktop.utils.UiUtils.DensityDimension
 
 fun main() = preview {
     val visible = mutableStateOf(true)
@@ -65,6 +67,7 @@ fun AddForumDialog(
     onCancelButtonClicked: () -> Unit,
 ) {
     if (!visible) return
+    val density = LocalDensity.current
     Dialog(
         title = i18n("forum.add.title"),
         onCloseRequest = onCancelButtonClicked,
@@ -72,43 +75,46 @@ fun AddForumDialog(
             position = WindowPosition(Alignment.Center),
         ),
     ) {
-        window.minimumSize = Dimension(360, 180)
-        val scaffoldState = rememberScaffoldState()
-        val name = rememberSaveable { mutableStateOf("") }
-        val onNameChanged = { changedName: String ->
-            // not checking for blank here, so user can still remove all characters
-            if (changedName.length <= MAX_FORUM_NAME_LENGTH) name.value = changedName
-        }
-        Surface {
-            Scaffold(
-                modifier = Modifier
-                    .padding(horizontal = 24.dp)
-                    .padding(top = 24.dp, bottom = 12.dp),
-                scaffoldState = scaffoldState,
-                topBar = {
-                    Box(Modifier.fillMaxWidth()) {
-                        Text(
-                            text = i18n("forum.add.title"),
-                            style = MaterialTheme.typography.h6,
-                            modifier = Modifier.padding(bottom = 12.dp)
+        CompositionLocalProvider(LocalDensity provides density) {
+            window.minimumSize = DensityDimension(360, 240)
+            window.preferredSize = DensityDimension(360, 240)
+            val scaffoldState = rememberScaffoldState()
+            val name = rememberSaveable { mutableStateOf("") }
+            val onNameChanged = { changedName: String ->
+                // not checking for blank here, so user can still remove all characters
+                if (changedName.length <= MAX_FORUM_NAME_LENGTH) name.value = changedName
+            }
+            Surface {
+                Scaffold(
+                    modifier = Modifier
+                        .padding(horizontal = 24.dp)
+                        .padding(top = 24.dp, bottom = 12.dp),
+                    scaffoldState = scaffoldState,
+                    topBar = {
+                        Box(Modifier.fillMaxWidth()) {
+                            Text(
+                                text = i18n("forum.add.title"),
+                                style = MaterialTheme.typography.h6,
+                                modifier = Modifier.padding(bottom = 12.dp)
+                            )
+                        }
+                    },
+                    content = {
+                        AddForumContent(name.value, onNameChanged, onCreate)
+                    },
+                    bottomBar = {
+                        OkCancelBottomBar(
+                            okButtonLabel = i18n("forum.add.button"),
+                            okButtonEnabled = isValidForumName(name.value),
+                            onOkButtonClicked = {
+                                onCreate(name.value)
+                                onNameChanged("")
+                            },
+                            onCancelButtonClicked = onCancelButtonClicked,
                         )
-                    }
-                },
-                content = {
-                    AddForumContent(name.value, onNameChanged, onCreate)
-                },
-                bottomBar = {
-                    OkCancelBottomBar(
-                        okButtonLabel = i18n("forum.add.button"),
-                        okButtonEnabled = isValidForumName(name.value),
-                        onOkButtonClicked = {
-                            onCreate(name.value)
-                            onNameChanged("")
-                        },
-                        onCancelButtonClicked = onCancelButtonClicked,
-                    )
-                },
-            )
+                    },
+                )
+            }
         }
     }
 }
