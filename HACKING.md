@@ -49,7 +49,8 @@ GRADLE_OPTS="-Duser.language=fr -Duser.country=FR" ./gradlew run
 Some rules about threading in Briar Desktop:
 
 * Always use local variables instead of the composable State objects inside
-  another thread: [Source](https://code.briarproject.org/briar/briar-desktop/-/merge_requests/55#note_57632)
+  another
+  thread: [Source](https://code.briarproject.org/briar/briar-desktop/-/merge_requests/55#note_57632)
 
 ## Testing with multiple app instances
 
@@ -73,6 +74,11 @@ in the scope which is configured in
 
 Which copyright profile is applied in which scope can be configured in
 `Settings → Editor → Copyright`.
+
+## Importing Android vector drawables
+
+There's lots of icons already existing in the Android app.
+Those can be imported using [vec2compose](https://github.com/LennartEgb/vec2compose).
 
 ## Unencrypted settings
 
