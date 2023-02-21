@@ -27,18 +27,53 @@ import java.time.temporal.ChronoUnit
 
 object TimeUtils {
 
-    fun getFormattedTimestamp(timestamp: Long): String {
-        val messageTime = LocalDateTime.ofInstant(
-            Instant.ofEpochMilli(timestamp), ZoneId.systemDefault()
-        )
-        val currentTime = LocalDateTime.now()
-        val difference = ChronoUnit.MINUTES.between(messageTime, currentTime)
+    fun getFormattedTimestamp(timestamp: Long): String =
+        localDateTimeWrapper(timestamp, ::getFormattedTimestamp)
 
-        val formatter = if (difference < 1440) { // = 1 day
+    fun getFormattedTimestamp(messageTime: LocalDateTime, currentTime: LocalDateTime): String =
+        when {
+            ChronoUnit.HOURS.between(messageTime, currentTime) < 18 ->
+                getFormattedRelativeTimestamp(messageTime, currentTime)
+            ChronoUnit.WEEKS.between(messageTime, currentTime) < 1 ->
+
+            else ->
+                getFormattedAbsoluteTimestamp(messageTime, currentTime)
+        }
+
+    fun getFormattedRelativeTimestamp(timestamp: Long): String =
+        localDateTimeWrapper(timestamp, ::getFormattedRelativeTimestamp)
+
+    private fun getFormattedRelativeTimestamp(messageTime: LocalDateTime, currentTime: LocalDateTime): String {
+        return when {
+            ChronoUnit.HOURS.between(messageTime, currentTime) < 18 ->
+                getFormattedRelativeTimestamp(timestamp)
+            ChronoUnit.WEEKS.between(messageTime, currentTime) < 1 ->
+
+            else ->
+                getFormattedAbsoluteTimestamp(timestamp)
+        }
+    }
+
+    fun getFormattedAbsoluteTimestamp(timestamp: Long): String =
+        localDateTimeWrapper(timestamp, ::getFormattedAbsoluteTimestamp)
+
+    private fun getFormattedAbsoluteTimestamp(messageTime: LocalDateTime, currentTime: LocalDateTime): String {
+        val formatter = if (ChronoUnit.DAYS.between(messageTime, currentTime) < 1) {
             DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
         } else {
             DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
         }.withLocale(InternationalizationUtils.locale)
         return messageTime.format(formatter)
+    }
+
+    private fun localDateTimeWrapper(
+        timestamp: Long,
+        callback: (messageTime: LocalDateTime, currentTime: LocalDateTime) -> String
+    ): String {
+        val messageTime = LocalDateTime.ofInstant(
+            Instant.ofEpochMilli(timestamp), ZoneId.systemDefault()
+        )
+        val currentTime = LocalDateTime.now()
+        return callback(messageTime, currentTime)
     }
 }
