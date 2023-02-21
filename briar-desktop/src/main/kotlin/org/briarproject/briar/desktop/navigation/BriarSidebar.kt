@@ -1,6 +1,6 @@
 /*
  * Briar Desktop
- * Copyright (C) 2021-2022 The Briar Project
+ * Copyright (C) 2021-2023 The Briar Project
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -32,14 +32,6 @@ import androidx.compose.material.Badge
 import androidx.compose.material.BadgedBox
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ChromeReaderMode
-import androidx.compose.material.icons.filled.Contacts
-import androidx.compose.material.icons.filled.Forum
-import androidx.compose.material.icons.filled.Group
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.WifiTethering
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -64,12 +56,11 @@ fun BriarSidebar(
     @Composable
     fun BriarSidebarButton(
         mode: UiMode,
-        icon: ImageVector = mode.icon,
         messageCount: Int = 0,
     ) = BriarSidebarButton(
         uiMode == mode,
         { setUiMode(mode) },
-        icon,
+        mode.icon,
         i18n(mode.contentDescriptionKey),
         messageCount
     )
@@ -88,24 +79,17 @@ fun BriarSidebar(
 
         Spacer(Modifier.height(4.dp))
 
-        BriarSidebarButton(UiMode.CONTACTS, Icons.Filled.Contacts, messageCount.privateMessages)
-        if (configuration.shouldEnablePrivateGroups()) BriarSidebarButton(UiMode.GROUPS, Icons.Filled.Group)
-        if (configuration.shouldEnableForums()) BriarSidebarButton(
-            UiMode.FORUMS,
-            Icons.Filled.Forum,
-            messageCount.forumPosts
-        )
-        if (configuration.shouldEnableBlogs()) BriarSidebarButton(UiMode.BLOGS, Icons.Filled.ChromeReaderMode)
+        BriarSidebarButton(UiMode.CONTACTS, messageCount.privateMessages)
+        if (configuration.shouldEnablePrivateGroups()) BriarSidebarButton(UiMode.GROUPS)
+        if (configuration.shouldEnableForums()) BriarSidebarButton(UiMode.FORUMS, messageCount.forumPosts)
+        if (configuration.shouldEnableBlogs()) BriarSidebarButton(UiMode.BLOGS)
 
         Spacer(Modifier.weight(1f))
 
-        if (configuration.shouldEnableTransportSettings()) BriarSidebarButton(
-            UiMode.TRANSPORTS,
-            Icons.Filled.WifiTethering
-        )
+        if (configuration.shouldEnableTransportSettings()) BriarSidebarButton(UiMode.TRANSPORTS)
         if (configuration.shouldEnableMailbox()) BriarSidebarButton(UiMode.MAILBOX)
-        BriarSidebarButton(UiMode.SETTINGS, Icons.Filled.Settings)
-        BriarSidebarButton(UiMode.ABOUT, Icons.Filled.Info)
+        BriarSidebarButton(UiMode.SETTINGS)
+        BriarSidebarButton(UiMode.ABOUT)
     }
 }
 
