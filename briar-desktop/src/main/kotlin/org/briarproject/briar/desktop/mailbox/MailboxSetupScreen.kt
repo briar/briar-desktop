@@ -48,7 +48,7 @@ import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 @Composable
 fun MailboxSetupScreen(viewModel: MailboxViewModel, showError: Boolean) {
     MailboxErrorDialog(
-        state = viewModel.pairingState.value,
+        state = viewModel.pairingUiState.value,
         visible = showError,
     ) {
         viewModel.onPairingErrorSeen()
@@ -99,7 +99,7 @@ fun MailboxSetupScreen(viewModel: MailboxViewModel, showError: Boolean) {
                         .fillMaxWidth()
                         .description(i18n("mailbox.setup.hint")),
                 )
-                if (viewModel.pairingState.value is NotSetup) Button(
+                if (viewModel.pairingUiState.value is NotSetup) Button(
                     onClick = onOkButtonClicked,
                     modifier = Modifier.align(End)
                 ) {

@@ -1,6 +1,6 @@
 /*
  * Briar Desktop
- * Copyright (C) 2021-2022 The Briar Project
+ * Copyright (C) 2021-2023 The Briar Project
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -36,7 +36,7 @@ import org.briarproject.briar.desktop.viewmodel.viewModel
 
 @Composable
 fun MailboxScreen(viewModel: MailboxViewModel = viewModel()) {
-    when (val state = viewModel.pairingState.value) {
+    when (val state = viewModel.pairingUiState.value) {
         Unknown -> Loader()
         NotSetup -> MailboxSetupScreen(viewModel, false)
         is Pairing -> when (state.pairingState) {
