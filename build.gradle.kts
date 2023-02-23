@@ -45,6 +45,7 @@ buildscript {
         set("bouncy_castle_version", "1.71")
         set("junit_version", "4.13.2")
         set("jmock_version", "2.12.0")
+        set("mockwebserver_version", "4.9.3")
     }
 }
 
