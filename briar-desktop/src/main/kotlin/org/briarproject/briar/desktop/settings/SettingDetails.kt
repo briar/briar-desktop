@@ -97,10 +97,11 @@ fun SettingDetails(viewModel: SettingsViewModel) {
                     )
                 }
 
-                // TODO: add description
                 DetailItem(
                     label = i18n("settings.display.ui_scale.title"),
-                    description = ""
+                    description = "${i18n("access.settings.current_value")}: " +
+                        viewModel.selectedUiScale.value + ", " +
+                        i18n("access.settings.drag_slider_to_change_value")
                 ) {
                     val uiScale = remember { mutableStateOf(viewModel.selectedUiScale.value) }
 
