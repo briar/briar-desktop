@@ -60,7 +60,7 @@ fun MailboxScreen(viewModel: MailboxViewModel = viewModel()) {
             onWipe = viewModel::unlink,
             isWiping = state.isWiping,
         )
-        // the unpair success message will be shown like an error dialog
+        // the unpairing success message will be shown like an error dialog
         is WasUnpaired -> MailboxSetupScreen(viewModel, true)
     }
 }
