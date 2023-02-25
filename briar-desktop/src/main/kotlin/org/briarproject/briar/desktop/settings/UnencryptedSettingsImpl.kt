@@ -55,7 +55,7 @@ class UnencryptedSettingsImpl @Inject internal constructor() : UnencryptedSettin
         onChange = ::updateLocale,
     )
 
-    override var uiScale by FloatEntry(
+    override var uiScale by NullableFloatEntry(
         PREF_UI_SCALE,
         null,
     )
@@ -149,7 +149,7 @@ class UnencryptedSettingsImpl @Inject internal constructor() : UnencryptedSettin
         key, default, deserialize, serialize, onChange
     )
 
-    private class FloatEntry(
+    private class NullableFloatEntry(
         key: String,
         default: Float?,
         deserialize: (string: String?) -> Float? = { it?.toFloatOrNull() },
