@@ -23,31 +23,29 @@ import ch.qos.logback.classic.Logger
 import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.read.ListAppender
 import org.briarproject.briar.desktop.settings.UnencryptedSettings.Language
+import org.junit.After
+import org.junit.Assert.assertEquals
+import org.junit.Before
+import org.junit.Test
 import org.slf4j.LoggerFactory
-import org.testng.annotations.AfterTest
-import org.testng.annotations.BeforeTest
 import java.util.prefs.Preferences
-import kotlin.test.Test
-import kotlin.test.assertContains
-import kotlin.test.assertEquals
 
 @Suppress("HardCodedStringLiteral")
 class UnencryptedSettingsImplTest {
 
     // Unfortunately, this test is not side effect free: it does update the preferences.
     // In order to reset value to what was stored in the preferences node before running
-    // the test, remember the value during @BeforeTest and reset it to that value during
-    // @AfterTest.
+    // the test, remember the value during @Before and reset it to that value during @After.
 
     private val prefs: Preferences = Preferences.userNodeForPackage(UnencryptedSettingsImpl::class.java)
     private var oldValue: String? = null
 
-    @BeforeTest
+    @Before
     fun rememberValuesBeforeTest() {
         oldValue = prefs.get(PREF_LANG, null)
     }
 
-    @AfterTest
+    @After
     fun restoreValuesAfterTest() {
         if (oldValue == null) {
             prefs.remove(PREF_LANG)
@@ -87,6 +85,6 @@ class UnencryptedSettingsImplTest {
         assertEquals(1, appender.list.size)
         val event = appender.list[0]
         assertEquals(Level.ERROR, event.level)
-        assertContains(event.message, "Unexpected enum value")
+        assert(event.message.contains("Unexpected enum value"))
     }
 }

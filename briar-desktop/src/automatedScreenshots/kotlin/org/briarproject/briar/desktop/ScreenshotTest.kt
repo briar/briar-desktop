@@ -18,13 +18,15 @@
 
 // TODO: Remove `invisible_reference` and `invisible_member`
 //  when https://youtrack.jetbrains.com/issue/KTIJ-23114/ is fixed.
-@file:Suppress("invisible_reference", "invisible_member", "nls")
+@file:Suppress("invisible_reference", "invisible_member", "HardCodedStringLiteral")
 
 package org.briarproject.briar.desktop
 
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.awt.ComposeWindow
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.toAwtImage
 import androidx.compose.ui.test.DesktopComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.onNodeWithTag
@@ -49,6 +51,7 @@ import org.briarproject.briar.desktop.ui.UiMode
 import org.briarproject.briar.desktop.ui.WindowInfo
 import org.jetbrains.annotations.NonNls
 import org.jetbrains.skia.Image
+import org.jetbrains.skiko.toImage
 import org.junit.Test
 import java.io.FileOutputStream
 
@@ -164,8 +167,10 @@ class ScreenshotTest {
     }
 }
 
-private fun Image.saveAsScreenshot(name: String) =
+private fun ImageBitmap.saveAsScreenshot(name: String) =
     save("../utils/screenshots/$name.png")
+
+private fun ImageBitmap.save(file: String) = toAwtImage().toImage().save(file)
 
 private fun Image.save(file: String) {
     encodeToData()?.bytes?.let { bytes ->
