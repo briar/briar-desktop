@@ -27,7 +27,8 @@ cache:
     - .gradle/wrapper
     - .gradle/caches
 
-ktlint:
+check:
+  # checks ktlint and runs unit tests
   stage: test
   script:
     - git submodule update
