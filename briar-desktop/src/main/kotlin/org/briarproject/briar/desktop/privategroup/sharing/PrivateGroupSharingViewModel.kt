@@ -19,6 +19,7 @@
 package org.briarproject.briar.desktop.privategroup.sharing
 
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import org.briarproject.bramble.api.connection.ConnectionRegistry
 import org.briarproject.bramble.api.contact.ContactId
@@ -31,9 +32,11 @@ import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.bramble.api.plugin.event.ContactConnectedEvent
 import org.briarproject.bramble.api.plugin.event.ContactDisconnectedEvent
 import org.briarproject.briar.api.conversation.ConversationManager
-import org.briarproject.briar.api.forum.ForumSharingManager
-import org.briarproject.briar.api.forum.event.ForumInvitationResponseReceivedEvent
 import org.briarproject.briar.api.identity.AuthorManager
+import org.briarproject.briar.api.privategroup.GroupMember
+import org.briarproject.briar.api.privategroup.PrivateGroupManager
+import org.briarproject.briar.api.privategroup.event.GroupInvitationResponseReceivedEvent
+import org.briarproject.briar.api.privategroup.invitation.GroupInvitationManager
 import org.briarproject.briar.api.sharing.SharingConstants.MAX_INVITATION_TEXT_LENGTH
 import org.briarproject.briar.api.sharing.SharingManager.SharingStatus
 import org.briarproject.briar.api.sharing.SharingManager.SharingStatus.SHAREABLE
@@ -45,12 +48,15 @@ import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.threading.UiExecutor
 import org.briarproject.briar.desktop.utils.InternationalizationUtils
 import org.briarproject.briar.desktop.utils.StringUtils.takeUtf8
+import org.briarproject.briar.desktop.utils.clearAndAddAll
+import org.briarproject.briar.desktop.viewmodel.asList
 import org.briarproject.briar.desktop.viewmodel.asState
 import org.briarproject.briar.desktop.viewmodel.update
 import javax.inject.Inject
 
 class PrivateGroupSharingViewModel @Inject constructor(
-    private val forumSharingManager: ForumSharingManager,
+    private val privateGroupManager: PrivateGroupManager,
+    private val privateGroupInvitationManager: GroupInvitationManager,
     contactManager: ContactManager,
     authorManager: AuthorManager,
     conversationManager: ConversationManager,
@@ -74,9 +80,8 @@ class PrivateGroupSharingViewModel @Inject constructor(
     private val _shareableSelected = mutableStateOf(emptySet<ContactId>())
     private val _sharingMessage = mutableStateOf("")
 
-    val currentlySharedWith = derivedStateOf {
-        _contactList.filter { _sharingStatus.value[it.id] == SHARING }
-    }
+    private val _members = mutableStateListOf<GroupMember>()
+    val members = _members.asList()
 
     data class ShareableContactItem(val status: SharingStatus, val contactItem: ContactItem)
 
@@ -108,6 +113,12 @@ class PrivateGroupSharingViewModel @Inject constructor(
         super.reload()
         _shareableSelected.value = emptySet()
         _sharingMessage.value = ""
+        runOnDbThreadWithTransaction(true) { txn ->
+            val members = privateGroupManager.getMembers(txn, _groupId!!)
+            txn.attach {
+                _members.clearAndAddAll(members)
+            }
+        }
     }
 
     @UiExecutor
@@ -124,12 +135,13 @@ class PrivateGroupSharingViewModel @Inject constructor(
         _sharingMessage.value = message.takeUtf8(MAX_INVITATION_TEXT_LENGTH)
     }
 
+    // todo: only possible if group creator
     @UiExecutor
     fun shareForum() = runOnDbThreadWithTransaction(false) { txn ->
         val groupId = _groupId ?: return@runOnDbThreadWithTransaction
         val message = _sharingMessage.value.ifEmpty { null }
         _shareableSelected.value.forEach { contactId ->
-            forumSharingManager.sendInvitation(txn, groupId, contactId, message)
+            // privateGroupInvitationManager.sendInvitation(txn, groupId, contactId, message)
         }
         txn.attach { reload() }
     }
@@ -140,7 +152,7 @@ class PrivateGroupSharingViewModel @Inject constructor(
 
         val groupId = _groupId ?: return
         when {
-            e is ForumInvitationResponseReceivedEvent && e.messageHeader.shareableId == groupId -> {
+            e is GroupInvitationResponseReceivedEvent && e.messageHeader.shareableId == groupId -> {
                 if (e.messageHeader.wasAccepted()) {
                     _sharingStatus.value += e.contactId to SHARING
                     val connected = connectionRegistry.isConnected(e.contactId)
@@ -150,6 +162,10 @@ class PrivateGroupSharingViewModel @Inject constructor(
                 }
             }
 
+            // todo: update/reload member list on member join and leave(?)
+            //  e is GroupMessageAddedEvent && e.groupId == groupId && e.header is JoinMessageHeader
+
+            // todo: those could be moved to GroupSharingViewModel
             e is ContactLeftShareableEvent && e.groupId == groupId -> {
                 _sharingStatus.value += e.contactId to SHAREABLE
                 val connected = connectionRegistry.isConnected(e.contactId)
@@ -171,7 +187,7 @@ class PrivateGroupSharingViewModel @Inject constructor(
     override fun loadSharingStatus(txn: Transaction) {
         val groupId = _groupId ?: return
         val map = contactManager.getContacts(txn).associate { contact ->
-            contact.id to forumSharingManager.getSharingStatus(txn, groupId, contact)
+            contact.id to privateGroupInvitationManager.getSharingStatus(txn, contact, groupId)
         }
         txn.attach {
             val sharing = map.filterValues { it == SHARING }.keys

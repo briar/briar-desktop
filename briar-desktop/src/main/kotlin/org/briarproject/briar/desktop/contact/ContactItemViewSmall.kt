@@ -33,6 +33,7 @@ import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.unit.dp
 import org.briarproject.bramble.api.contact.ContactId
 import org.briarproject.bramble.api.identity.AuthorId
+import org.briarproject.briar.api.identity.AuthorInfo
 import org.briarproject.briar.api.identity.AuthorInfo.Status
 import org.briarproject.briar.desktop.ui.TrustIndicatorShort
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
@@ -74,13 +75,28 @@ fun ContactItemViewSmall(
     contactItem: ContactItem,
     showConnectionState: Boolean = true,
     modifier: Modifier = Modifier,
+) = ContactItemViewSmall(
+    displayName = contactItem.displayName,
+    authorId = contactItem.authorId,
+    authorInfo = contactItem.authorInfo,
+    isConnected = if (showConnectionState) contactItem.isConnected else null,
+    modifier = modifier,
+)
+
+@Composable
+fun ContactItemViewSmall(
+    displayName: String,
+    authorId: AuthorId,
+    authorInfo: AuthorInfo,
+    isConnected: Boolean? = null,
+    modifier: Modifier = Modifier,
 ) = Row(
     horizontalArrangement = spacedBy(8.dp),
     verticalAlignment = Alignment.CenterVertically,
     modifier = modifier
         .fillMaxWidth()
         .semantics {
-            text = getDescription(contactItem, showConnectionState)
+            text = getDescription(displayName, isConnected)
         }
 ) {
     Row(
@@ -88,32 +104,32 @@ fun ContactItemViewSmall(
         horizontalArrangement = spacedBy(8.dp),
         modifier = Modifier.weight(1f, fill = true),
     ) {
-        ProfileCircle(27.dp, contactItem)
+        ProfileCircle(27.dp, authorId, authorInfo)
         Text(
             modifier = Modifier.weight(1f, fill = false),
-            text = contactItem.displayName,
+            text = displayName,
             style = MaterialTheme.typography.body1,
             maxLines = 3,
             overflow = Ellipsis,
         )
-        TrustIndicatorShort(contactItem.trustLevel)
+        TrustIndicatorShort(authorInfo.status)
     }
-    if (showConnectionState)
+    if (isConnected != null)
         ConnectionIndicator(
             modifier = Modifier.requiredSize(12.dp),
-            isConnected = contactItem.isConnected
+            isConnected = isConnected
         )
 }
 
 private fun getDescription(
-    contactItem: ContactItem,
-    showConnectionState: Boolean,
+    displayName: String,
+    isConnected: Boolean?,
 ) = buildBlankAnnotatedString {
-    append(i18nF("access.contact.with_name", contactItem.displayName))
+    append(i18nF("access.contact.with_name", displayName))
     // todo: trust level!
-    if (showConnectionState)
+    if (isConnected != null)
         appendCommaSeparated(
-            if (contactItem.isConnected) i18n("access.contact.connected.yes")
+            if (isConnected) i18n("access.contact.connected.yes")
             else i18n("access.contact.connected.no")
         )
     append('.')

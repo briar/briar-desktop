@@ -23,6 +23,7 @@ import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import org.briarproject.briar.desktop.privategroup.sharing.PrivateGroupMemberDrawerContent
 import org.briarproject.briar.desktop.privategroup.sharing.PrivateGroupSharingViewModel
 import org.briarproject.briar.desktop.ui.getInfoDrawerHandler
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
@@ -32,28 +33,28 @@ fun PrivateGroupDropdownMenu(
     privateGroupSharingViewModel: PrivateGroupSharingViewModel,
     expanded: Boolean,
     onClose: () -> Unit,
-    onLeaveForumClick: () -> Unit,
+    onLeaveForumClick: () -> Unit, // todo: rename
 ) = DropdownMenu(
     expanded = expanded,
     onDismissRequest = onClose,
 ) {
     val infoDrawerHandler = getInfoDrawerHandler()
-//    DropdownMenuItem(
-//        onClick = {
-//            onClose()
-//            infoDrawerHandler.open {
-//                ForumSharingActionDrawerContent(
-//                    close = infoDrawerHandler::close,
-//                    viewModel = forumSharingViewModel,
-//                )
-//            }
-//        }
-//    ) {
-//        Text(
-//            i18n("forum.sharing.action.title"),
-//            style = MaterialTheme.typography.body2,
-//        )
-//    }
+    DropdownMenuItem(
+        onClick = {
+            onClose()
+            infoDrawerHandler.open {
+                PrivateGroupMemberDrawerContent(
+                    close = infoDrawerHandler::close,
+                    viewModel = privateGroupSharingViewModel,
+                )
+            }
+        }
+    ) {
+        Text(
+            i18n("group.member.title"),
+            style = MaterialTheme.typography.body2,
+        )
+    }
 //    DropdownMenuItem(
 //        onClick = {
 //            onClose()
@@ -70,15 +71,15 @@ fun PrivateGroupDropdownMenu(
 //            style = MaterialTheme.typography.body2,
 //        )
 //    }
-    DropdownMenuItem(
-        onClick = {
-            onClose()
-            onLeaveForumClick()
-        }
-    ) {
-        Text(
-            i18n("forum.leave.title"),
-            style = MaterialTheme.typography.body2,
-        )
-    }
+//    DropdownMenuItem(
+//        onClick = {
+//            onClose()
+//            onLeaveForumClick()
+//        }
+//    ) {
+//        Text(
+//            i18n("forum.leave.title"), // todo: change
+//            style = MaterialTheme.typography.body2,
+//        )
+//    }
 }
