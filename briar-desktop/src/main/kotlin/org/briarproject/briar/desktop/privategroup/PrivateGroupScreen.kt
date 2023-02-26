@@ -19,7 +19,6 @@
 package org.briarproject.briar.desktop.privategroup
 
 import androidx.compose.runtime.Composable
-import org.briarproject.briar.desktop.forums.conversation.ForumDropdownMenu
 import org.briarproject.briar.desktop.group.GroupScreen
 import org.briarproject.briar.desktop.viewmodel.viewModel
 
@@ -30,6 +29,7 @@ fun PrivateGroupScreen(
     strings = PrivateGroupStrings,
     viewModel = viewModel,
     dropdownMenu = { forumSharingViewModel, expanded, onClose, onLeaveForumClick ->
-        ForumDropdownMenu(forumSharingViewModel, expanded, onClose, onLeaveForumClick)
+        // todo: uncomment when adapted to groups
+        // ForumDropdownMenu(forumSharingViewModel, expanded, onClose, onLeaveForumClick)
     }
 )
