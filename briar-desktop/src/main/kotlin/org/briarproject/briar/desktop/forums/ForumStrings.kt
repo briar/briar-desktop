@@ -35,8 +35,8 @@ object ForumStrings : GroupStrings(
     noGroupSelectedTitle = i18n("forum.none_selected.title"),
     noGroupSelectedText = i18n("forum.none_selected.hint"),
     messageCount = { count ->
-        if (count > 0) i18nP("group.card.posts", count)
-        else i18n("group.card.no_posts")
+        if (count > 0) i18nP("forum.card.posts", count)
+        else i18n("forum.card.no_posts")
     },
     unreadCount = { count ->
         i18nP("access.forums.unread_count", count)
