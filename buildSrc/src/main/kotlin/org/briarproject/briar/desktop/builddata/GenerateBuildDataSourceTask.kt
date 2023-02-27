@@ -27,6 +27,7 @@ import org.eclipse.jgit.revwalk.RevWalk
 import org.eclipse.jgit.submodule.SubmoduleWalk
 import org.gradle.api.GradleException
 import org.gradle.api.GradleScriptException
+import org.gradle.api.InvalidUserDataException
 import org.gradle.api.internal.artifacts.PreResolvedResolvableArtifact
 import org.gradle.api.tasks.TaskAction
 import java.io.ByteArrayInputStream
@@ -292,13 +293,18 @@ open class GenerateBuildDataSourceTask : AbstractBuildDataTask() {
         line("    val WINDOWS_AUMI = \"$windowsAumi\"")
         line()
         line("    val ARTIFACTS: List<Artifact> = buildList {")
+        var missingLicenses = false
         for (artifact in artifacts) {
             val license = LICENSES[artifact.unversioned()]
             if (license == null) {
                 logger.warn("No license defined for \"${artifact.group}:${artifact.artifact}\", please define in GenerateBuildDataSourceTask.kt")
+                missingLicenses = true
             }
             val licenseName = license ?: "Unknown"
             line("        add(Artifact(\"${artifact.group}\", \"${artifact.artifact}\", \"${artifact.version}\", \"$licenseName\"))")
+        }
+        if (missingLicenses) {
+            throw InvalidUserDataException("Some dependencies don't have their licenses defined. See the log for details.")
         }
         line("    }")
         line("}")
