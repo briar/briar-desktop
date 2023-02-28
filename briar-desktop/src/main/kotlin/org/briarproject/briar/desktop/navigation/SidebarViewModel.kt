@@ -1,6 +1,6 @@
 /*
  * Briar Desktop
- * Copyright (C) 2021-2022 The Briar Project
+ * Copyright (C) 2021-2023 The Briar Project
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -19,8 +19,13 @@
 package org.briarproject.briar.desktop.navigation
 
 import androidx.compose.runtime.mutableStateOf
+import org.briarproject.bramble.api.event.Event
+import org.briarproject.bramble.api.event.EventBus
+import org.briarproject.bramble.api.event.EventListener
 import org.briarproject.bramble.api.identity.IdentityManager
 import org.briarproject.bramble.api.identity.LocalAuthor
+import org.briarproject.bramble.api.mailbox.event.MailboxProblemEvent
+import org.briarproject.briar.desktop.threading.UiExecutor
 import org.briarproject.briar.desktop.ui.MessageCounter
 import org.briarproject.briar.desktop.ui.MessageCounterData
 import org.briarproject.briar.desktop.ui.MessageCounterDataType.Forum
@@ -36,9 +41,16 @@ class SidebarViewModel
 constructor(
     private val identityManager: IdentityManager,
     private val messageCounter: MessageCounter,
-) : ViewModel() {
+    private val eventBus: EventBus,
+) : EventListener, ViewModel() {
+    private var listensToEventBus = false
+
     override fun onInit() {
         super.onInit()
+        if (!listensToEventBus) {
+            eventBus.addListener(this)
+            listensToEventBus = true
+        }
         loadAccountInfo()
         messageCounter.addListener(this::onMessageCounterUpdated)
     }
@@ -46,6 +58,10 @@ constructor(
     override fun onCleared() {
         super.onCleared()
         messageCounter.removeListener(this::onMessageCounterUpdated)
+    }
+
+    override fun eventOccurred(e: Event) {
+        if (e is MailboxProblemEvent) _mailboxProblem.value = true
     }
 
     private fun onMessageCounterUpdated(data: MessageCounterData) {
@@ -56,21 +72,25 @@ constructor(
         }
     }
 
-    private var _uiMode = mutableStateOf(UiMode.CONTACTS)
-    private var _account = mutableStateOf<LocalAuthor?>(null)
+    private val _uiMode = mutableStateOf(UiMode.CONTACTS)
+    private val _account = mutableStateOf<LocalAuthor?>(null)
+    private val _mailboxProblem = mutableStateOf(false)
 
-    private var _messageCount = mutableStateOf(MessageCount())
+    private val _messageCount = mutableStateOf(MessageCount())
 
     val uiMode = _uiMode.asState()
     val account = _account.asState()
+    val mailboxProblem = _mailboxProblem.asState()
 
     val messageCount = _messageCount.asState()
 
+    @UiExecutor
     fun setUiMode(uiMode: UiMode) {
         _uiMode.value = uiMode
+        if (uiMode == UiMode.MAILBOX) _mailboxProblem.value = false
     }
 
-    fun loadAccountInfo() {
+    private fun loadAccountInfo() {
         _account.value = identityManager.localAuthor
     }
 
