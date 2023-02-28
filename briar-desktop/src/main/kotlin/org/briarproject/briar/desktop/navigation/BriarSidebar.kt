@@ -26,12 +26,16 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material.Badge
 import androidx.compose.material.BadgedBox
+import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Error
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,6 +43,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import org.briarproject.bramble.api.identity.LocalAuthor
 import org.briarproject.briar.desktop.contact.ProfileCircle
+import org.briarproject.briar.desktop.navigation.SidebarButtonState.None
+import org.briarproject.briar.desktop.navigation.SidebarButtonState.UnreadMessages
+import org.briarproject.briar.desktop.navigation.SidebarButtonState.Warning
 import org.briarproject.briar.desktop.theme.sidebarSurface
 import org.briarproject.briar.desktop.ui.UiMode
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
@@ -52,17 +59,18 @@ fun BriarSidebar(
     uiMode: UiMode,
     setUiMode: (UiMode) -> Unit,
     messageCount: SidebarViewModel.MessageCount,
+    hasMailboxProblem: Boolean,
 ) {
     @Composable
     fun BriarSidebarButton(
         mode: UiMode,
         messageCount: Int = 0,
     ) = BriarSidebarButton(
-        uiMode == mode,
-        { setUiMode(mode) },
-        mode.icon,
-        i18n(mode.contentDescriptionKey),
-        messageCount
+        selected = uiMode == mode,
+        onClick = { setUiMode(mode) },
+        icon = mode.icon,
+        contentDescription = i18n(mode.contentDescriptionKey),
+        sideBarButtonState = if (messageCount == 0) None else UnreadMessages(messageCount),
     )
 
     val configuration = getConfiguration()
@@ -87,10 +95,22 @@ fun BriarSidebar(
         Spacer(Modifier.weight(1f))
 
         if (configuration.shouldEnableTransportSettings()) BriarSidebarButton(UiMode.TRANSPORTS)
-        if (configuration.shouldEnableMailbox()) BriarSidebarButton(UiMode.MAILBOX)
+        if (configuration.shouldEnableMailbox()) BriarSidebarButton(
+            selected = uiMode == UiMode.MAILBOX,
+            onClick = { setUiMode(UiMode.MAILBOX) },
+            icon = UiMode.MAILBOX.icon,
+            contentDescription = i18n(UiMode.MAILBOX.contentDescriptionKey),
+            sideBarButtonState = if (hasMailboxProblem) Warning else None,
+        )
         BriarSidebarButton(UiMode.SETTINGS)
         BriarSidebarButton(UiMode.ABOUT)
     }
+}
+
+sealed class SidebarButtonState {
+    object None : SidebarButtonState()
+    class UnreadMessages(val messageCount: Int) : SidebarButtonState()
+    object Warning : SidebarButtonState()
 }
 
 @Composable
@@ -99,13 +119,20 @@ fun BriarSidebarButton(
     onClick: () -> Unit,
     icon: ImageVector,
     contentDescription: String,
-    messageCount: Int,
+    sideBarButtonState: SidebarButtonState,
 ) = BadgedBox(
     badge = {
-        if (messageCount > 0) {
+        if (sideBarButtonState is UnreadMessages && sideBarButtonState.messageCount > 0) {
             Badge(
                 modifier = Modifier.offset((-12).dp, 12.dp),
                 backgroundColor = MaterialTheme.colors.secondary,
+            )
+        } else if (sideBarButtonState is Warning) {
+            Icon(
+                Icons.Default.Error,
+                i18n("mailbox.status.problem"),
+                modifier = Modifier.offset((-12).dp, 12.dp).size(16.dp),
+                tint = MaterialTheme.colors.error
             )
         }
     },
