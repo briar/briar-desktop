@@ -23,10 +23,10 @@ import org.briarproject.briar.desktop.group.conversation.ThreadItem
 import javax.annotation.concurrent.NotThreadSafe
 
 @NotThreadSafe
-class PrivateGroupMessageItem(h: GroupMessageHeader, text: String?) : ThreadItem(
+class PrivateGroupMessageItem(h: GroupMessageHeader, text: String) : ThreadItem(
     messageId = h.id,
     parentId = h.parentId,
-    text = text ?: "",
+    text = text,
     timestamp = h.timestamp,
     author = h.author,
     authorInfo = h.authorInfo,

@@ -20,7 +20,6 @@ package org.briarproject.briar.desktop.group.conversation
 
 import androidx.compose.runtime.mutableStateOf
 import kotlinx.coroutines.Job
-import mu.KotlinLogging
 import org.briarproject.bramble.api.db.DatabaseExecutor
 import org.briarproject.bramble.api.db.Transaction
 import org.briarproject.bramble.api.db.TransactionManager
@@ -46,14 +45,10 @@ abstract class ThreadedConversationViewModel(
     private val eventBus: EventBus,
 ) : EventListenerDbViewModel(briarExecutors, lifecycleManager, db, eventBus) {
 
-    companion object {
-        private val LOG = KotlinLogging.logger {}
-    }
-
     private val _groupItem = mutableStateOf<GroupItem?>(null)
     val groupItem = _groupItem.asState()
 
-    protected lateinit var onThreadItemAdded: (header: PostHeader) -> Unit
+    protected lateinit var onThreadItemLocallyAdded: (header: PostHeader) -> Unit
 
     private val _state = mutableStateOf<ThreadedConversationScreenState>(Loading)
     val state = _state.asState()
@@ -62,8 +57,8 @@ abstract class ThreadedConversationViewModel(
     val selectedThreadItem = _selectedThreadItem.asState()
 
     @UiExecutor
-    fun setGroupItem(groupItem: GroupItem, onThreadItemAdded: (header: PostHeader) -> Unit) {
-        this.onThreadItemAdded = onThreadItemAdded
+    fun setGroupItem(groupItem: GroupItem, onThreadItemLocallyAdded: (header: PostHeader) -> Unit) {
+        this.onThreadItemLocallyAdded = onThreadItemLocallyAdded
         _groupItem.value = groupItem
         _selectedThreadItem.value = null
         forumSharingViewModel.setGroupId(groupItem.id)

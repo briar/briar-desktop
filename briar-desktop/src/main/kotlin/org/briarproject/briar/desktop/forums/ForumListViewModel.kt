@@ -86,7 +86,7 @@ class ForumListViewModel
         }
 
     override fun addOwnMessage(header: PostHeader) {
-        // no-op since GroupMessageAddedEvent is also sent on locally added message
+        selectedGroupId.value?.let { id -> updateItem(id) { it.updateOnPostReceived(header) } }
     }
 
     private fun updateItem(groupId: GroupId, update: (ForumItem) -> ForumItem) =

@@ -19,6 +19,12 @@
 package org.briarproject.briar.desktop.privategroup
 
 import androidx.compose.runtime.mutableStateListOf
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.briarproject.bramble.api.crypto.CryptoExecutor
 import org.briarproject.bramble.api.db.Transaction
 import org.briarproject.bramble.api.db.TransactionManager
 import org.briarproject.bramble.api.event.Event
@@ -48,6 +54,7 @@ class PrivateGroupListViewModel
     private val privateGroupManager: PrivateGroupManager,
     private val privateGroupFactory: PrivateGroupFactory,
     private val privateGroupMessageFactory: GroupMessageFactory,
+    @CryptoExecutor private val cryptoDispatcher: CoroutineDispatcher,
     threadViewModel: PrivateGroupConversationViewModel,
     briarExecutors: BriarExecutors,
     lifecycleManager: LifecycleManager,
@@ -78,14 +85,19 @@ class PrivateGroupListViewModel
         groupCount = privateGroupManager.getGroupCount(txn, id),
     )
 
-    override fun createGroup(name: String) = runOnDbThread {
-        val author: LocalAuthor = identityManager.localAuthor
-        // in Android, the following two actions are done on the cryptoExecutor
-        val group = privateGroupFactory.createPrivateGroup(name, author)
-        val joinMsg = privateGroupMessageFactory.createJoinMessage(
-            group.id, clock.currentTimeMillis(), author
-        )
-        privateGroupManager.addPrivateGroup(group, joinMsg, true)
+    @OptIn(DelicateCoroutinesApi::class)
+    override fun createGroup(name: String) {
+        GlobalScope.launch {
+            val author = runOnDbThread<LocalAuthor> { identityManager.localAuthor }
+            val (group, joinMsg) = withContext(cryptoDispatcher) {
+                val group = privateGroupFactory.createPrivateGroup(name, author)
+                val joinMsg = privateGroupMessageFactory.createJoinMessage(
+                    group.id, clock.currentTimeMillis(), author
+                )
+                return@withContext Pair(group, joinMsg)
+            }
+            runOnDbThread { privateGroupManager.addPrivateGroup(group, joinMsg, true) }
+        }
     }
 
     override fun loadGroups(txn: Transaction) =
@@ -97,7 +109,7 @@ class PrivateGroupListViewModel
         }
 
     override fun addOwnMessage(header: PostHeader) {
-        selectedGroupId.value?.let { id -> updateItem(id) { it.updateOnPostReceived(header) } }
+        // no-op since GroupMessageAddedEvent is also sent on locally added message
     }
 
     private fun updateItem(groupId: GroupId, update: (PrivateGroupItem) -> PrivateGroupItem) =

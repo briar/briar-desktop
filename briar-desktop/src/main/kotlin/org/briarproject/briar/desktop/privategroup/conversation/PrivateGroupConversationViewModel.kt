@@ -23,7 +23,6 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import mu.KotlinLogging
 import org.briarproject.bramble.api.crypto.CryptoExecutor
 import org.briarproject.bramble.api.db.DatabaseExecutor
 import org.briarproject.bramble.api.db.Transaction
@@ -66,13 +65,9 @@ class PrivateGroupConversationViewModel @Inject constructor(
     eventBus
 ) {
 
-    companion object {
-        private val LOG = KotlinLogging.logger {}
-    }
-
     @UiExecutor
     override fun eventOccurred(e: Event) {
-        // todo
+        // todo: handle incoming messages
         /*if (e is ForumPostReceivedEvent) {
             if (e.groupId == groupItem.value?.id) {
                 val item = ForumPostItem(e.header, e.text)
@@ -110,8 +105,8 @@ class PrivateGroupConversationViewModel @Inject constructor(
             val header = privateGroupManager.addLocalMessage(txn, post)
             txn.attach {
                 val item = PrivateGroupMessageItem(header, text)
-                addItem(item, item.id)
-                onThreadItemAdded(header)
+                addItem(item, scrollTo = item.id)
+                onThreadItemLocallyAdded(header)
                 // unselect post that we just replied to
                 if (parentId != null) {
                     selectThreadItem(null)

@@ -45,7 +45,6 @@ import androidx.compose.ui.input.pointer.PointerIconDefaults
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.unit.dp
 import org.briarproject.bramble.util.StringUtils.utf8IsTooLong
-import org.briarproject.briar.api.forum.ForumConstants.MAX_FORUM_POST_TEXT_LENGTH
 import org.briarproject.briar.desktop.group.GroupStrings
 import org.briarproject.briar.desktop.theme.divider
 import org.briarproject.briar.desktop.theme.sendButton
@@ -106,7 +105,7 @@ fun ThreadedConversationInput(
         HorizontalDivider()
         TextField(
             value = messageText.value,
-            onValueChange = { messageText.value = it.takeUtf8(MAX_FORUM_POST_TEXT_LENGTH) },
+            onValueChange = { messageText.value = it.takeUtf8(strings.messageMaxLength) },
             onEnter = onSendAction,
             maxLines = 10,
             textStyle = MaterialTheme.typography.body1,

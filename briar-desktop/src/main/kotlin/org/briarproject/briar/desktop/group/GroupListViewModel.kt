@@ -52,7 +52,7 @@ abstract class GroupListViewModel<T : GroupItem>(
 
     protected abstract val clientId: ClientId
 
-    protected abstract val _groupList: MutableList<T> // todo: check internal
+    protected abstract val _groupList: MutableList<T>
     val list = derivedStateOf {
         val filter = _filterBy.value
         _groupList.filter { item ->

@@ -51,14 +51,22 @@ import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.rememberDialogState
 import org.briarproject.bramble.util.StringUtils.utf8IsTooLong
 import org.briarproject.briar.desktop.forums.ForumStrings
+import org.briarproject.briar.desktop.privategroup.PrivateGroupStrings
 import org.briarproject.briar.desktop.utils.AccessibilityUtils.description
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 import org.briarproject.briar.desktop.utils.UiUtils.DensityDimension
 
-fun main() = preview {
-    val visible = mutableStateOf(true)
-    AddGroupDialog(ForumStrings, visible.value, {}, { visible.value = false })
+fun main() = preview(
+    "visible" to true,
+    "forums" to true
+) {
+    AddGroupDialog(
+        strings = if (getBooleanParameter("forums")) ForumStrings else PrivateGroupStrings,
+        visible = getBooleanParameter("visible"),
+        onCreate = {},
+        onCancelButtonClicked = { setBooleanParameter("visible", false) }
+    )
 }
 
 @Composable

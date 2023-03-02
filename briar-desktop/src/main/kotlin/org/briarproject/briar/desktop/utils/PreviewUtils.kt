@@ -1,6 +1,6 @@
 /*
  * Briar Desktop
- * Copyright (C) 2021-2022 The Briar Project
+ * Copyright (C) 2021-2023 The Briar Project
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -59,6 +59,7 @@ import org.briarproject.briar.desktop.ui.LocalWindowScope
 import org.briarproject.briar.desktop.ui.WindowFocusState
 import org.briarproject.briar.desktop.utils.UiUtils.DensityDimension
 import org.briarproject.briar.desktop.viewmodel.SingleStateEvent
+import org.jetbrains.annotations.NonNls
 import java.util.prefs.Preferences
 import kotlin.random.Random
 
@@ -81,25 +82,25 @@ object PreviewUtils {
             state.value = value!!
         }
 
-        fun getStringParameter(name: String) = getDatatype<String>(name)
+        fun getStringParameter(@NonNls name: String) = getDatatype<String>(name)
 
-        fun setStringParameter(name: String, value: String) = setDatatype(name, value)
+        fun setStringParameter(@NonNls name: String, value: String) = setDatatype(name, value)
 
-        fun getBooleanParameter(name: String) = getDatatype<Boolean>(name)
+        fun getBooleanParameter(@NonNls name: String) = getDatatype<Boolean>(name)
 
-        fun setBooleanParameter(name: String, value: Boolean) = setDatatype(name, value)
+        fun setBooleanParameter(@NonNls name: String, value: Boolean) = setDatatype(name, value)
 
-        fun getIntParameter(name: String) = getDatatype<Int>(name)
+        fun getIntParameter(@NonNls name: String) = getDatatype<Int>(name)
 
-        fun setIntParameter(name: String, value: Int) = setDatatype(name, value)
+        fun setIntParameter(@NonNls name: String, value: Int) = setDatatype(name, value)
 
-        fun getLongParameter(name: String) = getDatatype<Long>(name)
+        fun getLongParameter(@NonNls name: String) = getDatatype<Long>(name)
 
-        fun setLongParameter(name: String, value: Long) = setDatatype(name, value)
+        fun setLongParameter(@NonNls name: String, value: Long) = setDatatype(name, value)
 
-        fun getFloatParameter(name: String) = getDatatype<Float>(name)
+        fun getFloatParameter(@NonNls name: String) = getDatatype<Float>(name)
 
-        fun setFloatParameter(name: String, value: Float) = setDatatype(name, value)
+        fun setFloatParameter(@NonNls name: String, value: Float) = setDatatype(name, value)
 
         fun getRandomId() = random.nextBytes(UniqueId.LENGTH)
 
