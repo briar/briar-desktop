@@ -88,7 +88,6 @@ fun ContactItemViewSmall(
         horizontalArrangement = spacedBy(8.dp),
         modifier = Modifier.weight(1f, fill = true),
     ) {
-        // TODO cache profile images, if available
         ProfileCircle(27.dp, contactItem)
         Text(
             modifier = Modifier.weight(1f, fill = false),

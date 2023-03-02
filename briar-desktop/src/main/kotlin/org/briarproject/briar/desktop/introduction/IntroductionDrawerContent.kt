@@ -18,8 +18,9 @@
 
 package org.briarproject.briar.desktop.introduction
 
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -88,30 +89,13 @@ fun IntroductionDrawerContent(
         Box(Modifier.fillMaxWidth().weight(1f)) {
             if (viewModel.contactList.value.isEmpty()) {
                 // todo: this might be shown to the user while the list is still loading
-                Text(
-                    text = i18n("introduction.state.no_contacts"),
-                    style = MaterialTheme.typography.body1,
-                    modifier = Modifier.padding(8.dp).align(Center),
-                )
+                EmptyList()
             } else {
-                VerticallyScrollableArea { scrollState ->
-                    LazyColumn(state = scrollState) {
-                        items(
-                            items = viewModel.contactList.value,
-                            key = { it.contactItem.id },
-                        ) { introductionContactItem ->
-                            IntroductionListItemView(
-                                introductionContactItem = introductionContactItem,
-                                selected = viewModel.isSecondContactSelected(introductionContactItem),
-                                onToggle = { viewModel.toggleSecondContact(introductionContactItem) },
-                            )
-                        }
-                    }
-                }
+                List(viewModel)
             }
         }
         Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = spacedBy(8.dp),
             modifier = Modifier.fillMaxWidth().padding(8.dp),
         ) {
             val makeIntroduction = {
@@ -145,6 +129,29 @@ fun IntroductionDrawerContent(
 }
 
 @Composable
+private fun BoxScope.EmptyList() = Text(
+    text = i18n("introduction.state.no_contacts"),
+    style = MaterialTheme.typography.body1,
+    modifier = Modifier.padding(8.dp).align(Center),
+)
+
+@Composable
+private fun List(viewModel: IntroductionViewModel) = VerticallyScrollableArea { scrollState ->
+    LazyColumn(state = scrollState) {
+        items(
+            items = viewModel.contactList.value,
+            key = { it.contactItem.id },
+        ) { introductionContactItem ->
+            IntroductionListItemView(
+                introductionContactItem = introductionContactItem,
+                selected = viewModel.isSecondContactSelected(introductionContactItem),
+                onToggle = { viewModel.toggleSecondContact(introductionContactItem) },
+            )
+        }
+    }
+}
+
+@Composable
 private fun IntroductionListItemView(
     introductionContactItem: IntroductionViewModel.IntroductionContactItem,
     selected: Boolean,
@@ -155,7 +162,7 @@ private fun IntroductionListItemView(
     multiSelectWithCheckbox = true,
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(4.dp),
+        verticalArrangement = spacedBy(4.dp),
         modifier = Modifier.padding(vertical = 8.dp).padding(end = 8.dp)
     ) {
         ContactItemViewSmall(
