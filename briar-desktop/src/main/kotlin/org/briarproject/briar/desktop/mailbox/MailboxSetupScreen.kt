@@ -20,13 +20,14 @@ package org.briarproject.briar.desktop.mailbox
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.VerticalScrollbar
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.rememberScrollbarAdapter
@@ -40,6 +41,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterEnd
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.End
@@ -50,7 +52,6 @@ import androidx.compose.ui.unit.dp
 import org.briarproject.bramble.api.FormatException
 import org.briarproject.briar.desktop.mailbox.MailboxPairingUiState.NotSetup
 import org.briarproject.briar.desktop.ui.Constants.DIALOG_WIDTH
-import org.briarproject.briar.desktop.ui.HorizontalDivider
 import org.briarproject.briar.desktop.utils.AccessibilityUtils.description
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 
@@ -62,53 +63,72 @@ fun MailboxSetupScreen(viewModel: MailboxViewModel, showError: Boolean) {
     ) {
         viewModel.onPairingErrorSeen()
     }
-    Box {
+    Box(
+        contentAlignment = Center,
+        modifier = Modifier.fillMaxSize(),
+    ) {
         val scrollState = rememberScrollState()
         VerticalScrollbar(
             adapter = rememberScrollbarAdapter(scrollState),
-            modifier = Modifier.align(CenterEnd).fillMaxHeight()
+            modifier = Modifier.align(CenterEnd).fillMaxHeight(),
         )
-        Column(
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            horizontalAlignment = CenterHorizontally,
-            modifier = Modifier.verticalScroll(scrollState).padding(16.dp).fillMaxSize(),
+        Row(
+            horizontalArrangement = spacedBy(32.dp, CenterHorizontally),
+            modifier = Modifier.fillMaxWidth().verticalScroll(scrollState),
         ) {
             val theme = if (MaterialTheme.colors.isLight) "light" else "dark" // NON-NLS
-            Image(
-                painter = painterResource("images/il_mailbox_$theme.svg"), // NON-NLS
-                contentDescription = i18n("access.logo"),
-            )
-            Text(
-                text = i18n("mailbox.setup.intro"),
+            Column(
+                verticalArrangement = spacedBy(16.dp),
                 modifier = Modifier.widthIn(max = DIALOG_WIDTH),
-            )
-            Image(
-                painter = painterResource("images/il_mailbox_setup_$theme.svg"), // NON-NLS
-                contentDescription = i18n("access.logo"),
-            )
-            HorizontalDivider(Modifier.widthIn(max = DIALOG_WIDTH * 2))
-            Text(
-                text = i18n("mailbox.setup.download"),
-                modifier = Modifier.widthIn(max = DIALOG_WIDTH).padding(top = 16.dp),
-            )
-            Text(
-                text = i18n("mailbox.setup.link"),
-                modifier = Modifier.widthIn(max = DIALOG_WIDTH),
-            )
-
-            val isInvalid = rememberSaveable { mutableStateOf(false) }
-            val onNameChanged = { changedName: String ->
-                viewModel.onPairingLinkChanged(changedName)
-                isInvalid.value = false
+            ) {
+                Image(
+                    painter = painterResource("images/il_mailbox_$theme.svg"), // NON-NLS
+                    contentDescription = null,
+                    modifier = Modifier.align(CenterHorizontally),
+                )
+                Text(
+                    text = i18n("mailbox.setup.intro.title"),
+                    style = MaterialTheme.typography.h5,
+                )
+                Text(
+                    text = i18n("mailbox.setup.intro"),
+                )
+                Text(
+                    text = i18n("mailbox.setup.download.title"),
+                    style = MaterialTheme.typography.h5,
+                )
+                Text(
+                    text = i18n("mailbox.setup.download"),
+                )
             }
-            val onOkButtonClicked = {
-                try {
-                    viewModel.pairMailbox(viewModel.pairingLink.value)
-                } catch (e: FormatException) {
-                    isInvalid.value = true
+            Column(
+                verticalArrangement = spacedBy(16.dp),
+                modifier = Modifier.widthIn(max = DIALOG_WIDTH),
+            ) {
+                Image(
+                    painter = painterResource("images/il_mailbox_setup_$theme.svg"), // NON-NLS
+                    contentDescription = null,
+                    modifier = Modifier.align(CenterHorizontally),
+                )
+                Text(
+                    text = i18n("mailbox.setup.link.title"),
+                    style = MaterialTheme.typography.h5,
+                )
+                Text(
+                    text = i18n("mailbox.setup.link"),
+                )
+                val isInvalid = rememberSaveable { mutableStateOf(false) }
+                val onNameChanged = { changedName: String ->
+                    viewModel.onPairingLinkChanged(changedName)
+                    isInvalid.value = false
                 }
-            }
-            Column(Modifier.widthIn(max = DIALOG_WIDTH * 2)) {
+                val onOkButtonClicked = {
+                    try {
+                        viewModel.pairMailbox(viewModel.pairingLink.value)
+                    } catch (e: FormatException) {
+                        isInvalid.value = true
+                    }
+                }
                 OutlinedTextField(
                     value = viewModel.pairingLink.value,
                     onValueChange = onNameChanged,
@@ -119,6 +139,7 @@ fun MailboxSetupScreen(viewModel: MailboxViewModel, showError: Boolean) {
                     errorMessage = i18n("mailbox.setup.link.error"),
                     modifier = Modifier
                         .fillMaxWidth()
+                        .requiredHeight(96.dp)
                         .description(i18n("mailbox.setup.hint")),
                 )
                 if (viewModel.pairingUiState.value is NotSetup) Button(
