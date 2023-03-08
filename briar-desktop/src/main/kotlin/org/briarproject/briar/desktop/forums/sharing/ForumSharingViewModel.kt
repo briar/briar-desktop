@@ -1,6 +1,6 @@
 /*
  * Briar Desktop
- * Copyright (C) 2021-2022 The Briar Project
+ * Copyright (C) 2021-2023 The Briar Project
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -149,6 +149,9 @@ class ForumSharingViewModel @Inject constructor(
         _shareableSelected.value.forEach { contactId ->
             forumSharingManager.sendInvitation(txn, groupId, contactId, message)
         }
+        // send custom event to force message reload if private chat is open for contactId
+        // todo: switch to a more generic approach where every locally sent message broadcasts an event per default
+        txn.attach(ForumInvitationSentEvent(_shareableSelected.value.toList()))
         txn.attach { reload() }
     }
 

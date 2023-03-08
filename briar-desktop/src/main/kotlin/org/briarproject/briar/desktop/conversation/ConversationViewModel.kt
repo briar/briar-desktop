@@ -1,6 +1,6 @@
 /*
  * Briar Desktop
- * Copyright (C) 2021-2022 The Briar Project
+ * Copyright (C) 2021-2023 The Briar Project
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -64,6 +64,7 @@ import org.briarproject.briar.desktop.contact.ContactItem
 import org.briarproject.briar.desktop.contact.loadContactItem
 import org.briarproject.briar.desktop.conversation.ConversationRequestItem.RequestType.FORUM
 import org.briarproject.briar.desktop.conversation.ConversationRequestItem.RequestType.INTRODUCTION
+import org.briarproject.briar.desktop.forums.sharing.ForumInvitationSentEvent
 import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.utils.KLoggerUtils.e
 import org.briarproject.briar.desktop.utils.KLoggerUtils.i
@@ -374,6 +375,9 @@ constructor(
                     _messages.removeIf { messages.contains(it.id) }
                 }
             }
+
+            is ForumInvitationSentEvent ->
+                if (_contactId.value in e.contactIds) reloadMessages()
 
             is ContactConnectedEvent -> {
                 if (e.contactId == _contactId.value) {
