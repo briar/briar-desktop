@@ -65,7 +65,7 @@ sourceSets {
     }
 }
 
-val versionCode = "0.4.0"
+val versionCode = "0.4.1"
 val buildType = if (project.hasProperty("buildType")) project.properties["buildType"] else "snapshot"
 group = "app.briar.desktop"
 version = "$versionCode-$buildType"
