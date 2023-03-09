@@ -18,6 +18,7 @@
 
 @file:Suppress("HardCodedStringLiteral")
 
+import org.briarproject.briar.desktop.os.currentOS
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -77,10 +78,26 @@ buildData {
     windowsAumi = appName
 }
 
+val tor_version: String by rootProject.extra
+val obfs4proxy_version: String by rootProject.extra
+val snowflake_version: String by rootProject.extra
+
 dependencies {
     currentOs(compose.desktop.currentOs)
     windowsX64(compose.desktop.windows_x64)
     linuxX64(compose.desktop.linux_x64)
+
+    currentOs("org.briarproject:tor-${currentOS.id}:$tor_version")
+    currentOs("org.briarproject:obfs4proxy-${currentOS.id}:$obfs4proxy_version")
+    currentOs("org.briarproject:snowflake-${currentOS.id}:$snowflake_version")
+
+    linuxX64("org.briarproject:tor-linux:$tor_version")
+    linuxX64("org.briarproject:obfs4proxy-linux:$obfs4proxy_version")
+    linuxX64("org.briarproject:snowflake-linux:$snowflake_version")
+
+    windowsX64("org.briarproject:tor-windows:$tor_version")
+    windowsX64("org.briarproject:obfs4proxy-windows:$obfs4proxy_version")
+    windowsX64("org.briarproject:snowflake-windows:$snowflake_version")
 
     implementation(compose.materialIconsExtended)
     // needed to access Dispatchers.Swing for EventExecutor
