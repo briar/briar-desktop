@@ -1,6 +1,6 @@
 /*
  * Briar Desktop
- * Copyright (C) 2021-2022 The Briar Project
+ * Copyright (C) 2021-2023 The Briar Project
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -32,6 +32,10 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -41,7 +45,6 @@ import org.briarproject.briar.desktop.contact.ContactItem
 import org.briarproject.briar.desktop.contact.ContactList
 import org.briarproject.briar.desktop.contact.ContactListViewModel
 import org.briarproject.briar.desktop.contact.add.remote.AddContactDialog
-import org.briarproject.briar.desktop.contact.add.remote.AddContactViewModel
 import org.briarproject.briar.desktop.contact.add.remote.PendingContactItem
 import org.briarproject.briar.desktop.ui.BriarLogo
 import org.briarproject.briar.desktop.ui.ColoredIconButton
@@ -53,9 +56,12 @@ import org.briarproject.briar.desktop.viewmodel.viewModel
 @Composable
 fun PrivateMessageScreen(
     viewModel: ContactListViewModel = viewModel(),
-    addContactViewModel: AddContactViewModel = viewModel(),
 ) {
-    AddContactDialog(addContactViewModel)
+    var addDialogVisible by remember { mutableStateOf(false) }
+    AddContactDialog(
+        visible = addDialogVisible,
+        onClose = { addDialogVisible = false }
+    )
 
     ConfirmRemovePendingContactDialog(
         viewModel.removePendingContactDialogVisible.value,
@@ -64,7 +70,7 @@ fun PrivateMessageScreen(
     )
 
     if (viewModel.noContactsYet.value) {
-        NoContactsYet(onContactAdd = { addContactViewModel.showDialog() })
+        NoContactsYet(onContactAdd = { addDialogVisible = true })
         return
     }
 
@@ -76,7 +82,7 @@ fun PrivateMessageScreen(
             viewModel::removePendingContact,
             viewModel.filterBy.value,
             viewModel::setFilterBy,
-            onContactAdd = { addContactViewModel.showDialog() }
+            onContactAdd = { addDialogVisible = true }
         )
         VerticalDivider()
         Column(modifier = Modifier.weight(1f).fillMaxHeight()) {
@@ -87,6 +93,7 @@ fun PrivateMessageScreen(
                 is ContactItem -> {
                     ConversationScreen(item.id)
                 }
+
                 is PendingContactItem -> {
                     PendingContactSelected()
                 }

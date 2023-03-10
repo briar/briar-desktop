@@ -1,6 +1,6 @@
 /*
  * Briar Desktop
- * Copyright (C) 2021-2022 The Briar Project
+ * Copyright (C) 2021-2023 The Briar Project
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -68,25 +68,15 @@ constructor(
         fetchHandshakeLink()
     }
 
-    private val _visible = mutableStateOf(false)
     private val _alias = mutableStateOf("")
     private val _remoteHandshakeLink = mutableStateOf("")
     private val _handshakeLink = mutableStateOf("")
     private val _error = mutableStateOf<AddContactError?>(null)
 
-    val visible = _visible.asState()
     val alias = _alias.asState()
     val remoteHandshakeLink = _remoteHandshakeLink.asState()
     val handshakeLink = _handshakeLink.asState()
     val error = _error.asState()
-
-    fun showDialog() {
-        _visible.value = true
-    }
-
-    fun dismissDialog() {
-        _visible.value = false
-    }
 
     fun setAddContactAlias(alias: String) {
         _alias.value = alias
@@ -101,17 +91,17 @@ constructor(
         txn.attach { _handshakeLink.value = link }
     }
 
-    fun onSubmitAddContactDialog() {
+    fun onSubmitAddContactDialog(onSuccess: () -> Unit) {
         val link = _remoteHandshakeLink.value
         val alias = _alias.value
-        addPendingContact(link, alias)
+        addPendingContact(link, alias, onSuccess)
     }
 
     fun clearError() {
         _error.value = null
     }
 
-    private fun addPendingContact(link: String, alias: String) {
+    private fun addPendingContact(link: String, alias: String, onSuccess: () -> Unit) {
         // ignore preceding and trailing whitespace
         val matcher = HandshakeLinkConstants.LINK_REGEX.matcher(link.trim())
         // check if the link is well-formed
@@ -139,7 +129,7 @@ constructor(
             try {
                 contactManager.addPendingContact(txn, link, alias)
                 txn.attach {
-                    _visible.value = false
+                    onSuccess()
                     _alias.value = ""
                     _remoteHandshakeLink.value = ""
                 }

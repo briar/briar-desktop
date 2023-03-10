@@ -1,6 +1,6 @@
 /*
  * Briar Desktop
- * Copyright (C) 2021-2022 The Briar Project
+ * Copyright (C) 2021-2023 The Briar Project
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -113,7 +113,6 @@ const val link = "briar://ady23gvb2r76afe5zhxh5kvnh4b22zrcnxibn63tfknrdcwrw7zrs"
 
 @Suppress("HardCodedStringLiteral")
 fun main() = preview(
-    "visible" to true,
     "remote link" to "",
     "local link" to link,
     "alias" to "Alice",
@@ -132,9 +131,8 @@ fun main() = preview(
     ),
 ) {
     val localLink = getStringParameter("local link")
-    AddContactDialog(
-        onClose = { setBooleanParameter("visible", false) },
-        visible = getBooleanParameter("visible"),
+    AddContactDialogContent(
+        onClose = {},
         remoteHandshakeLink = getStringParameter("remote link"),
         setRemoteHandshakeLink = { link -> setStringParameter("remote link", link) },
         alias = getStringParameter("alias"),
@@ -166,33 +164,9 @@ private fun PreviewUtils.PreviewScope.mapErrors(name: String?): AddContactError?
 
 @Composable
 fun AddContactDialog(
-    viewModel: AddContactViewModel,
-) = AddContactDialog(
-    viewModel::dismissDialog,
-    viewModel.visible.value,
-    viewModel.remoteHandshakeLink.value,
-    viewModel::setRemoteHandshakeLink,
-    viewModel.alias.value,
-    viewModel::setAddContactAlias,
-    viewModel.handshakeLink.value,
-    viewModel::onSubmitAddContactDialog,
-    viewModel.error.value,
-    viewModel::clearError,
-)
-
-@OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
-@Composable
-fun AddContactDialog(
-    onClose: () -> Unit,
     visible: Boolean,
-    remoteHandshakeLink: String,
-    setRemoteHandshakeLink: (String) -> Unit,
-    alias: String,
-    setAddContactAlias: (String) -> Unit,
-    handshakeLink: String,
-    onSubmitAddContactDialog: () -> Unit,
-    error: AddContactError?,
-    onErrorDialogDismissed: () -> Unit,
+    onClose: () -> Unit,
+    viewModel: AddContactViewModel = viewModel(),
 ) {
     if (!visible) {
         return
@@ -208,74 +182,99 @@ fun AddContactDialog(
         CompositionLocalProvider(LocalDensity provides density) {
             window.minimumSize = DensityDimension(360, 512)
             window.preferredSize = DensityDimension(520, 512)
-            val clipboardManager = LocalClipboardManager.current
-            val scaffoldState = rememberScaffoldState()
-            val coroutineScope = rememberCoroutineScope()
-            val aliasFocusRequester = remember { FocusRequester() }
-            Surface {
-                Scaffold(
-                    modifier = Modifier.padding(horizontal = 24.dp).padding(top = 24.dp, bottom = 12.dp),
-                    topBar = {
-                        Box(Modifier.fillMaxWidth()) {
-                            Text(
-                                i18n("contact.add.remote.title"),
-                                style = MaterialTheme.typography.h6,
-                                modifier = Modifier.padding(bottom = 12.dp)
-                            )
-                        }
-                    },
-                    scaffoldState = scaffoldState,
-                    content = {
-                        Column(Modifier.fillMaxSize()) {
-                            if (error != null) {
-                                AddContactErrorDialog(error, onErrorDialogDismissed)
-                            }
-                            OwnLink(
-                                handshakeLink,
-                                clipboardManager,
-                                coroutineScope,
-                                scaffoldState,
-                            )
-                            ContactLink(
-                                remoteHandshakeLink,
-                                setRemoteHandshakeLink,
-                                clipboardManager,
-                                coroutineScope,
-                                scaffoldState,
-                                aliasFocusRequester,
-                            )
-                            Alias(
-                                alias,
-                                setAddContactAlias,
-                                aliasFocusRequester,
-                                onSubmitAddContactDialog,
-                            )
-                        }
-                    },
-                    bottomBar = {
-                        Box(Modifier.fillMaxWidth()) {
-                            Row(Modifier.align(Alignment.CenterEnd)) {
-                                TextButton(
-                                    onClose,
-                                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colors.error)
-                                ) {
-                                    Text(i18n("cancel"))
-                                }
-                                Button(onSubmitAddContactDialog, modifier = Modifier.padding(start = 8.dp)) {
-                                    Text(i18n("add"))
-                                }
-                            }
-                        }
-                    },
-                )
-            }
+            AddContactDialogContent(
+                onClose,
+                viewModel.remoteHandshakeLink.value,
+                viewModel::setRemoteHandshakeLink,
+                viewModel.alias.value,
+                viewModel::setAddContactAlias,
+                viewModel.handshakeLink.value,
+                { viewModel.onSubmitAddContactDialog(onClose) },
+                viewModel.error.value,
+                viewModel::clearError,
+            )
         }
+    }
+}
+
+@Composable
+private fun AddContactDialogContent(
+    onClose: () -> Unit,
+    remoteHandshakeLink: String,
+    setRemoteHandshakeLink: (String) -> Unit,
+    alias: String,
+    setAddContactAlias: (String) -> Unit,
+    handshakeLink: String,
+    onSubmitAddContactDialog: () -> Unit,
+    error: AddContactError?,
+    onErrorDialogDismissed: () -> Unit,
+) {
+    val clipboardManager = LocalClipboardManager.current
+    val scaffoldState = rememberScaffoldState()
+    val coroutineScope = rememberCoroutineScope()
+    val aliasFocusRequester = remember { FocusRequester() }
+    Surface {
+        Scaffold(
+            modifier = Modifier.padding(horizontal = 24.dp).padding(top = 24.dp, bottom = 12.dp),
+            topBar = {
+                Box(Modifier.fillMaxWidth()) {
+                    Text(
+                        i18n("contact.add.remote.title"),
+                        style = MaterialTheme.typography.h6,
+                        modifier = Modifier.padding(bottom = 12.dp)
+                    )
+                }
+            },
+            scaffoldState = scaffoldState,
+            content = {
+                Column(Modifier.fillMaxSize()) {
+                    if (error != null) {
+                        AddContactErrorDialog(error, onErrorDialogDismissed)
+                    }
+                    OwnLink(
+                        handshakeLink,
+                        clipboardManager,
+                        coroutineScope,
+                        scaffoldState,
+                    )
+                    ContactLink(
+                        remoteHandshakeLink,
+                        setRemoteHandshakeLink,
+                        clipboardManager,
+                        coroutineScope,
+                        scaffoldState,
+                        aliasFocusRequester,
+                    )
+                    Alias(
+                        alias,
+                        setAddContactAlias,
+                        aliasFocusRequester,
+                        onSubmitAddContactDialog,
+                    )
+                }
+            },
+            bottomBar = {
+                Box(Modifier.fillMaxWidth()) {
+                    Row(Modifier.align(Alignment.CenterEnd)) {
+                        TextButton(
+                            onClose,
+                            colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colors.error)
+                        ) {
+                            Text(i18n("cancel"))
+                        }
+                        Button(onSubmitAddContactDialog, modifier = Modifier.padding(start = 8.dp)) {
+                            Text(i18n("add"))
+                        }
+                    }
+                }
+            },
+        )
     }
 }
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun AddContactErrorDialog(error: AddContactError, onErrorDialogDismissed: () -> Unit) {
+private fun AddContactErrorDialog(error: AddContactError, onErrorDialogDismissed: () -> Unit) {
     val (type, title, message) = errorMessage(error)
     val (icon, color) = when (type) {
         WARNING -> Icons.Filled.Warning to Orange500
@@ -308,11 +307,11 @@ fun AddContactErrorDialog(error: AddContactError, onErrorDialogDismissed: () -> 
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun OwnLink(
+private fun OwnLink(
     handshakeLink: String,
     clipboardManager: ClipboardManager,
     coroutineScope: CoroutineScope,
-    scaffoldState: ScaffoldState
+    scaffoldState: ScaffoldState,
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Icon(Icons.Filled.NorthEast, "contact.add.remote.outgoing_arrow")
@@ -367,7 +366,7 @@ fun OwnLink(
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun ContactLink(
+private fun ContactLink(
     remoteHandshakeLink: String,
     setRemoteHandshakeLink: (String) -> Unit,
     clipboardManager: ClipboardManager,
@@ -428,11 +427,11 @@ fun ContactLink(
 }
 
 @Composable
-fun Alias(
+private fun Alias(
     alias: String,
     setAddContactAlias: (String) -> Unit,
     aliasFocusRequester: FocusRequester,
-    onSubmitAddContactDialog: () -> Unit
+    onSubmitAddContactDialog: () -> Unit,
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Icon(Icons.Filled.Person, "contact.add.remote.choose_nickname")
@@ -454,7 +453,7 @@ fun Alias(
     )
 }
 
-fun errorMessage(error: AddContactError) = when (error) {
+private fun errorMessage(error: AddContactError) = when (error) {
     is OwnLinkError -> Triple(ERROR, i18n("error"), i18n("contact.add.error.own_link"))
     is RemoteInvalidError -> Triple(ERROR, i18n("error"), i18n("contact.add.error.remote_invalid"))
     is AliasInvalidError -> Triple(ERROR, i18n("error"), i18n("contact.add.error.alias_invalid"))
