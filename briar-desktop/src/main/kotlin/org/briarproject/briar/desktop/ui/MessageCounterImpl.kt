@@ -21,10 +21,12 @@ package org.briarproject.briar.desktop.ui
 import org.briarproject.bramble.api.Multiset
 import org.briarproject.bramble.api.contact.ContactId
 import org.briarproject.bramble.api.contact.ContactManager
+import org.briarproject.bramble.api.contact.event.ContactRemovedEvent
 import org.briarproject.bramble.api.event.EventBus
 import org.briarproject.bramble.api.lifecycle.LifecycleManager.LifecycleState.RUNNING
 import org.briarproject.bramble.api.lifecycle.event.LifecycleEvent
 import org.briarproject.bramble.api.sync.GroupId
+import org.briarproject.bramble.api.sync.event.GroupRemovedEvent
 import org.briarproject.briar.api.conversation.ConversationManager
 import org.briarproject.briar.api.conversation.event.ConversationMessageReceivedEvent
 import org.briarproject.briar.api.forum.ForumManager
@@ -84,6 +86,11 @@ constructor(
                     informListeners(PrivateMessage, false)
                 }
 
+                is ContactRemovedEvent -> {
+                    countPrivateMessages.removeAll(e.contactId)
+                    informListeners(PrivateMessage, false)
+                }
+
                 is ForumPostReceivedEvent -> {
                     countForumPosts.add(e.groupId)
                     informListeners(Forum, true)
@@ -92,6 +99,13 @@ constructor(
                 is ForumPostReadEvent -> {
                     countForumPosts.removeCount(e.groupId, e.numMarkedRead)
                     informListeners(Forum, false)
+                }
+
+                is GroupRemovedEvent -> {
+                    if (e.group.clientId == ForumManager.CLIENT_ID) {
+                        countForumPosts.removeAll(e.group.id)
+                        informListeners(Forum, false)
+                    }
                 }
             }
         }
