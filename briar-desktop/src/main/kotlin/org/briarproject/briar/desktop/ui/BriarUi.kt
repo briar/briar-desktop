@@ -102,7 +102,7 @@ constructor(
     private val configuration: Configuration,
     private val visualNotificationProvider: VisualNotificationProvider,
     private val soundNotificationProvider: SoundNotificationProvider,
-    private val messageCounter: MessageCounterImpl,
+    private val messageCounter: MessageCounter,
 ) : BriarUi {
 
     private var screenState by mutableStateOf(
