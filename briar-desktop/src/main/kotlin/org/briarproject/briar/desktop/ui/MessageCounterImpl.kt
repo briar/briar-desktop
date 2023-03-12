@@ -1,6 +1,6 @@
 /*
  * Briar Desktop
- * Copyright (C) 2021-2022 The Briar Project
+ * Copyright (C) 2021-2023 The Briar Project
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -18,6 +18,7 @@
 
 package org.briarproject.briar.desktop.ui
 
+import mu.KotlinLogging
 import org.briarproject.bramble.api.Multiset
 import org.briarproject.bramble.api.contact.ContactId
 import org.briarproject.bramble.api.contact.ContactManager
@@ -34,8 +35,10 @@ import org.briarproject.briar.api.forum.event.ForumPostReceivedEvent
 import org.briarproject.briar.desktop.conversation.ConversationMessagesReadEvent
 import org.briarproject.briar.desktop.forums.ForumPostReadEvent
 import org.briarproject.briar.desktop.threading.BriarExecutors
+import org.briarproject.briar.desktop.threading.UiExecutor
 import org.briarproject.briar.desktop.ui.MessageCounterDataType.Forum
 import org.briarproject.briar.desktop.ui.MessageCounterDataType.PrivateMessage
+import org.briarproject.briar.desktop.utils.KLoggerUtils.e
 import javax.inject.Inject
 
 class MessageCounterImpl
@@ -48,7 +51,14 @@ constructor(
     eventBus: EventBus,
 ) : MessageCounter {
 
+    companion object {
+        private val LOG = KotlinLogging.logger {}
+    }
+
+    @UiExecutor
     private val countPrivateMessages = Multiset<ContactId>()
+
+    @UiExecutor
     private val countForumPosts = Multiset<GroupId>()
 
     private val listeners = mutableListOf<MessageCounterListener>()
@@ -59,17 +69,20 @@ constructor(
                 is LifecycleEvent ->
                     if (e.lifecycleState == RUNNING) {
                         briarExecutors.onDbThreadWithTransaction(true) { txn ->
-                            val contacts = contactManager.getContacts(txn)
-                            for (c in contacts) {
-                                val unreadMessages = conversationManager.getGroupCount(txn, c.id).unreadCount
-                                countPrivateMessages.addCount(c.id, unreadMessages)
+                            val countPrivateMessagesMap = contactManager.getContacts(txn).associate { c ->
+                                c.id to conversationManager.getGroupCount(txn, c.id).unreadCount
                             }
-                            val forums = forumManager.getForums(txn)
-                            for (f in forums) {
-                                val unreadMessages = forumManager.getGroupCount(txn, f.id).unreadCount
-                                countForumPosts.addCount(f.id, unreadMessages)
+                            val countForumPostsMap = forumManager.getForums(txn).associate { f ->
+                                f.id to forumManager.getGroupCount(txn, f.id).unreadCount
                             }
                             txn.attach {
+                                countPrivateMessagesMap.forEach { (id, count) ->
+                                    countPrivateMessages.addCount(id, count)
+                                }
+                                countForumPostsMap.forEach { (id, count) ->
+                                    countForumPosts.addCount(id, count)
+                                }
+
                                 informListeners(PrivateMessage, true)
                                 informListeners(Forum, true)
                             }
@@ -82,7 +95,14 @@ constructor(
                 }
 
                 is ConversationMessagesReadEvent -> {
-                    countPrivateMessages.removeCount(e.contactId, e.count)
+                    try {
+                        countPrivateMessages.removeCount(e.contactId, e.count)
+                    } catch (e: NoSuchElementException) {
+                        LOG.e(e) {
+                            "inconsistent state in MessageCounterImpl.countPrivateMessages: " +
+                                "trying to remove non-existing element"
+                        }
+                    }
                     informListeners(PrivateMessage, false)
                 }
 
@@ -97,7 +117,14 @@ constructor(
                 }
 
                 is ForumPostReadEvent -> {
-                    countForumPosts.removeCount(e.groupId, e.numMarkedRead)
+                    try {
+                        countForumPosts.removeCount(e.groupId, e.numMarkedRead)
+                    } catch (e: NoSuchElementException) {
+                        LOG.e(e) {
+                            "inconsistent state in MessageCounterImpl.countForumPosts: " +
+                                "trying to remove non-existing element"
+                        }
+                    }
                     informListeners(Forum, false)
                 }
 
