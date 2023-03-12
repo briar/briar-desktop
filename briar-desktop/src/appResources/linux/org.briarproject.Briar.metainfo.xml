@@ -73,7 +73,15 @@
     </custom>
 
     <releases>
-        <release version="0.4.1-beta" date="2023-03-09">
+        <release version="0.4.2-beta" date="2023-03-12">
+            <description>
+                <p>
+                    See the changelog for more information on this release.
+                </p>
+            </description>
+            <url>https://code.briarproject.org/briar/briar-desktop/-/wikis/Changelog#042-beta</url>
+        </release>
+        <release version="0.4.1-beta" date="2023-03-10">
             <description>
                 <p>
                     See the changelog for more information on this release.
