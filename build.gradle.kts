@@ -28,15 +28,15 @@ buildscript {
 
     // keep version here in sync when updating briar
     dependencies {
-        classpath("ru.vyarus:gradle-animalsniffer-plugin:1.5.3")
+        classpath("ru.vyarus:gradle-animalsniffer-plugin:1.7.0")
         classpath(files("briar/libs/gradle-witness.jar"))
     }
 
     // keep version here in sync when updating briar
     extra.apply {
-        set("kotlin_version", "1.7.10") // todo: different version used in Briar-Desktop?!
-        set("dagger_version", "2.43.2")
-        set("okhttp_version", "3.12.13")
+        set("kotlin_version", "1.8.20") // todo: different version used in Briar-Desktop?!
+        set("dagger_version", "2.45")
+        set("okhttp_version", "4.10.0")
         set("jackson_version", "2.13.4")
         set("tor_version", "0.4.7.13-2")
         set("obfs4proxy_version", "0.0.14-tor2")
@@ -45,8 +45,8 @@ buildscript {
         set("bouncy_castle_version", "1.71")
         set("junit_version", "4.13.2")
         set("jmock_version", "2.12.0")
-        set("mockwebserver_version", "4.9.3")
-        set("onionwrapper_version", "0.0.1")
+        set("mockwebserver_version", "4.10.0")
+        set("onionwrapper_version", "0.0.2")
     }
 }
 

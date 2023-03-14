@@ -96,7 +96,7 @@ fun BriarSidebar(
         Spacer(Modifier.weight(1f))
 
         if (configuration.shouldEnableTransportSettings()) BriarSidebarButton(UiMode.TRANSPORTS)
-        if (configuration.shouldEnableMailbox()) BriarSidebarButton(
+        BriarSidebarButton(
             selected = uiMode == UiMode.MAILBOX,
             onClick = { setUiMode(UiMode.MAILBOX) },
             icon = UiMode.MAILBOX.icon,

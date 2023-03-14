@@ -42,7 +42,7 @@ import java.nio.file.StandardCopyOption
 open class GenerateBuildDataSourceTask : AbstractBuildDataTask() {
 
     companion object {
-        val LICENSES = buildMap<UnversionedArtifact, String> {
+        val LICENSES = buildMap {
             put(UnversionedArtifact("ch.qos.logback", "logback-classic"), "EPL 1.0/LGPL 2.1")
             put(UnversionedArtifact("ch.qos.logback", "logback-core"), "EPL 1.0/LGPL 2.1")
             put(UnversionedArtifact("com.fasterxml.jackson.core", "jackson-annotations"), "Apache 2.0")
@@ -56,7 +56,7 @@ open class GenerateBuildDataSourceTask : AbstractBuildDataTask() {
             put(UnversionedArtifact("com.rometools", "rome"), "Apache 2.0")
             put(UnversionedArtifact("com.rometools", "rome-utils"), "Apache 2.0")
             put(UnversionedArtifact("com.squareup.okhttp3", "okhttp"), "Apache 2.0")
-            put(UnversionedArtifact("com.squareup.okio", "okio"), "Apache 2.0")
+            put(UnversionedArtifact("com.squareup.okio", "okio-jvm"), "Apache 2.0")
             put(UnversionedArtifact("de.mobanisto", "toast4j"), "MIT")
             put(UnversionedArtifact("io.github.microutils", "kotlin-logging-jvm"), "Apache 2.0")
             put(UnversionedArtifact("javax.inject", "javax.inject"), "Apache 2.0")

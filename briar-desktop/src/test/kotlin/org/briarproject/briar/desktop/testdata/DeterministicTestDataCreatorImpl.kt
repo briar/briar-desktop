@@ -143,7 +143,7 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
         numPrivateMsgs: Int,
         avatarPercent: Int,
         numPrivateGroups: Int,
-        numPrivateGroupPosts: Int
+        numPrivateGroupPosts: Int,
     ) {
         val contacts = createContacts(numContacts, avatarPercent)
         createPrivateMessages(contacts, numPrivateMsgs)
@@ -333,7 +333,7 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
     @Throws(DbException::class)
     private fun createPrivateMessages(
         contacts: List<ContactId>,
-        numPrivateMsgs: Int
+        numPrivateMsgs: Int,
     ) {
         for (i in contacts.indices) {
             val contactId = contacts[i]
@@ -354,7 +354,7 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
     private fun createPrivateMessage(
         contactId: ContactId,
         groupId: GroupId,
-        message: Message
+        message: Message,
     ) {
         val timestamp = message.date.toEpochSecond(ZoneOffset.UTC) * 1000
         val text = message.text
@@ -372,7 +372,7 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
         images: List<String>,
         timestamp: Long,
         local: Boolean,
-        autoDelete: Boolean
+        autoDelete: Boolean,
     ) {
         val timer =
             if (autoDelete) AutoDeleteConstants.MIN_AUTO_DELETE_TIMER_MS else AutoDeleteConstants.NO_AUTO_DELETE_TIMER
@@ -414,7 +414,7 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
         for (i in 0 until min(numPrivateGroups, GROUP_NAMES.size)) {
             // create private group
             val name = GROUP_NAMES[i]
-            var creator = identityManager.localAuthor
+            val creator = identityManager.localAuthor
             val privateGroup = privateGroupFactory.createPrivateGroup(name, creator)
             val joinMsg = groupMessageFactory.createJoinMessage(
                 privateGroup.id,
@@ -436,7 +436,7 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
     private fun createRandomPrivateGroupMessages(
         privateGroup: PrivateGroup,
         contacts: List<ContactId>,
-        numPrivateGroupMessages: Int
+        numPrivateGroupMessages: Int,
     ) {
         // TODO
     }

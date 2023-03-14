@@ -40,6 +40,7 @@ import org.briarproject.bramble.io.DnsModule
 import org.briarproject.bramble.mailbox.MailboxModule
 import org.briarproject.bramble.mailbox.ModularMailboxModule
 import org.briarproject.bramble.network.JavaNetworkModule
+import org.briarproject.bramble.plugin.tor.CircumventionModule
 import org.briarproject.bramble.socks.SocksModule
 import org.briarproject.bramble.system.ClockModule
 import org.briarproject.bramble.system.DefaultTaskSchedulerModule
@@ -69,7 +70,6 @@ import org.briarproject.briar.desktop.ui.MessageCounter
 import org.briarproject.briar.desktop.ui.MessageCounterImpl
 import org.briarproject.briar.desktop.viewmodel.ViewModelModule
 import org.briarproject.briar.identity.IdentityModule
-import org.briarproject.onionwrapper.CircumventionModule
 import java.io.File
 import java.nio.file.Path
 import java.util.concurrent.Executor
