@@ -64,7 +64,7 @@ import org.briarproject.briar.desktop.contact.ContactItem
 import org.briarproject.briar.desktop.contact.loadContactItem
 import org.briarproject.briar.desktop.conversation.ConversationRequestItem.RequestType.FORUM
 import org.briarproject.briar.desktop.conversation.ConversationRequestItem.RequestType.INTRODUCTION
-import org.briarproject.briar.desktop.forums.sharing.ForumInvitationSentEvent
+import org.briarproject.briar.desktop.forum.sharing.ForumInvitationSentEvent
 import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.utils.KLoggerUtils.e
 import org.briarproject.briar.desktop.utils.KLoggerUtils.i

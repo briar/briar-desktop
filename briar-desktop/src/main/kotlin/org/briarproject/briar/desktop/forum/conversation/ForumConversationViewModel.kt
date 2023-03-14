@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.briarproject.briar.desktop.privategroup.conversation
+package org.briarproject.briar.desktop.forum.conversation
 
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -36,9 +36,9 @@ import org.briarproject.bramble.api.sync.GroupId
 import org.briarproject.bramble.api.sync.MessageId
 import org.briarproject.bramble.api.system.Clock
 import org.briarproject.briar.api.client.MessageTracker
-import org.briarproject.briar.api.privategroup.GroupMessageFactory
-import org.briarproject.briar.api.privategroup.JoinMessageHeader
-import org.briarproject.briar.api.privategroup.PrivateGroupManager
+import org.briarproject.briar.api.forum.ForumManager
+import org.briarproject.briar.api.forum.event.ForumPostReceivedEvent
+import org.briarproject.briar.desktop.forum.ForumItem
 import org.briarproject.briar.desktop.forum.sharing.ForumSharingViewModel
 import org.briarproject.briar.desktop.threadedgroup.conversation.ThreadedConversationViewModel
 import org.briarproject.briar.desktop.threading.BriarExecutors
@@ -46,10 +46,9 @@ import org.briarproject.briar.desktop.threading.UiExecutor
 import java.lang.Long.max
 import javax.inject.Inject
 
-class PrivateGroupConversationViewModel @Inject constructor(
+class ForumConversationViewModel @Inject constructor(
     forumSharingViewModel: ForumSharingViewModel,
-    private val privateGroupManager: PrivateGroupManager,
-    private val privateGroupMessageFactory: GroupMessageFactory,
+    private val forumManager: ForumManager,
     private val identityManager: IdentityManager,
     private val clock: Clock,
     @CryptoExecutor private val cryptoDispatcher: CoroutineDispatcher,
@@ -67,22 +66,17 @@ class PrivateGroupConversationViewModel @Inject constructor(
 
     @UiExecutor
     override fun eventOccurred(e: Event) {
-        // todo: handle incoming messages
-        /*if (e is ForumPostReceivedEvent) {
+        if (e is ForumPostReceivedEvent) {
             if (e.groupId == groupItem.value?.id) {
                 val item = ForumPostItem(e.header, e.text)
-                addItem(item, null)
+                addItem(item)
             }
-        }*/
+        }
     }
 
     override fun loadThreadItems(txn: Transaction, groupId: GroupId) =
-        privateGroupManager.getHeaders(txn, groupId).map { header ->
-            PrivateGroupMessageItem(
-                header,
-                if (header !is JoinMessageHeader) privateGroupManager.getMessageText(txn, header.id)
-                else "" // todo
-            )
+        forumManager.getPostHeaders(txn, groupId).map { header ->
+            ForumPostItem(header, forumManager.getPostText(txn, header.id))
         }
 
     @UiExecutor
@@ -93,18 +87,17 @@ class PrivateGroupConversationViewModel @Inject constructor(
         val author = runOnDbThreadWithTransaction<LocalAuthor>(false) { txn ->
             identityManager.getLocalAuthor(txn)
         }
-        val previousMsgId = runOnDbThread<MessageId> { privateGroupManager.getPreviousMsgId(groupId) }
         val count = runOnDbThreadWithTransaction<MessageTracker.GroupCount>(false) { txn ->
-            privateGroupManager.getGroupCount(txn, groupId)
+            forumManager.getGroupCount(txn, groupId)
         }
         val timestamp = max(count.latestMsgTime + 1, clock.currentTimeMillis())
         val post = withContext(cryptoDispatcher) {
-            privateGroupMessageFactory.createGroupMessage(groupId, timestamp, parentId, author, text, previousMsgId)
+            forumManager.createLocalPost(groupId, text, timestamp, parentId, author)
         }
         runOnDbThreadWithTransaction(false) { txn ->
-            val header = privateGroupManager.addLocalMessage(txn, post)
+            val header = forumManager.addLocalPost(txn, post)
             txn.attach {
-                val item = PrivateGroupMessageItem(header, text)
+                val item = ForumPostItem(header, text)
                 addItem(item, scrollTo = item.id)
                 onThreadItemLocallyAdded(header)
                 // unselect post that we just replied to
@@ -117,9 +110,9 @@ class PrivateGroupConversationViewModel @Inject constructor(
 
     @DatabaseExecutor
     override fun markThreadItemRead(groupId: GroupId, id: MessageId) =
-        privateGroupManager.setReadFlag(groupId, id, true)
+        forumManager.setReadFlag(groupId, id, true)
 
     override fun deleteGroup() {
-        groupItem.value?.let { privateGroupManager.removePrivateGroup(it.id) }
+        groupItem.value?.let { forumManager.removeForum((it as ForumItem).forum) }
     }
 }

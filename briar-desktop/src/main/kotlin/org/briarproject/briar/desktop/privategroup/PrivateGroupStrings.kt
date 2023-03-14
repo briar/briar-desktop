@@ -20,12 +20,12 @@ package org.briarproject.briar.desktop.privategroup
 
 import org.briarproject.briar.api.privategroup.PrivateGroupConstants.MAX_GROUP_NAME_LENGTH
 import org.briarproject.briar.api.privategroup.PrivateGroupConstants.MAX_GROUP_POST_TEXT_LENGTH
-import org.briarproject.briar.desktop.group.GroupStrings
+import org.briarproject.briar.desktop.threadedgroup.ThreadedGroupStrings
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nF
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nP
 
-object PrivateGroupStrings : GroupStrings(
+object PrivateGroupStrings : ThreadedGroupStrings(
     listTitle = i18n("group.search.title"),
     listDescription = i18n("access.group.list"),
     addGroupTitle = i18n("group.add.title"),

@@ -33,7 +33,7 @@ import org.briarproject.briar.api.conversation.event.ConversationMessageReceived
 import org.briarproject.briar.api.forum.ForumManager
 import org.briarproject.briar.api.forum.event.ForumPostReceivedEvent
 import org.briarproject.briar.desktop.conversation.ConversationMessagesReadEvent
-import org.briarproject.briar.desktop.forums.ForumPostReadEvent
+import org.briarproject.briar.desktop.forum.ForumPostReadEvent
 import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.threading.UiExecutor
 import org.briarproject.briar.desktop.ui.MessageCounterDataType.Forum

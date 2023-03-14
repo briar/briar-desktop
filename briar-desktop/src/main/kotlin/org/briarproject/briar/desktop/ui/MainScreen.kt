@@ -28,7 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import org.briarproject.briar.desktop.conversation.PrivateMessageScreen
-import org.briarproject.briar.desktop.forums.ForumScreen
+import org.briarproject.briar.desktop.forum.ForumScreen
 import org.briarproject.briar.desktop.mailbox.MailboxScreen
 import org.briarproject.briar.desktop.navigation.BriarSidebar
 import org.briarproject.briar.desktop.navigation.SidebarViewModel

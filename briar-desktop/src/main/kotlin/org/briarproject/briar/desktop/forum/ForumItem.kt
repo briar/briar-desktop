@@ -16,32 +16,31 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.briarproject.briar.desktop.privategroup
+package org.briarproject.briar.desktop.forum
 
 import org.briarproject.bramble.api.sync.GroupId
 import org.briarproject.briar.api.client.MessageTracker
 import org.briarproject.briar.api.client.PostHeader
-import org.briarproject.briar.api.privategroup.PrivateGroup
+import org.briarproject.briar.api.forum.Forum
 import org.briarproject.briar.desktop.threadedgroup.ThreadedGroupItem
 import kotlin.math.max
 
-data class PrivateGroupItem(
-    val privateGroup: PrivateGroup,
+data class ForumItem(
+    val forum: Forum,
     override val msgCount: Int,
     override val unread: Int,
     override val timestamp: Long,
 ) : ThreadedGroupItem {
 
-    constructor(privateGroup: PrivateGroup, groupCount: MessageTracker.GroupCount) :
-        this(
-            privateGroup,
-            msgCount = groupCount.msgCount,
-            unread = groupCount.unreadCount,
-            timestamp = groupCount.latestMsgTime
-        )
+    constructor(forum: Forum, groupCount: MessageTracker.GroupCount) : this(
+        forum = forum,
+        msgCount = groupCount.msgCount,
+        unread = groupCount.unreadCount,
+        timestamp = groupCount.latestMsgTime,
+    )
 
-    override val id: GroupId = privateGroup.id
-    override val name: String = privateGroup.name
+    override val id: GroupId = forum.id
+    override val name: String = forum.name
 
     fun updateOnPostReceived(header: PostHeader) =
         copy(

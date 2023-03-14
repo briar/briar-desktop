@@ -40,8 +40,8 @@ import org.briarproject.briar.api.privategroup.GroupMessageFactory
 import org.briarproject.briar.api.privategroup.PrivateGroupFactory
 import org.briarproject.briar.api.privategroup.PrivateGroupManager
 import org.briarproject.briar.api.privategroup.event.GroupMessageAddedEvent
-import org.briarproject.briar.desktop.group.GroupListViewModel
 import org.briarproject.briar.desktop.privategroup.conversation.PrivateGroupConversationViewModel
+import org.briarproject.briar.desktop.threadedgroup.ThreadedGroupListViewModel
 import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.utils.removeFirst
 import org.briarproject.briar.desktop.utils.replaceFirst
@@ -60,7 +60,7 @@ class PrivateGroupListViewModel
     lifecycleManager: LifecycleManager,
     db: TransactionManager,
     eventBus: EventBus,
-) : GroupListViewModel<PrivateGroupItem>(threadViewModel, briarExecutors, lifecycleManager, db, eventBus) {
+) : ThreadedGroupListViewModel<PrivateGroupItem>(threadViewModel, briarExecutors, lifecycleManager, db, eventBus) {
 
     override val clientId: ClientId = PrivateGroupManager.CLIENT_ID
 

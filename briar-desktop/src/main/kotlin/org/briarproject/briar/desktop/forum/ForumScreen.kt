@@ -1,6 +1,6 @@
 /*
  * Briar Desktop
- * Copyright (C) 2021-2023 The Briar Project
+ * Copyright (C) 2023 The Briar Project
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -16,20 +16,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.briarproject.briar.desktop.privategroup
+package org.briarproject.briar.desktop.forum
 
 import androidx.compose.runtime.Composable
+import org.briarproject.briar.desktop.forum.conversation.ForumDropdownMenu
 import org.briarproject.briar.desktop.threadedgroup.ThreadedGroupScreen
 import org.briarproject.briar.desktop.viewmodel.viewModel
 
 @Composable
-fun PrivateGroupScreen(
-    viewModel: PrivateGroupListViewModel = viewModel(),
+fun ForumScreen(
+    viewModel: ForumListViewModel = viewModel(),
 ) = ThreadedGroupScreen(
-    strings = PrivateGroupStrings,
+    strings = ForumStrings,
     viewModel = viewModel,
     dropdownMenu = { forumSharingViewModel, expanded, onClose, onLeaveForumClick ->
-        // todo: uncomment when adapted to groups
-        // ForumDropdownMenu(forumSharingViewModel, expanded, onClose, onLeaveForumClick)
+        ForumDropdownMenu(forumSharingViewModel, expanded, onClose, onLeaveForumClick)
     }
 )

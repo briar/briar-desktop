@@ -19,7 +19,7 @@
 package org.briarproject.briar.desktop.privategroup.conversation
 
 import org.briarproject.briar.api.privategroup.GroupMessageHeader
-import org.briarproject.briar.desktop.group.conversation.ThreadItem
+import org.briarproject.briar.desktop.threadedgroup.conversation.ThreadItem
 import javax.annotation.concurrent.NotThreadSafe
 
 @NotThreadSafe

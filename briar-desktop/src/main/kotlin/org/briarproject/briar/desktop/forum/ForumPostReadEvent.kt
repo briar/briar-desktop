@@ -16,20 +16,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.briarproject.briar.desktop.privategroup
+package org.briarproject.briar.desktop.forum
 
-import androidx.compose.runtime.Composable
-import org.briarproject.briar.desktop.threadedgroup.ThreadedGroupScreen
-import org.briarproject.briar.desktop.viewmodel.viewModel
+import org.briarproject.bramble.api.event.Event
+import org.briarproject.bramble.api.sync.GroupId
 
-@Composable
-fun PrivateGroupScreen(
-    viewModel: PrivateGroupListViewModel = viewModel(),
-) = ThreadedGroupScreen(
-    strings = PrivateGroupStrings,
-    viewModel = viewModel,
-    dropdownMenu = { forumSharingViewModel, expanded, onClose, onLeaveForumClick ->
-        // todo: uncomment when adapted to groups
-        // ForumDropdownMenu(forumSharingViewModel, expanded, onClose, onLeaveForumClick)
-    }
-)
+/**
+ * An event that is broadcast when [numMarkedRead] post(s) in a forum was marked as read.
+ */
+data class ForumPostReadEvent(
+    val groupId: GroupId,
+    val numMarkedRead: Int,
+) : Event()

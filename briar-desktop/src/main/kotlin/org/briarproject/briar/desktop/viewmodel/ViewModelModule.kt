@@ -25,8 +25,8 @@ import dagger.multibindings.IntoMap
 import org.briarproject.briar.desktop.contact.ContactListViewModel
 import org.briarproject.briar.desktop.contact.add.remote.AddContactViewModel
 import org.briarproject.briar.desktop.conversation.ConversationViewModel
-import org.briarproject.briar.desktop.forums.ForumListViewModel
-import org.briarproject.briar.desktop.forums.sharing.ForumSharingViewModel
+import org.briarproject.briar.desktop.forum.ForumListViewModel
+import org.briarproject.briar.desktop.forum.sharing.ForumSharingViewModel
 import org.briarproject.briar.desktop.introduction.IntroductionViewModel
 import org.briarproject.briar.desktop.login.StartupViewModel
 import org.briarproject.briar.desktop.mailbox.MailboxViewModel
