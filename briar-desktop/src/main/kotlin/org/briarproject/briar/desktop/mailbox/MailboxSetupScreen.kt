@@ -27,6 +27,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
@@ -117,12 +118,12 @@ fun MailboxSetupScreen(
         )
         Row(
             horizontalArrangement = spacedBy(32.dp, CenterHorizontally),
-            modifier = Modifier.fillMaxWidth().verticalScroll(scrollState),
+            modifier = Modifier.fillMaxWidth().verticalScroll(scrollState).padding(16.dp),
         ) {
             val theme = if (MaterialTheme.colors.isLight) "light" else "dark" // NON-NLS
             Column(
                 verticalArrangement = spacedBy(16.dp),
-                modifier = Modifier.widthIn(max = DIALOG_WIDTH),
+                modifier = Modifier.weight(0.5f, fill = false).widthIn(max = DIALOG_WIDTH),
             ) {
                 Image(
                     painter = painterResource("images/il_mailbox_$theme.svg"), // NON-NLS
@@ -146,7 +147,7 @@ fun MailboxSetupScreen(
             }
             Column(
                 verticalArrangement = spacedBy(16.dp),
-                modifier = Modifier.widthIn(max = DIALOG_WIDTH),
+                modifier = Modifier.weight(0.5f, fill = false).widthIn(max = DIALOG_WIDTH),
             ) {
                 Image(
                     painter = painterResource("images/il_mailbox_setup_$theme.svg"), // NON-NLS
