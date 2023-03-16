@@ -40,6 +40,7 @@ import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterEnd
@@ -50,19 +51,61 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import org.briarproject.bramble.api.FormatException
+import org.briarproject.bramble.api.mailbox.MailboxPairingState
 import org.briarproject.briar.desktop.mailbox.MailboxPairingUiState.NotSetup
 import org.briarproject.briar.desktop.ui.Constants.DIALOG_WIDTH
 import org.briarproject.briar.desktop.utils.AccessibilityUtils.description
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
+import org.briarproject.briar.desktop.utils.PreviewUtils
+
+fun main() = PreviewUtils.preview(
+    "showError" to false,
+) {
+    val pairingLink = remember { mutableStateOf("") }
+    val isSettingUp = remember { mutableStateOf(false) }
+    val showError = getBooleanParameter("showError")
+    MailboxSetupScreen(
+        pairingUiState = if (showError) {
+            MailboxPairingUiState.OfflineWhenPairing
+        } else if (isSettingUp.value) {
+            MailboxPairingUiState.Pairing(MailboxPairingState.Pairing(System.currentTimeMillis()))
+        } else {
+            NotSetup
+        },
+        pairingLink = pairingLink.value,
+        onPairingLinkChanged = { pairingLink.value = it },
+        pairMailbox = { isSettingUp.value = true },
+        showError = showError,
+        onPairingErrorSeen = {},
+    )
+}
 
 @Composable
 fun MailboxSetupScreen(viewModel: MailboxViewModel, showError: Boolean) {
+    MailboxSetupScreen(
+        pairingUiState = viewModel.pairingUiState.value,
+        pairingLink = viewModel.pairingLink.value,
+        onPairingLinkChanged = viewModel::onPairingLinkChanged,
+        pairMailbox = viewModel::pairMailbox,
+        showError = showError,
+        onPairingErrorSeen = viewModel::onPairingErrorSeen,
+    )
+}
+
+@Composable
+fun MailboxSetupScreen(
+    pairingUiState: MailboxPairingUiState,
+    pairingLink: String,
+    onPairingLinkChanged: (String) -> Unit,
+    pairMailbox: () -> Unit,
+    showError: Boolean,
+    onPairingErrorSeen: () -> Unit,
+) {
     MailboxErrorDialog(
-        state = viewModel.pairingUiState.value,
+        state = pairingUiState,
         visible = showError,
-    ) {
-        viewModel.onPairingErrorSeen()
-    }
+        onDismissed = onPairingErrorSeen,
+    )
     Box(
         contentAlignment = Center,
         modifier = Modifier.fillMaxSize(),
@@ -119,18 +162,18 @@ fun MailboxSetupScreen(viewModel: MailboxViewModel, showError: Boolean) {
                 )
                 val isInvalid = rememberSaveable { mutableStateOf(false) }
                 val onNameChanged = { changedName: String ->
-                    viewModel.onPairingLinkChanged(changedName)
+                    onPairingLinkChanged(changedName)
                     isInvalid.value = false
                 }
                 val onOkButtonClicked = {
                     try {
-                        viewModel.pairMailbox(viewModel.pairingLink.value)
+                        pairMailbox()
                     } catch (e: FormatException) {
                         isInvalid.value = true
                     }
                 }
                 OutlinedTextField(
-                    value = viewModel.pairingLink.value,
+                    value = pairingLink,
                     onValueChange = onNameChanged,
                     label = { Text(i18n("mailbox.setup.hint")) },
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
@@ -142,7 +185,7 @@ fun MailboxSetupScreen(viewModel: MailboxViewModel, showError: Boolean) {
                         .requiredHeight(96.dp)
                         .description(i18n("mailbox.setup.hint")),
                 )
-                if (viewModel.pairingUiState.value is NotSetup) Button(
+                if (pairingUiState is NotSetup) Button(
                     onClick = onOkButtonClicked,
                     modifier = Modifier.align(End)
                 ) {

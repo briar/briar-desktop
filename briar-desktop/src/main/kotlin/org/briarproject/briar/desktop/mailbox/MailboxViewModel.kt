@@ -142,7 +142,8 @@ class MailboxViewModel @Inject constructor(
     }
 
     @UiExecutor
-    fun pairMailbox(base32Link: String) {
+    fun pairMailbox() {
+        val base32Link = pairingLink.value
         val payload = mailboxManager.convertBase32Payload(base32Link)
         if (isTorActive()) {
             pairingTask = mailboxManager.startPairingTask(payload).also {
