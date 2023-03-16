@@ -77,7 +77,7 @@ fun main() = PreviewUtils.preview(
         onPairingLinkChanged = { pairingLink.value = it },
         pairMailbox = { isSettingUp.value = true },
         showError = showError,
-        onPairingErrorSeen = {},
+        onPairingErrorSeen = { setBooleanParameter("showError", false) },
     )
 }
 
