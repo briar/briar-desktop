@@ -114,13 +114,13 @@ dependencies {
     windowsX64("org.briarproject:obfs4proxy-windows:$obfs4proxy_version")
     windowsX64("org.briarproject:snowflake-windows:$snowflake_version")
 
-    macosArm64("org.briarproject:tor-macos:$tor_version")
-    macosArm64("org.briarproject:obfs4proxy-macos:$obfs4proxy_version")
-    macosArm64("org.briarproject:snowflake-macos:$snowflake_version")
+    macosArm64("org.briarproject:tor-macos-torbrowser:$tor_version")
+    macosArm64("org.briarproject:obfs4proxy-macos-torbrowser:$obfs4proxy_version")
+    macosArm64("org.briarproject:snowflake-macos-torbrowser:$snowflake_version")
 
-    macosX64("org.briarproject:tor-macos:$tor_version")
-    macosX64("org.briarproject:obfs4proxy-macos:$obfs4proxy_version")
-    macosX64("org.briarproject:snowflake-macos:$snowflake_version")
+    macosX64("org.briarproject:tor-macos-torbrowser:$tor_version")
+    macosX64("org.briarproject:obfs4proxy-macos-torbrowser:$obfs4proxy_version")
+    macosX64("org.briarproject:snowflake-macos-torbrowser:$snowflake_version")
 
     implementation(compose.materialIconsExtended)
     // needed to access Dispatchers.Swing for EventExecutor
