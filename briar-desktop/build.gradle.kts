@@ -18,6 +18,7 @@
 
 @file:Suppress("HardCodedStringLiteral")
 
+import org.briarproject.briar.desktop.os.OS.MacOS
 import org.briarproject.briar.desktop.os.currentOS
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -102,9 +103,15 @@ dependencies {
     macosArm64(compose.desktop.macos_arm64)
     macosX64(compose.desktop.macos_x64)
 
-    currentOs("org.briarproject:tor-${currentOS.id}:$tor_version")
-    currentOs("org.briarproject:obfs4proxy-${currentOS.id}:$obfs4proxy_version")
-    currentOs("org.briarproject:snowflake-${currentOS.id}:$snowflake_version")
+    if (currentOS != MacOS) {
+        currentOs("org.briarproject:tor-${currentOS.id}:$tor_version")
+        currentOs("org.briarproject:obfs4proxy-${currentOS.id}:$obfs4proxy_version")
+        currentOs("org.briarproject:snowflake-${currentOS.id}:$snowflake_version")
+    } else {
+        currentOs("org.briarproject:tor-${currentOS.id}-torbrowser:$tor_version")
+        currentOs("org.briarproject:obfs4proxy-${currentOS.id}-torbrowser:$obfs4proxy_version")
+        currentOs("org.briarproject:snowflake-${currentOS.id}-torbrowser:$snowflake_version")
+    }
 
     linuxX64("org.briarproject:tor-linux:$tor_version")
     linuxX64("org.briarproject:obfs4proxy-linux:$obfs4proxy_version")
