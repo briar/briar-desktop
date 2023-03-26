@@ -285,6 +285,20 @@ pinpit.desktop {
                     bitmapDialog.set(project.file("src/packagingResources/windows/dialog.bmp"))
                 }
             }
+            macOS {
+                packageName = appName
+                iconFile.set(project.file("../assets/briar.icns"))
+                appCategory = "public.app-category.social-networking"
+                bundleID = "org.briarproject.briar.desktop"
+                distributableArchive {
+                    format = "zip"
+                    arch = "arm64"
+                }
+                distributableArchive {
+                    format = "zip"
+                    arch = "x64"
+                }
+            }
         }
     }
 }
