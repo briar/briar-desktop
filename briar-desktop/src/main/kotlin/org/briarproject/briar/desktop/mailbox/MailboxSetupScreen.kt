@@ -162,8 +162,8 @@ fun MailboxSetupScreen(
                     text = i18n("mailbox.setup.link"),
                 )
                 val isInvalid = rememberSaveable { mutableStateOf(false) }
-                val onNameChanged = { changedName: String ->
-                    onPairingLinkChanged(changedName)
+                val onLinkChanged = { changedLink: String ->
+                    onPairingLinkChanged(changedLink)
                     isInvalid.value = false
                 }
                 val onOkButtonClicked = {
@@ -175,7 +175,7 @@ fun MailboxSetupScreen(
                 }
                 OutlinedTextField(
                     value = pairingLink,
-                    onValueChange = onNameChanged,
+                    onValueChange = onLinkChanged,
                     label = { Text(i18n("mailbox.setup.hint")) },
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                     onEnter = onOkButtonClicked,
