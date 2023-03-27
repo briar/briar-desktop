@@ -1,6 +1,6 @@
 /*
  * Briar Desktop
- * Copyright (C) 2021-2022 The Briar Project
+ * Copyright (C) 2021-2023 The Briar Project
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -22,12 +22,14 @@ import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize.Max
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.ButtonType.DESTRUCTIVE
 import androidx.compose.material.ButtonType.NEUTRAL
 import androidx.compose.material.CircularProgressIndicator
@@ -58,6 +60,7 @@ import org.briarproject.bramble.api.mailbox.MailboxVersion
 import org.briarproject.briar.desktop.theme.Lime500
 import org.briarproject.briar.desktop.theme.Orange500
 import org.briarproject.briar.desktop.theme.Red500
+import org.briarproject.briar.desktop.ui.Constants.DIALOG_WIDTH
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nF
 import org.briarproject.briar.desktop.utils.PreviewUtils.DropDownValues
@@ -99,12 +102,14 @@ fun MailboxStatusScreen(
     onWipe: () -> Unit,
 ) {
     if (status == null) return // not expected to happen (for a noticeable amount of time)
-    val deleteGroupDialogVisible = remember { mutableStateOf(false) }
+    val wizardDialogVisible = remember { mutableStateOf(false) }
+    val wipeDialogVisible = remember { mutableStateOf(false) }
     Column(
         verticalArrangement = spacedBy(16.dp),
         horizontalAlignment = CenterHorizontally,
         modifier = Modifier.fillMaxSize().padding(16.dp),
     ) {
+        val showWizardButton: Boolean
         if (status.hasProblem(System.currentTimeMillis())) {
             MailboxStatusView(
                 icon = Icons.Filled.Error,
@@ -112,7 +117,7 @@ fun MailboxStatusScreen(
                 title = i18n("mailbox.status.error"),
                 lastSuccess = status.timeOfLastSuccess,
             )
-            // TODO wizard button
+            showWizardButton = true
         } else if (status.attemptsSinceSuccess > 0) {
             MailboxStatusView(
                 icon = Icons.Filled.QuestionMark,
@@ -120,6 +125,7 @@ fun MailboxStatusScreen(
                 title = i18n("mailbox.status.problem"),
                 lastSuccess = status.timeOfLastSuccess,
             )
+            showWizardButton = true
         } else if (status.mailboxCompatibility < 0) {
             MailboxStatusView(
                 icon = Icons.Filled.Error,
@@ -138,6 +144,7 @@ fun MailboxStatusScreen(
                     i18n("mailbox.status.mailbox_too_old.message")
                 },
             )
+            showWizardButton = false
         } else {
             MailboxStatusView(
                 icon = Icons.Filled.CheckCircle,
@@ -145,6 +152,7 @@ fun MailboxStatusScreen(
                 title = i18n("mailbox.status.connected.title"),
                 lastSuccess = status.timeOfLastSuccess,
             )
+            showWizardButton = false
         }
         if (isCheckingConnection) CircularProgressIndicator()
         else Button(
@@ -155,18 +163,32 @@ fun MailboxStatusScreen(
                 text = i18n("mailbox.status.check.connection.button"),
             )
         }
+        if (showWizardButton) OutlinedButton(
+            onClick = { wizardDialogVisible.value = true },
+            enabled = !isCheckingConnection && !wizardDialogVisible.value,
+        ) {
+            Text(
+                text = i18n("mailbox.error.wizard.button"),
+            )
+        }
         Spacer(modifier = Modifier.weight(1f))
         if (isWiping) CircularProgressIndicator()
         else OutlinedButton(
-            onClick = { deleteGroupDialogVisible.value = true },
+            onClick = { wipeDialogVisible.value = true },
             enabled = !isCheckingConnection,
+            colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colors.error),
         ) {
             Text(
                 text = i18n("mailbox.status.unlink.button"),
             )
         }
-        if (deleteGroupDialogVisible.value) MailboxWipeDialog(
-            close = { deleteGroupDialogVisible.value = false },
+        if (wizardDialogVisible.value) TroubleshootingWizardDialog(
+            close = { wizardDialogVisible.value = false },
+            onCheckConnection = onCheckConnection,
+            onUnlink = { wipeDialogVisible.value = true },
+        )
+        if (wipeDialogVisible.value) MailboxWipeDialog(
+            close = { wipeDialogVisible.value = false },
             onWipe = onWipe,
         )
     }
@@ -208,6 +230,7 @@ fun MailboxWipeDialog(
     onWipe: () -> Unit = {},
 ) {
     AlertDialog(
+        modifier = Modifier.defaultMinSize(minWidth = DIALOG_WIDTH),
         onDismissRequest = close,
         title = {
             Text(
