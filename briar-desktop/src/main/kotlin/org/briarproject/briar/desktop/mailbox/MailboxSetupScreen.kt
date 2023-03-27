@@ -27,8 +27,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.rememberScrollbarAdapter
@@ -183,7 +183,7 @@ fun MailboxSetupScreen(
                     errorMessage = i18n("mailbox.setup.link.error"),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .requiredHeight(96.dp)
+                        .heightIn(min = 96.dp)
                         .description(i18n("mailbox.setup.hint")),
                 )
                 if (pairingUiState is NotSetup) Button(
