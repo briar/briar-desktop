@@ -19,84 +19,93 @@
 package org.briarproject.briar.desktop.mailbox
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.layout.Arrangement.spacedBy
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.material.AlertDialog
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.ButtonType
-import androidx.compose.material.DialogButton
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.RadioButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment.Companion.CenterEnd
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
-import org.briarproject.briar.desktop.ui.Constants.DIALOG_WIDTH
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
-import org.briarproject.briar.desktop.utils.PreviewUtils
+import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 
 @Suppress("HardCodedStringLiteral")
-fun main() = PreviewUtils.preview {
-    val wizardDialogVisible = remember { mutableStateOf(true) }
-    if (wizardDialogVisible.value) TroubleshootingWizardDialog(
-        close = { wizardDialogVisible.value = false },
-        onCheckConnection = { wizardDialogVisible.value = false },
-        onUnlink = { wizardDialogVisible.value = false },
+fun main() = preview {
+    TroubleshootingWizard(
+        close = {},
+        onCheckConnection = {},
+        onUnlink = {},
     )
 }
 
 @Composable
-@OptIn(ExperimentalMaterialApi::class)
-fun TroubleshootingWizardDialog(
+fun TroubleshootingWizard(
     close: () -> Unit,
     onCheckConnection: () -> Unit,
     onUnlink: () -> Unit,
 ) {
-    AlertDialog(
-        modifier = Modifier.defaultMinSize(minWidth = DIALOG_WIDTH),
-        onDismissRequest = close,
-        title = {
+    Box(modifier = Modifier) {
+        val scrollState = rememberScrollState()
+        VerticalScrollbar(
+            adapter = rememberScrollbarAdapter(scrollState),
+            modifier = Modifier.align(CenterEnd).fillMaxHeight(),
+        )
+        Column(
+            verticalArrangement = spacedBy(16.dp),
+            modifier = Modifier.fillMaxSize(),
+        ) {
             Text(
                 text = i18n("mailbox.error.wizard.title"),
-                modifier = Modifier.width(IntrinsicSize.Max),
-                style = MaterialTheme.typography.h6,
+                modifier = Modifier.padding(16.dp),
+                style = MaterialTheme.typography.h5,
             )
-        },
-        text = { Troubleshooting(close, onCheckConnection, onUnlink) },
-        confirmButton = {
-            DialogButton(
+            Troubleshooting(scrollState, close, onCheckConnection, onUnlink)
+            Button(
+                modifier = Modifier.padding(16.dp),
                 onClick = { close() },
-                text = i18n("back"),
-                type = ButtonType.NEUTRAL,
-            )
-        },
-    )
+            ) {
+                Text(i18n("back"))
+            }
+        }
+    }
 }
 
 @Composable
 @Suppress("LocalVariableName")
-private fun Troubleshooting(
+private fun ColumnScope.Troubleshooting(
+    scrollState: ScrollState,
     close: () -> Unit,
     onCheckConnection: () -> Unit,
     onUnlink: () -> Unit,
 ) {
-    Column(verticalArrangement = spacedBy(16.dp)) {
+    Column(
+        modifier = Modifier.padding(horizontal = 16.dp).weight(1f, false).verticalScroll(scrollState),
+        verticalArrangement = spacedBy(16.dp),
+    ) {
         val answer1Selected = rememberSaveable { mutableStateOf(false) }
         val answer2Selected = rememberSaveable { mutableStateOf(false) }
         val answer3Selected = rememberSaveable { mutableStateOf(false) }

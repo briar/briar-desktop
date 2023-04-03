@@ -44,6 +44,7 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.QuestionMark
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
@@ -102,96 +103,114 @@ fun MailboxStatusScreen(
     onWipe: () -> Unit,
 ) {
     if (status == null) return // not expected to happen (for a noticeable amount of time)
-    val wizardDialogVisible = remember { mutableStateOf(false) }
+    val wizardVisible = remember { mutableStateOf(false) }
     val wipeDialogVisible = remember { mutableStateOf(false) }
-    Column(
-        verticalArrangement = spacedBy(16.dp),
-        horizontalAlignment = CenterHorizontally,
-        modifier = Modifier.fillMaxSize().padding(16.dp),
-    ) {
-        val showWizardButton: Boolean
-        if (status.hasProblem(System.currentTimeMillis())) {
-            MailboxStatusView(
-                icon = Icons.Filled.Error,
-                iconTint = Red500,
-                title = i18n("mailbox.status.error"),
-                lastSuccess = status.timeOfLastSuccess,
-            )
-            showWizardButton = true
-        } else if (status.attemptsSinceSuccess > 0) {
-            MailboxStatusView(
-                icon = Icons.Filled.QuestionMark,
-                iconTint = Orange500,
-                title = i18n("mailbox.status.problem"),
-                lastSuccess = status.timeOfLastSuccess,
-            )
-            showWizardButton = true
-        } else if (status.mailboxCompatibility < 0) {
-            MailboxStatusView(
-                icon = Icons.Filled.Error,
-                iconTint = Red500,
-                title = if (status.mailboxCompatibility == API_CLIENT_TOO_OLD) {
-                    i18n("mailbox.status.app_too_old.title")
-                } else {
-                    i18n("mailbox.status.mailbox_too_old.title")
-                },
-                lastSuccess = status.timeOfLastSuccess,
-            )
-            Text(
-                text = if (status.mailboxCompatibility == API_CLIENT_TOO_OLD) {
-                    i18n("mailbox.status.app_too_old.message")
-                } else {
-                    i18n("mailbox.status.mailbox_too_old.message")
-                },
-            )
-            showWizardButton = false
-        } else {
-            MailboxStatusView(
-                icon = Icons.Filled.CheckCircle,
-                iconTint = Lime500,
-                title = i18n("mailbox.status.connected.title"),
-                lastSuccess = status.timeOfLastSuccess,
-            )
-            showWizardButton = false
-        }
-        if (isCheckingConnection) CircularProgressIndicator()
-        else Button(
-            onClick = onCheckConnection,
-            enabled = !isWiping,
-        ) {
-            Text(
-                text = i18n("mailbox.status.check.connection.button"),
-            )
-        }
-        if (showWizardButton) OutlinedButton(
-            onClick = { wizardDialogVisible.value = true },
-            enabled = !isCheckingConnection && !wizardDialogVisible.value,
-        ) {
-            Text(
-                text = i18n("mailbox.error.wizard.button"),
-            )
-        }
-        Spacer(modifier = Modifier.weight(1f))
-        if (isWiping) CircularProgressIndicator()
-        else OutlinedButton(
-            onClick = { wipeDialogVisible.value = true },
-            enabled = !isCheckingConnection,
-            colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colors.error),
-        ) {
-            Text(
-                text = i18n("mailbox.status.unlink.button"),
-            )
-        }
-        if (wizardDialogVisible.value) TroubleshootingWizardDialog(
-            close = { wizardDialogVisible.value = false },
-            onCheckConnection = onCheckConnection,
-            onUnlink = { wipeDialogVisible.value = true },
+    if (wizardVisible.value) TroubleshootingWizard(
+        close = { wizardVisible.value = false },
+        onCheckConnection = onCheckConnection,
+        onUnlink = { wipeDialogVisible.value = true },
+    ) else MailboxStatusScreen(
+        status = status,
+        isCheckingConnection = isCheckingConnection,
+        onCheckConnection = onCheckConnection,
+        wizardVisible = wizardVisible,
+        wipeDialogVisible = wipeDialogVisible,
+        isWiping = isWiping,
+        onWipe = onWipe,
+    )
+}
+
+@Composable
+private fun MailboxStatusScreen(
+    status: MailboxStatus,
+    isCheckingConnection: Boolean,
+    onCheckConnection: () -> Unit,
+    wizardVisible: MutableState<Boolean>,
+    wipeDialogVisible: MutableState<Boolean>,
+    isWiping: Boolean,
+    onWipe: () -> Unit,
+) = Column(
+    verticalArrangement = spacedBy(16.dp),
+    horizontalAlignment = CenterHorizontally,
+    modifier = Modifier.fillMaxSize().padding(16.dp),
+) {
+    val showWizardButton: Boolean
+    if (status.hasProblem(System.currentTimeMillis())) {
+        MailboxStatusView(
+            icon = Icons.Filled.Error,
+            iconTint = Red500,
+            title = i18n("mailbox.status.error"),
+            lastSuccess = status.timeOfLastSuccess,
         )
-        if (wipeDialogVisible.value) MailboxWipeDialog(
-            close = { wipeDialogVisible.value = false },
-            onWipe = onWipe,
+        showWizardButton = true
+    } else if (status.attemptsSinceSuccess > 0) {
+        MailboxStatusView(
+            icon = Icons.Filled.QuestionMark,
+            iconTint = Orange500,
+            title = i18n("mailbox.status.problem"),
+            lastSuccess = status.timeOfLastSuccess,
+        )
+        showWizardButton = true
+    } else if (status.mailboxCompatibility < 0) {
+        MailboxStatusView(
+            icon = Icons.Filled.Error,
+            iconTint = Red500,
+            title = if (status.mailboxCompatibility == API_CLIENT_TOO_OLD) {
+                i18n("mailbox.status.app_too_old.title")
+            } else {
+                i18n("mailbox.status.mailbox_too_old.title")
+            },
+            lastSuccess = status.timeOfLastSuccess,
+        )
+        Text(
+            text = if (status.mailboxCompatibility == API_CLIENT_TOO_OLD) {
+                i18n("mailbox.status.app_too_old.message")
+            } else {
+                i18n("mailbox.status.mailbox_too_old.message")
+            },
+        )
+        showWizardButton = false
+    } else {
+        MailboxStatusView(
+            icon = Icons.Filled.CheckCircle,
+            iconTint = Lime500,
+            title = i18n("mailbox.status.connected.title"),
+            lastSuccess = status.timeOfLastSuccess,
+        )
+        showWizardButton = false
+    }
+    if (isCheckingConnection) CircularProgressIndicator()
+    else Button(
+        onClick = onCheckConnection,
+        enabled = !isWiping,
+    ) {
+        Text(
+            text = i18n("mailbox.status.check.connection.button"),
         )
     }
+    if (showWizardButton) OutlinedButton(
+        onClick = { wizardVisible.value = true },
+        enabled = !isCheckingConnection && !wizardVisible.value,
+    ) {
+        Text(
+            text = i18n("mailbox.error.wizard.button"),
+        )
+    }
+    Spacer(modifier = Modifier.weight(1f))
+    if (isWiping) CircularProgressIndicator()
+    else OutlinedButton(
+        onClick = { wipeDialogVisible.value = true },
+        enabled = !isCheckingConnection,
+        colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colors.error),
+    ) {
+        Text(
+            text = i18n("mailbox.status.unlink.button"),
+        )
+    }
+    if (wipeDialogVisible.value) MailboxWipeDialog(
+        close = { wipeDialogVisible.value = false },
+        onWipe = onWipe,
+    )
 }
 
 @Composable
