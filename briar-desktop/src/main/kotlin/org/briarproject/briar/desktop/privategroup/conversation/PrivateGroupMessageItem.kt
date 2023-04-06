@@ -18,12 +18,16 @@
 
 package org.briarproject.briar.desktop.privategroup.conversation
 
+import org.briarproject.briar.api.identity.AuthorInfo.Status.OURSELVES
 import org.briarproject.briar.api.privategroup.GroupMessageHeader
+import org.briarproject.briar.api.privategroup.JoinMessageHeader
 import org.briarproject.briar.desktop.threadedgroup.conversation.ThreadItem
+import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
+import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nF
 import javax.annotation.concurrent.NotThreadSafe
 
 @NotThreadSafe
-class PrivateGroupMessageItem(h: GroupMessageHeader, text: String) : ThreadItem(
+open class PrivateGroupMessageItem(h: GroupMessageHeader, text: String) : ThreadItem(
     messageId = h.id,
     parentId = h.parentId,
     text = text,
@@ -32,3 +36,21 @@ class PrivateGroupMessageItem(h: GroupMessageHeader, text: String) : ThreadItem(
     authorInfo = h.authorInfo,
     isRead = h.isRead
 )
+
+class PrivateGroupJoinItem(h: JoinMessageHeader) : PrivateGroupMessageItem(h, "") {
+    val isInitial = h.isInitial
+}
+
+val ThreadItem.isMeta: Boolean get() = this is PrivateGroupJoinItem
+
+val ThreadItem.metaText: String
+    get() {
+        if (this !is PrivateGroupJoinItem) throw IllegalArgumentException()
+        return if (isInitial) {
+            if (authorInfo.status == OURSELVES) i18n("group.meta.created.you")
+            else i18nF("group.meta.created.other", authorName)
+        } else {
+            if (authorInfo.status == OURSELVES) i18n("group.meta.joined.you")
+            else i18nF("group.meta.joined.other", authorName)
+        }
+    }

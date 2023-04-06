@@ -47,6 +47,7 @@ import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -54,6 +55,8 @@ import androidx.compose.ui.unit.dp
 import org.briarproject.briar.api.identity.AuthorInfo.Status.OURSELVES
 import org.briarproject.briar.desktop.contact.ProfileCircle
 import org.briarproject.briar.desktop.forum.conversation.ForumPostItem
+import org.briarproject.briar.desktop.privategroup.conversation.isMeta
+import org.briarproject.briar.desktop.privategroup.conversation.metaText
 import org.briarproject.briar.desktop.theme.Blue500
 import org.briarproject.briar.desktop.theme.divider
 import org.briarproject.briar.desktop.ui.Constants.COLUMN_WIDTH
@@ -65,6 +68,7 @@ import org.briarproject.briar.desktop.ui.VerticalDivider
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 import org.briarproject.briar.desktop.utils.TimeUtils.getFormattedTimestamp
+import org.briarproject.briar.desktop.utils.UiUtils.modifyIf
 import org.briarproject.briar.desktop.utils.getRandomForumPostHeader
 import org.briarproject.briar.desktop.utils.getRandomString
 import kotlin.math.min
@@ -110,24 +114,24 @@ fun ThreadItemView(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .then(
-                    if (isSelected) {
-                        Modifier.border(3.dp, Blue500)
-                    } else Modifier
-                ).selectable(
-                    selected = isSelected,
-                    onClick = { onPostSelected(item) }
+                // only make normal thread items selectable
+                .modifyIf(
+                    !item.isMeta,
+                    Modifier.selectable(
+                        selected = isSelected,
+                        onClick = { onPostSelected(item) }
+                    ).modifyIf(isSelected, Modifier.border(3.dp, Blue500))
                 ),
         ) {
             HorizontalDivider()
-            ThreadItemContentComposable(item)
+            ThreadItemContent(item)
         }
     }
 }
 
 @Composable
 @OptIn(ExperimentalFoundationApi::class)
-fun ThreadItemContentComposable(
+fun ThreadItemContent(
     item: ThreadItem,
     modifier: Modifier = Modifier,
     isPreview: Boolean = false,
@@ -167,7 +171,15 @@ fun ThreadItemContentComposable(
             // should be changed back to verticalArrangement = spacedBy(8.dp) on the containing Column
             // when https://github.com/JetBrains/compose-jb/issues/2729 is fixed
             Spacer(Modifier.height(8.dp))
-            if (!isPreview) {
+            if (item.isMeta) {
+                // italicised text for special thread items
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = item.metaText,
+                    fontStyle = FontStyle.Italic,
+                )
+            } else if (!isPreview) {
+                // selectable text for normal thread items which are not previewed for reply
                 SelectionContainer {
                     Text(
                         modifier = Modifier.fillMaxWidth(),
@@ -175,6 +187,7 @@ fun ThreadItemContentComposable(
                     )
                 }
             } else {
+                // shorten normal thread items when previewed for reply
                 Text(
                     modifier = Modifier.fillMaxWidth(),
                     text = item.text,

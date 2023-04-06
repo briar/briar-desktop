@@ -83,7 +83,7 @@ fun ThreadedGroupConversationInput(
                         text = strings.messageReplyIntro,
                         modifier = Modifier.padding(bottom = 8.dp),
                     )
-                    ThreadItemContentComposable(
+                    ThreadItemContent(
                         item = selectedThreadItem,
                         isPreview = true,
                         modifier = Modifier

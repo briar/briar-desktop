@@ -1,6 +1,6 @@
 /*
  * Briar Desktop
- * Copyright (C) 2021-2022 The Briar Project
+ * Copyright (C) 2021-2023 The Briar Project
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -19,6 +19,7 @@
 package org.briarproject.briar.desktop.utils
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
@@ -78,4 +79,9 @@ object UiUtils {
             return Dimension(width.dp.roundToPx(), height.dp.roundToPx())
         }
     }
+
+    fun Modifier.modifyIf(
+        condition: Boolean,
+        modifier: Modifier,
+    ) = if (condition) then(modifier) else this
 }

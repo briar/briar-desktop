@@ -78,11 +78,10 @@ class PrivateGroupConversationViewModel @Inject constructor(
 
     override fun loadThreadItems(txn: Transaction, groupId: GroupId) =
         privateGroupManager.getHeaders(txn, groupId).map { header ->
-            PrivateGroupMessageItem(
-                header,
-                if (header !is JoinMessageHeader) privateGroupManager.getMessageText(txn, header.id)
-                else "" // todo
-            )
+            if (header is JoinMessageHeader)
+                PrivateGroupJoinItem(header)
+            else
+                PrivateGroupMessageItem(header, privateGroupManager.getMessageText(txn, header.id))
         }
 
     @UiExecutor
