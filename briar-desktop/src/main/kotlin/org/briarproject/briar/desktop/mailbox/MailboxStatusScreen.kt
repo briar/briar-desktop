@@ -190,7 +190,7 @@ private fun MailboxStatusScreen(
     }
     if (showWizardButton) OutlinedButton(
         onClick = { wizardVisible.value = true },
-        enabled = !isCheckingConnection && !wizardVisible.value,
+        enabled = !isCheckingConnection && !isWiping && !wizardVisible.value,
     ) {
         Text(
             text = i18n("mailbox.error.wizard.button"),
