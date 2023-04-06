@@ -178,6 +178,7 @@ class MailboxViewModel @Inject constructor(
     @UiExecutor
     fun unlink() {
         _pairingUiState.value = IsPaired(connectionCheckRunning = false, isWiping = true)
+        _pairingLink.value = ""
         briarExecutors.onIoThread {
             val wasWiped = mailboxManager.unPair()
             briarExecutors.onUiThread {
