@@ -35,6 +35,7 @@ import org.briarproject.bramble.api.contact.ContactId
 import org.briarproject.bramble.api.identity.AuthorId
 import org.briarproject.briar.api.identity.AuthorInfo
 import org.briarproject.briar.api.identity.AuthorInfo.Status
+import org.briarproject.briar.desktop.privategroup.sharing.GroupMemberItem
 import org.briarproject.briar.desktop.ui.TrustIndicatorShort
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nF
@@ -80,6 +81,18 @@ fun ContactItemViewSmall(
     authorId = contactItem.authorId,
     authorInfo = contactItem.authorInfo,
     isConnected = if (showConnectionState) contactItem.isConnected else null,
+    modifier = modifier,
+)
+
+@Composable
+fun ContactItemViewSmall(
+    groupMemberItem: GroupMemberItem,
+    modifier: Modifier = Modifier,
+) = ContactItemViewSmall(
+    displayName = groupMemberItem.displayName,
+    authorId = groupMemberItem.authorId,
+    authorInfo = groupMemberItem.authorInfo,
+    isConnected = groupMemberItem.isConnected,
     modifier = modifier,
 )
 

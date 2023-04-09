@@ -58,11 +58,14 @@ import org.briarproject.briar.api.messaging.MessagingManager
 import org.briarproject.briar.api.messaging.PrivateMessage
 import org.briarproject.briar.api.messaging.PrivateMessageFactory
 import org.briarproject.briar.api.messaging.PrivateMessageHeader
+import org.briarproject.briar.api.privategroup.invitation.GroupInvitationManager
 import org.briarproject.briar.desktop.DesktopFeatureFlags
 import org.briarproject.briar.desktop.attachment.media.ImageCompressor
 import org.briarproject.briar.desktop.contact.ContactItem
 import org.briarproject.briar.desktop.contact.loadContactItem
+import org.briarproject.briar.desktop.conversation.ConversationRequestItem.RequestType.BLOG
 import org.briarproject.briar.desktop.conversation.ConversationRequestItem.RequestType.FORUM
+import org.briarproject.briar.desktop.conversation.ConversationRequestItem.RequestType.GROUP
 import org.briarproject.briar.desktop.conversation.ConversationRequestItem.RequestType.INTRODUCTION
 import org.briarproject.briar.desktop.forum.sharing.ForumInvitationSentEvent
 import org.briarproject.briar.desktop.threading.BriarExecutors
@@ -92,6 +95,7 @@ constructor(
     private val conversationManager: ConversationManager,
     private val introductionManager: IntroductionManager,
     private val forumSharingManager: ForumSharingManager,
+    private val groupInvitationManager: GroupInvitationManager,
     private val messagingManager: MessagingManager,
     private val privateMessageFactory: PrivateMessageFactory,
     briarExecutors: BriarExecutors,
@@ -431,20 +435,31 @@ constructor(
                     introductionManager.respondToIntroduction(txn, _contactId.value!!, item.sessionId, accept)
 
                 FORUM -> {
-                    if (desktopFeatureFlags.shouldEnableForums()) {
-                        forumSharingManager.respondToInvitation(
-                            /* txn = */ txn,
-                            /* c = */ _contactId.value!!,
-                            /* id = */ item.sessionId,
-                            /* accept = */ accept
-                        )
-                    } else {
-                        LOG.e { "Forum requests are not supported for this build." }
+                    require(desktopFeatureFlags.shouldEnableForums()) {
+                        "Forum requests are not supported for this build." // NON-NLS
                     }
+                    forumSharingManager.respondToInvitation(
+                        /* txn = */ txn,
+                        /* c = */ _contactId.value!!,
+                        /* id = */ item.sessionId,
+                        /* accept = */ accept
+                    )
                 }
 
-                else ->
-                    LOG.e { "Only introduction and forum requests are supported for the time being." }
+                GROUP -> {
+                    require(desktopFeatureFlags.shouldEnablePrivateGroups()) {
+                        "Private group requests are not supported for this build." // NON-NLS
+                    }
+                    groupInvitationManager.respondToInvitation(
+                        /* txn = */ txn,
+                        /* c = */ _contactId.value!!,
+                        /* s = */ item.sessionId,
+                        /* accept = */ accept
+                    )
+                }
+
+                BLOG ->
+                    LOG.e { "Blogs are not supported for the time being." }
             }
             // reload all messages to also show request response message
             // todo: might be better to have an event to react to, also for (other) outgoing messages

@@ -31,6 +31,7 @@ import org.briarproject.bramble.api.event.EventBus
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.bramble.api.plugin.event.ContactConnectedEvent
 import org.briarproject.bramble.api.plugin.event.ContactDisconnectedEvent
+import org.briarproject.bramble.api.sync.GroupId
 import org.briarproject.briar.api.conversation.ConversationManager
 import org.briarproject.briar.api.forum.ForumSharingManager
 import org.briarproject.briar.api.forum.event.ForumInvitationResponseReceivedEvent
@@ -110,9 +111,12 @@ class ForumSharingViewModel @Inject constructor(
     }
 
     override fun reload() {
-        super.reload()
         _shareableSelected.value = emptySet()
         _sharingMessage.value = ""
+        val groupId = _groupId ?: return
+        runOnDbThreadWithTransaction(true) { txn ->
+            loadSharingStatus(txn, groupId)
+        }
     }
 
     @UiExecutor
@@ -176,13 +180,12 @@ class ForumSharingViewModel @Inject constructor(
         }
     }
 
-    override fun loadSharingStatus(txn: Transaction) {
-        val groupId = _groupId ?: return
+    fun loadSharingStatus(txn: Transaction, groupId: GroupId) {
         val map = contactManager.getContacts(txn).associate { contact ->
             contact.id to forumSharingManager.getSharingStatus(txn, groupId, contact)
         }
+        val sharing = map.filterValues { it == SHARING }.keys
         txn.attach {
-            val sharing = map.filterValues { it == SHARING }.keys
             val online =
                 sharing.fold(0) { acc, it -> if (connectionRegistry.isConnected(it)) acc + 1 else acc }
             _sharingStatus.value = map

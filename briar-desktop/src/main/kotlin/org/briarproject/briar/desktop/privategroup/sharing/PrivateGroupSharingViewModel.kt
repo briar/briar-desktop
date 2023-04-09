@@ -24,18 +24,22 @@ import androidx.compose.runtime.mutableStateOf
 import org.briarproject.bramble.api.connection.ConnectionRegistry
 import org.briarproject.bramble.api.contact.ContactId
 import org.briarproject.bramble.api.contact.ContactManager
+import org.briarproject.bramble.api.contact.event.ContactAddedEvent
+import org.briarproject.bramble.api.contact.event.ContactRemovedEvent
 import org.briarproject.bramble.api.db.Transaction
 import org.briarproject.bramble.api.db.TransactionManager
 import org.briarproject.bramble.api.event.Event
 import org.briarproject.bramble.api.event.EventBus
+import org.briarproject.bramble.api.identity.IdentityManager
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.bramble.api.plugin.event.ContactConnectedEvent
 import org.briarproject.bramble.api.plugin.event.ContactDisconnectedEvent
+import org.briarproject.bramble.api.sync.GroupId
 import org.briarproject.briar.api.conversation.ConversationManager
 import org.briarproject.briar.api.identity.AuthorManager
-import org.briarproject.briar.api.privategroup.GroupMember
+import org.briarproject.briar.api.privategroup.JoinMessageHeader
 import org.briarproject.briar.api.privategroup.PrivateGroupManager
-import org.briarproject.briar.api.privategroup.event.GroupInvitationResponseReceivedEvent
+import org.briarproject.briar.api.privategroup.event.GroupMessageAddedEvent
 import org.briarproject.briar.api.privategroup.invitation.GroupInvitationManager
 import org.briarproject.briar.api.sharing.SharingConstants.MAX_INVITATION_TEXT_LENGTH
 import org.briarproject.briar.api.sharing.SharingManager.SharingStatus
@@ -49,7 +53,7 @@ import org.briarproject.briar.desktop.threading.UiExecutor
 import org.briarproject.briar.desktop.utils.InternationalizationUtils
 import org.briarproject.briar.desktop.utils.StringUtils.takeUtf8
 import org.briarproject.briar.desktop.utils.clearAndAddAll
-import org.briarproject.briar.desktop.viewmodel.asList
+import org.briarproject.briar.desktop.utils.replaceFirst
 import org.briarproject.briar.desktop.viewmodel.asState
 import org.briarproject.briar.desktop.viewmodel.update
 import javax.inject.Inject
@@ -57,6 +61,7 @@ import javax.inject.Inject
 class PrivateGroupSharingViewModel @Inject constructor(
     private val privateGroupManager: PrivateGroupManager,
     private val privateGroupInvitationManager: GroupInvitationManager,
+    private val identityManager: IdentityManager,
     contactManager: ContactManager,
     authorManager: AuthorManager,
     conversationManager: ConversationManager,
@@ -80,8 +85,20 @@ class PrivateGroupSharingViewModel @Inject constructor(
     private val _shareableSelected = mutableStateOf(emptySet<ContactId>())
     private val _sharingMessage = mutableStateOf("")
 
-    private val _members = mutableStateListOf<GroupMember>()
-    val members = _members.asList()
+    private val _isCreator = mutableStateOf(false)
+    val isCreator = _isCreator.asState()
+
+    private val _members = mutableStateListOf<GroupMemberItem>()
+    val members = derivedStateOf {
+        _members.sortedWith(
+            // first creator of the group (false comes before true)
+            // second non-case-sensitive, alphabetical order on displayName
+            compareBy(
+                { !it.isCreator },
+                { it.displayName.lowercase(InternationalizationUtils.locale) }
+            )
+        )
+    }
 
     data class ShareableContactItem(val status: SharingStatus, val contactItem: ContactItem)
 
@@ -110,14 +127,24 @@ class PrivateGroupSharingViewModel @Inject constructor(
     }
 
     override fun reload() {
-        super.reload()
         _shareableSelected.value = emptySet()
         _sharingMessage.value = ""
+        reloadMembers()
+    }
+
+    private fun reloadMembers() {
+        val groupId = _groupId ?: return
         runOnDbThreadWithTransaction(true) { txn ->
-            val members = privateGroupManager.getMembers(txn, _groupId!!)
+            val isCreator =
+                privateGroupManager.getPrivateGroup(txn, groupId).creator == identityManager.getLocalAuthor(txn)
+            val members = privateGroupManager.getMembers(txn, groupId).map {
+                loadGroupMemberItem(it, connectionRegistry)
+            }
             txn.attach {
+                _isCreator.value = isCreator
                 _members.clearAndAddAll(members)
             }
+            loadSharingStatus(txn, groupId, members, isCreator)
         }
     }
 
@@ -152,49 +179,70 @@ class PrivateGroupSharingViewModel @Inject constructor(
 
         val groupId = _groupId ?: return
         when {
-            e is GroupInvitationResponseReceivedEvent && e.messageHeader.shareableId == groupId -> {
-                if (e.messageHeader.wasAccepted()) {
-                    _sharingStatus.value += e.contactId to SHARING
-                    val connected = connectionRegistry.isConnected(e.contactId)
-                    _sharingInfo.update { addContact(connected) }
-                } else {
-                    _sharingStatus.value += e.contactId to SHAREABLE
-                }
+            // todo: is there any similar leave event we could react to?
+            e is GroupMessageAddedEvent && e.groupId == groupId && e.header is JoinMessageHeader -> {
+                reloadMembers()
             }
 
-            // todo: update/reload member list on member join and leave(?)
-            //  e is GroupMessageAddedEvent && e.groupId == groupId && e.header is JoinMessageHeader
+            e is ContactAddedEvent || e is ContactRemovedEvent -> {
+                // the newly added or removed contact may be member of the private group
+                reloadMembers()
+            }
 
-            // todo: those could be moved to GroupSharingViewModel
+            // todo: update member list on contact alias/avatar changed (may be member)
+            // todo: any way of coupling member list to contact list for members that are actually contacts?
+
+            // todo: test when leaving groups is implemented
             e is ContactLeftShareableEvent && e.groupId == groupId -> {
-                _sharingStatus.value += e.contactId to SHAREABLE
+                if (_isCreator.value)
+                    _sharingStatus.value += e.contactId to SHAREABLE
                 val connected = connectionRegistry.isConnected(e.contactId)
                 _sharingInfo.update { removeContact(connected) }
             }
 
             e is ContactConnectedEvent -> {
-                if (_sharingStatus.value[e.contactId] == SHARING)
+                if (_sharingStatus.value[e.contactId] == SHARING) {
                     _sharingInfo.update { updateContactConnected(true) }
+                    _members.replaceFirst({ it.contactId == e.contactId }) { it.updateIsConnected(true) }
+                }
             }
 
             e is ContactDisconnectedEvent -> {
-                if (_sharingStatus.value[e.contactId] == SHARING)
+                if (_sharingStatus.value[e.contactId] == SHARING) {
                     _sharingInfo.update { updateContactConnected(false) }
+                    _members.replaceFirst({ it.contactId == e.contactId }) { it.updateIsConnected(false) }
+                }
             }
         }
     }
 
-    override fun loadSharingStatus(txn: Transaction) {
-        val groupId = _groupId ?: return
-        val map = contactManager.getContacts(txn).associate { contact ->
-            contact.id to privateGroupInvitationManager.getSharingStatus(txn, contact, groupId)
-        }
-        txn.attach {
+    private fun loadSharingStatus(
+        txn: Transaction,
+        groupId: GroupId,
+        members: List<GroupMemberItem>,
+        isCreator: Boolean,
+    ) {
+        val contacts = contactManager.getContacts(txn)
+        if (isCreator) {
+            val map = contacts.associate { contact ->
+                contact.id to privateGroupInvitationManager.getSharingStatus(txn, contact, groupId)
+            }
             val sharing = map.filterValues { it == SHARING }.keys
-            val online =
-                sharing.fold(0) { acc, it -> if (connectionRegistry.isConnected(it)) acc + 1 else acc }
-            _sharingStatus.value = map
-            _sharingInfo.value = SharingInfo(sharing.size, online)
+            txn.attach {
+                val online =
+                    sharing.fold(0) { acc, it -> if (connectionRegistry.isConnected(it)) acc + 1 else acc }
+                _sharingStatus.value = map
+                _sharingInfo.value = SharingInfo(sharing.size, online)
+            }
+        } else {
+            val sharing = members.mapNotNull { it.contactId }
+            val map = sharing.associateWith { SHARING }
+            txn.attach {
+                val online =
+                    sharing.fold(0) { acc, it -> if (connectionRegistry.isConnected(it)) acc + 1 else acc }
+                _sharingStatus.value = map
+                _sharingInfo.value = SharingInfo(sharing.size, online)
+            }
         }
     }
 }

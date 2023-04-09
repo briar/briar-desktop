@@ -40,14 +40,12 @@ import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.briarproject.briar.api.identity.AuthorInfo.Status.OURSELVES
-import org.briarproject.briar.api.privategroup.GroupMember
 import org.briarproject.briar.desktop.contact.ContactItemViewSmall
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
 import org.briarproject.briar.desktop.ui.HorizontalDivider
 import org.briarproject.briar.desktop.ui.ListItemView
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nF
-import org.briarproject.briar.desktop.utils.UiUtils.getContactDisplayName
 
 @Composable
 fun PrivateGroupMemberDrawerContent(
@@ -85,7 +83,7 @@ fun PrivateGroupMemberDrawerContent(
     }
     HorizontalDivider()
     LazyColumn(Modifier.fillMaxSize()) {
-        items(viewModel.members) { groupMember ->
+        items(viewModel.members.value) { groupMember ->
             PrivateGroupMemberListItem(groupMember)
         }
     }
@@ -93,26 +91,17 @@ fun PrivateGroupMemberDrawerContent(
 
 @Composable
 private fun PrivateGroupMemberListItem(
-    groupMember: GroupMember,
+    groupMember: GroupMemberItem,
 ) = ListItemView {
     Column(
         verticalArrangement = spacedBy(8.dp),
         modifier = Modifier.padding(8.dp)
     ) {
-        ContactItemViewSmall(
-            displayName = groupMember.author.name,
-            authorId = groupMember.author.id,
-            authorInfo = groupMember.authorInfo,
-            // todo: Android shows connection status if contact
-            isConnected = null,
-        )
+        ContactItemViewSmall(groupMember)
         if (groupMember.isCreator) {
             Text(
                 if (groupMember.authorInfo.status == OURSELVES) i18n("group.member.created_you")
-                else i18nF(
-                    "group.member.created_contact",
-                    getContactDisplayName(groupMember.author.name, groupMember.authorInfo.alias)
-                ),
+                else i18nF("group.member.created_contact", groupMember.displayName),
                 style = MaterialTheme.typography.caption,
             )
         }

@@ -21,7 +21,6 @@ package org.briarproject.briar.desktop.threadedgroup.sharing
 import androidx.compose.runtime.mutableStateOf
 import org.briarproject.bramble.api.connection.ConnectionRegistry
 import org.briarproject.bramble.api.contact.ContactManager
-import org.briarproject.bramble.api.db.Transaction
 import org.briarproject.bramble.api.db.TransactionManager
 import org.briarproject.bramble.api.event.EventBus
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
@@ -69,19 +68,7 @@ abstract class ThreadedGroupSharingViewModel(
         reload()
     }
 
-    protected open fun reload() {
-        loadSharingStatus()
-    }
-
-    override fun loadContactsWithinTransaction(txn: Transaction) {
-        super.loadContactsWithinTransaction(txn)
-        if (_groupId != null) loadSharingStatus(txn)
-    }
-
-    private fun loadSharingStatus(): Unit =
-        runOnDbThreadWithTransaction(true, this::loadSharingStatus)
-
-    protected abstract fun loadSharingStatus(txn: Transaction)
+    protected abstract fun reload()
 
     data class SharingInfo(val total: Int, val online: Int) {
         fun addContact(connected: Boolean) = copy(
