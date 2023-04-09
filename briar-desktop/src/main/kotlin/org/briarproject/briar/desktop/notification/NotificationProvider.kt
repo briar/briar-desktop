@@ -37,6 +37,7 @@ interface NotificationProvider {
     fun uninit()
     fun notifyPrivateMessages(num: Int, contacts: Int)
     fun notifyForumPosts(num: Int, forums: Int)
+    fun notifyPrivateGroupMessages(num: Int, groups: Int)
 }
 
 interface VisualNotificationProvider : NotificationProvider
@@ -52,4 +53,5 @@ object StubNotificationProvider : VisualNotificationProvider {
     override fun uninit() {}
     override fun notifyPrivateMessages(num: Int, contacts: Int) {}
     override fun notifyForumPosts(num: Int, forums: Int) {}
+    override fun notifyPrivateGroupMessages(num: Int, groups: Int) {}
 }

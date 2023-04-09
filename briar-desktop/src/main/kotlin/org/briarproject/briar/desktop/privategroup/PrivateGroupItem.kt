@@ -20,7 +20,7 @@ package org.briarproject.briar.desktop.privategroup
 
 import org.briarproject.bramble.api.sync.GroupId
 import org.briarproject.briar.api.client.MessageTracker
-import org.briarproject.briar.api.client.PostHeader
+import org.briarproject.briar.api.privategroup.GroupMessageHeader
 import org.briarproject.briar.api.privategroup.PrivateGroup
 import org.briarproject.briar.desktop.threadedgroup.ThreadedGroupItem
 import kotlin.math.max
@@ -43,13 +43,13 @@ data class PrivateGroupItem(
     override val id: GroupId = privateGroup.id
     override val name: String = privateGroup.name
 
-    fun updateOnPostReceived(header: PostHeader) =
+    fun updateOnMessageReceived(header: GroupMessageHeader) =
         copy(
             msgCount = msgCount + 1,
             unread = if (header.isRead) unread else unread + 1,
             timestamp = max(header.timestamp, this.timestamp)
         )
 
-    fun updateOnPostsRead(num: Int) =
+    fun updateOnMessagesRead(num: Int) =
         copy(unread = unread - num)
 }

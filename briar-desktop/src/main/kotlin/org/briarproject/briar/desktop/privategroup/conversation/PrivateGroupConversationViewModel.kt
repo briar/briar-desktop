@@ -32,6 +32,7 @@ import org.briarproject.bramble.api.event.EventBus
 import org.briarproject.bramble.api.identity.IdentityManager
 import org.briarproject.bramble.api.identity.LocalAuthor
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
+import org.briarproject.bramble.api.sync.ClientId
 import org.briarproject.bramble.api.sync.GroupId
 import org.briarproject.bramble.api.sync.MessageId
 import org.briarproject.bramble.api.system.Clock
@@ -64,6 +65,8 @@ class PrivateGroupConversationViewModel @Inject constructor(
     db,
     eventBus
 ) {
+
+    override val clientId: ClientId = PrivateGroupManager.CLIENT_ID
 
     @UiExecutor
     override fun eventOccurred(e: Event) {

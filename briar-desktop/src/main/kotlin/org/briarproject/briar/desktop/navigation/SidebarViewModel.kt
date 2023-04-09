@@ -29,6 +29,7 @@ import org.briarproject.briar.desktop.threading.UiExecutor
 import org.briarproject.briar.desktop.ui.MessageCounter
 import org.briarproject.briar.desktop.ui.MessageCounterData
 import org.briarproject.briar.desktop.ui.MessageCounterDataType.Forum
+import org.briarproject.briar.desktop.ui.MessageCounterDataType.PrivateGroup
 import org.briarproject.briar.desktop.ui.MessageCounterDataType.PrivateMessage
 import org.briarproject.briar.desktop.ui.UiMode
 import org.briarproject.briar.desktop.viewmodel.ViewModel
@@ -69,6 +70,7 @@ constructor(
         when (type) {
             PrivateMessage -> _messageCount.update { copy(privateMessages = count) }
             Forum -> _messageCount.update { copy(forumPosts = count) }
+            PrivateGroup -> _messageCount.update { copy(privateGroupMessages = count) }
         }
     }
 
@@ -97,5 +99,6 @@ constructor(
     data class MessageCount(
         val privateMessages: Int = 0,
         val forumPosts: Int = 0,
+        val privateGroupMessages: Int = 0,
     )
 }

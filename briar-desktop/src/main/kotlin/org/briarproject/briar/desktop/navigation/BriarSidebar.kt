@@ -88,7 +88,8 @@ fun BriarSidebar(
         Spacer(Modifier.height(4.dp))
 
         BriarSidebarButton(UiMode.CONTACTS, messageCount.privateMessages)
-        if (configuration.shouldEnablePrivateGroups()) BriarSidebarButton(UiMode.GROUPS)
+        if (configuration.shouldEnablePrivateGroups())
+            BriarSidebarButton(UiMode.GROUPS, messageCount.privateGroupMessages)
         if (configuration.shouldEnableForums()) BriarSidebarButton(UiMode.FORUMS, messageCount.forumPosts)
         if (configuration.shouldEnableBlogs()) BriarSidebarButton(UiMode.BLOGS)
 

@@ -37,4 +37,11 @@ abstract class AbstractNotificationProvider : VisualNotificationProvider {
         else
             i18nF("notifications.message.forum.several_forums", num, forums)
     )
+
+    override fun notifyPrivateGroupMessages(num: Int, groups: Int) = sendNotification(
+        if (groups == 1)
+            i18nP("notifications.message.group.one_group", num)
+        else
+            i18nF("notifications.message.group.several_groups", num, groups)
+    )
 }

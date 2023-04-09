@@ -57,4 +57,5 @@ object SoundNotificationProvider : NotificationProvider {
 
     override fun notifyPrivateMessages(num: Int, contacts: Int) = playSound()
     override fun notifyForumPosts(num: Int, forums: Int) = playSound()
+    override fun notifyPrivateGroupMessages(num: Int, groups: Int) = playSound()
 }

@@ -42,6 +42,7 @@ import org.briarproject.briar.api.privategroup.PrivateGroupManager
 import org.briarproject.briar.api.privategroup.event.GroupMessageAddedEvent
 import org.briarproject.briar.desktop.privategroup.conversation.PrivateGroupConversationViewModel
 import org.briarproject.briar.desktop.threadedgroup.ThreadedGroupListViewModel
+import org.briarproject.briar.desktop.threadedgroup.ThreadedGroupMessageReadEvent
 import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.utils.removeFirst
 import org.briarproject.briar.desktop.utils.replaceFirst
@@ -70,13 +71,13 @@ class PrivateGroupListViewModel
         super.eventOccurred(e)
         when (e) {
             is GroupMessageAddedEvent -> {
-                updateItem(e.groupId) { it.updateOnPostReceived(e.header) }
+                updateItem(e.groupId) { it.updateOnMessageReceived(e.header) }
             }
 
-            // TODO
-            /*is ForumPostReadEvent -> {
-                updateItem(e.groupId) { it.updateOnPostsRead(e.numMarkedRead) }
-            }*/
+            is ThreadedGroupMessageReadEvent -> {
+                if (e.clientId != clientId) return
+                updateItem(e.groupId) { it.updateOnMessagesRead(e.numMarkedRead) }
+            }
         }
     }
 

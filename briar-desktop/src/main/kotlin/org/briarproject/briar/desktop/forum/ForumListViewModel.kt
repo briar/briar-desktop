@@ -32,6 +32,7 @@ import org.briarproject.briar.api.forum.ForumManager
 import org.briarproject.briar.api.forum.event.ForumPostReceivedEvent
 import org.briarproject.briar.desktop.forum.conversation.ForumConversationViewModel
 import org.briarproject.briar.desktop.threadedgroup.ThreadedGroupListViewModel
+import org.briarproject.briar.desktop.threadedgroup.ThreadedGroupMessageReadEvent
 import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.utils.removeFirst
 import org.briarproject.briar.desktop.utils.replaceFirst
@@ -62,7 +63,8 @@ class ForumListViewModel
                 updateItem(e.groupId) { it.updateOnPostReceived(e.header) }
             }
 
-            is ForumPostReadEvent -> {
+            is ThreadedGroupMessageReadEvent -> {
+                if (e.clientId != clientId) return
                 updateItem(e.groupId) { it.updateOnPostsRead(e.numMarkedRead) }
             }
         }

@@ -16,15 +16,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.briarproject.briar.desktop.forum
+package org.briarproject.briar.desktop.threadedgroup
 
 import org.briarproject.bramble.api.event.Event
+import org.briarproject.bramble.api.sync.ClientId
 import org.briarproject.bramble.api.sync.GroupId
 
 /**
- * An event that is broadcast when [numMarkedRead] post(s) in a forum was marked as read.
+ * An event that is broadcast when [numMarkedRead] post(s) in a forum
+ * or message(s) in a private group are marked as read.
  */
-data class ForumPostReadEvent(
+data class ThreadedGroupMessageReadEvent(
+    val clientId: ClientId,
     val groupId: GroupId,
     val numMarkedRead: Int,
 ) : Event()

@@ -57,6 +57,7 @@ import org.briarproject.briar.desktop.settings.UnencryptedSettings.Theme.AUTO
 import org.briarproject.briar.desktop.settings.UnencryptedSettings.Theme.DARK
 import org.briarproject.briar.desktop.theme.BriarTheme
 import org.briarproject.briar.desktop.ui.MessageCounterDataType.Forum
+import org.briarproject.briar.desktop.ui.MessageCounterDataType.PrivateGroup
 import org.briarproject.briar.desktop.ui.MessageCounterDataType.PrivateMessage
 import org.briarproject.briar.desktop.ui.Screen.EXPIRED
 import org.briarproject.briar.desktop.ui.Screen.MAIN
@@ -139,6 +140,7 @@ constructor(
                 val notificationCoolDown = 5.seconds.inWholeMilliseconds
                 var lastNotificationPrivateMessage = 0L
                 var lastNotificationForum = 0L
+                var lastNotificationPrivateGroup = 0L
 
                 val eventListener = EventListener { e ->
                     when (e) {
@@ -157,6 +159,7 @@ constructor(
                         // reset notification cool-down
                         lastNotificationPrivateMessage = 0
                         lastNotificationForum = 0
+                        lastNotificationPrivateGroup = 0
                     }
                 }
                 val messageCounterListener: MessageCounterListener = { (type, total, groups, inc) ->
@@ -169,6 +172,10 @@ constructor(
                             Forum -> {
                                 { notifyForumPosts(total, groups) }
                             }
+
+                            PrivateGroup -> {
+                                { notifyPrivateGroupMessages(total, groups) }
+                            }
                         }
                         val (lastNotification, setLastNotification) = when (type) {
                             PrivateMessage -> lastNotificationPrivateMessage to { v: Long ->
@@ -176,6 +183,10 @@ constructor(
                             }
 
                             Forum -> lastNotificationForum to { v: Long -> lastNotificationForum = v }
+
+                            PrivateGroup -> lastNotificationPrivateGroup to { v: Long ->
+                                lastNotificationPrivateGroup = v
+                            }
                         }
 
                         window.iconImage = iconBadge

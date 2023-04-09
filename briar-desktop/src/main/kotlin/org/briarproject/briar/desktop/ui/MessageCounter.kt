@@ -25,7 +25,7 @@ interface MessageCounter {
     fun removeListener(listener: MessageCounterListener): Boolean
 }
 
-enum class MessageCounterDataType { PrivateMessage, Forum }
+enum class MessageCounterDataType { PrivateMessage, Forum, PrivateGroup }
 
 /**
  * Data holder for MessageCounter updates.

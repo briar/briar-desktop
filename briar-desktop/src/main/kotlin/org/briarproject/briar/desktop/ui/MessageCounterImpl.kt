@@ -32,11 +32,14 @@ import org.briarproject.briar.api.conversation.ConversationManager
 import org.briarproject.briar.api.conversation.event.ConversationMessageReceivedEvent
 import org.briarproject.briar.api.forum.ForumManager
 import org.briarproject.briar.api.forum.event.ForumPostReceivedEvent
+import org.briarproject.briar.api.privategroup.PrivateGroupManager
+import org.briarproject.briar.api.privategroup.event.GroupMessageAddedEvent
 import org.briarproject.briar.desktop.conversation.ConversationMessagesReadEvent
-import org.briarproject.briar.desktop.forum.ForumPostReadEvent
+import org.briarproject.briar.desktop.threadedgroup.ThreadedGroupMessageReadEvent
 import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.threading.UiExecutor
 import org.briarproject.briar.desktop.ui.MessageCounterDataType.Forum
+import org.briarproject.briar.desktop.ui.MessageCounterDataType.PrivateGroup
 import org.briarproject.briar.desktop.ui.MessageCounterDataType.PrivateMessage
 import org.briarproject.briar.desktop.utils.KLoggerUtils.e
 import javax.inject.Inject
@@ -47,6 +50,7 @@ constructor(
     private val contactManager: ContactManager,
     private val conversationManager: ConversationManager,
     private val forumManager: ForumManager,
+    private val privateGroupManager: PrivateGroupManager,
     private val briarExecutors: BriarExecutors,
     eventBus: EventBus,
 ) : MessageCounter {
@@ -60,6 +64,9 @@ constructor(
 
     @UiExecutor
     private val countForumPosts = Multiset<GroupId>()
+
+    @UiExecutor
+    private val countPrivateGroupMessages = Multiset<GroupId>()
 
     private val listeners = mutableListOf<MessageCounterListener>()
 
@@ -75,6 +82,9 @@ constructor(
                             val countForumPostsMap = forumManager.getForums(txn).associate { f ->
                                 f.id to forumManager.getGroupCount(txn, f.id).unreadCount
                             }
+                            val countPrivateGroupMessageMap = privateGroupManager.getPrivateGroups(txn).associate { g ->
+                                g.id to privateGroupManager.getGroupCount(txn, g.id).unreadCount
+                            }
                             txn.attach {
                                 countPrivateMessagesMap.forEach { (id, count) ->
                                     countPrivateMessages.addCount(id, count)
@@ -82,9 +92,13 @@ constructor(
                                 countForumPostsMap.forEach { (id, count) ->
                                     countForumPosts.addCount(id, count)
                                 }
+                                countPrivateGroupMessageMap.forEach { (id, count) ->
+                                    countPrivateGroupMessages.addCount(id, count)
+                                }
 
                                 informListeners(PrivateMessage, true)
                                 informListeners(Forum, true)
+                                informListeners(PrivateGroup, true)
                             }
                         }
                     }
@@ -116,22 +130,45 @@ constructor(
                     informListeners(Forum, true)
                 }
 
-                is ForumPostReadEvent -> {
+                is GroupMessageAddedEvent -> {
+                    if (e.isLocal) return@addListener
+
+                    countPrivateGroupMessages.add(e.groupId)
+                    informListeners(PrivateGroup, true)
+                }
+
+                is ThreadedGroupMessageReadEvent -> {
                     try {
-                        countForumPosts.removeCount(e.groupId, e.numMarkedRead)
+                        when (e.clientId) {
+                            ForumManager.CLIENT_ID -> {
+                                countForumPosts.removeCount(e.groupId, e.numMarkedRead)
+                                informListeners(Forum, false)
+                            }
+
+                            PrivateGroupManager.CLIENT_ID -> {
+                                countPrivateGroupMessages.removeCount(e.groupId, e.numMarkedRead)
+                                informListeners(PrivateGroup, false)
+                            }
+                        }
                     } catch (e: NoSuchElementException) {
                         LOG.e(e) {
-                            "inconsistent state in MessageCounterImpl.countForumPosts: " +
+                            "inconsistent state in MessageCounterImpl: " +
                                 "trying to remove non-existing element"
                         }
                     }
-                    informListeners(Forum, false)
                 }
 
                 is GroupRemovedEvent -> {
-                    if (e.group.clientId == ForumManager.CLIENT_ID) {
-                        countForumPosts.removeAll(e.group.id)
-                        informListeners(Forum, false)
+                    when (e.group.clientId) {
+                        ForumManager.CLIENT_ID -> {
+                            countForumPosts.removeAll(e.group.id)
+                            informListeners(Forum, false)
+                        }
+
+                        PrivateGroupManager.CLIENT_ID -> {
+                            countPrivateGroupMessages.removeAll(e.group.id)
+                            informListeners(PrivateGroup, false)
+                        }
                     }
                 }
             }
@@ -146,6 +183,7 @@ constructor(
         val groupCount = when (type) {
             PrivateMessage -> countPrivateMessages
             Forum -> countForumPosts
+            PrivateGroup -> countPrivateGroupMessages
         }
         l.invoke(MessageCounterData(type, groupCount.total, groupCount.unique, increment))
     }

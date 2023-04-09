@@ -25,12 +25,13 @@ import org.briarproject.bramble.api.db.Transaction
 import org.briarproject.bramble.api.db.TransactionManager
 import org.briarproject.bramble.api.event.EventBus
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
+import org.briarproject.bramble.api.sync.ClientId
 import org.briarproject.bramble.api.sync.GroupId
 import org.briarproject.bramble.api.sync.MessageId
 import org.briarproject.briar.api.client.PostHeader
 import org.briarproject.briar.client.MessageTreeImpl
-import org.briarproject.briar.desktop.forum.ForumPostReadEvent
 import org.briarproject.briar.desktop.threadedgroup.ThreadedGroupItem
+import org.briarproject.briar.desktop.threadedgroup.ThreadedGroupMessageReadEvent
 import org.briarproject.briar.desktop.threadedgroup.sharing.ThreadedGroupSharingViewModel
 import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.threading.UiExecutor
@@ -44,6 +45,8 @@ abstract class ThreadedConversationViewModel(
     db: TransactionManager,
     private val eventBus: EventBus,
 ) : EventListenerDbViewModel(briarExecutors, lifecycleManager, db, eventBus) {
+
+    protected abstract val clientId: ClientId
 
     private val _threadedGroupItem = mutableStateOf<ThreadedGroupItem?>(null)
     val groupItem = _threadedGroupItem.asState()
@@ -128,7 +131,7 @@ abstract class ThreadedConversationViewModel(
             }
             // we don't attach this to the transaction that actually changes the DB,
             // but that should be fine for this purpose of just decrementing a counter
-            eventBus.broadcast(ForumPostReadEvent(groupId, readIds.size))
+            eventBus.broadcast(ThreadedGroupMessageReadEvent(clientId, groupId, readIds.size))
             // TODO replace immutable ThreadItems instead to avoid recomposing whole list
             val messageTree = (state.value as? Loaded)?.messageTree ?: return
             _state.value = Loaded(messageTree)
