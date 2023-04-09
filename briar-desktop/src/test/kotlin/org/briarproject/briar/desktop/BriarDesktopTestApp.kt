@@ -36,6 +36,11 @@ import org.briarproject.briar.BriarCoreModule
 import org.briarproject.briar.api.forum.ForumManager
 import org.briarproject.briar.api.forum.ForumSharingManager
 import org.briarproject.briar.api.introduction.IntroductionManager
+import org.briarproject.briar.api.privategroup.GroupMessageFactory
+import org.briarproject.briar.api.privategroup.PrivateGroupFactory
+import org.briarproject.briar.api.privategroup.PrivateGroupManager
+import org.briarproject.briar.api.privategroup.invitation.GroupInvitationFactory
+import org.briarproject.briar.api.privategroup.invitation.GroupInvitationManager
 import org.briarproject.briar.api.test.TestDataCreator
 import org.briarproject.briar.desktop.testdata.DeterministicTestDataCreator
 import org.briarproject.briar.desktop.threading.BriarExecutors
@@ -87,4 +92,14 @@ internal interface BriarDesktopTestApp : BrambleCoreEagerSingletons, BriarCoreEa
     fun getForumManager(): ForumManager
 
     fun getForumSharingManager(): ForumSharingManager
+
+    fun getPrivateGroupManager(): PrivateGroupManager
+
+    fun getPrivateGroupFactory(): PrivateGroupFactory
+
+    fun getGroupMessageFactory(): GroupMessageFactory
+
+    fun getGroupInvitationManager(): GroupInvitationManager
+
+    fun getGroupInvitationFactory(): GroupInvitationFactory
 }

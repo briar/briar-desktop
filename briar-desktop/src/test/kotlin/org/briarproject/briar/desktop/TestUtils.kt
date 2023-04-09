@@ -17,6 +17,7 @@
  */
 
 @file:Suppress("HardCodedStringLiteral")
+
 package org.briarproject.briar.desktop
 
 import mu.KotlinLogging
@@ -32,8 +33,11 @@ import org.briarproject.bramble.api.identity.LocalAuthor
 import org.briarproject.bramble.api.plugin.TransportId
 import org.briarproject.bramble.api.properties.TransportProperties
 import org.briarproject.bramble.api.versioning.event.ClientVersionUpdatedEvent
+import org.briarproject.briar.api.autodelete.AutoDeleteConstants.NO_AUTO_DELETE_TIMER
 import org.briarproject.briar.api.forum.ForumManager
 import org.briarproject.briar.api.forum.event.ForumInvitationRequestReceivedEvent
+import org.briarproject.briar.api.privategroup.PrivateGroupManager
+import org.briarproject.briar.api.privategroup.event.GroupInvitationRequestReceivedEvent
 import org.briarproject.briar.api.sharing.SharingManager.SharingStatus.SHAREABLE
 import org.briarproject.briar.desktop.utils.FileUtils
 import java.io.IOException
@@ -157,8 +161,10 @@ object TestUtils {
     internal fun List<BriarDesktopTestApp>.createForumForAll() {
         if (isEmpty()) return
 
-        // create forum
         val creator = get(0)
+        val contacts = drop(1)
+
+        // create forum
         val forum = creator.getForumManager().addForum("Shared Forum")
 
         // invite all contacts
@@ -174,11 +180,57 @@ object TestUtils {
         }
 
         // accept invitation at all contacts
-        drop(1).forEach { app ->
+        contacts.forEach { app ->
             app.getEventBus().addListenerOnce { e ->
                 if (e is ForumInvitationRequestReceivedEvent) {
                     val contact = app.getContactManager().getContact(e.contactId)
                     app.getForumSharingManager().respondToInvitation(forum, contact, true)
+                    return@addListenerOnce true
+                }
+                false
+            }
+        }
+    }
+
+    internal fun List<BriarDesktopTestApp>.createPrivateGroupForAll() {
+        if (isEmpty()) return
+
+        val creator = get(0)
+        val contacts = drop(1)
+
+        // create private group
+        val author = creator.getIdentityManager().localAuthor
+        val group = creator.getPrivateGroupFactory().createPrivateGroup("Shared Private Group", author)
+        val joinMsg = creator.getGroupMessageFactory().createJoinMessage(
+            group.id, System.currentTimeMillis(), author
+        )
+        creator.getPrivateGroupManager().addPrivateGroup(group, joinMsg, true)
+
+        // invite all contacts
+        creator.getEventBus().addListener { e ->
+            if (e is ClientVersionUpdatedEvent && e.clientVersion.clientId == PrivateGroupManager.CLIENT_ID) {
+                creator.getBriarExecutors().onDbThread {
+                    val contact = creator.getContactManager().getContact(e.contactId)
+                    val invitationManager = creator.getGroupInvitationManager()
+                    if (invitationManager.getSharingStatus(contact, group.id) == SHAREABLE) {
+                        val timestamp = System.currentTimeMillis()
+                        val signature = creator.getGroupInvitationFactory().signInvitation(
+                            contact, group.id, timestamp, author.privateKey
+                        )
+                        invitationManager.sendInvitation(
+                            group.id, e.contactId, null,
+                            timestamp, signature, NO_AUTO_DELETE_TIMER
+                        )
+                    }
+                }
+            }
+        }
+
+        // accept invitation at all contacts
+        contacts.forEach { app ->
+            app.getEventBus().addListenerOnce { e ->
+                if (e is GroupInvitationRequestReceivedEvent) {
+                    app.getGroupInvitationManager().respondToInvitation(e.contactId, group, true)
                     return@addListenerOnce true
                 }
                 false

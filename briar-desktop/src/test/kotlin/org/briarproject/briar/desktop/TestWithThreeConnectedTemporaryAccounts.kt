@@ -20,6 +20,7 @@ package org.briarproject.briar.desktop
 
 import org.briarproject.briar.desktop.TestUtils.connectAllInstantly
 import org.briarproject.briar.desktop.TestUtils.createForumForAll
+import org.briarproject.briar.desktop.TestUtils.createPrivateGroupForAll
 
 fun main() = RunWithMultipleTemporaryAccounts(listOf("alice", "bob", "eve")) { // NON-NLS
     forEach {
@@ -27,4 +28,5 @@ fun main() = RunWithMultipleTemporaryAccounts(listOf("alice", "bob", "eve")) { /
     }
     connectAllInstantly()
     createForumForAll()
+    createPrivateGroupForAll()
 }.run()
