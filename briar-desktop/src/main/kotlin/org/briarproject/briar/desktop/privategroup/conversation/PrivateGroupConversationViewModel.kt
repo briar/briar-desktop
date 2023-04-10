@@ -40,6 +40,7 @@ import org.briarproject.briar.api.client.MessageTracker
 import org.briarproject.briar.api.privategroup.GroupMessageFactory
 import org.briarproject.briar.api.privategroup.JoinMessageHeader
 import org.briarproject.briar.api.privategroup.PrivateGroupManager
+import org.briarproject.briar.api.privategroup.event.GroupMessageAddedEvent
 import org.briarproject.briar.desktop.privategroup.sharing.PrivateGroupSharingViewModel
 import org.briarproject.briar.desktop.threadedgroup.conversation.ThreadedConversationViewModel
 import org.briarproject.briar.desktop.threading.BriarExecutors
@@ -70,13 +71,13 @@ class PrivateGroupConversationViewModel @Inject constructor(
 
     @UiExecutor
     override fun eventOccurred(e: Event) {
-        // todo: handle incoming messages
-        /*if (e is ForumPostReceivedEvent) {
-            if (e.groupId == groupItem.value?.id) {
-                val item = ForumPostItem(e.header, e.text)
-                addItem(item, null)
-            }
-        }*/
+        if (e is GroupMessageAddedEvent && e.groupId == groupItem.value?.id && !e.isLocal) {
+            val header = e.header
+            val item =
+                if (header is JoinMessageHeader) PrivateGroupJoinItem(header)
+                else PrivateGroupMessageItem(header, e.text)
+            addItem(item, null)
+        }
     }
 
     override fun loadThreadItems(txn: Transaction, groupId: GroupId) =
