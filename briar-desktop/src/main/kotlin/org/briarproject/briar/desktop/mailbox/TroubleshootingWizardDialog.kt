@@ -42,6 +42,7 @@ import androidx.compose.material.OutlinedButton
 import androidx.compose.material.RadioButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment.Companion.CenterEnd
@@ -116,25 +117,12 @@ private fun ColumnScope.Troubleshooting(
             i18n("mailbox_error.wizard.answer2"),
             i18n("mailbox_error.wizard.answer3"),
         )
-        RadioGroup(radioOptions) { answer ->
-            when (answer) {
-                i18n("mailbox_error.wizard.answer1") -> {
-                    answer1Selected.value = true
-                    answer2Selected.value = false
-                    answer3Selected.value = false
-                }
-                i18n("mailbox_error.wizard.answer2") -> {
-                    answer1Selected.value = false
-                    answer2Selected.value = true
-                    answer3Selected.value = false
-                }
-                i18n("mailbox_error.wizard.answer3") -> {
-                    answer1Selected.value = false
-                    answer2Selected.value = false
-                    answer3Selected.value = true
-                }
-            }
-        }
+        val radioValues = listOf(
+            answer1Selected,
+            answer2Selected,
+            answer3Selected,
+        )
+        RadioGroup(radioOptions, radioValues)
         AnimatedVisibility(answer1Selected.value) {
             TroubleshootingAccess(close, onCheckConnection, onUnlink)
         }
@@ -159,40 +147,19 @@ private fun TroubleshootingAccess(close: () -> Unit, onCheckConnection: () -> Un
         Text(i18n("mailbox_error.wizard.info1_1"))
         Text(i18n("mailbox_error.wizard.question1_1"))
 
-        val radioOptions1 = listOf(
+        val radioOptions = listOf(
             i18n("mailbox_error.wizard.answer1_1"),
             i18n("mailbox_error.wizard.answer1_2"),
             i18n("mailbox_error.wizard.answer1_3"),
             i18n("mailbox_error.wizard.answer1_4"),
         )
-        RadioGroup(radioOptions1) { answer ->
-            when (answer) {
-                i18n("mailbox_error.wizard.answer1_1") -> {
-                    answer1_1Selected.value = true
-                    answer1_2Selected.value = false
-                    answer1_3Selected.value = false
-                    answer1_4Selected.value = false
-                }
-                i18n("mailbox_error.wizard.answer1_2") -> {
-                    answer1_1Selected.value = false
-                    answer1_2Selected.value = true
-                    answer1_3Selected.value = false
-                    answer1_4Selected.value = false
-                }
-                i18n("mailbox_error.wizard.answer1_3") -> {
-                    answer1_1Selected.value = false
-                    answer1_2Selected.value = false
-                    answer1_3Selected.value = true
-                    answer1_4Selected.value = false
-                }
-                i18n("mailbox_error.wizard.answer1_4") -> {
-                    answer1_1Selected.value = false
-                    answer1_2Selected.value = false
-                    answer1_3Selected.value = false
-                    answer1_4Selected.value = true
-                }
-            }
-        }
+        val radioValues = listOf(
+            answer1_1Selected,
+            answer1_2Selected,
+            answer1_3Selected,
+            answer1_4Selected,
+        )
+        RadioGroup(radioOptions, radioValues)
         AnimatedVisibility(answer1_1Selected.value) {
             UnlinkAnswer(i18n("mailbox_error.wizard.info1_1_1"), close, onUnlink)
         }
@@ -222,18 +189,20 @@ private fun TroubleshootingAccess(close: () -> Unit, onCheckConnection: () -> Un
 }
 
 @Composable
-fun RadioGroup(radioOptions: List<String>, modifier: Modifier = Modifier, onSelected: (String) -> Unit) {
-    val (selectedOption, onOptionSelected) = rememberSaveable { mutableStateOf("") }
+fun RadioGroup(radioOptions: List<String>, radioValues: List<MutableState<Boolean>>, modifier: Modifier = Modifier) {
+    val (selectedOption, onOptionSelected) = rememberSaveable { mutableStateOf(-1) }
     Column(modifier.selectableGroup()) {
-        radioOptions.forEach { text ->
+        radioOptions.forEachIndexed { idx, text ->
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .selectable(
-                        selected = (text == selectedOption),
+                        selected = (idx == selectedOption),
                         onClick = {
-                            onOptionSelected(text)
-                            onSelected(text)
+                            onOptionSelected(idx)
+                            for (i in radioValues.indices) {
+                                radioValues[i].value = i == idx
+                            }
                         },
                         role = Role.RadioButton,
                     )
@@ -241,7 +210,7 @@ fun RadioGroup(radioOptions: List<String>, modifier: Modifier = Modifier, onSele
                 verticalAlignment = CenterVertically,
             ) {
                 RadioButton(
-                    selected = (text == selectedOption),
+                    selected = (idx == selectedOption),
                     onClick = null, // null recommended for accessibility with screen readers
                 )
                 Text(
