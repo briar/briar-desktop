@@ -64,7 +64,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.input.pointer.PointerIconDefaults
+import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.platform.LocalClipboardManager
@@ -420,7 +420,7 @@ private fun ContactLink(
                         }
                     }
                 },
-                modifier = Modifier.pointerHoverIcon(PointerIconDefaults.Default)
+                modifier = Modifier.pointerHoverIcon(PointerIcon.Default)
             )
         }
     )

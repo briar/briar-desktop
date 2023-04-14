@@ -41,7 +41,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment.Companion.Top
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.pointer.PointerIconDefaults
+import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.unit.dp
 import org.briarproject.bramble.util.StringUtils.utf8IsTooLong
@@ -137,7 +137,7 @@ fun ThreadedGroupConversationInput(
                     modifier = Modifier
                         .padding(4.dp)
                         .size(32.dp)
-                        .pointerHoverIcon(PointerIconDefaults.Default),
+                        .pointerHoverIcon(PointerIcon.Default),
                 )
             }
         )

@@ -45,7 +45,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.input.pointer.PointerIconDefaults
+import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.res.ResourceLoader
 import androidx.compose.ui.res.loadImageBitmap
@@ -132,7 +132,7 @@ fun ConversationInput(
                     iconTint = MaterialTheme.colors.sendButton,
                     contentDescription = i18n("access.message.send"),
                     onClick = onSend,
-                    modifier = Modifier.padding(4.dp).size(32.dp).pointerHoverIcon(PointerIconDefaults.Default),
+                    modifier = Modifier.padding(4.dp).size(32.dp).pointerHoverIcon(PointerIcon.Default),
                 )
             }
         )

@@ -24,7 +24,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     kotlin("jvm") version "1.7.20"
     kotlin("kapt") version "1.7.20"
-    id("org.jetbrains.compose") version "1.3.0"
+    id("org.jetbrains.compose") version "1.4.0"
     id("de.mobanisto.pinpit") version "0.3.0"
     id("java")
     id("org.jlleitschuh.gradle.ktlint") version "10.1.0"
