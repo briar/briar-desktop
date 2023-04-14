@@ -44,8 +44,8 @@ import org.briarproject.bramble.api.plugin.LanTcpConstants
 import org.briarproject.briar.BriarCoreEagerSingletons
 import org.briarproject.briar.desktop.TestUtils.getDataDir
 import org.briarproject.briar.desktop.contact.ContactListViewModel
-import org.briarproject.briar.desktop.forums.ForumViewModel
 import org.briarproject.briar.desktop.navigation.SidebarViewModel
+import org.briarproject.briar.desktop.threadedgroup.ThreadedGroupListViewModel
 import org.briarproject.briar.desktop.ui.LocalWindowInfo
 import org.briarproject.briar.desktop.ui.UiMode
 import org.briarproject.briar.desktop.ui.WindowInfo
@@ -140,7 +140,7 @@ class ScreenshotTest {
 
                 val sidebarViewModel = getViewModelProvider().get(SidebarViewModel::class)
                 val contactListViewModel = getViewModelProvider().get(ContactListViewModel::class)
-                val forumViewModel = getViewModelProvider().get(ForumViewModel::class)
+                val forumViewModel = getViewModelProvider().get(ThreadedGroupListViewModel::class)
 
                 // give IO executor some time to add contacts and messages
                 delay(10_000)
@@ -154,10 +154,10 @@ class ScreenshotTest {
                 captureToImage().saveAsScreenshot("contact-list")
 
                 sidebarViewModel.setUiMode(UiMode.FORUMS)
-                waitUntil(60_000) { forumViewModel.forumList.value.size >= 2 }
+                waitUntil(60_000) { forumViewModel.list.value.size >= 2 }
 
                 // select the second forum in the list and wait for the forum posts to load
-                forumViewModel.selectGroup(forumViewModel.forumList.value[1])
+                forumViewModel.selectGroup(forumViewModel.list.value[1])
                 awaitIdle()
 
                 // forum list screenshot
