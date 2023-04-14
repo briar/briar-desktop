@@ -81,7 +81,7 @@ sourceSets {
 val versionCode = "0.4.2"
 val buildType = if (project.hasProperty("buildType")) project.properties["buildType"] else "snapshot"
 group = "app.briar.desktop"
-version = "$versionCode"
+version = "$versionCode-$buildType"
 val appVendor = "The Briar Project"
 val appName = "Briar"
 val appDescription = "Secure messaging, anywhere"
@@ -287,6 +287,8 @@ pinpit.desktop {
             }
             macOS {
                 packageName = appName
+                // MacOS doesn't support things like 'nightly' or 'release'. Only numeric versions are acceptable
+                packageVersion = versionCode
                 iconFile.set(project.file("../assets/briar.icns"))
                 appCategory = "public.app-category.social-networking"
                 bundleID = "org.briarproject.briar.desktop"
