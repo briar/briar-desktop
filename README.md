@@ -27,7 +27,7 @@ Each night a new build is compiled by Briar's GitLab CI.
 #### Self-contained Java .jar
 
 The simplest way is to download the nightly
-[briar-desktop-linux.jar](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop-linux.jar?job=b_package_linux)
+[briar-desktop-linux.jar](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop-linux.jar?job=b_package_linux_x64)
 or
 [briar-desktop-windows.jar](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop-windows.jar?job=b_package_windows)
 and execute it from the command-line with
@@ -40,10 +40,10 @@ For Debian- and Ubuntu-based Linux distributions, a set of .deb files is availab
 Depending on which version of Debian/Ubuntu your OS is based on,
 you can choose the right .deb file:
 
-* [Ubuntu 22.04](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop-ubuntu-22.04.deb?job=b_package_linux)
-* [Ubuntu 20.04](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop-ubuntu-20.04.deb?job=b_package_linux)
-* [Debian stable (bullseye)](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop-debian-bullseye.deb?job=b_package_linux)
-* [Ubuntu 18.04](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop-ubuntu-18.04.deb?job=b_package_linux)
+* [Ubuntu 22.04](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop-ubuntu-22.04.deb?job=b_package_linux_x64)
+* [Ubuntu 20.04](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop-ubuntu-20.04.deb?job=b_package_linux_x64)
+* [Debian stable (bullseye)](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop-debian-bullseye.deb?job=b_package_linux_x64)
+* [Ubuntu 18.04](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop-ubuntu-18.04.deb?job=b_package_linux_x64)
 
 Here are some examples of popular distributions and their respective .deb file:
 
@@ -56,6 +56,12 @@ Here are some examples of popular distributions and their respective .deb file:
 * Ubuntu 18.04 and compatible:
   Linux Mint 19.X (Tara, Tessa, Tina, Tricia), elementaryOS 5.X (Juno, Hera), Trisquel 9 (
   Etiona)
+
+#### Tarball for Linux ARM 64
+
+For ARM-based devices, there's a tarball available:
+
+* [Tarball for ARM 64](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop-linux-arm64.tar.gz?job=b_package_linux_arm)
 
 #### Windows installer .msi
 
