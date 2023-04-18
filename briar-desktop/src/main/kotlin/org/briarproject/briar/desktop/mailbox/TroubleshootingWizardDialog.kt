@@ -54,7 +54,6 @@ import androidx.compose.ui.unit.dp
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 
-@Suppress("HardCodedStringLiteral")
 fun main() = preview {
     TroubleshootingWizard(
         close = {},
@@ -96,7 +95,6 @@ fun TroubleshootingWizard(
 }
 
 @Composable
-@Suppress("LocalVariableName")
 private fun ColumnScope.Troubleshooting(
     scrollState: ScrollState,
     close: () -> Unit,
