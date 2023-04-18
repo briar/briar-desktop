@@ -50,7 +50,10 @@ fun MailboxErrorDialog(
 ) {
     if (!visible) return
     AlertDialog(
-        title = { Text(i18n("mailbox.setup.error.title")) },
+        title = {
+            if (state is WasUnpaired) Text(i18n("mailbox.setup.intro.title"))
+            else Text(i18n("mailbox.setup.error.title"))
+        },
         onDismissRequest = onDismissed,
         text = {
             // Add empty box here with a minimum size to prevent overly narrow dialog
