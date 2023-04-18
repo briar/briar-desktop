@@ -46,6 +46,7 @@ buildscript {
         set("junit_version", "4.13.2")
         set("jmock_version", "2.12.0")
         set("mockwebserver_version", "4.9.3")
+        set("onionwrapper_version", "0.0.1")
     }
 }
 

@@ -68,6 +68,8 @@ open class GenerateBuildDataSourceTask : AbstractBuildDataTask() {
             put(UnversionedArtifact("org.briarproject", "jtorctl"), "BSD 2.0")
             put(UnversionedArtifact("org.briarproject", "null-safety"), "Apache 2.0")
             put(UnversionedArtifact("org.briarproject", "socks-socket"), "Apache 2.0")
+            put(UnversionedArtifact("org.briarproject", "onionwrapper-core"), "GPL 3.0")
+            put(UnversionedArtifact("org.briarproject", "onionwrapper-java"), "GPL 3.0")
             put(UnversionedArtifact("org.bytedeco", "javacpp"), "Apache 2.0")
             put(UnversionedArtifact("org.jdom", "jdom2"), "JDOM (Apache without acknowledgment clause)")
             put(UnversionedArtifact("org.jetbrains", "annotations"), "Apache 2.0")
