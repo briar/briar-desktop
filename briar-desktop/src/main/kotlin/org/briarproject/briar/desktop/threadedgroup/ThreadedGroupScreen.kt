@@ -43,6 +43,7 @@ fun <T : ThreadedGroupItem> ThreadedGroupScreen(
     strings: ThreadedGroupStrings,
     viewModel: ThreadedGroupListViewModel<T>,
     dropdownMenu: ThreadedGroupDropdownMenu,
+    extraContent: @Composable () -> Unit = {},
 ) {
     var addDialogVisible by remember { mutableStateOf(false) }
     AddThreadedGroupDialog(
@@ -73,7 +74,7 @@ fun <T : ThreadedGroupItem> ThreadedGroupScreen(
                 if (viewModel.selectedGroupId.value == null) {
                     NoThreadedGroupSelected(strings)
                 } else {
-                    ThreadedGroupConversationScreen(strings, viewModel.threadViewModel, dropdownMenu)
+                    ThreadedGroupConversationScreen(strings, viewModel.threadViewModel, dropdownMenu, extraContent)
                 }
             }
         }

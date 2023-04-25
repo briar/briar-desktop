@@ -115,7 +115,10 @@ class ForumConversationViewModel @Inject constructor(
     override fun markThreadItemRead(groupId: GroupId, id: MessageId) =
         forumManager.setReadFlag(groupId, id, true)
 
+    @UiExecutor
     override fun deleteGroup() {
-        groupItem.value?.let { forumManager.removeForum((it as ForumItem).forum) }
+        groupItem.value?.let {
+            runOnDbThread { forumManager.removeForum((it as ForumItem).forum) }
+        }
     }
 }

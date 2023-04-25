@@ -18,6 +18,7 @@
 
 package org.briarproject.briar.desktop.threadedgroup.conversation
 
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import kotlinx.coroutines.Job
 import org.briarproject.bramble.api.db.DatabaseExecutor
@@ -58,6 +59,8 @@ abstract class ThreadedConversationViewModel(
 
     private val _selectedThreadItem = mutableStateOf<ThreadItem?>(null)
     val selectedThreadItem = _selectedThreadItem.asState()
+
+    open val groupEnabled = derivedStateOf { true }
 
     @UiExecutor
     fun setGroupItem(threadedGroupItem: ThreadedGroupItem, onThreadItemLocallyAdded: (header: PostHeader) -> Unit) {

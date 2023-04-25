@@ -18,6 +18,8 @@
 
 package org.briarproject.briar.desktop.privategroup.conversation
 
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.mutableStateOf
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
@@ -40,11 +42,14 @@ import org.briarproject.briar.api.client.MessageTracker
 import org.briarproject.briar.api.privategroup.GroupMessageFactory
 import org.briarproject.briar.api.privategroup.JoinMessageHeader
 import org.briarproject.briar.api.privategroup.PrivateGroupManager
+import org.briarproject.briar.api.privategroup.event.GroupDissolvedEvent
 import org.briarproject.briar.api.privategroup.event.GroupMessageAddedEvent
 import org.briarproject.briar.desktop.privategroup.sharing.PrivateGroupSharingViewModel
+import org.briarproject.briar.desktop.threadedgroup.conversation.ThreadItem
 import org.briarproject.briar.desktop.threadedgroup.conversation.ThreadedConversationViewModel
 import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.threading.UiExecutor
+import org.briarproject.briar.desktop.viewmodel.asState
 import java.lang.Long.max
 import javax.inject.Inject
 
@@ -69,6 +74,11 @@ class PrivateGroupConversationViewModel @Inject constructor(
 
     override val clientId: ClientId = PrivateGroupManager.CLIENT_ID
 
+    private val _isDissolved = mutableStateOf(false)
+    val isDissolved = _isDissolved.asState()
+
+    override val groupEnabled = derivedStateOf { !_isDissolved.value }
+
     @UiExecutor
     override fun eventOccurred(e: Event) {
         if (e is GroupMessageAddedEvent && e.groupId == groupItem.value?.id && !e.isLocal) {
@@ -77,16 +87,23 @@ class PrivateGroupConversationViewModel @Inject constructor(
                 if (header is JoinMessageHeader) PrivateGroupJoinItem(header)
                 else PrivateGroupMessageItem(header, e.text)
             addItem(item, null)
+        } else if (e is GroupDissolvedEvent && e.groupId == groupItem.value?.id) {
+            _isDissolved.value = true
         }
     }
 
-    override fun loadThreadItems(txn: Transaction, groupId: GroupId) =
-        privateGroupManager.getHeaders(txn, groupId).map { header ->
+    override fun loadThreadItems(txn: Transaction, groupId: GroupId): List<ThreadItem> {
+        val isDissolved = privateGroupManager.isDissolved(txn, groupId)
+        txn.attach {
+            _isDissolved.value = isDissolved
+        }
+        return privateGroupManager.getHeaders(txn, groupId).map { header ->
             if (header is JoinMessageHeader)
                 PrivateGroupJoinItem(header)
             else
                 PrivateGroupMessageItem(header, privateGroupManager.getMessageText(txn, header.id))
         }
+    }
 
     @UiExecutor
     @OptIn(DelicateCoroutinesApi::class)
@@ -122,7 +139,10 @@ class PrivateGroupConversationViewModel @Inject constructor(
     override fun markThreadItemRead(groupId: GroupId, id: MessageId) =
         privateGroupManager.setReadFlag(groupId, id, true)
 
+    @UiExecutor
     override fun deleteGroup() {
-        groupItem.value?.let { privateGroupManager.removePrivateGroup(it.id) }
+        groupItem.value?.let {
+            runOnDbThread { privateGroupManager.removePrivateGroup(it.id) }
+        }
     }
 }

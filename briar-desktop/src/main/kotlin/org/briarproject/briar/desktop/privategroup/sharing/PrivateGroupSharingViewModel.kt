@@ -88,6 +88,8 @@ class PrivateGroupSharingViewModel @Inject constructor(
     private val _isCreator = mutableStateOf(false)
     val isCreator = _isCreator.asState()
 
+    override val deleteDialogCondition get() = _isCreator.value
+
     private val _members = mutableStateListOf<GroupMemberItem>()
     val members = derivedStateOf {
         _members.sortedWith(

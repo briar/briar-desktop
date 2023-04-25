@@ -50,9 +50,18 @@ object PrivateGroupStrings : ThreadedGroupStrings(
     },
     unreadJumpToPrevious = i18n("access.group.jump_to_prev_unread"),
     unreadJumpToNext = i18n("access.group.jump_to_next_unread"),
-    deleteDialogTitle = i18n("group.leave.dialog.title"),
-    deleteDialogMessage = i18n("group.leave.dialog.message"),
-    deleteDialogButton = i18n("group.leave.dialog.button"),
+    deleteDialogTitle = { isCreator ->
+        if (isCreator) i18n("group.dissolve.dialog.title")
+        else i18n("group.leave.dialog.title")
+    },
+    deleteDialogMessage = { isCreator ->
+        if (isCreator) i18n("group.dissolve.dialog.message")
+        else i18n("group.leave.dialog.message")
+    },
+    deleteDialogButton = { isCreator ->
+        if (isCreator) i18n("group.dissolve.dialog.button")
+        else i18n("group.leave.dialog.button")
+    },
     messageMaxLength = MAX_GROUP_POST_TEXT_LENGTH,
     messageReplyIntro = i18n("group.message.reply.intro"),
     messageReplyClose = i18n("access.group.reply.close"),

@@ -34,10 +34,9 @@ abstract class ThreadedGroupStrings(
     val sharedWith: (total: Int, online: Int) -> String,
     val unreadJumpToPrevious: String,
     val unreadJumpToNext: String,
-    // todo: will need to be different for private groups depending on creator or not
-    val deleteDialogTitle: String,
-    val deleteDialogMessage: String,
-    val deleteDialogButton: String,
+    val deleteDialogTitle: (Boolean) -> String,
+    val deleteDialogMessage: (Boolean) -> String,
+    val deleteDialogButton: (Boolean) -> String,
     val messageMaxLength: Int,
     val messageReplyIntro: String,
     val messageReplyClose: String,

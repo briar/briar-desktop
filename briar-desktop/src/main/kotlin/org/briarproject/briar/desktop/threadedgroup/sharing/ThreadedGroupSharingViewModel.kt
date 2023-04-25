@@ -56,6 +56,8 @@ abstract class ThreadedGroupSharingViewModel(
     protected val _sharingInfo = mutableStateOf(SharingInfo(0, 0))
     val sharingInfo = _sharingInfo.asState()
 
+    open val deleteDialogCondition = false
+
     override fun onInit() {
         super.onInit()
         loadContacts()

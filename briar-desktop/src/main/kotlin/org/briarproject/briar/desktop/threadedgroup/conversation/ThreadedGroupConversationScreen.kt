@@ -47,6 +47,7 @@ import androidx.compose.ui.Alignment.Companion.BottomCenter
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.unit.dp
 import org.briarproject.briar.desktop.contact.ContactDropDown.State.CLOSED
@@ -64,6 +65,7 @@ fun ThreadedGroupConversationScreen(
     strings: ThreadedGroupStrings,
     viewModel: ThreadedConversationViewModel,
     dropdownMenu: ThreadedGroupDropdownMenu,
+    extraContent: @Composable () -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -78,19 +80,23 @@ fun ThreadedGroupConversationScreen(
             }
         },
         content = { padding ->
+            extraContent()
             ThreadedGroupConversationContent(
                 strings = strings,
                 state = viewModel.state.value,
                 selectedThreadItem = viewModel.selectedThreadItem.value,
                 onThreadItemSelected = viewModel::selectThreadItem,
                 onThreadItemsVisible = viewModel::markThreadItemsRead,
-                modifier = Modifier.padding(padding)
+                modifier = Modifier.padding(padding).alpha(if (viewModel.groupEnabled.value) 1f else 0.5f)
             )
         },
         bottomBar = {
-            val onCloseReply = { viewModel.selectThreadItem(null) }
-            ThreadedGroupConversationInput(strings, viewModel.selectedThreadItem.value, onCloseReply) { text ->
-                viewModel.createThreadItem(text)
+            if (viewModel.groupEnabled.value) {
+                // only show message compose field is group is enabled (aka not dissolved for private groups)
+                val onCloseReply = { viewModel.selectThreadItem(null) }
+                ThreadedGroupConversationInput(strings, viewModel.selectedThreadItem.value, onCloseReply) { text ->
+                    viewModel.createThreadItem(text)
+                }
             }
         }
     )
@@ -154,6 +160,7 @@ private fun ThreadedGroupConversationHeader(
         DeleteThreadedGroupDialog(
             strings = strings,
             close = { deleteGroupDialogVisible.value = false },
+            dialogCondition = sharingViewModel.deleteDialogCondition,
             onDelete = onGroupDelete,
         )
     }
@@ -163,6 +170,7 @@ private fun ThreadedGroupConversationHeader(
 @OptIn(ExperimentalMaterialApi::class)
 private fun DeleteThreadedGroupDialog(
     strings: ThreadedGroupStrings,
+    dialogCondition: Boolean,
     close: () -> Unit,
     onDelete: () -> Unit = {},
 ) {
@@ -170,13 +178,13 @@ private fun DeleteThreadedGroupDialog(
         onDismissRequest = close,
         title = {
             Text(
-                text = strings.deleteDialogTitle,
+                text = strings.deleteDialogTitle(dialogCondition),
                 modifier = Modifier.width(Max),
                 style = MaterialTheme.typography.h6,
             )
         },
         text = {
-            Text(strings.deleteDialogMessage)
+            Text(strings.deleteDialogMessage(dialogCondition))
         },
         dismissButton = {
             DialogButton(
@@ -191,7 +199,7 @@ private fun DeleteThreadedGroupDialog(
                     close()
                     onDelete()
                 },
-                text = strings.deleteDialogButton,
+                text = strings.deleteDialogButton(dialogCondition),
                 type = DESTRUCTIVE,
             )
         },

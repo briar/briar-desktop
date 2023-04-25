@@ -33,7 +33,7 @@ fun PrivateGroupDropdownMenu(
     privateGroupSharingViewModel: PrivateGroupSharingViewModel,
     expanded: Boolean,
     onClose: () -> Unit,
-    onLeaveForumClick: () -> Unit, // todo: rename
+    onLeaveOrDissolvePrivateGroupClick: () -> Unit,
 ) = DropdownMenu(
     expanded = expanded,
     onDismissRequest = onClose,
@@ -55,31 +55,19 @@ fun PrivateGroupDropdownMenu(
             style = MaterialTheme.typography.body2,
         )
     }
-//    DropdownMenuItem(
-//        onClick = {
-//            onClose()
-//            infoDrawerHandler.open {
-//                ForumSharingStatusDrawerContent(
-//                    close = infoDrawerHandler::close,
-//                    viewModel = forumSharingViewModel,
-//                )
-//            }
-//        }
-//    ) {
-//        Text(
-//            i18n("forum.sharing.status.title"),
-//            style = MaterialTheme.typography.body2,
-//        )
-//    }
-//    DropdownMenuItem(
-//        onClick = {
-//            onClose()
-//            onLeaveForumClick()
-//        }
-//    ) {
-//        Text(
-//            i18n("forum.leave.title"), // todo: change
-//            style = MaterialTheme.typography.body2,
-//        )
-//    }
+    if (privateGroupSharingViewModel.isCreator.value) {
+        // todo: invite member
+    }
+    DropdownMenuItem(
+        onClick = {
+            onClose()
+            onLeaveOrDissolvePrivateGroupClick()
+        }
+    ) {
+        Text(
+            if (privateGroupSharingViewModel.isCreator.value) i18n("group.dissolve.title")
+            else i18n("group.leave.title"),
+            style = MaterialTheme.typography.body2,
+        )
+    }
 }
