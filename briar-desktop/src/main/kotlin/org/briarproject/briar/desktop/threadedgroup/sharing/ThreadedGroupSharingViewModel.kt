@@ -18,8 +18,10 @@
 
 package org.briarproject.briar.desktop.threadedgroup.sharing
 
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import org.briarproject.bramble.api.connection.ConnectionRegistry
+import org.briarproject.bramble.api.contact.ContactId
 import org.briarproject.bramble.api.contact.ContactManager
 import org.briarproject.bramble.api.db.TransactionManager
 import org.briarproject.bramble.api.event.EventBus
@@ -27,9 +29,14 @@ import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.bramble.api.sync.GroupId
 import org.briarproject.briar.api.conversation.ConversationManager
 import org.briarproject.briar.api.identity.AuthorManager
+import org.briarproject.briar.api.sharing.SharingConstants
+import org.briarproject.briar.api.sharing.SharingManager
+import org.briarproject.briar.desktop.contact.ContactItem
 import org.briarproject.briar.desktop.contact.ContactsViewModel
 import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.threading.UiExecutor
+import org.briarproject.briar.desktop.utils.InternationalizationUtils
+import org.briarproject.briar.desktop.utils.StringUtils.takeUtf8
 import org.briarproject.briar.desktop.viewmodel.asState
 
 abstract class ThreadedGroupSharingViewModel(
@@ -55,6 +62,33 @@ abstract class ThreadedGroupSharingViewModel(
 
     protected val _sharingInfo = mutableStateOf(SharingInfo(0, 0))
     val sharingInfo = _sharingInfo.asState()
+
+    protected val _sharingStatus = mutableStateOf(emptyMap<ContactId, SharingManager.SharingStatus>())
+    protected val _shareableSelected = mutableStateOf(emptySet<ContactId>())
+    protected val _sharingMessage = mutableStateOf("")
+
+    open val deleteDialogCondition = false
+
+    data class ShareableContactItem(val status: SharingManager.SharingStatus, val contactItem: ContactItem)
+
+    val contactList = derivedStateOf {
+        _contactList.mapNotNull {
+            _sharingStatus.value[it.id]?.let { status ->
+                ShareableContactItem(status, it)
+            }
+        }.sortedWith(
+            // first all items that are SHAREABLE (false comes before true)
+            // second non-case-sensitive, alphabetical order on displayName
+            compareBy(
+                { it.status != SharingManager.SharingStatus.SHAREABLE },
+                { it.contactItem.displayName.lowercase(InternationalizationUtils.locale) }
+            )
+        )
+    }
+
+    val sharingMessage = _sharingMessage.asState()
+
+    val buttonEnabled = derivedStateOf { _shareableSelected.value.isNotEmpty() }
 
     override fun onInit() {
         super.onInit()
@@ -86,4 +120,21 @@ abstract class ThreadedGroupSharingViewModel(
             online = if (connected) online + 1 else online - 1
         )
     }
+
+    @UiExecutor
+    fun isShareableSelected(shareable: ShareableContactItem) =
+        _shareableSelected.value.contains(shareable.contactItem.id)
+
+    @UiExecutor
+    fun toggleShareable(shareable: ShareableContactItem) =
+        if (isShareableSelected(shareable)) _shareableSelected.value -= shareable.contactItem.id
+        else _shareableSelected.value += shareable.contactItem.id
+
+    @UiExecutor
+    fun setSharingMessage(message: String) {
+        _sharingMessage.value = message.takeUtf8(SharingConstants.MAX_INVITATION_TEXT_LENGTH)
+    }
+
+    @UiExecutor
+    abstract fun shareThreadedGroup()
 }

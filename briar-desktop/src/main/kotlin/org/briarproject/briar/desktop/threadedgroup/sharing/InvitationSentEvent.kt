@@ -16,15 +16,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.briarproject.briar.desktop.forum.sharing
+package org.briarproject.briar.desktop.threadedgroup.sharing
 
 import org.briarproject.bramble.api.contact.ContactId
 import org.briarproject.bramble.api.event.Event
 
 /**
- * An event that is broadcast when a forum invitation
+ * An event that is broadcast when a forum or private group invitation
  * is sent to a contact.
  */
-data class ForumInvitationSentEvent(
+data class InvitationSentEvent(
     val contactIds: List<ContactId>,
 ) : Event()

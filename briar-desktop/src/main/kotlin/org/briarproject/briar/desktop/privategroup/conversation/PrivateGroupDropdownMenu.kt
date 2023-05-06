@@ -23,8 +23,10 @@ import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import org.briarproject.briar.desktop.privategroup.PrivateGroupStrings
 import org.briarproject.briar.desktop.privategroup.sharing.PrivateGroupMemberDrawerContent
 import org.briarproject.briar.desktop.privategroup.sharing.PrivateGroupSharingViewModel
+import org.briarproject.briar.desktop.threadedgroup.sharing.ThreadedGroupSharingActionDrawerContent
 import org.briarproject.briar.desktop.ui.getInfoDrawerHandler
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 
@@ -56,7 +58,23 @@ fun PrivateGroupDropdownMenu(
         )
     }
     if (privateGroupSharingViewModel.isCreator.value) {
-        // todo: invite member #496
+        DropdownMenuItem(
+            onClick = {
+                onClose()
+                infoDrawerHandler.open {
+                    ThreadedGroupSharingActionDrawerContent(
+                        close = infoDrawerHandler::close,
+                        viewModel = privateGroupSharingViewModel,
+                        strings = PrivateGroupStrings,
+                    )
+                }
+            }
+        ) {
+            Text(
+                i18n("group.invite.action.title"),
+                style = MaterialTheme.typography.body2,
+            )
+        }
     }
     DropdownMenuItem(
         onClick = {

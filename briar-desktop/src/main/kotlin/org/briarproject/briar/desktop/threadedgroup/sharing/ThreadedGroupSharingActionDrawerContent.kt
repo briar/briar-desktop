@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.briarproject.briar.desktop.forum.sharing
+package org.briarproject.briar.desktop.threadedgroup.sharing
 
 import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Box
@@ -48,6 +48,7 @@ import org.briarproject.briar.api.sharing.SharingManager.SharingStatus.NOT_SUPPO
 import org.briarproject.briar.api.sharing.SharingManager.SharingStatus.SHAREABLE
 import org.briarproject.briar.api.sharing.SharingManager.SharingStatus.SHARING
 import org.briarproject.briar.desktop.contact.ContactItemViewSmall
+import org.briarproject.briar.desktop.threadedgroup.ThreadedGroupStrings
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
 import org.briarproject.briar.desktop.ui.HorizontalDivider
 import org.briarproject.briar.desktop.ui.ListItemView
@@ -55,9 +56,10 @@ import org.briarproject.briar.desktop.ui.VerticallyScrollableArea
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 
 @Composable
-fun ForumSharingActionDrawerContent(
+fun ThreadedGroupSharingActionDrawerContent(
     close: () -> Unit,
-    viewModel: ForumSharingViewModel,
+    viewModel: ThreadedGroupSharingViewModel,
+    strings: ThreadedGroupStrings,
 ) = Column {
     Row(
         verticalAlignment = CenterVertically,
@@ -65,12 +67,12 @@ fun ForumSharingActionDrawerContent(
     ) {
         IconButton(
             icon = Icons.Filled.Close,
-            contentDescription = i18n("access.forum.sharing.action.close"),
+            contentDescription = strings.sharingActionClose,
             onClick = close,
             modifier = Modifier.padding(start = 24.dp).size(24.dp)
         )
         Text(
-            text = i18n("forum.sharing.action.title"),
+            text = strings.sharingActionTitle,
             modifier = Modifier.padding(start = 16.dp),
             style = MaterialTheme.typography.h3,
         )
@@ -80,7 +82,7 @@ fun ForumSharingActionDrawerContent(
         if (viewModel.contactList.value.isEmpty()) {
             // todo: this might be shown to the user while the list is still loading
             Text(
-                text = i18n("forum.sharing.action.no_contacts"),
+                text = strings.sharingActionNoContacts,
                 style = MaterialTheme.typography.body1,
                 modifier = Modifier.padding(8.dp).align(Alignment.Center),
             )
@@ -91,7 +93,7 @@ fun ForumSharingActionDrawerContent(
                         items = viewModel.contactList.value,
                         key = { it.contactItem.id },
                     ) { shareableContactItem ->
-                        ForumSharingActionListItem(
+                        ListItem(
                             shareableContactItem = shareableContactItem,
                             selected = viewModel.isShareableSelected(shareableContactItem),
                             onToggle = { viewModel.toggleShareable(shareableContactItem) },
@@ -105,9 +107,9 @@ fun ForumSharingActionDrawerContent(
         verticalArrangement = spacedBy(8.dp),
         modifier = Modifier.fillMaxWidth().padding(8.dp),
     ) {
-        val shareForum = {
+        val shareAction = {
             if (viewModel.buttonEnabled.value) {
-                viewModel.shareForum()
+                viewModel.shareThreadedGroup()
                 close()
             }
         }
@@ -115,28 +117,28 @@ fun ForumSharingActionDrawerContent(
         TextField(
             value = viewModel.sharingMessage.value,
             onValueChange = viewModel::setSharingMessage,
-            onEnter = shareForum,
+            onEnter = shareAction,
             placeholder = {
                 Text(
-                    text = i18n("forum.sharing.action.add_message"),
+                    text = i18n("threadedgroup.sharing.action.add_message"),
                     style = MaterialTheme.typography.body1,
                 )
             },
             modifier = Modifier.fillMaxWidth().heightIn(max = 100.dp)
         )
         Button(
-            onClick = shareForum,
+            onClick = shareAction,
             modifier = Modifier.fillMaxWidth(),
             enabled = viewModel.buttonEnabled.value,
         ) {
-            Text(i18n("forum.sharing.action.title"))
+            Text(strings.sharingActionTitle)
         }
     }
 }
 
 @Composable
-private fun ForumSharingActionListItem(
-    shareableContactItem: ForumSharingViewModel.ShareableContactItem,
+private fun ListItem(
+    shareableContactItem: ThreadedGroupSharingViewModel.ShareableContactItem,
     selected: Boolean,
     onToggle: () -> Unit,
 ) = ListItemView(
@@ -156,11 +158,11 @@ private fun ForumSharingActionListItem(
             Text(
                 text = when (shareableContactItem.status) {
                     SHAREABLE -> ""
-                    SHARING -> i18n("forum.sharing.action.status.already_shared")
-                    INVITE_SENT -> i18n("forum.sharing.action.status.already_invited")
-                    INVITE_RECEIVED -> i18n("forum.sharing.action.status.invite_received")
-                    NOT_SUPPORTED -> i18n("forum.sharing.action.status.not_supported")
-                    ERROR -> i18n("forum.sharing.action.status.error")
+                    SHARING -> i18n("threadedgroup.sharing.action.status.already_shared")
+                    INVITE_SENT -> i18n("threadedgroup.sharing.action.status.already_invited")
+                    INVITE_RECEIVED -> i18n("threadedgroup.sharing.action.status.invite_received")
+                    NOT_SUPPORTED -> i18n("threadedgroup.sharing.action.status.not_supported")
+                    ERROR -> i18n("threadedgroup.sharing.action.status.error")
                 },
                 style = MaterialTheme.typography.caption,
             )

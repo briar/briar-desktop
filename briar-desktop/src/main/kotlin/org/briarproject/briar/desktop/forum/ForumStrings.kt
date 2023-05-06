@@ -58,4 +58,7 @@ object ForumStrings : ThreadedGroupStrings(
     messageReplyClose = i18n("access.forums.reply.close"),
     messageReplyHint = i18n("forum.message.reply.hint"),
     messageHint = i18n("forum.message.hint"),
+    sharingActionTitle = i18n("forum.sharing.action.title"),
+    sharingActionClose = i18n("access.forum.sharing.action.close"),
+    sharingActionNoContacts = i18n("forum.sharing.action.no_contacts"),
 )

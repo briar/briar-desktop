@@ -42,4 +42,7 @@ abstract class ThreadedGroupStrings(
     val messageReplyClose: String,
     val messageReplyHint: String,
     val messageHint: String,
+    val sharingActionTitle: String,
+    val sharingActionClose: String,
+    val sharingActionNoContacts: String,
 )

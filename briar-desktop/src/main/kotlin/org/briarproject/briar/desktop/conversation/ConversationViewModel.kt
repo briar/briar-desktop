@@ -67,7 +67,7 @@ import org.briarproject.briar.desktop.conversation.ConversationRequestItem.Reque
 import org.briarproject.briar.desktop.conversation.ConversationRequestItem.RequestType.FORUM
 import org.briarproject.briar.desktop.conversation.ConversationRequestItem.RequestType.GROUP
 import org.briarproject.briar.desktop.conversation.ConversationRequestItem.RequestType.INTRODUCTION
-import org.briarproject.briar.desktop.forum.sharing.ForumInvitationSentEvent
+import org.briarproject.briar.desktop.threadedgroup.sharing.InvitationSentEvent
 import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.utils.KLoggerUtils.e
 import org.briarproject.briar.desktop.utils.KLoggerUtils.i
@@ -380,7 +380,7 @@ constructor(
                 }
             }
 
-            is ForumInvitationSentEvent ->
+            is InvitationSentEvent ->
                 if (_contactId.value in e.contactIds) reloadMessages()
 
             is ContactConnectedEvent -> {

@@ -19,10 +19,8 @@
 package org.briarproject.briar.desktop.forum.sharing
 
 import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.mutableStateOf
 import mu.KotlinLogging
 import org.briarproject.bramble.api.connection.ConnectionRegistry
-import org.briarproject.bramble.api.contact.ContactId
 import org.briarproject.bramble.api.contact.ContactManager
 import org.briarproject.bramble.api.db.Transaction
 import org.briarproject.bramble.api.db.TransactionManager
@@ -36,18 +34,13 @@ import org.briarproject.briar.api.conversation.ConversationManager
 import org.briarproject.briar.api.forum.ForumSharingManager
 import org.briarproject.briar.api.forum.event.ForumInvitationResponseReceivedEvent
 import org.briarproject.briar.api.identity.AuthorManager
-import org.briarproject.briar.api.sharing.SharingConstants.MAX_INVITATION_TEXT_LENGTH
-import org.briarproject.briar.api.sharing.SharingManager.SharingStatus
 import org.briarproject.briar.api.sharing.SharingManager.SharingStatus.SHAREABLE
 import org.briarproject.briar.api.sharing.SharingManager.SharingStatus.SHARING
 import org.briarproject.briar.api.sharing.event.ContactLeftShareableEvent
-import org.briarproject.briar.desktop.contact.ContactItem
+import org.briarproject.briar.desktop.threadedgroup.sharing.InvitationSentEvent
 import org.briarproject.briar.desktop.threadedgroup.sharing.ThreadedGroupSharingViewModel
 import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.threading.UiExecutor
-import org.briarproject.briar.desktop.utils.InternationalizationUtils
-import org.briarproject.briar.desktop.utils.StringUtils.takeUtf8
-import org.briarproject.briar.desktop.viewmodel.asState
 import org.briarproject.briar.desktop.viewmodel.update
 import javax.inject.Inject
 
@@ -76,38 +69,8 @@ class ForumSharingViewModel @Inject constructor(
         private val LOG = KotlinLogging.logger {}
     }
 
-    private val _sharingStatus = mutableStateOf(emptyMap<ContactId, SharingStatus>())
-    private val _shareableSelected = mutableStateOf(emptySet<ContactId>())
-    private val _sharingMessage = mutableStateOf("")
-
     val currentlySharedWith = derivedStateOf {
         _contactList.filter { _sharingStatus.value[it.id] == SHARING }
-    }
-
-    data class ShareableContactItem(val status: SharingStatus, val contactItem: ContactItem)
-
-    val contactList = derivedStateOf {
-        _contactList.mapNotNull {
-            _sharingStatus.value[it.id]?.let { status ->
-                ShareableContactItem(status, it)
-            }
-        }.sortedWith(
-            // first all items that are SHAREABLE (false comes before true)
-            // second non-case-sensitive, alphabetical order on displayName
-            compareBy(
-                { it.status != SHAREABLE },
-                { it.contactItem.displayName.lowercase(InternationalizationUtils.locale) }
-            )
-        )
-    }
-
-    val sharingMessage = _sharingMessage.asState()
-
-    val buttonEnabled = derivedStateOf { _shareableSelected.value.isNotEmpty() }
-
-    override fun onInit() {
-        super.onInit()
-        loadContacts()
     }
 
     override fun reload() {
@@ -120,21 +83,7 @@ class ForumSharingViewModel @Inject constructor(
     }
 
     @UiExecutor
-    fun isShareableSelected(shareable: ShareableContactItem) =
-        _shareableSelected.value.contains(shareable.contactItem.id)
-
-    @UiExecutor
-    fun toggleShareable(shareable: ShareableContactItem) =
-        if (isShareableSelected(shareable)) _shareableSelected.value -= shareable.contactItem.id
-        else _shareableSelected.value += shareable.contactItem.id
-
-    @UiExecutor
-    fun setSharingMessage(message: String) {
-        _sharingMessage.value = message.takeUtf8(MAX_INVITATION_TEXT_LENGTH)
-    }
-
-    @UiExecutor
-    fun shareForum() = runOnDbThreadWithTransaction(false) { txn ->
+    override fun shareThreadedGroup() = runOnDbThreadWithTransaction(false) { txn ->
         val groupId = _groupId ?: return@runOnDbThreadWithTransaction
         val message = _sharingMessage.value.ifEmpty { null }
         _shareableSelected.value.forEach { contactId ->
@@ -142,7 +91,7 @@ class ForumSharingViewModel @Inject constructor(
         }
         // send custom event to force message reload if private chat is open for contactId
         // todo: switch to a more generic approach where every locally sent message broadcasts an event per default
-        txn.attach(ForumInvitationSentEvent(_shareableSelected.value.toList()))
+        txn.attach(InvitationSentEvent(_shareableSelected.value.toList()))
         txn.attach { reload() }
     }
 

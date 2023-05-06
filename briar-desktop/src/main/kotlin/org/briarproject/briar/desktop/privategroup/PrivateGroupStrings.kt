@@ -67,4 +67,7 @@ object PrivateGroupStrings : ThreadedGroupStrings(
     messageReplyClose = i18n("access.group.reply.close"),
     messageReplyHint = i18n("group.message.reply.hint"),
     messageHint = i18n("group.message.hint"),
+    sharingActionTitle = i18n("group.invite.action.title"),
+    sharingActionClose = i18n("access.group.invite.action.close"),
+    sharingActionNoContacts = i18n("group.invite.action.no_contacts"),
 )

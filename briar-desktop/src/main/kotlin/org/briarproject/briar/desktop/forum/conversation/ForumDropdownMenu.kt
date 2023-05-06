@@ -23,9 +23,10 @@ import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import org.briarproject.briar.desktop.forum.sharing.ForumSharingActionDrawerContent
+import org.briarproject.briar.desktop.forum.ForumStrings
 import org.briarproject.briar.desktop.forum.sharing.ForumSharingStatusDrawerContent
 import org.briarproject.briar.desktop.forum.sharing.ForumSharingViewModel
+import org.briarproject.briar.desktop.threadedgroup.sharing.ThreadedGroupSharingActionDrawerContent
 import org.briarproject.briar.desktop.ui.getInfoDrawerHandler
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 
@@ -44,9 +45,10 @@ fun ForumDropdownMenu(
         onClick = {
             onClose()
             infoDrawerHandler.open {
-                ForumSharingActionDrawerContent(
+                ThreadedGroupSharingActionDrawerContent(
                     close = infoDrawerHandler::close,
                     viewModel = forumSharingViewModel,
+                    strings = ForumStrings,
                 )
             }
         }
