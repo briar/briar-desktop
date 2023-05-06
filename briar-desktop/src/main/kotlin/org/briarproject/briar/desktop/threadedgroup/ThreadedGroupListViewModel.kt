@@ -38,8 +38,8 @@ import org.briarproject.briar.desktop.utils.clearAndAddAll
 import org.briarproject.briar.desktop.viewmodel.EventListenerDbViewModel
 import org.briarproject.briar.desktop.viewmodel.asState
 
-abstract class ThreadedGroupListViewModel<T : ThreadedGroupItem>(
-    val threadViewModel: ThreadedConversationViewModel,
+abstract class ThreadedGroupListViewModel<VM : ThreadedConversationViewModel, GroupItem : ThreadedGroupItem>(
+    val threadViewModel: VM,
     briarExecutors: BriarExecutors,
     lifecycleManager: LifecycleManager,
     db: TransactionManager,
@@ -52,7 +52,7 @@ abstract class ThreadedGroupListViewModel<T : ThreadedGroupItem>(
 
     protected abstract val clientId: ClientId
 
-    protected abstract val _groupList: MutableList<T>
+    protected abstract val _groupList: MutableList<GroupItem>
     val list = derivedStateOf {
         val filter = _filterBy.value
         _groupList.filter { item ->
@@ -104,7 +104,7 @@ abstract class ThreadedGroupListViewModel<T : ThreadedGroupItem>(
     }
 
     @DatabaseExecutor
-    protected abstract fun createGroupItem(txn: Transaction, id: GroupId): T
+    protected abstract fun createGroupItem(txn: Transaction, id: GroupId): GroupItem
 
     private fun onGroupAdded(id: GroupId) = runOnDbThreadWithTransaction(true) { txn ->
         val item = createGroupItem(txn, id)
@@ -114,7 +114,7 @@ abstract class ThreadedGroupListViewModel<T : ThreadedGroupItem>(
     }
 
     @DatabaseExecutor
-    protected abstract fun loadGroups(txn: Transaction): List<T>
+    protected abstract fun loadGroups(txn: Transaction): List<GroupItem>
 
     private fun loadGroups() = runOnDbThreadWithTransaction(true) { txn ->
         val list = loadGroups(txn)
@@ -139,7 +139,7 @@ abstract class ThreadedGroupListViewModel<T : ThreadedGroupItem>(
         _filterBy.value = filter
     }
 
-    private fun addItem(groupItem: T) = _groupList.add(groupItem)
+    private fun addItem(groupItem: GroupItem) = _groupList.add(groupItem)
 
     protected abstract fun removeItem(groupId: GroupId): Boolean
 }

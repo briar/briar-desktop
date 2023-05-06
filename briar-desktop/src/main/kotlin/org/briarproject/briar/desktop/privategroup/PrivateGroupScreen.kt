@@ -30,7 +30,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import org.briarproject.briar.desktop.privategroup.conversation.PrivateGroupConversationViewModel
 import org.briarproject.briar.desktop.privategroup.conversation.PrivateGroupDropdownMenu
 import org.briarproject.briar.desktop.privategroup.sharing.PrivateGroupSharingViewModel
 import org.briarproject.briar.desktop.threadedgroup.ThreadedGroupScreen
@@ -47,14 +46,14 @@ fun PrivateGroupScreen(
         dropdownMenu = { sharingViewModel, expanded, onClose, onLeaveOrDissolvePrivateGroupClick ->
             val privateGroupSharingViewModel = sharingViewModel as PrivateGroupSharingViewModel
             PrivateGroupDropdownMenu(
-                privateGroupSharingViewModel,
-                expanded,
-                onClose,
-                onLeaveOrDissolvePrivateGroupClick
+                privateGroupSharingViewModel = privateGroupSharingViewModel,
+                expanded = expanded,
+                onClose = onClose,
+                onLeaveOrDissolvePrivateGroupClick = onLeaveOrDissolvePrivateGroupClick
             )
         },
         extraContent = {
-            if ((viewModel.threadViewModel as PrivateGroupConversationViewModel).isDissolved.value) {
+            if (viewModel.threadViewModel.isDissolved.value) {
                 PrivateGroupDissolvedDialog()
             }
         }
@@ -79,18 +78,11 @@ private fun PrivateGroupDissolvedDialog() {
             text = {
                 Text(i18n("group.dissolved.dialog.message"))
             },
-            dismissButton = {
-                DialogButton(
-                    onClick = { close() },
-                    text = i18n("cancel"),
-                    type = ButtonType.NEUTRAL,
-                )
-            },
             confirmButton = {
                 DialogButton(
                     onClick = { close() },
                     text = i18n("ok"),
-                    type = ButtonType.DESTRUCTIVE,
+                    type = ButtonType.NEUTRAL,
                 )
             },
         )

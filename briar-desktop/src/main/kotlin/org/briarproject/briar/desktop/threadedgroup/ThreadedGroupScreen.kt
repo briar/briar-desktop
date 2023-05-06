@@ -39,11 +39,11 @@ import org.briarproject.briar.desktop.ui.VerticalDivider
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 
 @Composable
-fun <T : ThreadedGroupItem> ThreadedGroupScreen(
+fun <VM : ThreadedGroupListViewModel<*, *>> ThreadedGroupScreen(
     strings: ThreadedGroupStrings,
-    viewModel: ThreadedGroupListViewModel<T>,
+    viewModel: VM,
     dropdownMenu: ThreadedGroupDropdownMenu,
-    extraContent: @Composable () -> Unit = {},
+    extraContent: (@Composable () -> Unit)? = null,
 ) {
     var addDialogVisible by remember { mutableStateOf(false) }
     AddThreadedGroupDialog(

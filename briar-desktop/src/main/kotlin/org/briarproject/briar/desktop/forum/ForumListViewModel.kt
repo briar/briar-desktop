@@ -46,7 +46,9 @@ class ForumListViewModel
     lifecycleManager: LifecycleManager,
     db: TransactionManager,
     eventBus: EventBus,
-) : ThreadedGroupListViewModel<ForumItem>(threadViewModel, briarExecutors, lifecycleManager, db, eventBus) {
+) : ThreadedGroupListViewModel<ForumConversationViewModel, ForumItem>(
+    threadViewModel, briarExecutors, lifecycleManager, db, eventBus
+) {
 
     companion object {
         private val LOG = KotlinLogging.logger {}

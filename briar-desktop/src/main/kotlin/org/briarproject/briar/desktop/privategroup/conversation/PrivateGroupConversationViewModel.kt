@@ -18,7 +18,6 @@
 
 package org.briarproject.briar.desktop.privategroup.conversation
 
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -77,7 +76,7 @@ class PrivateGroupConversationViewModel @Inject constructor(
     private val _isDissolved = mutableStateOf(false)
     val isDissolved = _isDissolved.asState()
 
-    override val groupEnabled = derivedStateOf { !_isDissolved.value }
+    override val groupEnabled get() = !_isDissolved.value
 
     @UiExecutor
     override fun eventOccurred(e: Event) {

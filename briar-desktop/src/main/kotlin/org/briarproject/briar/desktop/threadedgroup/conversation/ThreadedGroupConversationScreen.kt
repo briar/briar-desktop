@@ -65,7 +65,7 @@ fun ThreadedGroupConversationScreen(
     strings: ThreadedGroupStrings,
     viewModel: ThreadedConversationViewModel,
     dropdownMenu: ThreadedGroupDropdownMenu,
-    extraContent: @Composable () -> Unit,
+    extraContent: (@Composable () -> Unit)? = null,
 ) {
     Scaffold(
         topBar = {
@@ -80,18 +80,18 @@ fun ThreadedGroupConversationScreen(
             }
         },
         content = { padding ->
-            extraContent()
+            extraContent?.let { it() }
             ThreadedGroupConversationContent(
                 strings = strings,
                 state = viewModel.state.value,
                 selectedThreadItem = viewModel.selectedThreadItem.value,
                 onThreadItemSelected = viewModel::selectThreadItem,
                 onThreadItemsVisible = viewModel::markThreadItemsRead,
-                modifier = Modifier.padding(padding).alpha(if (viewModel.groupEnabled.value) 1f else 0.5f)
+                modifier = Modifier.padding(padding).alpha(if (viewModel.groupEnabled) 1f else 0.5f)
             )
         },
         bottomBar = {
-            if (viewModel.groupEnabled.value) {
+            if (viewModel.groupEnabled) {
                 // only show message compose field is group is enabled (aka not dissolved for private groups)
                 val onCloseReply = { viewModel.selectThreadItem(null) }
                 ThreadedGroupConversationInput(strings, viewModel.selectedThreadItem.value, onCloseReply) { text ->

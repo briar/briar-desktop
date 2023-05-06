@@ -56,7 +56,7 @@ fun PrivateGroupDropdownMenu(
         )
     }
     if (privateGroupSharingViewModel.isCreator.value) {
-        // todo: invite member
+        // todo: invite member #496
     }
     DropdownMenuItem(
         onClick = {

@@ -61,7 +61,9 @@ class PrivateGroupListViewModel
     lifecycleManager: LifecycleManager,
     db: TransactionManager,
     eventBus: EventBus,
-) : ThreadedGroupListViewModel<PrivateGroupItem>(threadViewModel, briarExecutors, lifecycleManager, db, eventBus) {
+) : ThreadedGroupListViewModel<PrivateGroupConversationViewModel, PrivateGroupItem>(
+    threadViewModel, briarExecutors, lifecycleManager, db, eventBus
+) {
 
     override val clientId: ClientId = PrivateGroupManager.CLIENT_ID
 
