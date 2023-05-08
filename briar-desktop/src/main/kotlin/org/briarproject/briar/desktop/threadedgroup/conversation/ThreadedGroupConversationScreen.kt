@@ -52,6 +52,7 @@ import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.unit.dp
 import org.briarproject.briar.desktop.contact.ContactDropDown.State.CLOSED
 import org.briarproject.briar.desktop.contact.ContactDropDown.State.MAIN
+import org.briarproject.briar.desktop.privategroup.sharing.PrivateGroupSharingViewModel
 import org.briarproject.briar.desktop.threadedgroup.ThreadedGroupCircle
 import org.briarproject.briar.desktop.threadedgroup.ThreadedGroupItem
 import org.briarproject.briar.desktop.threadedgroup.ThreadedGroupStrings
@@ -160,7 +161,8 @@ private fun ThreadedGroupConversationHeader(
         DeleteThreadedGroupDialog(
             strings = strings,
             close = { deleteGroupDialogVisible.value = false },
-            dialogCondition = sharingViewModel.deleteDialogCondition,
+            isCreator = if (sharingViewModel is PrivateGroupSharingViewModel)
+                sharingViewModel.isCreator.value else false,
             onDelete = onGroupDelete,
         )
     }
@@ -170,7 +172,7 @@ private fun ThreadedGroupConversationHeader(
 @OptIn(ExperimentalMaterialApi::class)
 private fun DeleteThreadedGroupDialog(
     strings: ThreadedGroupStrings,
-    dialogCondition: Boolean,
+    isCreator: Boolean,
     close: () -> Unit,
     onDelete: () -> Unit = {},
 ) {
@@ -178,13 +180,13 @@ private fun DeleteThreadedGroupDialog(
         onDismissRequest = close,
         title = {
             Text(
-                text = strings.deleteDialogTitle(dialogCondition),
+                text = strings.deleteDialogTitle(isCreator),
                 modifier = Modifier.width(Max),
                 style = MaterialTheme.typography.h6,
             )
         },
         text = {
-            Text(strings.deleteDialogMessage(dialogCondition))
+            Text(strings.deleteDialogMessage(isCreator))
         },
         dismissButton = {
             DialogButton(
@@ -199,7 +201,7 @@ private fun DeleteThreadedGroupDialog(
                     close()
                     onDelete()
                 },
-                text = strings.deleteDialogButton(dialogCondition),
+                text = strings.deleteDialogButton(isCreator),
                 type = DESTRUCTIVE,
             )
         },
