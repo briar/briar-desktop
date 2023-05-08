@@ -20,21 +20,25 @@ package org.briarproject.briar.desktop.privategroup
 
 import org.briarproject.bramble.api.sync.GroupId
 import org.briarproject.briar.api.client.MessageTracker
+import org.briarproject.briar.api.identity.AuthorInfo
 import org.briarproject.briar.api.privategroup.GroupMessageHeader
 import org.briarproject.briar.api.privategroup.PrivateGroup
 import org.briarproject.briar.desktop.threadedgroup.ThreadedGroupItem
+import org.briarproject.briar.desktop.utils.UiUtils.getContactDisplayName
 import kotlin.math.max
 
 data class PrivateGroupItem(
     val privateGroup: PrivateGroup,
+    val creatorInfo: AuthorInfo,
     override val msgCount: Int,
     override val unread: Int,
     override val timestamp: Long,
 ) : ThreadedGroupItem {
 
-    constructor(privateGroup: PrivateGroup, groupCount: MessageTracker.GroupCount) :
+    constructor(privateGroup: PrivateGroup, creatorInfo: AuthorInfo, groupCount: MessageTracker.GroupCount) :
         this(
             privateGroup,
+            creatorInfo,
             msgCount = groupCount.msgCount,
             unread = groupCount.unreadCount,
             timestamp = groupCount.latestMsgTime
@@ -42,6 +46,7 @@ data class PrivateGroupItem(
 
     override val id: GroupId = privateGroup.id
     override val name: String = privateGroup.name
+    override val creator: String = getContactDisplayName(privateGroup.creator.name, creatorInfo.alias)
 
     fun updateOnMessageReceived(header: GroupMessageHeader) =
         copy(

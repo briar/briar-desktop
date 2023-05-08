@@ -36,6 +36,7 @@ import org.briarproject.bramble.api.sync.ClientId
 import org.briarproject.bramble.api.sync.GroupId
 import org.briarproject.bramble.api.system.Clock
 import org.briarproject.briar.api.client.PostHeader
+import org.briarproject.briar.api.identity.AuthorManager
 import org.briarproject.briar.api.privategroup.GroupMessageFactory
 import org.briarproject.briar.api.privategroup.PrivateGroupFactory
 import org.briarproject.briar.api.privategroup.PrivateGroupManager
@@ -51,6 +52,7 @@ import javax.inject.Inject
 class PrivateGroupListViewModel
 @Inject constructor(
     private val clock: Clock,
+    private val authorManager: AuthorManager,
     private val identityManager: IdentityManager,
     private val privateGroupManager: PrivateGroupManager,
     private val privateGroupFactory: PrivateGroupFactory,
@@ -83,10 +85,14 @@ class PrivateGroupListViewModel
         }
     }
 
-    override fun createGroupItem(txn: Transaction, id: GroupId) = PrivateGroupItem(
-        privateGroup = privateGroupManager.getPrivateGroup(txn, id),
-        groupCount = privateGroupManager.getGroupCount(txn, id),
-    )
+    override fun createGroupItem(txn: Transaction, id: GroupId): PrivateGroupItem {
+        val privateGroup = privateGroupManager.getPrivateGroup(txn, id)
+        return PrivateGroupItem(
+            privateGroup = privateGroup,
+            creatorInfo = authorManager.getAuthorInfo(txn, privateGroup.creator.id),
+            groupCount = privateGroupManager.getGroupCount(txn, id),
+        )
+    }
 
     @OptIn(DelicateCoroutinesApi::class)
     override fun createGroup(name: String) {
@@ -107,6 +113,7 @@ class PrivateGroupListViewModel
         privateGroupManager.getPrivateGroups(txn).map { privateGroup ->
             PrivateGroupItem(
                 privateGroup = privateGroup,
+                creatorInfo = authorManager.getAuthorInfo(txn, privateGroup.creator.id),
                 groupCount = privateGroupManager.getGroupCount(txn, privateGroup.id),
             )
         }

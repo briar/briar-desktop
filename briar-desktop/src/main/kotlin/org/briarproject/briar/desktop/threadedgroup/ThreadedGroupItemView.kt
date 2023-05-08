@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import org.briarproject.bramble.api.sync.GroupId
 import org.briarproject.briar.desktop.forum.ForumStrings
 import org.briarproject.briar.desktop.ui.NumberBadge
+import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nF
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 import org.briarproject.briar.desktop.utils.TimeUtils.getFormattedTimestamp
 import org.briarproject.briar.desktop.utils.appendCommaSeparated
@@ -54,6 +55,7 @@ import java.time.Instant
 @Suppress("HardCodedStringLiteral")
 fun main() = preview(
     "name" to "This is a test forum! This is a test forum! This is a test forum! This is a test forum!",
+    "creator" to "Bobby",
     "msgCount" to 42,
     "unread" to 23,
     "timestamp" to Instant.now().toEpochMilli(),
@@ -61,6 +63,7 @@ fun main() = preview(
     val item = object : ThreadedGroupItem {
         override val id: GroupId = GroupId(getRandomIdPersistent())
         override val name: String = getStringParameter("name")
+        override val creator: String = getStringParameter("creator")
         override val msgCount: Int = getIntParameter("msgCount")
         override val unread: Int = getIntParameter("unread")
         override val timestamp: Long = getLongParameter("timestamp")
@@ -95,6 +98,7 @@ fun ThreadedGroupItemView(
 
 private fun getDescription(strings: ThreadedGroupStrings, item: ThreadedGroupItem) = buildBlankAnnotatedString {
     append(item.name)
+    item.creator?.let { creator -> appendCommaSeparated(i18nF("group.card.created", creator)) }
     if (item.unread > 0) appendCommaSeparated(strings.unreadCount(item.unread))
     appendCommaSeparated(strings.messageCount(item.msgCount))
     if (item.msgCount > 0) appendCommaSeparated(strings.lastMessage(getFormattedTimestamp(item.timestamp)))
@@ -112,6 +116,15 @@ private fun ThreadedGroupItemViewInfo(strings: ThreadedGroupStrings, threadedGro
         overflow = TextOverflow.Ellipsis,
     )
     Spacer(Modifier.heightIn(min = 4.dp).weight(1f, fill = true))
+    threadedGroupItem.creator?.let { creator ->
+        Text(
+            text = i18nF("group.card.created", creator),
+            style = MaterialTheme.typography.caption,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.padding(bottom = 4.dp),
+        )
+    }
     Row(
         horizontalArrangement = SpaceBetween,
         modifier = Modifier.fillMaxWidth()

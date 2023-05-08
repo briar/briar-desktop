@@ -23,6 +23,7 @@ import org.briarproject.bramble.api.sync.GroupId
 interface ThreadedGroupItem {
     val id: GroupId
     val name: String
+    val creator: String?
     val msgCount: Int
     val unread: Int
     val timestamp: Long
