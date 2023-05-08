@@ -108,9 +108,9 @@ dependencies {
         currentOs("org.briarproject:obfs4proxy-${currentOS.id}:$obfs4proxy_version")
         currentOs("org.briarproject:snowflake-${currentOS.id}:$snowflake_version")
     } else {
-        currentOs("org.briarproject:tor-${currentOS.id}-torbrowser:$tor_version")
-        currentOs("org.briarproject:obfs4proxy-${currentOS.id}-torbrowser:$obfs4proxy_version")
-        currentOs("org.briarproject:snowflake-${currentOS.id}-torbrowser:$snowflake_version")
+        currentOs("org.briarproject:tor-${currentOS.id}-pipelines:$tor_version")
+        currentOs("org.briarproject:obfs4proxy-${currentOS.id}-pipelines:$obfs4proxy_version")
+        currentOs("org.briarproject:snowflake-${currentOS.id}-pipelines:$snowflake_version")
     }
 
     linuxX64("org.briarproject:tor-linux:$tor_version")
@@ -121,13 +121,13 @@ dependencies {
     windowsX64("org.briarproject:obfs4proxy-windows:$obfs4proxy_version")
     windowsX64("org.briarproject:snowflake-windows:$snowflake_version")
 
-    macosArm64("org.briarproject:tor-macos-torbrowser:$tor_version")
-    macosArm64("org.briarproject:obfs4proxy-macos-torbrowser:$obfs4proxy_version")
-    macosArm64("org.briarproject:snowflake-macos-torbrowser:$snowflake_version")
+    macosArm64("org.briarproject:tor-macos-pipelines:$tor_version")
+    macosArm64("org.briarproject:obfs4proxy-macos-pipelines:$obfs4proxy_version")
+    macosArm64("org.briarproject:snowflake-macos-pipelines:$snowflake_version")
 
-    macosX64("org.briarproject:tor-macos-torbrowser:$tor_version")
-    macosX64("org.briarproject:obfs4proxy-macos-torbrowser:$obfs4proxy_version")
-    macosX64("org.briarproject:snowflake-macos-torbrowser:$snowflake_version")
+    macosX64("org.briarproject:tor-macos-pipelines:$tor_version")
+    macosX64("org.briarproject:obfs4proxy-macos-pipelines:$obfs4proxy_version")
+    macosX64("org.briarproject:snowflake-macos-pipelines:$snowflake_version")
 
     implementation(compose.materialIconsExtended)
     // needed to access Dispatchers.Swing for EventExecutor
