@@ -132,7 +132,7 @@ private fun ThreadedGroupConversationHeader(
                     Text(
                         modifier = Modifier,
                         text = threadedGroupItem.name,
-                        maxLines = 2,
+                        maxLines = 1,
                         overflow = Ellipsis,
                         style = MaterialTheme.typography.h2,
                     )
