@@ -69,6 +69,7 @@ import org.briarproject.briar.desktop.conversation.ConversationRequestItem.Reque
 import org.briarproject.briar.desktop.conversation.ConversationRequestItem.RequestType.INTRODUCTION
 import org.briarproject.briar.desktop.threadedgroup.sharing.InvitationSentEvent
 import org.briarproject.briar.desktop.threading.BriarExecutors
+import org.briarproject.briar.desktop.threading.UiExecutor
 import org.briarproject.briar.desktop.utils.KLoggerUtils.e
 import org.briarproject.briar.desktop.utils.KLoggerUtils.i
 import org.briarproject.briar.desktop.utils.KLoggerUtils.logDuration
@@ -307,8 +308,12 @@ constructor(
         }
     }
 
-    fun reloadMessages() = runOnDbThreadWithTransaction(true) { txn ->
-        loadMessages(txn, contactItem.value!!)
+    @UiExecutor
+    fun reloadMessages() {
+        val c = _contactItem.value!!
+        runOnDbThreadWithTransaction(true) { txn ->
+            loadMessages(txn, c)
+        }
     }
 
     private fun loadMessages(txn: Transaction, contact: ContactItem) {
@@ -467,28 +472,38 @@ constructor(
         }
     }
 
-    fun deleteMessage(id: MessageId) = runOnDbThread {
-        val result = conversationManager.deleteMessages(_contactId.value!!, listOf(id))
-        if (result.allDeleted()) {
-            _messages.removeIf { it.id == id }
-        } else {
-            _deletionResult.value = result
+    fun deleteMessage(id: MessageId) {
+        val c = _contactId.value!!
+        runOnDbThreadWithTransaction(false) { txn ->
+            val result = conversationManager.deleteMessages(txn, c, listOf(id))
+            txn.attach {
+                if (result.allDeleted()) {
+                    _messages.find { it.id == id }?.let { msg ->
+                        if (!msg.isRead)
+                            eventBus.broadcast(ConversationMessagesReadEvent(1, c))
+                        _messages.remove(msg)
+                    }
+                } else {
+                    _deletionResult.value = result
+                }
+            }
         }
     }
 
-    fun deleteAllMessages() = runOnDbThread {
-        _loadingMessages.value = true
-        try {
-            val result = conversationManager.deleteAllMessages(_contactId.value!!)
-            reloadConversationAfterDeletingMessages(result)
-        } finally {
-            _loadingMessages.value = false
+    fun deleteAllMessages() {
+        val id = _contactId.value!!
+        val c = _contactItem.value!!
+        val unreadMessagesBefore = _messages.count { !it.isRead }
+        runOnDbThreadWithTransaction(false) { txn ->
+            val result = conversationManager.deleteAllMessages(txn, id)
+            loadMessages(txn, c)
+            txn.attach {
+                _deletionResult.value = if (!result.allDeleted()) result else null
+                val unreadMessagesAfter = _messages.count { !it.isRead }
+                val count = unreadMessagesBefore - unreadMessagesAfter
+                if (count > 0) eventBus.broadcast(ConversationMessagesReadEvent(count, c.id))
+            }
         }
-    }
-
-    private fun reloadConversationAfterDeletingMessages(result: DeletionResult) {
-        reloadMessages()
-        _deletionResult.value = if (!result.allDeleted()) result else null
     }
 
     fun confirmDeletionResult() {
