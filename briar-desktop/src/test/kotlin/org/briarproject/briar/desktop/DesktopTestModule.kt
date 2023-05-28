@@ -25,6 +25,7 @@ import org.briarproject.bramble.api.plugin.PluginConfig
 import org.briarproject.bramble.api.plugin.TransportId
 import org.briarproject.bramble.api.plugin.duplex.DuplexPluginFactory
 import org.briarproject.bramble.api.plugin.simplex.SimplexPluginFactory
+import org.briarproject.bramble.plugin.file.MailboxPluginFactory
 import org.briarproject.bramble.plugin.tcp.TestLanTcpPluginFactory
 import org.briarproject.bramble.plugin.tor.UnixTorPluginFactory
 import org.briarproject.bramble.plugin.tor.WindowsTorPluginFactory
@@ -76,7 +77,8 @@ internal class DesktopTestModule {
     internal fun providePluginConfig(
         unixTor: UnixTorPluginFactory,
         winTor: WindowsTorPluginFactory,
-        lan: TestLanTcpPluginFactory
+        lan: TestLanTcpPluginFactory,
+        mailbox: MailboxPluginFactory,
     ): PluginConfig {
         val duplex: List<DuplexPluginFactory> = when {
             isLinux() || isMac() -> listOf(unixTor, lan)
@@ -85,7 +87,7 @@ internal class DesktopTestModule {
         }
         return object : PluginConfig {
             override fun getDuplexFactories(): Collection<DuplexPluginFactory> = duplex
-            override fun getSimplexFactories(): Collection<SimplexPluginFactory> = emptyList()
+            override fun getSimplexFactories(): Collection<SimplexPluginFactory> = listOf(mailbox)
             override fun shouldPoll(): Boolean = true
             override fun getTransportPreferences(): Map<TransportId, List<TransportId>> = emptyMap()
         }

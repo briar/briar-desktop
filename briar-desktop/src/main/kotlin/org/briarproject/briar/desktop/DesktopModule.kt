@@ -64,7 +64,7 @@ internal class DesktopModule {
         unixTor: UnixTorPluginFactory,
         winTor: WindowsTorPluginFactory,
         lan: LanTcpPluginFactory,
-        mailbox: MailboxPluginFactory
+        mailbox: MailboxPluginFactory,
     ): PluginConfig {
         val duplex: List<DuplexPluginFactory> = when {
             isLinux() || isMac() -> listOf(unixTor, lan)
