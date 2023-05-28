@@ -60,6 +60,7 @@ fun main() = preview {
                 override val name: String =
                     "This is a test forum! This is a test forum! This is a test forum! This is a test forum!"
                 override val creator: String? = null
+                override val isDissolved: Boolean = false
                 override val msgCount: Int = 42
                 override val unread: Int = 23
                 override val timestamp: Long = (Instant.now().minusSeconds(300)).toEpochMilli()
@@ -68,6 +69,7 @@ fun main() = preview {
                 override val id: GroupId = GroupId(getRandomId())
                 override val name: String = "Newly added group"
                 override val creator: String = "Alicia"
+                override val isDissolved: Boolean = false
                 override val msgCount: Int = 0
                 override val unread: Int = 0
                 override val timestamp: Long = (Instant.now()).toEpochMilli()
@@ -75,7 +77,8 @@ fun main() = preview {
             object : ThreadedGroupItem {
                 override val id: GroupId = GroupId(getRandomId())
                 override val name: String = "Old forum"
-                override val creator: String? = null
+                override val creator: String = "Bernard"
+                override val isDissolved: Boolean = true
                 override val msgCount: Int = 123
                 override val unread: Int = 5
                 override val timestamp: Long = (Instant.now().minusSeconds(1200)).toEpochMilli()

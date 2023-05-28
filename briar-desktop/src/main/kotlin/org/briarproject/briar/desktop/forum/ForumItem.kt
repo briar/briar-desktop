@@ -42,6 +42,7 @@ data class ForumItem(
     override val id: GroupId = forum.id
     override val name: String = forum.name
     override val creator: String? = null
+    override val isDissolved: Boolean = false
 
     fun updateOnPostReceived(header: PostHeader) =
         copy(

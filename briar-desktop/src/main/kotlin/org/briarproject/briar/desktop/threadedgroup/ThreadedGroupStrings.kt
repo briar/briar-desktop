@@ -30,6 +30,7 @@ abstract class ThreadedGroupStrings(
     val messageCount: (Int) -> String,
     val unreadCount: (Int) -> String,
     val lastMessage: (String) -> String,
+    val groupDissolved: String = "",
     val groupNameMaxLength: Int,
     val sharedWith: (total: Int, online: Int) -> String,
     val unreadJumpToPrevious: String,

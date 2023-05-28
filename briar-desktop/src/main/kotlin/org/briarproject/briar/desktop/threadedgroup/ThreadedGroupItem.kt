@@ -24,6 +24,7 @@ interface ThreadedGroupItem {
     val id: GroupId
     val name: String
     val creator: String?
+    val isDissolved: Boolean
     val msgCount: Int
     val unread: Int
     val timestamp: Long

@@ -38,6 +38,7 @@ import androidx.compose.ui.Alignment.Companion.Start
 import androidx.compose.ui.Alignment.Companion.Top
 import androidx.compose.ui.Alignment.Companion.TopEnd
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.text
 import androidx.compose.ui.text.style.TextOverflow
@@ -56,6 +57,7 @@ import java.time.Instant
 fun main() = preview(
     "name" to "This is a test forum! This is a test forum! This is a test forum! This is a test forum!",
     "creator" to "Bobby",
+    "isDissolved" to false,
     "msgCount" to 42,
     "unread" to 23,
     "timestamp" to Instant.now().toEpochMilli(),
@@ -64,6 +66,7 @@ fun main() = preview(
         override val id: GroupId = GroupId(getRandomIdPersistent())
         override val name: String = getStringParameter("name")
         override val creator: String = getStringParameter("creator")
+        override val isDissolved: Boolean = getBooleanParameter("isDissolved")
         override val msgCount: Int = getIntParameter("msgCount")
         override val unread: Int = getIntParameter("unread")
         override val timestamp: Long = getLongParameter("timestamp")
@@ -84,7 +87,7 @@ fun ThreadedGroupItemView(
         .height(IntrinsicSize.Min)
         .semantics {
             text = getDescription(strings, threadedGroupItem)
-        },
+        }.alpha(if (threadedGroupItem.isDissolved) 0.5f else 1f),
 ) {
     Box(Modifier.align(Top).padding(vertical = 8.dp)) {
         ThreadedGroupCircle(threadedGroupItem)
@@ -129,13 +132,20 @@ private fun ThreadedGroupItemViewInfo(strings: ThreadedGroupStrings, threadedGro
         horizontalArrangement = SpaceBetween,
         modifier = Modifier.fillMaxWidth()
     ) {
-        Text(
-            text = strings.messageCount(threadedGroupItem.msgCount),
-            style = MaterialTheme.typography.caption
-        )
-        if (threadedGroupItem.msgCount > 0) {
+        if (!threadedGroupItem.isDissolved) {
             Text(
-                text = getFormattedTimestamp(threadedGroupItem.timestamp),
+                text = strings.messageCount(threadedGroupItem.msgCount),
+                style = MaterialTheme.typography.caption
+            )
+            if (threadedGroupItem.msgCount > 0) {
+                Text(
+                    text = getFormattedTimestamp(threadedGroupItem.timestamp),
+                    style = MaterialTheme.typography.caption
+                )
+            }
+        } else {
+            Text(
+                text = strings.groupDissolved,
                 style = MaterialTheme.typography.caption
             )
         }

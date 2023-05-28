@@ -44,6 +44,7 @@ object PrivateGroupStrings : ThreadedGroupStrings(
     lastMessage = { timestamp ->
         i18nF("access.group.last_post_timestamp", timestamp)
     },
+    groupDissolved = i18n("group.card.dissolved"),
     groupNameMaxLength = MAX_GROUP_NAME_LENGTH,
     sharedWith = { total, online ->
         i18nF("group.sharing.status.with", total, online)

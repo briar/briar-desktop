@@ -40,6 +40,7 @@ import org.briarproject.briar.api.identity.AuthorManager
 import org.briarproject.briar.api.privategroup.GroupMessageFactory
 import org.briarproject.briar.api.privategroup.PrivateGroupFactory
 import org.briarproject.briar.api.privategroup.PrivateGroupManager
+import org.briarproject.briar.api.privategroup.event.GroupDissolvedEvent
 import org.briarproject.briar.api.privategroup.event.GroupMessageAddedEvent
 import org.briarproject.briar.desktop.privategroup.conversation.PrivateGroupConversationViewModel
 import org.briarproject.briar.desktop.threadedgroup.ThreadedGroupListViewModel
@@ -82,6 +83,10 @@ class PrivateGroupListViewModel
                 if (e.clientId != clientId) return
                 updateItem(e.groupId) { it.updateOnMessagesRead(e.numMarkedRead) }
             }
+
+            is GroupDissolvedEvent -> {
+                updateItem(e.groupId) { it.updateOnDissolve() }
+            }
         }
     }
 
@@ -90,6 +95,7 @@ class PrivateGroupListViewModel
         return PrivateGroupItem(
             privateGroup = privateGroup,
             creatorInfo = authorManager.getAuthorInfo(txn, privateGroup.creator.id),
+            isDissolved = privateGroupManager.isDissolved(txn, id),
             groupCount = privateGroupManager.getGroupCount(txn, id),
         )
     }
@@ -113,6 +119,7 @@ class PrivateGroupListViewModel
         privateGroupManager.getPrivateGroups(txn).map { privateGroup ->
             PrivateGroupItem(
                 privateGroup = privateGroup,
+                isDissolved = privateGroupManager.isDissolved(txn, privateGroup.id),
                 creatorInfo = authorManager.getAuthorInfo(txn, privateGroup.creator.id),
                 groupCount = privateGroupManager.getGroupCount(txn, privateGroup.id),
             )

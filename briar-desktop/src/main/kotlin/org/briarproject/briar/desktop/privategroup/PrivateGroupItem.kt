@@ -28,17 +28,24 @@ import org.briarproject.briar.desktop.utils.UiUtils.getContactDisplayName
 import kotlin.math.max
 
 data class PrivateGroupItem(
-    val privateGroup: PrivateGroup,
-    val creatorInfo: AuthorInfo,
+    private val privateGroup: PrivateGroup,
+    private val creatorInfo: AuthorInfo,
+    override val isDissolved: Boolean,
     override val msgCount: Int,
     override val unread: Int,
     override val timestamp: Long,
 ) : ThreadedGroupItem {
 
-    constructor(privateGroup: PrivateGroup, creatorInfo: AuthorInfo, groupCount: MessageTracker.GroupCount) :
+    constructor(
+        privateGroup: PrivateGroup,
+        creatorInfo: AuthorInfo,
+        isDissolved: Boolean,
+        groupCount: MessageTracker.GroupCount,
+    ) :
         this(
             privateGroup,
             creatorInfo,
+            isDissolved = isDissolved,
             msgCount = groupCount.msgCount,
             unread = groupCount.unreadCount,
             timestamp = groupCount.latestMsgTime
@@ -57,4 +64,7 @@ data class PrivateGroupItem(
 
     fun updateOnMessagesRead(num: Int) =
         copy(unread = unread - num)
+
+    fun updateOnDissolve() =
+        copy(isDissolved = true)
 }
