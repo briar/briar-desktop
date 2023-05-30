@@ -43,12 +43,13 @@ fun PrivateGroupScreen(
     ThreadedGroupScreen(
         strings = PrivateGroupStrings,
         viewModel = viewModel,
-        dropdownMenu = { sharingViewModel, expanded, onClose, onLeaveOrDissolvePrivateGroupClick ->
+        dropdownMenu = { sharingViewModel, expanded, onClose, onMarkReadClick, onLeaveOrDissolvePrivateGroupClick ->
             val privateGroupSharingViewModel = sharingViewModel as PrivateGroupSharingViewModel
             PrivateGroupDropdownMenu(
                 privateGroupSharingViewModel = privateGroupSharingViewModel,
                 expanded = expanded,
                 onClose = onClose,
+                onMarkReadClick = onMarkReadClick,
                 onLeaveOrDissolvePrivateGroupClick = onLeaveOrDissolvePrivateGroupClick
             )
         },

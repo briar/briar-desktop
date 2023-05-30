@@ -76,6 +76,7 @@ fun ThreadedGroupConversationScreen(
                     threadedGroupItem = groupItem,
                     sharingViewModel = viewModel.sharingViewModel,
                     onGroupDelete = viewModel::deleteGroup,
+                    onMarkRead = viewModel::markThreadItemsRead,
                     dropdownMenu = dropdownMenu,
                 )
             }
@@ -108,6 +109,7 @@ private fun ThreadedGroupConversationHeader(
     strings: ThreadedGroupStrings,
     threadedGroupItem: ThreadedGroupItem,
     sharingViewModel: ThreadedGroupSharingViewModel,
+    onMarkRead: () -> Unit,
     onGroupDelete: () -> Unit,
     dropdownMenu: ThreadedGroupDropdownMenu,
 ) {
@@ -151,7 +153,8 @@ private fun ThreadedGroupConversationHeader(
                 dropdownMenu(
                     sharingViewModel,
                     menuState.value == MAIN,
-                    close
+                    close,
+                    onMarkRead,
                 ) { deleteGroupDialogVisible.value = true }
             }
         }

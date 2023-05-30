@@ -129,7 +129,7 @@ class ForumSharingViewModel @Inject constructor(
         }
     }
 
-    fun loadSharingStatus(txn: Transaction, groupId: GroupId) {
+    private fun loadSharingStatus(txn: Transaction, groupId: GroupId) {
         val map = contactManager.getContacts(txn).associate { contact ->
             contact.id to forumSharingManager.getSharingStatus(txn, groupId, contact)
         }

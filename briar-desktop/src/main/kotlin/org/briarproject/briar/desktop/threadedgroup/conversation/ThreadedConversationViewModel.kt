@@ -112,13 +112,13 @@ abstract class ThreadedConversationViewModel(
     }
 
     @DatabaseExecutor
-    abstract fun markThreadItemRead(groupId: GroupId, id: MessageId)
+    abstract fun markThreadItemRead(txn: Transaction, groupId: GroupId, id: MessageId)
 
     @UiExecutor
-    fun markThreadItemsRead(ids: List<MessageId>) {
+    fun markThreadItemsRead(ids: List<MessageId>? = null) {
         // TODO messageTree.get(id) would be nice, but not in briar-core
         val readIds = (state.value as? Loaded)?.posts?.filter { item ->
-            !item.isRead && ids.contains(item.id)
+            ids?.contains(item.id) ?: true && !item.isRead
         }?.map { item ->
             item.isRead = true
             item.id
@@ -126,17 +126,17 @@ abstract class ThreadedConversationViewModel(
 
         val groupId = _threadedGroupItem.value?.id
         if (readIds.isNotEmpty() && groupId != null) {
-            runOnDbThread {
+            runOnDbThreadWithTransaction(false) { txn ->
                 readIds.forEach { id ->
-                    markThreadItemRead(groupId, id)
+                    markThreadItemRead(txn, groupId, id)
+                }
+                txn.attach(ThreadedGroupMessageReadEvent(clientId, groupId, readIds.size))
+                txn.attach {
+                    // TODO replace immutable ThreadItems instead to avoid recomposing whole list
+                    val messageTree = (state.value as? Loaded)?.messageTree ?: return@attach
+                    _state.value = Loaded(messageTree)
                 }
             }
-            // we don't attach this to the transaction that actually changes the DB,
-            // but that should be fine for this purpose of just decrementing a counter
-            eventBus.broadcast(ThreadedGroupMessageReadEvent(clientId, groupId, readIds.size))
-            // TODO replace immutable ThreadItems instead to avoid recomposing whole list
-            val messageTree = (state.value as? Loaded)?.messageTree ?: return
-            _state.value = Loaded(messageTree)
         }
     }
 

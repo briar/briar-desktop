@@ -25,5 +25,6 @@ typealias ThreadedGroupDropdownMenu = @Composable (
     sharingViewModel: ThreadedGroupSharingViewModel,
     expanded: Boolean,
     onClose: () -> Unit,
+    onMarkReadClick: () -> Unit,
     onLeaveGroupClick: () -> Unit,
 ) -> Unit

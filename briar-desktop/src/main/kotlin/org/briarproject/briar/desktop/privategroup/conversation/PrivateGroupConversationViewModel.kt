@@ -135,8 +135,8 @@ class PrivateGroupConversationViewModel @Inject constructor(
     }
 
     @DatabaseExecutor
-    override fun markThreadItemRead(groupId: GroupId, id: MessageId) =
-        privateGroupManager.setReadFlag(groupId, id, true)
+    override fun markThreadItemRead(txn: Transaction, groupId: GroupId, id: MessageId) =
+        privateGroupManager.setReadFlag(txn, groupId, id, true)
 
     @UiExecutor
     override fun deleteGroup() {

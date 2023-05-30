@@ -35,6 +35,7 @@ fun PrivateGroupDropdownMenu(
     privateGroupSharingViewModel: PrivateGroupSharingViewModel,
     expanded: Boolean,
     onClose: () -> Unit,
+    onMarkReadClick: () -> Unit,
     onLeaveOrDissolvePrivateGroupClick: () -> Unit,
 ) = DropdownMenu(
     expanded = expanded,
@@ -75,6 +76,17 @@ fun PrivateGroupDropdownMenu(
                 style = MaterialTheme.typography.body2,
             )
         }
+    }
+    DropdownMenuItem(
+        onClick = {
+            onClose()
+            onMarkReadClick()
+        }
+    ) {
+        Text(
+            i18n("group.mark.read"),
+            style = MaterialTheme.typography.body2,
+        )
     }
     DropdownMenuItem(
         onClick = {

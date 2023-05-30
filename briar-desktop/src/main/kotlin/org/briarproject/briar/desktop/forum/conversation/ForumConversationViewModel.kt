@@ -112,8 +112,8 @@ class ForumConversationViewModel @Inject constructor(
     }
 
     @DatabaseExecutor
-    override fun markThreadItemRead(groupId: GroupId, id: MessageId) =
-        forumManager.setReadFlag(groupId, id, true)
+    override fun markThreadItemRead(txn: Transaction, groupId: GroupId, id: MessageId) =
+        forumManager.setReadFlag(txn, groupId, id, true)
 
     @UiExecutor
     override fun deleteGroup() {

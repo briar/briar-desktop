@@ -35,6 +35,7 @@ fun ForumDropdownMenu(
     forumSharingViewModel: ForumSharingViewModel,
     expanded: Boolean,
     onClose: () -> Unit,
+    onMarkReadClick: () -> Unit,
     onLeaveForumClick: () -> Unit,
 ) = DropdownMenu(
     expanded = expanded,
@@ -71,6 +72,17 @@ fun ForumDropdownMenu(
     ) {
         Text(
             i18n("forum.sharing.status.title"),
+            style = MaterialTheme.typography.body2,
+        )
+    }
+    DropdownMenuItem(
+        onClick = {
+            onClose()
+            onMarkReadClick()
+        }
+    ) {
+        Text(
+            i18n("group.mark.read"),
             style = MaterialTheme.typography.body2,
         )
     }

@@ -30,8 +30,8 @@ fun ForumScreen(
 ) = ThreadedGroupScreen(
     strings = ForumStrings,
     viewModel = viewModel,
-    dropdownMenu = { sharingViewModel, expanded, onClose, onLeaveForumClick ->
+    dropdownMenu = { sharingViewModel, expanded, onClose, onMarkReadClick, onLeaveForumClick ->
         val forumSharingViewModel = sharingViewModel as ForumSharingViewModel
-        ForumDropdownMenu(forumSharingViewModel, expanded, onClose, onLeaveForumClick)
+        ForumDropdownMenu(forumSharingViewModel, expanded, onClose, onMarkReadClick, onLeaveForumClick)
     }
 )
