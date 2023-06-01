@@ -61,6 +61,7 @@ val Colors.sendButton: Color get() = if (isLight) Lime700 else Lime500
 val Colors.passwordStrengthWeak: Color get() = Red500
 val Colors.passwordStrengthMiddle: Color get() = if (isLight) Orange700 else Orange500
 val Colors.passwordStrengthStrong: Color get() = if (isLight) Lime700 else Lime500
+val Colors.tabs: Color get() = if (isLight) Color.White else materialDarkBg
 
 val DarkColors = darkColors(
     primary = Blue500,

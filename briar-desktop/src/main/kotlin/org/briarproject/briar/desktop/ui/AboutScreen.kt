@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,11 +19,17 @@ import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Tab
+import androidx.compose.material.TabRow
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
@@ -35,6 +42,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import org.briarproject.briar.desktop.BuildData
 import org.briarproject.briar.desktop.Strings
+import org.briarproject.briar.desktop.about.Artifact
+import org.briarproject.briar.desktop.theme.tabs
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 import java.time.Instant
@@ -69,25 +78,6 @@ fun AboutScreen(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AboutScreen(modifier: Modifier = Modifier.padding(16.dp)) {
-    // format date
-    val buildTime = Instant.ofEpochMilli(BuildData.GIT_TIME).atZone(ZoneId.systemDefault()).toLocalDateTime()
-
-    // rows displayed in table
-    val lines = buildList {
-        add(Entry(i18n("about.copyright"), Strings.APP_AUTHORS))
-        add(Entry(i18n("about.license"), Strings.LICENSE))
-        add(Entry(i18n("about.version"), BuildData.VERSION))
-        add(Entry(i18n("about.version.core"), BuildData.CORE_VERSION))
-        if (BuildData.GIT_BRANCH != null) add(Entry("Git branch", BuildData.GIT_BRANCH)) // NON-NLS
-        if (BuildData.GIT_TAG != null) add(Entry("Git tag", BuildData.GIT_TAG)) // NON-NLS
-        if (BuildData.GIT_BRANCH == null && BuildData.GIT_TAG == null)
-            add(Entry("Git branch/tag", "None detected")) // NON-NLS
-        add(Entry("Git hash", BuildData.GIT_HASH)) // NON-NLS
-        add(Entry("Commit time", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(buildTime))) // NON-NLS
-        add(Entry(i18n("about.website"), Strings.WEBSITE, true))
-        add(Entry(i18n("about.contact"), Strings.EMAIL, true))
-    }
-
     Column(modifier) {
         Row(
             modifier = Modifier.padding(bottom = 16.dp).fillMaxWidth(),
@@ -103,38 +93,78 @@ fun AboutScreen(modifier: Modifier = Modifier.padding(16.dp)) {
                 maxLines = 1,
             )
         }
-        val scrollState = rememberLazyListState()
-        Box {
-            LazyColumn(
-                modifier = Modifier.semantics {
-                    contentDescription = i18n("access.about.list")
-                },
-                state = scrollState
-            ) {
-                item {
-                    HorizontalDivider()
-                }
-                items(lines) {
-                    AboutEntry(it)
-                    HorizontalDivider()
+        var state by remember { mutableStateOf(0) }
+        val titles = listOf(i18n("about.category.general"), i18n("about.category.dependencies"))
+        Column {
+            TabRow(selectedTabIndex = state, backgroundColor = MaterialTheme.colors.tabs) {
+                titles.forEachIndexed { index, title ->
+                    Tab(
+                        text = { Text(title) },
+                        selected = state == index,
+                        onClick = { state = index }
+                    )
                 }
             }
-            VerticalScrollbar(
-                adapter = rememberScrollbarAdapter(scrollState),
-                modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight()
-            )
+            when (state) {
+                0 -> GeneralInfo()
+                1 -> Libraries()
+            }
         }
+    }
+}
+
+@Composable
+private fun GeneralInfo() {
+    // format date
+    val commitTime = Instant.ofEpochMilli(BuildData.GIT_TIME).atZone(ZoneId.systemDefault()).toLocalDateTime()
+
+    // rows displayed in table
+    val lines = buildList {
+        add(Entry(i18n("about.copyright"), Strings.APP_AUTHORS))
+        add(Entry(i18n("about.license"), Strings.LICENSE))
+        add(Entry(i18n("about.version"), BuildData.VERSION))
+        add(Entry(i18n("about.version.core"), BuildData.CORE_VERSION))
+        if (BuildData.GIT_BRANCH != null) add(Entry("Git branch", BuildData.GIT_BRANCH)) // NON-NLS
+        if (BuildData.GIT_TAG != null) add(Entry("Git tag", BuildData.GIT_TAG)) // NON-NLS
+        if (BuildData.GIT_BRANCH == null && BuildData.GIT_TAG == null)
+            add(Entry("Git branch/tag", "None detected")) // NON-NLS
+        add(Entry("Git hash", BuildData.GIT_HASH)) // NON-NLS
+        add(Entry("Commit time", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(commitTime))) // NON-NLS
+        add(Entry(i18n("about.website"), Strings.WEBSITE, true))
+        add(Entry(i18n("about.contact"), Strings.EMAIL, true))
+    }
+
+    val scrollState = rememberLazyListState()
+    Box {
+        LazyColumn(
+            modifier = Modifier.semantics {
+                contentDescription = i18n("access.about.list.general")
+            },
+            state = scrollState
+        ) {
+            item {
+                HorizontalDivider()
+            }
+            items(lines) {
+                AboutEntry(it)
+                HorizontalDivider()
+            }
+        }
+        VerticalScrollbar(
+            adapter = rememberScrollbarAdapter(scrollState),
+            modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight()
+        )
     }
 }
 
 private data class Entry(
     val label: String,
     val value: String,
-    val showCopy: Boolean = false
+    val showCopy: Boolean = false,
 )
 
-// sizes of the two columns
-private val colSizes = listOf(0.3f, 0.7f)
+// sizes of the two columns in the general tab
+private val colSizesGeneral = listOf(0.3f, 0.7f)
 
 @Composable
 private fun AboutEntry(entry: Entry) =
@@ -149,14 +179,9 @@ private fun AboutEntry(entry: Entry) =
                 text = buildAnnotatedString { append("${entry.label}: ${entry.value}") }
             }
     ) {
-        Box(modifier = Modifier.weight(colSizes[0]).fillMaxHeight()) {
-            Text(
-                text = entry.label,
-                modifier = Modifier.padding(8.dp).align(Alignment.CenterStart)
-            )
-        }
+        Cell(colSizesGeneral[0], entry.label)
         VerticalDivider()
-        Box(modifier = Modifier.weight(colSizes[1]).fillMaxHeight()) {
+        Box(modifier = Modifier.weight(colSizesGeneral[1]).fillMaxHeight()) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -180,4 +205,55 @@ private fun AboutEntry(entry: Entry) =
                 }
             }
         }
+    }
+
+@Composable
+private fun Libraries() {
+    val scrollState = rememberLazyListState()
+    Box {
+        LazyColumn(
+            modifier = Modifier.semantics {
+                contentDescription = i18n("access.about.list.dependencies")
+            },
+            state = scrollState
+        ) {
+            item {
+                HorizontalDivider()
+            }
+            items(BuildData.ARTIFACTS) { artifact ->
+                LibraryEntry(artifact)
+                HorizontalDivider()
+            }
+        }
+        VerticalScrollbar(
+            adapter = rememberScrollbarAdapter(scrollState),
+            modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight()
+        )
+    }
+}
+
+// sizes of the four columns in the dependencies tab
+val colSizesLibraries = listOf(0.3f, 0.3f, 0.15f, 0.25f)
+
+@Composable
+private fun LibraryEntry(artifact: Artifact) =
+    SelectionContainer {
+        Row(Modifier.fillMaxWidth().height(IntrinsicSize.Min)) {
+            Cell(colSizesLibraries[0], artifact.group)
+            VerticalDivider()
+            Cell(colSizesLibraries[1], artifact.artifact)
+            VerticalDivider()
+            Cell(colSizesLibraries[2], artifact.version)
+            VerticalDivider()
+            Cell(colSizesLibraries[3], artifact.license)
+        }
+    }
+
+@Composable
+private fun RowScope.Cell(size: Float, text: String) =
+    Box(modifier = Modifier.weight(size).fillMaxHeight()) {
+        Text(
+            text = text,
+            modifier = Modifier.fillMaxWidth().padding(8.dp).align(Alignment.CenterStart)
+        )
     }
