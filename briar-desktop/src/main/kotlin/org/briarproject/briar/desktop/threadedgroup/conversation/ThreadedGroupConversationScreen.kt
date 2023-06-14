@@ -76,7 +76,7 @@ fun ThreadedGroupConversationScreen(
                     threadedGroupItem = groupItem,
                     sharingViewModel = viewModel.sharingViewModel,
                     onGroupDelete = viewModel::deleteGroup,
-                    onMarkRead = viewModel::markThreadItemsRead,
+                    onMarkRead = viewModel::markAllThreadItemsRead,
                     dropdownMenu = dropdownMenu,
                 )
             }

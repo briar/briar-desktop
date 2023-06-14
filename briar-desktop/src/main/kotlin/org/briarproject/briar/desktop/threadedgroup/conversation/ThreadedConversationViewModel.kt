@@ -115,10 +115,21 @@ abstract class ThreadedConversationViewModel(
     abstract fun markThreadItemRead(txn: Transaction, groupId: GroupId, id: MessageId)
 
     @UiExecutor
-    fun markThreadItemsRead(ids: List<MessageId>? = null) {
+    fun markThreadItemsRead(ids: List<MessageId>) = markThreadItemsRead { item ->
+        ids.contains(item.id)
+    }
+
+    @UiExecutor
+    fun markAllThreadItemsRead() = markThreadItemsRead { true }
+
+    /**
+     * Marks the [ThreadItem]s as read for those the given [predicate] returns true.
+     */
+    @UiExecutor
+    private fun markThreadItemsRead(predicate: (ThreadItem) -> Boolean) {
         // TODO messageTree.get(id) would be nice, but not in briar-core
         val readIds = (state.value as? Loaded)?.posts?.filter { item ->
-            ids?.contains(item.id) ?: true && !item.isRead
+            predicate(item) && !item.isRead
         }?.map { item ->
             item.isRead = true
             item.id
