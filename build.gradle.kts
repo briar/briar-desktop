@@ -46,8 +46,7 @@ buildscript {
         set("junit_version", "4.13.2")
         set("jmock_version", "2.12.0")
         set("mockwebserver_version", "4.10.0")
-        set("onionwrapper_version", "0.0.2")
-        set("onionwrapper_version2", "0.0.2-macos")
+        set("onionwrapper_version", "0.0.4")
     }
 }
 
@@ -56,6 +55,5 @@ allprojects {
         mavenCentral()
         google()
         jcenter()
-        maven("https://mvntmp.mobanisto.de/")
     }
 }
