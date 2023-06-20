@@ -18,7 +18,6 @@
 
 @file:Suppress("HardCodedStringLiteral")
 
-import org.briarproject.briar.desktop.os.OS.MacOS
 import org.briarproject.briar.desktop.os.currentOS
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
