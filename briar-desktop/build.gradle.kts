@@ -138,7 +138,9 @@ dependencies {
     implementation("org.slf4j:jul-to-slf4j:2.0.5")
     implementation("ch.qos.logback:logback-classic:1.4.5")
     implementation("de.mobanisto:toast4j:0.2.0")
-    implementation("de.jangassen:jfa:1.2.0")
+    implementation("de.jangassen:jfa:1.2.0") {
+        exclude(group = "net.java.dev.jna", module = "jna")
+    }
 
     val daggerVersion = "2.24"
     kapt("com.google.dagger:dagger-compiler:$daggerVersion")
