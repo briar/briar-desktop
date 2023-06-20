@@ -27,6 +27,7 @@ import org.briarproject.bramble.api.plugin.duplex.DuplexPluginFactory
 import org.briarproject.bramble.api.plugin.simplex.SimplexPluginFactory
 import org.briarproject.bramble.plugin.file.MailboxPluginFactory
 import org.briarproject.bramble.plugin.tcp.LanTcpPluginFactory
+import org.briarproject.bramble.plugin.tor.MacTorPluginFactory
 import org.briarproject.bramble.plugin.tor.UnixTorPluginFactory
 import org.briarproject.bramble.plugin.tor.WindowsTorPluginFactory
 import org.briarproject.bramble.util.OsUtils.isLinux
@@ -62,12 +63,14 @@ internal class DesktopModule {
     @Provides
     internal fun providePluginConfig(
         unixTor: UnixTorPluginFactory,
+        macTor: MacTorPluginFactory,
         winTor: WindowsTorPluginFactory,
         lan: LanTcpPluginFactory,
         mailbox: MailboxPluginFactory,
     ): PluginConfig {
         val duplex: List<DuplexPluginFactory> = when {
-            isLinux() || isMac() -> listOf(unixTor, lan)
+            isLinux() -> listOf(unixTor, lan)
+            isMac() -> listOf(macTor, lan)
             isWindows() -> listOf(winTor, lan)
             else -> listOf(lan)
         }
