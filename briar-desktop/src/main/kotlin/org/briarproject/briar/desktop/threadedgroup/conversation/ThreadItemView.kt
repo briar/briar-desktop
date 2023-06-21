@@ -22,7 +22,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -44,37 +43,30 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment.Companion.Center
-import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight.Companion.Bold
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import org.briarproject.briar.api.identity.AuthorInfo.Status.OURSELVES
-import org.briarproject.briar.desktop.contact.ProfileCircle
 import org.briarproject.briar.desktop.forum.conversation.ForumPostItem
 import org.briarproject.briar.desktop.privategroup.conversation.isMeta
 import org.briarproject.briar.desktop.privategroup.conversation.metaText
 import org.briarproject.briar.desktop.theme.Blue500
 import org.briarproject.briar.desktop.theme.divider
+import org.briarproject.briar.desktop.ui.AuthorView
 import org.briarproject.briar.desktop.ui.Constants.COLUMN_WIDTH
 import org.briarproject.briar.desktop.ui.HorizontalDivider
 import org.briarproject.briar.desktop.ui.LocalWindowScope
 import org.briarproject.briar.desktop.ui.Tooltip
-import org.briarproject.briar.desktop.ui.TrustIndicatorShort
 import org.briarproject.briar.desktop.ui.VerticalDivider
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
-import org.briarproject.briar.desktop.utils.TimeUtils.getFormattedTimestamp
 import org.briarproject.briar.desktop.utils.UiUtils.modifyIf
 import org.briarproject.briar.desktop.utils.getRandomForumPostHeader
 import org.briarproject.briar.desktop.utils.getRandomString
 import kotlin.math.min
 import kotlin.random.Random
 
-@Suppress("HardCodedStringLiteral")
 fun main() = preview {
     val list = remember {
         (0..8).map { i ->
@@ -142,32 +134,7 @@ fun ThreadItemContent(
                 .weight(1f)
                 .padding(8.dp),
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = spacedBy(8.dp),
-            ) {
-                Row(
-                    modifier = Modifier.weight(1f),
-                    horizontalArrangement = spacedBy(8.dp),
-                    verticalAlignment = CenterVertically,
-                ) {
-                    ProfileCircle(27.dp, item.author.id, item.authorInfo)
-                    Text(
-                        modifier = Modifier.weight(1f, fill = false),
-                        text = item.authorName,
-                        fontWeight = if (item.authorInfo.status == OURSELVES) Bold else null,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                    TrustIndicatorShort(item.authorInfo.status)
-                }
-                Text(
-                    text = getFormattedTimestamp(item.timestamp),
-                    textAlign = TextAlign.End,
-                    style = MaterialTheme.typography.caption,
-                    maxLines = 1,
-                )
-            }
+            AuthorView(item.author, item.authorInfo, item.timestamp, Modifier.fillMaxWidth())
             // should be changed back to verticalArrangement = spacedBy(8.dp) on the containing Column
             // when https://github.com/JetBrains/compose-jb/issues/2729 is fixed
             Spacer(Modifier.height(8.dp))
