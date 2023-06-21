@@ -1,6 +1,6 @@
 /*
  * Briar Desktop
- * Copyright (C) 2021-2022 The Briar Project
+ * Copyright (C) 2021-2023 The Briar Project
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -48,6 +48,9 @@ import org.briarproject.bramble.api.system.Clock
 import org.briarproject.briar.api.autodelete.AutoDeleteConstants
 import org.briarproject.briar.api.avatar.AvatarManager
 import org.briarproject.briar.api.avatar.AvatarMessageEncoder
+import org.briarproject.briar.api.blog.BlogFactory
+import org.briarproject.briar.api.blog.BlogManager
+import org.briarproject.briar.api.blog.BlogPostFactory
 import org.briarproject.briar.api.conversation.ConversationManager
 import org.briarproject.briar.api.forum.ForumFactory
 import org.briarproject.briar.api.forum.ForumManager
@@ -96,6 +99,9 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
     private val transportPropertyManager: TransportPropertyManager,
     private val conversationManager: ConversationManager,
     private val messagingManager: MessagingManager,
+    private val blogManager: BlogManager,
+    private val blogFactory: BlogFactory,
+    private val blogPostFactory: BlogPostFactory,
     private val testAvatarCreator: TestAvatarCreator,
     private val avatarMessageEncoder: AvatarMessageEncoder,
     private val clientHelper: ClientHelper,
@@ -154,6 +160,7 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
         }
 
         createForums()
+        createBlogPosts(contacts)
     }
 
     @Throws(DbException::class)
@@ -165,7 +172,7 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
             val person = conversations.persons[i]
             val remote = authorFactory.createLocalAuthor(person.name)
 
-            val date = person.messages.map { it.date }.sorted().last()
+            val date = person.messages.map { it.date }.maxOf { it }
             val contact = addContact(localAuthor.id, remote, null, avatarPercent, date)
             contacts.add(contact)
         }
@@ -468,5 +475,16 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
             f.posts.forEach { addPost(it, null) }
         }
         LOG.i { "Created ${forums.forums.size} forums." }
+    }
+
+    private fun createBlogPosts(contactIds: List<ContactId>) {
+        contactIds.forEach { contactId ->
+            // add one blog per contact
+            val author = localAuthors[contactId] ?: return@forEach
+            val blog = blogFactory.createBlog(author)
+            blogManager.addBlog(blog)
+
+            // blogPostFactory.createBlogPost(blog.id, 0L, null, author, getRandomString())
+        }
     }
 }
