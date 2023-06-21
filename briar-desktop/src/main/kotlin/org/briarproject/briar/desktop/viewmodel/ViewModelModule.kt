@@ -22,6 +22,7 @@ import dagger.Binds
 import dagger.MapKey
 import dagger.Module
 import dagger.multibindings.IntoMap
+import org.briarproject.briar.desktop.blog.FeedViewModel
 import org.briarproject.briar.desktop.contact.ContactListViewModel
 import org.briarproject.briar.desktop.contact.add.remote.AddContactViewModel
 import org.briarproject.briar.desktop.conversation.ConversationViewModel
@@ -90,6 +91,11 @@ abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(PrivateGroupSharingViewModel::class)
     abstract fun bindPrivateGroupSharingViewModel(privateGroupSharingViewModel: PrivateGroupSharingViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(FeedViewModel::class)
+    abstract fun bindFeedViewModel(feedViewModel: FeedViewModel): ViewModel
 
     @Binds
     @IntoMap

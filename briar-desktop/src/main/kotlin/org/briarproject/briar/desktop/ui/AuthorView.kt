@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import org.briarproject.bramble.api.identity.Author
 import org.briarproject.briar.api.identity.AuthorInfo
@@ -37,17 +38,24 @@ import org.briarproject.briar.desktop.utils.TimeUtils
 import org.briarproject.briar.desktop.utils.UiUtils.getContactDisplayName
 
 @Composable
-fun AuthorView(author: Author, authorInfo: AuthorInfo, timestamp: Long, modifier: Modifier = Modifier) {
+fun AuthorView(
+    author: Author,
+    authorInfo: AuthorInfo,
+    timestamp: Long,
+    modifier: Modifier = Modifier,
+    avatarSize: Dp = 27.dp,
+) {
     Row(
         modifier = modifier,
         horizontalArrangement = spacedBy(8.dp),
+        verticalAlignment = CenterVertically,
     ) {
         Row(
             modifier = Modifier.weight(1f),
             horizontalArrangement = spacedBy(8.dp),
             verticalAlignment = CenterVertically,
         ) {
-            ProfileCircle(27.dp, author.id, authorInfo)
+            ProfileCircle(avatarSize, author.id, authorInfo)
             Text(
                 modifier = Modifier.weight(1f, fill = false),
                 text = getContactDisplayName(author.name, authorInfo.alias),
