@@ -110,6 +110,25 @@ b_package_windows:
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
 
+b_package_macos:
+  image: briar/ci-image-android:ubuntu-20
+  stage: build
+  script:
+    - ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-17-openjdk-amd64 --no-daemon -PbuildType=nightly
+      pinpitPackageDefaultDistributableZipMacosArm64
+      pinpitPackageDefaultDistributableZipMacosX64
+    - ls -lrth briar-desktop/build/pinpit/binaries/main-default/macos/arm64/distributableArchive/Briar-arm64-*.zip
+    - ls -lrth briar-desktop/build/pinpit/binaries/main-default/macos/x64/distributableArchive/Briar-x64-*.zip
+    - mv briar-desktop/build/pinpit/binaries/main-default/macos/arm64/distributableArchive/Briar-arm64-*.zip ./Briar-macos-arm64.zip
+    - mv briar-desktop/build/pinpit/binaries/main-default/macos/x64/distributableArchive/Briar-x64-*.zip ./Briar-macos-x64.zip
+  artifacts:
+    paths:
+      - Briar-macos-arm64.zip
+      - Briar-macos-x64.zip
+    expire_in: 2 days
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+
 rb_package_linux_x64:
   image: briar/ci-image-android:ubuntu-20
   stage: releasebuild
@@ -176,6 +195,25 @@ rb_package_windows:
     paths:
       - briar-desktop-windows.jar
       - Briar-Desktop.msi
+    expire_in: 2 days
+  only:
+    - tags
+
+rb_package_macos:
+  image: briar/ci-image-android:ubuntu-20
+  stage: releasebuild
+  script:
+    - ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-17-openjdk-amd64 --no-daemon -PbuildType=beta
+      pinpitPackageDefaultDistributableZipMacosArm64
+      pinpitPackageDefaultDistributableZipMacosX64
+    - ls -lrth briar-desktop/build/pinpit/binaries/main-default/macos/arm64/distributableArchive/Briar-arm64-*.zip
+    - ls -lrth briar-desktop/build/pinpit/binaries/main-default/macos/x64/distributableArchive/Briar-x64-*.zip
+    - mv briar-desktop/build/pinpit/binaries/main-default/macos/arm64/distributableArchive/Briar-arm64-*.zip ./Briar-macos-arm64.zip
+    - mv briar-desktop/build/pinpit/binaries/main-default/macos/x64/distributableArchive/Briar-x64-*.zip ./Briar-macos-x64.zip
+  artifacts:
+    paths:
+      - Briar-macos-arm64.zip
+      - Briar-macos-x64.zip
     expire_in: 2 days
   only:
     - tags
