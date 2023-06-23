@@ -8,10 +8,12 @@ PASSWORD="<password>"
 
 IDENTITY="Mobanisto"
 
-SOURCE="../briar-desktop/build/pinpit/binaries/main-default/macos/arm64/distributableArchive/Briar-arm64-0.4.2.zip"
+DIR=$(dirname $0)
+
+SOURCE="$DIR/../briar-desktop/build/pinpit/binaries/main-default/macos/arm64/distributableArchive/Briar-arm64-0.4.2.zip"
 TARGET="Briar-release.zip"
 APP="Briar.app"
-ENTITLEMENTS_FILE="entitlements.plist"
+ENTITLEMENTS_FILE="$DIR/entitlements.plist"
 LOG="Briar.log"
 
 ENTITLEMENTS=$(realpath "$ENTITLEMENTS_FILE")
