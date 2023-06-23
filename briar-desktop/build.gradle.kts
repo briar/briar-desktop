@@ -138,6 +138,8 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:1.4.5")
     implementation("de.mobanisto:toast4j:0.2.0")
     implementation("de.jangassen:jfa:1.2.0") {
+        // not excluding this leads to a strange error during build:
+        // > Could not find jna-5.13.0-jpms.jar (net.java.dev.jna:jna:5.13.0)
         exclude(group = "net.java.dev.jna", module = "jna")
     }
 
