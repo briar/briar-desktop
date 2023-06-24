@@ -28,7 +28,7 @@ object MacOsNotificationProvider : AbstractNotificationProvider() {
     override var available: Boolean = true
         private set
     override val errorMessage: String
-        get() = ""
+        get() = "" // currently no situation known where available = false and an error message is required.
 
     override fun init() {
         // nothing to initialize here
