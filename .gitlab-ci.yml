@@ -162,7 +162,7 @@ rb_package_linux_x64:
 
 rb_package_linux_arm:
   image: briar/ci-image-android:ubuntu-20
-  stage: build
+  stage: releasebuild
   script:
     - ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-17-openjdk-amd64 --no-daemon -PbuildType=beta
       pinpitPackageDefaultDistributableTarGzLinuxArm64
