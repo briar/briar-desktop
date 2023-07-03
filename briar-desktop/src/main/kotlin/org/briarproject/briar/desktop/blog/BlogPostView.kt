@@ -39,8 +39,8 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Repeat
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.BottomEnd
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -61,8 +61,8 @@ import org.briarproject.briar.desktop.ui.HorizontalDivider
 import org.briarproject.briar.desktop.ui.TrustIndicatorShort
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
-import org.briarproject.briar.desktop.utils.TimeUtils
-import org.briarproject.briar.desktop.utils.UiUtils
+import org.briarproject.briar.desktop.utils.TimeUtils.getFormattedTimestamp
+import org.briarproject.briar.desktop.utils.UiUtils.getContactDisplayName
 import org.briarproject.briar.desktop.utils.getRandomAuthor
 import org.briarproject.briar.desktop.utils.getRandomId
 import org.briarproject.briar.desktop.utils.getRandomString
@@ -130,7 +130,7 @@ private fun BlogPostViewHeader(
     Row(
         modifier = modifier,
         horizontalArrangement = spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = CenterVertically,
     ) {
         Column(
             verticalArrangement = spacedBy(8.dp),
@@ -158,13 +158,13 @@ private fun RepeatAuthorView(item: BlogPost, modifier: Modifier = Modifier) {
     val timestamp = item.timestamp
     Row(
         horizontalArrangement = spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = CenterVertically,
         modifier = modifier,
     ) {
         Row(
             modifier = Modifier.weight(1f),
             horizontalArrangement = spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = CenterVertically,
         ) {
             Box(
                 contentAlignment = BottomEnd,
@@ -183,7 +183,7 @@ private fun RepeatAuthorView(item: BlogPost, modifier: Modifier = Modifier) {
             }
             Text(
                 modifier = Modifier.weight(1f, fill = false),
-                text = UiUtils.getContactDisplayName(author.name, authorInfo.alias),
+                text = getContactDisplayName(author.name, authorInfo.alias),
                 fontWeight = if (authorInfo.status == OURSELVES) FontWeight.Bold else null,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -191,7 +191,7 @@ private fun RepeatAuthorView(item: BlogPost, modifier: Modifier = Modifier) {
             TrustIndicatorShort(authorInfo.status)
         }
         Text(
-            text = TimeUtils.getFormattedTimestamp(timestamp),
+            text = getFormattedTimestamp(timestamp),
             textAlign = TextAlign.End,
             style = MaterialTheme.typography.caption,
             maxLines = 1,

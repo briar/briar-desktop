@@ -106,9 +106,6 @@ class FeedViewModel @Inject constructor(
     private fun onBlogPostAdded(header: BlogPostHeader, local: Boolean) {
         runOnDbThreadWithTransaction(true) { txn ->
             val item = getItem(txn, header)
-
-            LOG.error { "${item::class.java} ${item.text}" }
-
             txn.attach {
                 _posts.add(item)
                 _posts.sortByDescending { blogPost ->

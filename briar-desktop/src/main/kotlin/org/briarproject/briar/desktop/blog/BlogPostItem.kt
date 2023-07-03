@@ -71,8 +71,7 @@ data class BlogCommentItem(
 
     init {
         collectComments(header)
-        // TODO check order
-        _comments.sortBy { it.timestamp }
+        _comments.sortBy { it.timeReceived }
     }
 
     private fun collectComments(header: BlogPostHeader): BlogPostHeader {

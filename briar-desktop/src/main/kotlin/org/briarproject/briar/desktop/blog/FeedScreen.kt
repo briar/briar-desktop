@@ -32,13 +32,13 @@ import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterEnd
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import org.briarproject.bramble.api.sync.MessageId
 import org.briarproject.briar.desktop.conversation.reallyVisibleItemsInfo
-import org.briarproject.briar.desktop.ui.Constants
+import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
 import org.briarproject.briar.desktop.ui.isWindowFocused
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 import java.time.Instant
@@ -78,7 +78,7 @@ fun FeedScreen(posts: List<BlogPost>, onItemSelected: (BlogPost) -> Unit, modifi
                     item = item,
                     onItemRepeat = onItemSelected,
                     modifier = Modifier
-                        .heightIn(min = Constants.HEADER_SIZE)
+                        .heightIn(min = HEADER_SIZE)
                         .fillMaxWidth()
                         .padding(vertical = 8.dp)
                         .padding(start = 16.dp, end = 8.dp)
@@ -87,7 +87,7 @@ fun FeedScreen(posts: List<BlogPost>, onItemSelected: (BlogPost) -> Unit, modifi
         }
         VerticalScrollbar(
             adapter = rememberScrollbarAdapter(scrollState),
-            modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight()
+            modifier = Modifier.align(CenterEnd).fillMaxHeight()
         )
         if (isWindowFocused()) {
             // if Briar Desktop currently has focus,
