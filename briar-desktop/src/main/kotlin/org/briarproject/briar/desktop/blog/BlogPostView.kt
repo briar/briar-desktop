@@ -166,6 +166,7 @@ private fun RepeatAuthorView(item: BlogPost, modifier: Modifier = Modifier) {
             horizontalArrangement = spacedBy(8.dp),
             verticalAlignment = CenterVertically,
         ) {
+            // TODO we may eventually want to move this into its own composable or integrate into ProfileCircle
             Box(
                 contentAlignment = BottomEnd,
                 modifier = Modifier.size(36.dp),

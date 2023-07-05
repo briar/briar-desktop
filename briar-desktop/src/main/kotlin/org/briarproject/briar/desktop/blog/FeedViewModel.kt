@@ -86,9 +86,7 @@ class FeedViewModel @Inject constructor(
     private fun loadAllBlogPosts(txn: Transaction) {
         val posts = blogManager.getBlogIds(txn).flatMap { g ->
             loadBlogPosts(txn, g)
-        }.sortedByDescending { blogPost ->
-            blogPost.header.timeReceived
-        }
+        }.sortedDescending()
         txn.attach {
             _posts.addAll(posts)
             _isLoading.value = false
@@ -108,9 +106,7 @@ class FeedViewModel @Inject constructor(
             val item = getItem(txn, header)
             txn.attach {
                 _posts.add(item)
-                _posts.sortByDescending { blogPost ->
-                    blogPost.header.timeReceived
-                }
+                _posts.sortDescending()
                 _isLoading.value = false
             }
         }

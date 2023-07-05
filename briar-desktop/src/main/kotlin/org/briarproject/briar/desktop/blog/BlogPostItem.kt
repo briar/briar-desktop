@@ -28,7 +28,7 @@ import org.briarproject.briar.api.identity.AuthorInfo
 sealed class BlogPost(
     open val header: BlogPostHeader,
     open val text: String?,
-) : Comparable<BlogPostItem> {
+) : Comparable<BlogPost> {
     abstract val postHeader: BlogPostHeader
     val isRead: Boolean get() = header.isRead
     val id: MessageId get() = header.id
@@ -38,7 +38,7 @@ sealed class BlogPost(
     val authorInfo: AuthorInfo get() = header.authorInfo
     val isRssFeed: Boolean get() = header.isRssFeed
 
-    override operator fun compareTo(other: BlogPostItem): Int {
+    override fun compareTo(other: BlogPost): Int {
         return if (this === other) 0 else other.header.timeReceived.compareTo(header.timeReceived)
     }
 }
@@ -71,6 +71,7 @@ data class BlogCommentItem(
 
     init {
         collectComments(header)
+        // comments are sorted in reverse order, so newest is at the end
         _comments.sortBy { it.timeReceived }
     }
 
