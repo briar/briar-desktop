@@ -46,7 +46,6 @@ import org.briarproject.briar.desktop.ui.MessageCounterDataType.Forum
 import org.briarproject.briar.desktop.ui.MessageCounterDataType.PrivateGroup
 import org.briarproject.briar.desktop.ui.MessageCounterDataType.PrivateMessage
 import org.briarproject.briar.desktop.utils.KLoggerUtils.e
-import org.briarproject.briar.desktop.utils.getRandomId
 import javax.inject.Inject
 
 class MessageCounterImpl
@@ -76,7 +75,6 @@ constructor(
 
     @UiExecutor
     private var countBlogPosts: Int = 0
-    private val fakeBlogGroupId: GroupId = GroupId(getRandomId())
 
     private val listeners = mutableListOf<MessageCounterListener>()
 
@@ -210,7 +208,9 @@ constructor(
             PrivateMessage -> countPrivateMessages
             Forum -> countForumPosts
             PrivateGroup -> countPrivateGroupMessages
-            Blog -> Multiset<GroupId>().apply { addCount(fakeBlogGroupId, countBlogPosts) }
+            // We are not marking blog posts as read *per* blog, but in the global feed.
+            // So we are not using GroupId here, but true to accumulate the unread posts count.
+            Blog -> Multiset<Boolean>().apply { addCount(true, countBlogPosts) }
         }
         l.invoke(MessageCounterData(type, groupCount.total, groupCount.unique, increment))
     }

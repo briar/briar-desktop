@@ -53,6 +53,7 @@ fun BlogScreen(viewModel: FeedViewModel = viewModel()) {
                 } else {
                     FeedScreen(
                         posts = viewModel.posts,
+                        unreadFabsInfo = viewModel,
                         onItemSelected = viewModel::selectPost,
                         onBlogPostsVisible = viewModel::onPostsVisible,
                         modifier = Modifier.padding(padding)

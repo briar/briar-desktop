@@ -21,17 +21,19 @@ package org.briarproject.briar.desktop.threadedgroup.conversation
 import org.briarproject.bramble.api.sync.MessageId
 import org.briarproject.briar.client.MessageTreeImpl
 import org.briarproject.briar.desktop.threading.UiExecutor
+import org.briarproject.briar.desktop.ui.UnreadFabsInfo
+import org.briarproject.briar.desktop.ui.UnreadPostInfo
 
 sealed class ThreadedGroupConversationScreenState
 object Loading : ThreadedGroupConversationScreenState()
 class Loaded(
     val messageTree: MessageTreeImpl<ThreadItem>,
     val scrollTo: MessageId? = null,
-) : ThreadedGroupConversationScreenState() {
+) : ThreadedGroupConversationScreenState(), UnreadFabsInfo {
     val posts: List<ThreadItem> = messageTree.depthFirstOrder()
 
     @UiExecutor
-    fun unreadBeforeIndex(index: Int): UnreadPostInfo {
+    override fun unreadBeforeIndex(index: Int): UnreadPostInfo {
         if (index <= 0 || index >= posts.size) return UnreadPostInfo(null, 0)
 
         var lastUnread: Int? = null
@@ -44,7 +46,7 @@ class Loaded(
     }
 
     @UiExecutor
-    fun unreadAfterIndex(index: Int): UnreadPostInfo {
+    override fun unreadAfterIndex(index: Int): UnreadPostInfo {
         if (index < 0 || index >= posts.size) return UnreadPostInfo(null, 0)
 
         var firstUnread: Int? = null
@@ -58,8 +60,3 @@ class Loaded(
         return UnreadPostInfo(firstUnread, num)
     }
 }
-
-class UnreadPostInfo(
-    val nextUnreadIndex: Int?,
-    val numUnread: Int,
-)

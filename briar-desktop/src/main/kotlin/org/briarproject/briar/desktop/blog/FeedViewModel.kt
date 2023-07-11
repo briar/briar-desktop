@@ -38,6 +38,8 @@ import org.briarproject.briar.api.blog.BlogPostHeader
 import org.briarproject.briar.api.blog.event.BlogPostAddedEvent
 import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.threading.UiExecutor
+import org.briarproject.briar.desktop.ui.UnreadFabsInfo
+import org.briarproject.briar.desktop.ui.UnreadPostInfo
 import org.briarproject.briar.desktop.utils.replaceIf
 import org.briarproject.briar.desktop.viewmodel.EventListenerDbViewModel
 import org.briarproject.briar.desktop.viewmodel.asList
@@ -53,7 +55,7 @@ class FeedViewModel @Inject constructor(
     lifecycleManager: LifecycleManager,
     db: TransactionManager,
     private val eventBus: EventBus,
-) : EventListenerDbViewModel(briarExecutors, lifecycleManager, db, eventBus) {
+) : EventListenerDbViewModel(briarExecutors, lifecycleManager, db, eventBus), UnreadFabsInfo {
 
     companion object {
         private val LOG = KotlinLogging.logger {}
@@ -201,5 +203,31 @@ class FeedViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    override fun unreadBeforeIndex(index: Int): UnreadPostInfo {
+        if (index <= 0 || index >= posts.size) return UnreadPostInfo(null, 0)
+
+        var lastUnread: Int? = null
+        var num = 0
+        for (i in 0 until index) if (!posts[i].isRead) {
+            lastUnread = i
+            num++
+        }
+        return UnreadPostInfo(lastUnread, num)
+    }
+
+    override fun unreadAfterIndex(index: Int): UnreadPostInfo {
+        if (index < 0 || index >= posts.size) return UnreadPostInfo(null, 0)
+
+        var firstUnread: Int? = null
+        var num = 0
+        for (i in index + 1 until posts.size) {
+            if (!posts[i].isRead) {
+                if (firstUnread == null) firstUnread = i
+                num++
+            }
+        }
+        return UnreadPostInfo(firstUnread, num)
     }
 }

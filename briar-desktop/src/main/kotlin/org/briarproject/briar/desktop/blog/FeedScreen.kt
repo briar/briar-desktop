@@ -39,6 +39,9 @@ import kotlinx.coroutines.delay
 import org.briarproject.bramble.api.sync.MessageId
 import org.briarproject.briar.desktop.conversation.reallyVisibleItemsInfo
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
+import org.briarproject.briar.desktop.ui.UnreadFabs
+import org.briarproject.briar.desktop.ui.UnreadFabsInfo
+import org.briarproject.briar.desktop.ui.UnreadPostInfo
 import org.briarproject.briar.desktop.ui.isWindowFocused
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 import java.time.Instant
@@ -54,12 +57,21 @@ fun main() = preview(
             add(getRandomBlogPost(getStringParameter("text"), getLongParameter("timestamp")))
         }
     }
-    FeedScreen(items, {}, {})
+    FeedScreen(
+        posts = items,
+        unreadFabsInfo = object : UnreadFabsInfo {
+            override fun unreadBeforeIndex(index: Int) = UnreadPostInfo(1, 1)
+            override fun unreadAfterIndex(index: Int) = UnreadPostInfo(3, 3)
+        },
+        onItemSelected = {},
+        onBlogPostsVisible = {},
+    )
 }
 
 @Composable
 fun FeedScreen(
     posts: List<BlogPost>,
+    unreadFabsInfo: UnreadFabsInfo,
     onItemSelected: (BlogPost) -> Unit,
     onBlogPostsVisible: (List<MessageId>) -> Unit,
     modifier: Modifier = Modifier,
@@ -90,6 +102,7 @@ fun FeedScreen(
                 )
             }
         }
+        UnreadFabs(scrollState, unreadFabsInfo)
         VerticalScrollbar(
             adapter = rememberScrollbarAdapter(scrollState),
             modifier = Modifier.align(CenterEnd).fillMaxHeight()
