@@ -18,17 +18,22 @@
 
 package org.briarproject.briar.desktop.blog
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.Card
@@ -56,8 +61,10 @@ import org.briarproject.briar.api.blog.MessageType
 import org.briarproject.briar.api.identity.AuthorInfo
 import org.briarproject.briar.api.identity.AuthorInfo.Status.OURSELVES
 import org.briarproject.briar.desktop.contact.ProfileCircle
+import org.briarproject.briar.desktop.theme.Blue500
 import org.briarproject.briar.desktop.ui.AuthorView
 import org.briarproject.briar.desktop.ui.HorizontalDivider
+import org.briarproject.briar.desktop.ui.Tooltip
 import org.briarproject.briar.desktop.ui.TrustIndicatorShort
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
@@ -95,27 +102,38 @@ fun main() = preview {
 }
 
 @Composable
+@OptIn(ExperimentalFoundationApi::class)
 fun BlogPostView(
     item: BlogPost,
     onItemRepeat: ((BlogPost) -> Unit)?,
     modifier: Modifier = Modifier,
 ) = Card(modifier = modifier) {
-    Column {
-        BlogPostViewHeader(item, onItemRepeat, Modifier.padding(8.dp))
-        // should be changed back to verticalArrangement = spacedBy(8.dp) on the containing Column
-        // when https://github.com/JetBrains/compose-jb/issues/2729 is fixed
-        Spacer(Modifier.height(8.dp))
-        SelectionContainer {
-            Text(
-                modifier = Modifier.padding(horizontal = 8.dp).fillMaxWidth(),
-                text = item.text ?: "",
-            )
+    Row(modifier = Modifier.height(IntrinsicSize.Min)) {
+        Column(modifier = Modifier.weight(1f)) {
+            BlogPostViewHeader(item, onItemRepeat, Modifier.padding(8.dp))
+            // should be changed back to verticalArrangement = spacedBy(8.dp) on the containing Column
+            // when https://github.com/JetBrains/compose-jb/issues/2729 is fixed
+            Spacer(Modifier.height(8.dp))
+            SelectionContainer {
+                Text(
+                    modifier = Modifier.padding(horizontal = 8.dp).fillMaxWidth(),
+                    text = item.text ?: "",
+                )
+            }
+            Spacer(Modifier.height(8.dp))
+            // if no preview and a comment item, show comments
+            if (onItemRepeat != null && item is BlogCommentItem) {
+                item.comments.forEach { commentItem ->
+                    BlogCommentView(commentItem, modifier = Modifier.padding(vertical = 4.dp))
+                }
+            }
         }
-        Spacer(Modifier.height(8.dp))
-        // if no preview and a comment item, show comments
-        if (onItemRepeat != null && item is BlogCommentItem) {
-            item.comments.forEach { commentItem ->
-                BlogCommentView(commentItem, modifier = Modifier.padding(vertical = 4.dp))
+        if (onItemRepeat != null) Tooltip(
+            text = i18n("forum.message.new"),
+            modifier = Modifier.width(8.dp),
+        ) {
+            AnimatedVisibility(visible = !item.isRead) {
+                Box(modifier = Modifier.fillMaxSize().background(Blue500))
             }
         }
     }
