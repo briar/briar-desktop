@@ -1,6 +1,6 @@
 /*
  * Briar Desktop
- * Copyright (C) 2021-2023 The Briar Project
+ * Copyright (C) 2023 The Briar Project
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -16,8 +16,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.briarproject.briar.desktop
+package org.briarproject.briar.desktop.blog
 
-fun main() = RunWithTemporaryAccount {
-    getTestDataCreator().createTestData(5, 20, 50, 10, 4, 23, 4, 23)
-}.run()
+import org.briarproject.bramble.api.event.Event
+
+data class BlogPostsReadEvent(val numPostsMarkedRead: Int) : Event()

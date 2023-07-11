@@ -28,6 +28,7 @@ import org.briarproject.bramble.api.mailbox.event.MailboxProblemEvent
 import org.briarproject.briar.desktop.threading.UiExecutor
 import org.briarproject.briar.desktop.ui.MessageCounter
 import org.briarproject.briar.desktop.ui.MessageCounterData
+import org.briarproject.briar.desktop.ui.MessageCounterDataType.Blog
 import org.briarproject.briar.desktop.ui.MessageCounterDataType.Forum
 import org.briarproject.briar.desktop.ui.MessageCounterDataType.PrivateGroup
 import org.briarproject.briar.desktop.ui.MessageCounterDataType.PrivateMessage
@@ -71,6 +72,7 @@ constructor(
             PrivateMessage -> _messageCount.update { copy(privateMessages = count) }
             Forum -> _messageCount.update { copy(forumPosts = count) }
             PrivateGroup -> _messageCount.update { copy(privateGroupMessages = count) }
+            Blog -> _messageCount.update { copy(blogPosts = count) }
         }
     }
 
@@ -100,5 +102,6 @@ constructor(
         val privateMessages: Int = 0,
         val forumPosts: Int = 0,
         val privateGroupMessages: Int = 0,
+        val blogPosts: Int = 0,
     )
 }

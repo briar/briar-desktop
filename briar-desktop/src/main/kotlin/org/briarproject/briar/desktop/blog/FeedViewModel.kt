@@ -192,7 +192,7 @@ class FeedViewModel @Inject constructor(
                     blogManager.setReadFlag(id, false)
                 }
                 // TODO introduce Transaction for BlogManager#setReadFlag() and attach event there
-//                eventBus.broadcast()
+                eventBus.broadcast(BlogPostsReadEvent(readIds.size))
             }
             _posts.replaceIf({ it.id in readIds }) {
                 when (it) {

@@ -28,20 +28,25 @@ import org.briarproject.bramble.api.lifecycle.LifecycleManager.LifecycleState.RU
 import org.briarproject.bramble.api.lifecycle.event.LifecycleEvent
 import org.briarproject.bramble.api.sync.GroupId
 import org.briarproject.bramble.api.sync.event.GroupRemovedEvent
+import org.briarproject.briar.api.blog.BlogManager
+import org.briarproject.briar.api.blog.event.BlogPostAddedEvent
 import org.briarproject.briar.api.conversation.ConversationManager
 import org.briarproject.briar.api.conversation.event.ConversationMessageReceivedEvent
 import org.briarproject.briar.api.forum.ForumManager
 import org.briarproject.briar.api.forum.event.ForumPostReceivedEvent
 import org.briarproject.briar.api.privategroup.PrivateGroupManager
 import org.briarproject.briar.api.privategroup.event.GroupMessageAddedEvent
+import org.briarproject.briar.desktop.blog.BlogPostsReadEvent
 import org.briarproject.briar.desktop.conversation.ConversationMessagesReadEvent
 import org.briarproject.briar.desktop.threadedgroup.ThreadedGroupMessageReadEvent
 import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.threading.UiExecutor
+import org.briarproject.briar.desktop.ui.MessageCounterDataType.Blog
 import org.briarproject.briar.desktop.ui.MessageCounterDataType.Forum
 import org.briarproject.briar.desktop.ui.MessageCounterDataType.PrivateGroup
 import org.briarproject.briar.desktop.ui.MessageCounterDataType.PrivateMessage
 import org.briarproject.briar.desktop.utils.KLoggerUtils.e
+import org.briarproject.briar.desktop.utils.getRandomId
 import javax.inject.Inject
 
 class MessageCounterImpl
@@ -51,6 +56,7 @@ constructor(
     private val conversationManager: ConversationManager,
     private val forumManager: ForumManager,
     private val privateGroupManager: PrivateGroupManager,
+    private val blogManager: BlogManager,
     private val briarExecutors: BriarExecutors,
     eventBus: EventBus,
 ) : MessageCounter {
@@ -67,6 +73,10 @@ constructor(
 
     @UiExecutor
     private val countPrivateGroupMessages = Multiset<GroupId>()
+
+    @UiExecutor
+    private var countBlogPosts: Int = 0
+    private val fakeBlogGroupId: GroupId = GroupId(getRandomId())
 
     private val listeners = mutableListOf<MessageCounterListener>()
 
@@ -85,6 +95,9 @@ constructor(
                             val countPrivateGroupMessageMap = privateGroupManager.getPrivateGroups(txn).associate { g ->
                                 g.id to privateGroupManager.getGroupCount(txn, g.id).unreadCount
                             }
+                            val blogPosts = blogManager.getBlogIds(txn).flatMap { b ->
+                                blogManager.getPostHeaders(txn, b)
+                            }
                             txn.attach {
                                 countPrivateMessagesMap.forEach { (id, count) ->
                                     countPrivateMessages.addCount(id, count)
@@ -95,10 +108,11 @@ constructor(
                                 countPrivateGroupMessageMap.forEach { (id, count) ->
                                     countPrivateGroupMessages.addCount(id, count)
                                 }
-
+                                countBlogPosts = blogPosts.count { post -> !post.isRead }
                                 informListeners(PrivateMessage, true)
                                 informListeners(Forum, true)
                                 informListeners(PrivateGroup, true)
+                                informListeners(Blog, true)
                             }
                         }
                     }
@@ -137,6 +151,13 @@ constructor(
                     informListeners(PrivateGroup, true)
                 }
 
+                is BlogPostAddedEvent -> {
+                    if (e.isLocal) return@addListener
+
+                    countBlogPosts++
+                    informListeners(Blog, true)
+                }
+
                 is ThreadedGroupMessageReadEvent -> {
                     try {
                         when (e.clientId) {
@@ -156,6 +177,11 @@ constructor(
                                 "trying to remove non-existing element"
                         }
                     }
+                }
+
+                is BlogPostsReadEvent -> {
+                    countBlogPosts -= e.numPostsMarkedRead
+                    informListeners(Blog, false)
                 }
 
                 is GroupRemovedEvent -> {
@@ -184,6 +210,7 @@ constructor(
             PrivateMessage -> countPrivateMessages
             Forum -> countForumPosts
             PrivateGroup -> countPrivateGroupMessages
+            Blog -> Multiset<GroupId>().apply { addCount(fakeBlogGroupId, countBlogPosts) }
         }
         l.invoke(MessageCounterData(type, groupCount.total, groupCount.unique, increment))
     }

@@ -1,6 +1,6 @@
 /*
  * Briar Desktop
- * Copyright (C) 2021-2022 The Briar Project
+ * Copyright (C) 2021-2023 The Briar Project
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -58,4 +58,5 @@ object SoundNotificationProvider : NotificationProvider {
     override fun notifyPrivateMessages(num: Int, contacts: Int) = playSound()
     override fun notifyForumPosts(num: Int, forums: Int) = playSound()
     override fun notifyPrivateGroupMessages(num: Int, groups: Int) = playSound()
+    override fun notifyBlogPosts(num: Int) = playSound()
 }

@@ -1,6 +1,6 @@
 /*
  * Briar Desktop
- * Copyright (C) 2021-2022 The Briar Project
+ * Copyright (C) 2021-2023 The Briar Project
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -38,6 +38,7 @@ interface NotificationProvider {
     fun notifyPrivateMessages(num: Int, contacts: Int)
     fun notifyForumPosts(num: Int, forums: Int)
     fun notifyPrivateGroupMessages(num: Int, groups: Int)
+    fun notifyBlogPosts(num: Int)
 }
 
 interface VisualNotificationProvider : NotificationProvider
@@ -54,4 +55,5 @@ object StubNotificationProvider : VisualNotificationProvider {
     override fun notifyPrivateMessages(num: Int, contacts: Int) {}
     override fun notifyForumPosts(num: Int, forums: Int) {}
     override fun notifyPrivateGroupMessages(num: Int, groups: Int) {}
+    override fun notifyBlogPosts(num: Int) {}
 }

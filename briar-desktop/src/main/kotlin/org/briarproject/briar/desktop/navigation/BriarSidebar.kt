@@ -91,7 +91,7 @@ fun BriarSidebar(
         if (configuration.shouldEnablePrivateGroups())
             BriarSidebarButton(UiMode.GROUPS, messageCount.privateGroupMessages)
         if (configuration.shouldEnableForums()) BriarSidebarButton(UiMode.FORUMS, messageCount.forumPosts)
-        if (configuration.shouldEnableBlogs()) BriarSidebarButton(UiMode.BLOGS)
+        if (configuration.shouldEnableBlogs()) BriarSidebarButton(UiMode.BLOGS, messageCount.blogPosts)
 
         Spacer(Modifier.weight(1f))
 

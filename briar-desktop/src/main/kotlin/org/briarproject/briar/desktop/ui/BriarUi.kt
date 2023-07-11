@@ -56,6 +56,7 @@ import org.briarproject.briar.desktop.settings.Configuration
 import org.briarproject.briar.desktop.settings.UnencryptedSettings.Theme.AUTO
 import org.briarproject.briar.desktop.settings.UnencryptedSettings.Theme.DARK
 import org.briarproject.briar.desktop.theme.BriarTheme
+import org.briarproject.briar.desktop.ui.MessageCounterDataType.Blog
 import org.briarproject.briar.desktop.ui.MessageCounterDataType.Forum
 import org.briarproject.briar.desktop.ui.MessageCounterDataType.PrivateGroup
 import org.briarproject.briar.desktop.ui.MessageCounterDataType.PrivateMessage
@@ -141,6 +142,7 @@ constructor(
                 var lastNotificationPrivateMessage = 0L
                 var lastNotificationForum = 0L
                 var lastNotificationPrivateGroup = 0L
+                var lastNotificationBlog = 0L
 
                 val eventListener = EventListener { e ->
                     when (e) {
@@ -160,6 +162,7 @@ constructor(
                         lastNotificationPrivateMessage = 0
                         lastNotificationForum = 0
                         lastNotificationPrivateGroup = 0
+                        lastNotificationBlog = 0
                     }
                 }
                 val messageCounterListener: MessageCounterListener = { (type, total, groups, inc) ->
@@ -176,6 +179,10 @@ constructor(
                             PrivateGroup -> {
                                 { notifyPrivateGroupMessages(total, groups) }
                             }
+
+                            Blog -> {
+                                { notifyBlogPosts(total) }
+                            }
                         }
                         val (lastNotification, setLastNotification) = when (type) {
                             PrivateMessage -> lastNotificationPrivateMessage to { v: Long ->
@@ -186,6 +193,10 @@ constructor(
 
                             PrivateGroup -> lastNotificationPrivateGroup to { v: Long ->
                                 lastNotificationPrivateGroup = v
+                            }
+
+                            Blog -> lastNotificationBlog to { v: Long ->
+                                lastNotificationBlog = v
                             }
                         }
 
