@@ -38,6 +38,7 @@ import org.briarproject.briar.api.blog.BlogPostHeader
 import org.briarproject.briar.api.blog.event.BlogPostAddedEvent
 import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.threading.UiExecutor
+import org.briarproject.briar.desktop.utils.replaceIf
 import org.briarproject.briar.desktop.viewmodel.EventListenerDbViewModel
 import org.briarproject.briar.desktop.viewmodel.asList
 import org.briarproject.briar.desktop.viewmodel.asState
@@ -51,7 +52,7 @@ class FeedViewModel @Inject constructor(
     briarExecutors: BriarExecutors,
     lifecycleManager: LifecycleManager,
     db: TransactionManager,
-    eventBus: EventBus,
+    private val eventBus: EventBus,
 ) : EventListenerDbViewModel(briarExecutors, lifecycleManager, db, eventBus) {
 
     companion object {
@@ -168,5 +169,37 @@ class FeedViewModel @Inject constructor(
     @DatabaseExecutor
     private fun getPostText(txn: Transaction, m: MessageId): String {
         return HtmlUtils.cleanArticle(blogManager.getPostText(txn, m))
+    }
+
+    @UiExecutor
+    fun onPostsVisible(messageIds: List<MessageId>) = markBlogPostRead { item ->
+        messageIds.contains(item.id)
+    }
+
+    /**
+     * Marks the [BlogPost]s as read for those the given [predicate] returns true.
+     */
+    @UiExecutor
+    private fun markBlogPostRead(predicate: (BlogPost) -> Boolean) {
+        val readIds = posts.filter { item ->
+            predicate(item) && !item.isRead
+        }.map { item ->
+            item.id
+        }
+        if (readIds.isNotEmpty()) {
+            runOnDbThread {
+                readIds.forEach { id ->
+                    blogManager.setReadFlag(id, false)
+                }
+                // TODO introduce Transaction for BlogManager#setReadFlag() and attach event there
+//                eventBus.broadcast()
+            }
+            _posts.replaceIf({ it.id in readIds }) {
+                when (it) {
+                    is BlogPostItem -> it.copy(isRead = true)
+                    is BlogCommentItem -> it.copy(isRead = true)
+                }
+            }
+        }
     }
 }

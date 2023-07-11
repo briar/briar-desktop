@@ -54,11 +54,16 @@ fun main() = preview(
             add(getRandomBlogPost(getStringParameter("text"), getLongParameter("timestamp")))
         }
     }
-    FeedScreen(items, {})
+    FeedScreen(items, {}, {})
 }
 
 @Composable
-fun FeedScreen(posts: List<BlogPost>, onItemSelected: (BlogPost) -> Unit, modifier: Modifier = Modifier) {
+fun FeedScreen(
+    posts: List<BlogPost>,
+    onItemSelected: (BlogPost) -> Unit,
+    onBlogPostsVisible: (List<MessageId>) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val scrollState = rememberLazyListState()
     // scroll to first unread item if needed
     val lastUnreadIndex = posts.indexOfLast { item -> !item.isRead }
@@ -101,7 +106,7 @@ fun FeedScreen(posts: List<BlogPost>, onItemSelected: (BlogPost) -> Unit, modifi
                 val visibleMessageIds = scrollState.layoutInfo.reallyVisibleItemsInfo.map {
                     it.key as MessageId
                 }
-                // TODO onBlogPostsVisible(visibleMessageIds)
+                onBlogPostsVisible(visibleMessageIds)
             }
         }
     }

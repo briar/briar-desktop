@@ -51,7 +51,12 @@ fun BlogScreen(viewModel: FeedViewModel = viewModel()) {
                         Text(i18n("blog.empty.state"), Modifier.padding(16.dp))
                     }
                 } else {
-                    FeedScreen(viewModel.posts, viewModel::selectPost, Modifier.padding(padding))
+                    FeedScreen(
+                        posts = viewModel.posts,
+                        onItemSelected = viewModel::selectPost,
+                        onBlogPostsVisible = viewModel::onPostsVisible,
+                        modifier = Modifier.padding(padding)
+                    )
                 }
             }
         },

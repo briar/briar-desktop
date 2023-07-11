@@ -30,7 +30,7 @@ sealed class BlogPost(
     open val text: String?,
 ) : Comparable<BlogPost> {
     abstract val postHeader: BlogPostHeader
-    val isRead: Boolean get() = header.isRead
+    abstract val isRead: Boolean
     val id: MessageId get() = header.id
     val groupId: GroupId get() = header.groupId
     val timestamp: Long get() = header.timestamp
@@ -46,6 +46,7 @@ sealed class BlogPost(
 data class BlogPostItem(
     override val header: BlogPostHeader,
     override val text: String,
+    override val isRead: Boolean = header.isRead,
 ) : BlogPost(header, text) {
     override val postHeader: BlogPostHeader get() = header
 }
@@ -54,6 +55,7 @@ data class BlogCommentItem(
     override val header: BlogCommentHeader,
     override val postHeader: BlogPostHeader,
     override val text: String?,
+    override val isRead: Boolean = header.isRead,
 ) : BlogPost(header, text) {
 
     companion object {
