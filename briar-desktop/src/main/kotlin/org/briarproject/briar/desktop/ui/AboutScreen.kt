@@ -91,7 +91,6 @@ fun AboutScreen(modifier: Modifier = Modifier.padding(16.dp)) {
                 Strings.APP_NAME,
                 style = MaterialTheme.typography.h4,
                 modifier = Modifier.padding(start = 16.dp),
-                overflow = TextOverflow.Ellipsis,
                 maxLines = 1,
             )
         }
