@@ -118,6 +118,8 @@ fun BlogPostView(
                 Text(
                     modifier = Modifier.padding(horizontal = 8.dp).fillMaxWidth(),
                     text = item.text ?: "",
+                    maxLines = if (onItemRepeat == null) 5 else Int.MAX_VALUE,
+                    overflow = TextOverflow.Ellipsis,
                 )
             }
             Spacer(Modifier.height(8.dp))
