@@ -32,6 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -49,6 +50,7 @@ import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import kotlin.Float.Companion.MIN_VALUE
 
 @Suppress("HardCodedStringLiteral")
 fun main() = preview(
@@ -239,11 +241,16 @@ val colSizesLibraries = listOf(0.3f, 0.3f, 0.15f, 0.25f)
 private fun LibraryEntry(artifact: Artifact) =
     SelectionContainer {
         Row(Modifier.fillMaxWidth().height(IntrinsicSize.Min)) {
+            // Add tiny cells in between so that one can select a row, copy and paste
+            // it somewhere and appear like "group:artifact:version license".
             Cell(colSizesLibraries[0], artifact.group)
+            Cell(MIN_VALUE, ":");
             VerticalDivider()
             Cell(colSizesLibraries[1], artifact.artifact)
+            Cell(MIN_VALUE, ":");
             VerticalDivider()
             Cell(colSizesLibraries[2], artifact.version)
+            Cell(MIN_VALUE, "\t");
             VerticalDivider()
             Cell(colSizesLibraries[3], artifact.license)
         }
