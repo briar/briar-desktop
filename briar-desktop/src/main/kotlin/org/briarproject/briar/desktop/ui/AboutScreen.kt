@@ -1,7 +1,6 @@
 package org.briarproject.briar.desktop.ui
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,8 +13,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -32,14 +29,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.text
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import org.briarproject.briar.desktop.BuildData
 import org.briarproject.briar.desktop.Strings
@@ -96,20 +91,18 @@ fun AboutScreen(modifier: Modifier = Modifier.padding(16.dp)) {
         }
         var state by remember { mutableStateOf(0) }
         val titles = listOf(i18n("about.category.general"), i18n("about.category.dependencies"))
-        Column {
-            TabRow(selectedTabIndex = state, backgroundColor = MaterialTheme.colors.tabs) {
-                titles.forEachIndexed { index, title ->
-                    Tab(
-                        text = { Text(title) },
-                        selected = state == index,
-                        onClick = { state = index }
-                    )
-                }
+        TabRow(selectedTabIndex = state, backgroundColor = MaterialTheme.colors.tabs) {
+            titles.forEachIndexed { index, title ->
+                Tab(
+                    text = { Text(title) },
+                    selected = state == index,
+                    onClick = { state = index }
+                )
             }
-            when (state) {
-                0 -> GeneralInfo()
-                1 -> Libraries()
-            }
+        }
+        when (state) {
+            0 -> GeneralInfo()
+            1 -> Libraries()
         }
     }
 }
@@ -135,8 +128,7 @@ private fun GeneralInfo() {
         add(Entry(i18n("about.contact"), Strings.EMAIL, true))
     }
 
-    val scrollState = rememberLazyListState()
-    Box {
+    VerticallyScrollableArea { scrollState ->
         LazyColumn(
             modifier = Modifier.semantics {
                 contentDescription = i18n("access.about.list.general")
@@ -151,10 +143,6 @@ private fun GeneralInfo() {
                 HorizontalDivider()
             }
         }
-        VerticalScrollbar(
-            adapter = rememberScrollbarAdapter(scrollState),
-            modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight()
-        )
     }
 }
 
@@ -210,8 +198,7 @@ private fun AboutEntry(entry: Entry) =
 
 @Composable
 private fun Libraries() {
-    val scrollState = rememberLazyListState()
-    Box {
+    VerticallyScrollableArea { scrollState ->
         LazyColumn(
             modifier = Modifier.semantics {
                 contentDescription = i18n("access.about.list.dependencies")
@@ -226,10 +213,6 @@ private fun Libraries() {
                 HorizontalDivider()
             }
         }
-        VerticalScrollbar(
-            adapter = rememberScrollbarAdapter(scrollState),
-            modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight()
-        )
     }
 }
 
@@ -243,13 +226,13 @@ private fun LibraryEntry(artifact: Artifact) =
             // Add tiny cells in between so that one can select a row, copy and paste
             // it somewhere and appear like "group:artifact:version license".
             Cell(colSizesLibraries[0], artifact.group)
-            Cell(MIN_VALUE, ":");
+            Cell(MIN_VALUE, ":")
             VerticalDivider()
             Cell(colSizesLibraries[1], artifact.artifact)
-            Cell(MIN_VALUE, ":");
+            Cell(MIN_VALUE, ":")
             VerticalDivider()
             Cell(colSizesLibraries[2], artifact.version)
-            Cell(MIN_VALUE, "\t");
+            Cell(MIN_VALUE, "\t")
             VerticalDivider()
             Cell(colSizesLibraries[3], artifact.license)
         }
