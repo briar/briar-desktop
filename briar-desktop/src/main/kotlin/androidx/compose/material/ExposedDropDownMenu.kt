@@ -36,7 +36,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterEnd
+import androidx.compose.ui.Alignment.Companion.CenterStart
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
@@ -184,7 +185,7 @@ private fun ExposedDropDownMenuImpl(
                     }
                     .padding(start = 16.dp, end = 12.dp, top = 7.dp, bottom = 10.dp)
             ) {
-                Column(Modifier.padding(end = 32.dp).align(Alignment.CenterStart).width(IntrinsicSize.Max)) {
+                Column(Modifier.padding(end = 32.dp).align(CenterStart).width(IntrinsicSize.Max)) {
                     ProvideTextStyle(value = MaterialTheme.typography.caption.copy(color = labelColor)) {
                         label()
                     }
@@ -200,7 +201,7 @@ private fun ExposedDropDownMenuImpl(
                     contentDescription = "Change", // NON-NLS since this will be replaced by a toolkit native version at some point
                     tint = trailingIconColor,
                     modifier = Modifier
-                        .align(Alignment.CenterEnd)
+                        .align(CenterEnd)
                         .padding(top = 4.dp)
                         .rotate(rotation)
                 )

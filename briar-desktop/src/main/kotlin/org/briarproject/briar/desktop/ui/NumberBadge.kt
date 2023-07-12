@@ -28,7 +28,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -49,7 +49,7 @@ fun NumberBadge(num: Int, modifier: Modifier = Modifier) {
                 .padding(horizontal = 6.dp)
         ) {
             Text(
-                modifier = Modifier.align(Alignment.Center),
+                modifier = Modifier.align(Center),
                 style = MaterialTheme.typography.overline,
                 textAlign = TextAlign.Center,
                 text = num.toString(),

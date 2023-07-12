@@ -25,7 +25,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterEnd
 import androidx.compose.ui.Modifier
 
 @Composable
@@ -39,6 +39,6 @@ fun VerticallyScrollableArea(
 
     VerticalScrollbar(
         adapter = rememberScrollbarAdapter(scrollState),
-        modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight()
+        modifier = Modifier.align(CenterEnd).fillMaxHeight()
     )
 }

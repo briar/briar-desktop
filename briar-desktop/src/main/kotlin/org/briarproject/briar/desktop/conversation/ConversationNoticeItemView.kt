@@ -28,7 +28,7 @@ import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.Start
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
@@ -105,7 +105,7 @@ fun ConversationNoticeItemView(
                         text,
                         style = MaterialTheme.typography.body1,
                         color = textColor,
-                        modifier = Modifier.padding(12.dp, 8.dp).align(Alignment.Start)
+                        modifier = Modifier.padding(12.dp, 8.dp).align(Start)
                     )
                 }
             }
@@ -117,7 +117,7 @@ fun ConversationNoticeItemView(
                     style = MaterialTheme.typography.body2,
                     fontStyle = FontStyle.Italic,
                     color = noticeColor,
-                    modifier = Modifier.align(Alignment.Start).padding(bottom = 8.dp)
+                    modifier = Modifier.align(Start).padding(bottom = 8.dp)
                 )
                 ConversationItemStatusView(m)
             }

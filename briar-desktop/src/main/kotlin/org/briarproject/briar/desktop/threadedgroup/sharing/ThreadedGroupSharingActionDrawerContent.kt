@@ -37,7 +37,7 @@ import androidx.compose.material.TextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -84,7 +84,7 @@ fun ThreadedGroupSharingActionDrawerContent(
             Text(
                 text = strings.sharingActionNoContacts,
                 style = MaterialTheme.typography.body1,
-                modifier = Modifier.padding(8.dp).align(Alignment.Center),
+                modifier = Modifier.padding(8.dp).align(Center),
             )
         } else {
             VerticallyScrollableArea { scrollState ->

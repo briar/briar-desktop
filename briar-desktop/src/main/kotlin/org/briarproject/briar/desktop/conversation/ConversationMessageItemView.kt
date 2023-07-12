@@ -25,7 +25,7 @@ import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.Start
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -90,7 +90,7 @@ fun ConversationMessageItemView(
                         m.text!!,
                         style = MaterialTheme.typography.body1,
                         color = textColor,
-                        modifier = Modifier.align(Alignment.Start).padding(bottom = 8.dp)
+                        modifier = Modifier.align(Start).padding(bottom = 8.dp)
                     )
                 }
             }

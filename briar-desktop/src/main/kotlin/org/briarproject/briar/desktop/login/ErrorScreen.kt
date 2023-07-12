@@ -40,7 +40,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.BottomStart
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -145,7 +145,7 @@ fun ErrorScreen(
             icon = Icons.Filled.Info,
             contentDescription = i18n("access.mode.about"),
             onClick = { showAbout = true },
-            modifier = Modifier.align(Alignment.BottomStart)
+            modifier = Modifier.align(BottomStart)
         )
     }
 }

@@ -59,7 +59,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.BottomCenter
+import androidx.compose.ui.Alignment.Companion.Center
+import androidx.compose.ui.Alignment.Companion.CenterEnd
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -176,7 +179,7 @@ fun AddContactDialog(
         title = i18n("contact.add.title_dialog"),
         onCloseRequest = onClose,
         state = rememberDialogState(
-            position = WindowPosition(Alignment.Center),
+            position = WindowPosition(Center),
         ),
     ) {
         CompositionLocalProvider(LocalDensity provides density) {
@@ -255,7 +258,7 @@ private fun AddContactDialogContent(
             },
             bottomBar = {
                 Box(Modifier.fillMaxWidth()) {
-                    Row(Modifier.align(Alignment.CenterEnd)) {
+                    Row(Modifier.align(CenterEnd)) {
                         TextButton(
                             onClose,
                             colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colors.error)
@@ -290,7 +293,7 @@ private fun AddContactErrorDialog(error: AddContactError, onErrorDialogDismissed
         modifier = Modifier.widthIn(min = DIALOG_WIDTH),
         title = {
             Row(
-                verticalAlignment = Alignment.CenterVertically,
+                verticalAlignment = CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Icon(
@@ -313,7 +316,7 @@ private fun OwnLink(
     coroutineScope: CoroutineScope,
     scaffoldState: ScaffoldState,
 ) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
+    Row(verticalAlignment = CenterVertically) {
         Icon(Icons.Filled.NorthEast, "contact.add.remote.outgoing_arrow")
         Text(
             i18n("contact.add.remote.your_link"),
@@ -353,10 +356,10 @@ private fun OwnLink(
         )
         Tooltip(
             text = i18n("contact.add.remote.copy_tooltip"),
-            modifier = Modifier.align(Alignment.CenterEnd),
+            modifier = Modifier.align(CenterEnd),
             delayMillis = 200,
             tooltipPlacement = TooltipPlacement.ComponentRect(
-                alignment = Alignment.BottomCenter,
+                alignment = BottomCenter,
             )
         ) {
             Icon(Icons.Filled.ContentCopy, "contact.add.remote.contact_link", modifier = Modifier.padding(8.dp))
@@ -374,7 +377,7 @@ private fun ContactLink(
     scaffoldState: ScaffoldState,
     aliasFocusRequester: FocusRequester,
 ) {
-    Row(Modifier.padding(top = 16.dp), verticalAlignment = Alignment.CenterVertically) {
+    Row(Modifier.padding(top = 16.dp), verticalAlignment = CenterVertically) {
         Icon(Icons.Filled.SouthWest, "contact.add.remote.incoming_arrow")
         Text(
             i18n("contact.add.remote.contact_link"),
@@ -433,7 +436,7 @@ private fun Alias(
     aliasFocusRequester: FocusRequester,
     onSubmitAddContactDialog: () -> Unit,
 ) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
+    Row(verticalAlignment = CenterVertically) {
         Icon(Icons.Filled.Person, "contact.add.remote.choose_nickname")
         Text(
             i18n("contact.add.remote.nickname_intro"),

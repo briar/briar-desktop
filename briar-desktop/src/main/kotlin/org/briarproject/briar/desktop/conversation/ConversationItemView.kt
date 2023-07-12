@@ -39,7 +39,11 @@ import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.DoneAll
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterEnd
+import androidx.compose.ui.Alignment.Companion.CenterStart
+import androidx.compose.ui.Alignment.Companion.CenterVertically
+import androidx.compose.ui.Alignment.Companion.End
+import androidx.compose.ui.Alignment.Companion.Start
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.text
@@ -178,7 +182,7 @@ fun ConversationItemView(
     content: @Composable () -> Unit,
 ) {
     val arrangement = if (item.isIncoming) Arrangement.Start else Arrangement.End
-    val alignment = if (item.isIncoming) Alignment.CenterStart else Alignment.CenterEnd
+    val alignment = if (item.isIncoming) CenterStart else CenterEnd
     val color = if (item.isIncoming) MaterialTheme.colors.msgIn else MaterialTheme.colors.msgOut
     val shape = if (item.isIncoming)
         RoundedCornerShape(topStart = 4.dp, topEnd = 16.dp, bottomStart = 16.dp, bottomEnd = 16.dp)
@@ -222,7 +226,7 @@ fun ConversationItemView(
 @Composable
 fun ColumnScope.ConversationItemStatusView(item: ConversationItem, rowModifier: Modifier = Modifier) {
     val statusColor = if (item.isIncoming) MaterialTheme.colors.textPrimary else MaterialTheme.colors.privateMessageDate
-    val statusAlignment = if (item.isIncoming) Alignment.End else Alignment.Start
+    val statusAlignment = if (item.isIncoming) End else Start
     Row(rowModifier.align(statusAlignment)) {
         Text(
             text = getFormattedTimestamp(item.time),
@@ -230,7 +234,7 @@ fun ColumnScope.ConversationItemStatusView(item: ConversationItem, rowModifier: 
             color = statusColor,
         )
         if (item.isOutgoing) {
-            val modifier = Modifier.padding(start = 4.dp).size(12.dp).align(Alignment.CenterVertically)
+            val modifier = Modifier.padding(start = 4.dp).size(12.dp).align(CenterVertically)
             val icon =
                 if (item.isSeen) Icons.Filled.DoneAll // acknowledged
                 else if (item.isSent) Icons.Filled.Done // sent

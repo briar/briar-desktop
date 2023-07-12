@@ -49,7 +49,10 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.BottomEnd
+import androidx.compose.ui.Alignment.Companion.Center
+import androidx.compose.ui.Alignment.Companion.CenterEnd
+import androidx.compose.ui.Alignment.Companion.TopEnd
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -208,7 +211,7 @@ fun ConversationList(
         }
         VerticalScrollbar(
             adapter = rememberScrollbarAdapter(scrollState),
-            modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight()
+            modifier = Modifier.align(CenterEnd).fillMaxHeight()
         )
 
         if (currentUnreadMessagesInfo.amount > 0) {
@@ -252,7 +255,7 @@ fun ConversationList(
                             scrollState.animateScrollToItem(currentUnreadMessagesInfo.firstIndex, 0)
                         }
                     },
-                    modifier = Modifier.align(Alignment.BottomEnd).padding(32.dp) // todo: check padding
+                    modifier = Modifier.align(BottomEnd).padding(32.dp) // todo: check padding
                 )
             }
         }
@@ -270,11 +273,11 @@ fun ConversationList(
 
 @Composable
 fun UnreadMessagesMarker() = Box {
-    HorizontalDivider(Modifier.align(Alignment.Center))
+    HorizontalDivider(Modifier.align(Center))
     Text(
         text = i18n("conversation.message.unread"),
         modifier = Modifier
-            .align(Alignment.Center)
+            .align(Center)
             .padding(8.dp)
             .border(1.dp, MaterialTheme.colors.divider, RoundedCornerShape(16.dp))
             .background(MaterialTheme.colors.background)
@@ -297,7 +300,7 @@ fun UnreadMessagesFAB(
     }
     NumberBadge(
         counter,
-        Modifier.align(Alignment.TopEnd).offset(3.dp, (-3).dp)
+        Modifier.align(TopEnd).offset(3.dp, (-3).dp)
     )
 }
 

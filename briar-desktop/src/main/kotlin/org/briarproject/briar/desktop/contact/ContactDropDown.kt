@@ -30,7 +30,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowLeft
 import androidx.compose.material.icons.filled.ArrowRight
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.briarproject.briar.desktop.contact.ContactDropDown.State
@@ -80,12 +80,12 @@ fun ContactDropDown(
                     Text(
                         i18n("contacts.dropdown.connections"),
                         style = MaterialTheme.typography.body2,
-                        modifier = Modifier.align(Alignment.CenterVertically)
+                        modifier = Modifier.align(CenterVertically)
                     )
                     Icon(
                         Icons.Filled.ArrowRight,
                         i18n("access.contacts.dropdown.connections.expand"),
-                        modifier = Modifier.align(Alignment.CenterVertically)
+                        modifier = Modifier.align(CenterVertically)
                     )
                 }
             }
@@ -95,12 +95,12 @@ fun ContactDropDown(
                 Text(
                     i18n("contacts.dropdown.contact"),
                     style = MaterialTheme.typography.body2,
-                    modifier = Modifier.align(Alignment.CenterVertically)
+                    modifier = Modifier.align(CenterVertically)
                 )
                 Icon(
                     Icons.Filled.ArrowRight,
                     i18n("access.contacts.dropdown.contacts.expand"),
-                    modifier = Modifier.align(Alignment.CenterVertically)
+                    modifier = Modifier.align(CenterVertically)
                 )
             }
         }
@@ -128,12 +128,12 @@ fun ContactDropDown(
                 Icon(
                     Icons.Filled.ArrowLeft,
                     i18n("back"),
-                    modifier = Modifier.align(Alignment.CenterVertically)
+                    modifier = Modifier.align(CenterVertically)
                 )
                 Text(
                     i18n("contacts.dropdown.contact"),
                     style = MaterialTheme.typography.body2,
-                    modifier = Modifier.align(Alignment.CenterVertically)
+                    modifier = Modifier.align(CenterVertically)
                 )
             }
         }

@@ -34,7 +34,8 @@ import androidx.compose.material.DialogButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.End
+import androidx.compose.ui.Alignment.Companion.Start
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
@@ -96,7 +97,7 @@ fun ConversationRequestItemView(
     onOpenRequestedShareable: () -> Unit = {},
     onDelete: (MessageId) -> Unit = {},
 ) {
-    val statusAlignment = if (m.isIncoming) Alignment.End else Alignment.Start
+    val statusAlignment = if (m.isIncoming) End else Start
     val textColor = if (m.isIncoming) MaterialTheme.colors.textPrimary else Color.White
     val noticeBackground = if (m.isIncoming) MaterialTheme.colors.noticeIn else MaterialTheme.colors.noticeOut
     val noticeColor = if (m.isIncoming) MaterialTheme.colors.textSecondary else MaterialTheme.colors.privateMessageDate
@@ -124,7 +125,7 @@ fun ConversationRequestItemView(
                         text,
                         style = MaterialTheme.typography.body1,
                         color = textColor,
-                        modifier = Modifier.padding(12.dp, 8.dp).align(Alignment.Start)
+                        modifier = Modifier.padding(12.dp, 8.dp).align(Start)
                     )
                 }
             }
@@ -136,7 +137,7 @@ fun ConversationRequestItemView(
                     style = MaterialTheme.typography.body2,
                     fontStyle = FontStyle.Italic,
                     color = noticeColor,
-                    modifier = Modifier.align(Alignment.Start),
+                    modifier = Modifier.align(Start),
                 )
 
                 Row(modifier = Modifier.align(statusAlignment)) {

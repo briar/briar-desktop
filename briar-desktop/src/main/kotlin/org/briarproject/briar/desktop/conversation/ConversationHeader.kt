@@ -34,7 +34,10 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.BottomCenter
+import androidx.compose.ui.Alignment.Companion.BottomEnd
+import androidx.compose.ui.Alignment.Companion.Center
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.unit.dp
@@ -60,20 +63,20 @@ fun ConversationHeader(
     Box(modifier = Modifier.fillMaxWidth().height(HEADER_SIZE + 1.dp)) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth().align(Alignment.Center)
+            modifier = Modifier.fillMaxWidth().align(Center)
         ) {
             Row(modifier = Modifier.fillMaxHeight().padding(start = 8.dp).weight(1f, fill = false)) {
-                Box(modifier = Modifier.align(Alignment.CenterVertically)) {
+                Box(modifier = Modifier.align(CenterVertically)) {
                     ProfileCircle(36.dp, contactItem)
                     ConnectionIndicator(
-                        modifier = Modifier.align(Alignment.BottomEnd).size(12.dp),
+                        modifier = Modifier.align(BottomEnd).size(12.dp),
                         isConnected = contactItem.isConnected,
                         notConnectedColor = MaterialTheme.colors.surfaceVariant,
                     )
                 }
                 Text(
                     contactItem.displayName,
-                    modifier = Modifier.align(Alignment.CenterVertically).padding(start = 12.dp)
+                    modifier = Modifier.align(CenterVertically).padding(start = 12.dp)
                         .weight(1f, fill = false),
                     maxLines = 2,
                     overflow = Ellipsis,
@@ -84,7 +87,7 @@ fun ConversationHeader(
                 icon = Icons.Filled.MoreVert,
                 contentDescription = i18n("access.contact.menu"),
                 onClick = { setMenuState(ContactDropDown.State.MAIN) },
-                modifier = Modifier.align(Alignment.CenterVertically).padding(end = 16.dp)
+                modifier = Modifier.align(CenterVertically).padding(end = 16.dp)
             ) {
                 ContactDropDown(
                     menuState,
@@ -96,6 +99,6 @@ fun ConversationHeader(
                 )
             }
         }
-        HorizontalDivider(modifier = Modifier.align(Alignment.BottomCenter))
+        HorizontalDivider(modifier = Modifier.align(BottomCenter))
     }
 }

@@ -27,7 +27,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterStart
+import androidx.compose.ui.Alignment.Companion.CenterVertically
+import androidx.compose.ui.Alignment.Companion.TopStart
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.semantics.contentDescription
@@ -68,7 +70,7 @@ fun AboutScreen(
         icon = Icons.Filled.ArrowBack,
         contentDescription = i18n("access.return_to_previous_screen"),
         onClick = onBackButton,
-        modifier = Modifier.align(Alignment.TopStart)
+        modifier = Modifier.align(TopStart)
     )
 }
 
@@ -78,7 +80,7 @@ fun AboutScreen(modifier: Modifier = Modifier.padding(16.dp)) {
     Column(modifier) {
         Row(
             modifier = Modifier.padding(bottom = 16.dp).fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
             BriarLogo(modifier = Modifier.height(48.dp))
@@ -174,7 +176,7 @@ private fun AboutEntry(entry: Entry) =
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = CenterVertically
             ) {
                 SelectionContainer {
                     Text(
@@ -243,6 +245,6 @@ private fun RowScope.Cell(size: Float, text: String) =
     Box(modifier = Modifier.weight(size).fillMaxHeight()) {
         Text(
             text = text,
-            modifier = Modifier.fillMaxWidth().padding(8.dp).align(Alignment.CenterStart)
+            modifier = Modifier.fillMaxWidth().padding(8.dp).align(CenterStart)
         )
     }

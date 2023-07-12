@@ -37,7 +37,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.Center
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.briarproject.briar.desktop.contact.ContactItemViewSmall
@@ -56,17 +57,17 @@ fun ForumSharingStatusDrawerContent(
             icon = Icons.Filled.Close,
             contentDescription = i18n("access.forum.sharing.status.close"),
             onClick = close,
-            modifier = Modifier.padding(start = 24.dp).size(24.dp).align(Alignment.CenterVertically)
+            modifier = Modifier.padding(start = 24.dp).size(24.dp).align(CenterVertically)
         )
         Text(
             text = i18n("forum.sharing.status.title"),
-            modifier = Modifier.align(Alignment.CenterVertically).padding(start = 16.dp),
+            modifier = Modifier.align(CenterVertically).padding(start = 16.dp),
             style = MaterialTheme.typography.h3,
         )
     }
     HorizontalDivider()
     Row(
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = CenterVertically,
         horizontalArrangement = spacedBy(8.dp),
         modifier = Modifier.padding(8.dp),
     ) {
@@ -87,7 +88,7 @@ fun ForumSharingStatusDrawerContent(
             Text(
                 text = i18n("forum.sharing.status.nobody"),
                 style = MaterialTheme.typography.body1,
-                modifier = Modifier.align(Alignment.Center),
+                modifier = Modifier.align(Center),
             )
         } else {
             LazyColumn {

@@ -32,9 +32,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.BottomStart
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.CenterVertically
+import androidx.compose.ui.Alignment.Companion.TopStart
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.briarproject.briar.desktop.ui.AboutScreen
@@ -75,7 +76,7 @@ fun StartupScreenScaffold(
             icon = Icons.Filled.ArrowBack,
             contentDescription = i18n("access.return_to_previous_screen"),
             onClick = onBackButton,
-            modifier = Modifier.align(Alignment.TopStart)
+            modifier = Modifier.align(TopStart)
         )
     }
 
@@ -83,7 +84,7 @@ fun StartupScreenScaffold(
         icon = Icons.Filled.Info,
         contentDescription = i18n("access.mode.about"),
         onClick = onShowAbout,
-        modifier = Modifier.align(Alignment.BottomStart)
+        modifier = Modifier.align(BottomStart)
     )
 }
 
