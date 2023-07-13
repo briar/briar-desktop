@@ -22,6 +22,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -70,6 +71,7 @@ import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 import org.briarproject.briar.desktop.utils.TimeUtils.getFormattedTimestamp
 import org.briarproject.briar.desktop.utils.UiUtils.getContactDisplayName
+import org.briarproject.briar.desktop.utils.UiUtils.modifyIf
 import org.briarproject.briar.desktop.utils.getRandomAuthor
 import org.briarproject.briar.desktop.utils.getRandomId
 import org.briarproject.briar.desktop.utils.getRandomString
@@ -82,13 +84,13 @@ fun main() = preview {
             text = "This is a normal blog post.\n\nIt has one author and no comments.",
             time = System.currentTimeMillis() - 999_000
         )
-        BlogPostView(post, {})
+        BlogPostView(post, {}, {})
         val commentPost = getRandomBlogCommentItem(
             post = post,
             comment = "This is a comment on that first blog post.\n\nIt has two lines as well.",
             time = System.currentTimeMillis() - 500_000
         )
-        BlogPostView(commentPost, {})
+        BlogPostView(commentPost, {}, {})
         BlogPostView(
             getRandomBlogCommentItem(
                 post = commentPost,
@@ -96,8 +98,9 @@ fun main() = preview {
                 time = System.currentTimeMillis()
             ),
             null,
+            null,
         )
-        BlogPostView(getRandomBlogPost(getRandomString(1337), 1337), null)
+        BlogPostView(getRandomBlogPost(getRandomString(1337), 1337), null, null)
     }
 }
 
@@ -106,11 +109,12 @@ fun main() = preview {
 fun BlogPostView(
     item: BlogPost,
     onItemRepeat: ((BlogPost) -> Unit)?,
+    onAuthorClicked: ((GroupId) -> Unit)?,
     modifier: Modifier = Modifier,
 ) = Card(modifier = modifier) {
     Row(modifier = Modifier.height(IntrinsicSize.Min)) {
         Column(modifier = Modifier.weight(1f)) {
-            BlogPostViewHeader(item, onItemRepeat, Modifier.padding(8.dp))
+            BlogPostViewHeader(item, onItemRepeat, onAuthorClicked, Modifier.padding(8.dp))
             // should be changed back to verticalArrangement = spacedBy(8.dp) on the containing Column
             // when https://github.com/JetBrains/compose-jb/issues/2729 is fixed
             Spacer(Modifier.height(8.dp))
@@ -145,6 +149,7 @@ fun BlogPostView(
 private fun BlogPostViewHeader(
     item: BlogPost,
     onItemRepeat: ((BlogPost) -> Unit)?,
+    onAuthorClicked: ((GroupId) -> Unit)?,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -156,10 +161,22 @@ private fun BlogPostViewHeader(
             verticalArrangement = spacedBy(8.dp),
             modifier = Modifier.weight(1f)
         ) {
-            RepeatAuthorView(item)
+            RepeatAuthorView(
+                item = item,
+                onAuthorClicked = if (onAuthorClicked == null) null else {
+                    { onAuthorClicked(item.header.groupId) }
+                },
+            )
             if (item is BlogCommentItem) {
                 val postHeader = item.postHeader
-                AuthorView(postHeader.author, postHeader.authorInfo, postHeader.timestamp)
+                AuthorView(
+                    author = postHeader.author,
+                    authorInfo = postHeader.authorInfo,
+                    timestamp = postHeader.timestamp,
+                    onAuthorClicked = if (onAuthorClicked == null) null else {
+                        { onAuthorClicked(item.postHeader.groupId) }
+                    },
+                )
             }
         }
         if (onItemRepeat != null) IconButton(onClick = { onItemRepeat(item) }) {
@@ -172,7 +189,11 @@ private fun BlogPostViewHeader(
 }
 
 @Composable
-private fun RepeatAuthorView(item: BlogPost, modifier: Modifier = Modifier) {
+private fun RepeatAuthorView(
+    item: BlogPost,
+    modifier: Modifier = Modifier,
+    onAuthorClicked: (() -> Unit)?,
+) {
     val author = item.author
     val authorInfo = item.authorInfo
     val timestamp = item.timestamp
@@ -182,7 +203,8 @@ private fun RepeatAuthorView(item: BlogPost, modifier: Modifier = Modifier) {
         modifier = modifier,
     ) {
         Row(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(1f)
+                .modifyIf(onAuthorClicked != null, Modifier.clickable { onAuthorClicked?.invoke() }),
             horizontalArrangement = spacedBy(8.dp),
             verticalAlignment = CenterVertically,
         ) {

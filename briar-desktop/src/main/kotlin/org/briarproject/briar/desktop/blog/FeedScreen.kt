@@ -36,6 +36,7 @@ import androidx.compose.ui.Alignment.Companion.CenterEnd
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
+import org.briarproject.bramble.api.sync.GroupId
 import org.briarproject.bramble.api.sync.MessageId
 import org.briarproject.briar.desktop.conversation.reallyVisibleItemsInfo
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
@@ -64,6 +65,7 @@ fun main() = preview(
             override fun unreadAfterIndex(index: Int) = UnreadPostInfo(3, 3)
         },
         onItemSelected = {},
+        onBlogSelected = {},
         onBlogPostsVisible = {},
     )
 }
@@ -73,6 +75,7 @@ fun FeedScreen(
     posts: List<BlogPost>,
     unreadFabsInfo: UnreadFabsInfo,
     onItemSelected: (BlogPost) -> Unit,
+    onBlogSelected: ((GroupId) -> Unit)?,
     onBlogPostsVisible: (List<MessageId>) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -94,6 +97,7 @@ fun FeedScreen(
                 BlogPostView(
                     item = item,
                     onItemRepeat = onItemSelected,
+                    onAuthorClicked = onBlogSelected,
                     modifier = Modifier
                         .heightIn(min = HEADER_SIZE)
                         .fillMaxWidth()

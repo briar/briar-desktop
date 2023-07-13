@@ -18,6 +18,7 @@
 
 package org.briarproject.briar.desktop.blog
 
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import mu.KotlinLogging
@@ -42,7 +43,6 @@ import org.briarproject.briar.desktop.ui.UnreadFabsInfo
 import org.briarproject.briar.desktop.ui.UnreadPostInfo
 import org.briarproject.briar.desktop.utils.replaceIf
 import org.briarproject.briar.desktop.viewmodel.EventListenerDbViewModel
-import org.briarproject.briar.desktop.viewmodel.asList
 import org.briarproject.briar.desktop.viewmodel.asState
 import org.briarproject.briar.util.HtmlUtils
 import javax.inject.Inject
@@ -64,11 +64,17 @@ class FeedViewModel @Inject constructor(
     private val _isLoading = mutableStateOf(true)
     val isLoading = _isLoading.asState()
 
-    private val _posts = mutableStateListOf<BlogPost>()
-    val posts = _posts.asList()
+    private val _allPosts = mutableStateListOf<BlogPost>()
+    val posts = derivedStateOf {
+        if (selectedBlog.value == null) _allPosts
+        else _allPosts.filter { it.groupId == selectedBlog.value }
+    }
 
     private val _selectedPost = mutableStateOf<BlogPost?>(null)
     val selectedPost = _selectedPost.asState()
+
+    private val _selectedBlog = mutableStateOf<GroupId?>(null)
+    val selectedBlog = _selectedBlog.asState()
 
     init {
         runOnDbThreadWithTransaction(true, this::loadAllBlogPosts)
@@ -91,7 +97,7 @@ class FeedViewModel @Inject constructor(
             loadBlogPosts(txn, g)
         }.sorted()
         txn.attach {
-            _posts.addAll(posts)
+            _allPosts.addAll(posts)
             _isLoading.value = false
         }
     }
@@ -108,8 +114,8 @@ class FeedViewModel @Inject constructor(
         runOnDbThreadWithTransaction(true) { txn ->
             val item = getItem(txn, header)
             txn.attach {
-                _posts.add(item)
-                _posts.sort()
+                _allPosts.add(item)
+                _allPosts.sort()
                 _isLoading.value = false
             }
         }
@@ -117,13 +123,18 @@ class FeedViewModel @Inject constructor(
 
     @UiExecutor
     private fun onBlogRemoved(id: GroupId) {
-        _posts.removeIf { it.id == id }
+        _allPosts.removeIf { it.id == id }
     }
 
     @UiExecutor
     fun selectPost(item: BlogPost?) {
         _selectedPost.value = item
         if (item != null && !item.isRead) markPostsRead(listOf(item.id))
+    }
+
+    @UiExecutor
+    fun selectBlog(groupId: GroupId?) {
+        _selectedBlog.value = groupId
     }
 
     @UiExecutor
@@ -183,7 +194,7 @@ class FeedViewModel @Inject constructor(
      */
     @UiExecutor
     private fun markBlogPostRead(predicate: (BlogPost) -> Boolean) {
-        val readIds = posts.filter { item ->
+        val readIds = posts.value.filter { item ->
             predicate(item) && !item.isRead
         }.map { item ->
             item.id
@@ -197,7 +208,7 @@ class FeedViewModel @Inject constructor(
                     eventBus.broadcast(BlogPostsReadEvent(readIds.size))
                 }
             }
-            _posts.replaceIf({ it.id in readIds }) {
+            _allPosts.replaceIf({ it.id in readIds }) {
                 when (it) {
                     is BlogPostItem -> it.copy(isRead = true)
                     is BlogCommentItem -> it.copy(isRead = true)
@@ -207,6 +218,7 @@ class FeedViewModel @Inject constructor(
     }
 
     override fun unreadBeforeIndex(index: Int): UnreadPostInfo {
+        val posts = posts.value
         if (index <= 0 || index >= posts.size) return UnreadPostInfo(null, 0)
 
         var lastUnread: Int? = null
@@ -219,6 +231,7 @@ class FeedViewModel @Inject constructor(
     }
 
     override fun unreadAfterIndex(index: Int): UnreadPostInfo {
+        val posts = posts.value
         if (index < 0 || index >= posts.size) return UnreadPostInfo(null, 0)
 
         var firstUnread: Int? = null

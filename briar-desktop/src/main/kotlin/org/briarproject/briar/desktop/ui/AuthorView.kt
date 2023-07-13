@@ -18,6 +18,7 @@
 
 package org.briarproject.briar.desktop.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material.MaterialTheme
@@ -36,6 +37,7 @@ import org.briarproject.briar.api.identity.AuthorInfo.Status.OURSELVES
 import org.briarproject.briar.desktop.contact.ProfileCircle
 import org.briarproject.briar.desktop.utils.TimeUtils
 import org.briarproject.briar.desktop.utils.UiUtils.getContactDisplayName
+import org.briarproject.briar.desktop.utils.UiUtils.modifyIf
 
 @Composable
 fun AuthorView(
@@ -44,6 +46,7 @@ fun AuthorView(
     timestamp: Long,
     modifier: Modifier = Modifier,
     avatarSize: Dp = 27.dp,
+    onAuthorClicked: (() -> Unit)? = null,
 ) {
     Row(
         modifier = modifier,
@@ -51,7 +54,8 @@ fun AuthorView(
         verticalAlignment = CenterVertically,
     ) {
         Row(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(1f)
+                .modifyIf(onAuthorClicked != null, Modifier.clickable { onAuthorClicked?.invoke() }),
             horizontalArrangement = spacedBy(8.dp),
             verticalAlignment = CenterVertically,
         ) {

@@ -25,6 +25,7 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -32,7 +33,8 @@ import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.viewmodel.viewModel
 
 @Composable
-fun BlogScreen(viewModel: FeedViewModel = viewModel()) {
+fun BlogScreen(onSideBarClickedKey: Any, viewModel: FeedViewModel = viewModel()) {
+    LaunchedEffect(onSideBarClickedKey) { viewModel.selectBlog(null) }
     Scaffold(
         content = { padding ->
             if (viewModel.isLoading.value) {
@@ -43,7 +45,7 @@ fun BlogScreen(viewModel: FeedViewModel = viewModel()) {
                     CircularProgressIndicator(Modifier.padding(16.dp))
                 }
             } else {
-                if (viewModel.posts.isEmpty()) {
+                if (viewModel.posts.value.isEmpty()) {
                     Box(
                         contentAlignment = Center,
                         modifier = Modifier.padding(padding).fillMaxSize()
@@ -52,9 +54,10 @@ fun BlogScreen(viewModel: FeedViewModel = viewModel()) {
                     }
                 } else {
                     FeedScreen(
-                        posts = viewModel.posts,
+                        posts = viewModel.posts.value,
                         unreadFabsInfo = viewModel,
                         onItemSelected = viewModel::selectPost,
+                        onBlogSelected = if (viewModel.selectedBlog.value == null) viewModel::selectBlog else null,
                         onBlogPostsVisible = viewModel::onPostsVisible,
                         modifier = Modifier.padding(padding)
                     )

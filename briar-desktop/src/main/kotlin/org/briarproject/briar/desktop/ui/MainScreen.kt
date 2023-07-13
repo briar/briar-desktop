@@ -65,7 +65,7 @@ fun MainScreen(viewModel: SidebarViewModel = viewModel()) {
                     UiMode.CONTACTS -> PrivateMessageScreen()
                     UiMode.GROUPS -> PrivateGroupScreen()
                     UiMode.FORUMS -> ForumScreen()
-                    UiMode.BLOGS -> BlogScreen()
+                    UiMode.BLOGS -> BlogScreen(viewModel.blogResetView.value)
                     UiMode.MAILBOX -> MailboxScreen()
                     UiMode.SETTINGS -> SettingsScreen()
                     UiMode.ABOUT -> AboutScreen()
