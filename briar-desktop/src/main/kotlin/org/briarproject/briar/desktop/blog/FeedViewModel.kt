@@ -129,8 +129,8 @@ class FeedViewModel @Inject constructor(
     @UiExecutor
     fun createBlogPost(text: String) {
         val parentPost = selectedPost.value
-        runOnDbThread {
-            val author = identityManager.localAuthor
+        runOnDbThreadWithTransaction(false) { txn ->
+            val author = identityManager.getLocalAuthor(txn)
             val blog = blogManager.getPersonalBlog(author)
             if (parentPost == null) {
                 val p = blogPostFactory.createBlogPost(
@@ -140,10 +140,10 @@ class FeedViewModel @Inject constructor(
                     author,
                     text,
                 )
-                blogManager.addLocalPost(p)
+                blogManager.addLocalPost(txn, p)
             } else {
                 val comment = text.takeIf { it.isNotBlank() }
-                blogManager.addLocalComment(author, blog.id, comment, parentPost.header)
+                blogManager.addLocalComment(txn, author, blog.id, comment, parentPost.header)
             }
         }
         _selectedPost.value = null
@@ -151,9 +151,9 @@ class FeedViewModel @Inject constructor(
 
     @UiExecutor
     fun markPostsRead(postIds: List<MessageId>) {
-        runOnDbThread {
+        runOnDbThreadWithTransaction(false) { txn ->
             postIds.forEach { id ->
-                blogManager.setReadFlag(id, true)
+                blogManager.setReadFlag(txn, id, true)
             }
         }
     }
@@ -189,12 +189,13 @@ class FeedViewModel @Inject constructor(
             item.id
         }
         if (readIds.isNotEmpty()) {
-            runOnDbThread {
+            runOnDbThreadWithTransaction(false) { txn ->
                 readIds.forEach { id ->
-                    blogManager.setReadFlag(id, false)
+                    blogManager.setReadFlag(txn, id, false)
                 }
-                // TODO introduce Transaction for BlogManager#setReadFlag() and attach event there
-                eventBus.broadcast(BlogPostsReadEvent(readIds.size))
+                txn.attach {
+                    eventBus.broadcast(BlogPostsReadEvent(readIds.size))
+                }
             }
             _posts.replaceIf({ it.id in readIds }) {
                 when (it) {
