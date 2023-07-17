@@ -26,5 +26,5 @@ import org.briarproject.briar.desktop.ui.UnreadFabs
 
 @Composable
 fun BoxScope.UnreadFabs(strings: ThreadedGroupStrings, scrollState: LazyListState, postsState: Loaded) {
-    UnreadFabs(scrollState, postsState, strings.unreadJumpToPrevious, strings.unreadJumpToNext)
+    UnreadFabs(scrollState, postsState, postsState, strings.unreadJumpToPrevious, strings.unreadJumpToNext)
 }

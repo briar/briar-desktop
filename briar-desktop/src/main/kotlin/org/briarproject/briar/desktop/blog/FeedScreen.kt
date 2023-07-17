@@ -106,7 +106,7 @@ fun FeedScreen(
                 )
             }
         }
-        UnreadFabs(scrollState, unreadFabsInfo)
+        UnreadFabs(scrollState, unreadFabsInfo, posts)
         VerticalScrollbar(
             adapter = rememberScrollbarAdapter(scrollState),
             modifier = Modifier.align(CenterEnd).fillMaxHeight()

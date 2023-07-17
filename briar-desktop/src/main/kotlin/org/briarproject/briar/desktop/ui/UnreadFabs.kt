@@ -60,6 +60,7 @@ class UnreadPostInfo(
 fun BoxScope.UnreadFabs(
     scrollState: LazyListState,
     unreadFabsInfo: UnreadFabsInfo,
+    changeKey: Any,
     contentDescriptionUp: String = i18n("access.forums.jump_to_prev_unread"),
     contentDescriptionDown: String = i18n("access.forums.jump_to_next_unread"),
 ) {
@@ -70,7 +71,7 @@ fun BoxScope.UnreadFabs(
         scrollState.firstReallyVisibleItemIndex
     }
     // remember unread info to avoid unnecessary re-computations
-    val unreadInfo = remember(unreadFabsInfo, firstReallyVisibleItemIndex) {
+    val unreadInfo = remember(changeKey, firstReallyVisibleItemIndex) {
         unreadFabsInfo.unreadBeforeIndex(firstReallyVisibleItemIndex)
     }
     AnimatedVisibility(
@@ -99,7 +100,7 @@ fun BoxScope.UnreadFabs(
         scrollState.lastReallyVisibleItemIndex
     }
     // remember unread info to avoid unnecessary re-computations
-    val bottomUnreadInfo = remember(unreadFabsInfo, lastReallyVisibleItemIndex) {
+    val bottomUnreadInfo = remember(changeKey, lastReallyVisibleItemIndex) {
         unreadFabsInfo.unreadAfterIndex(lastReallyVisibleItemIndex)
     }
     AnimatedVisibility(
