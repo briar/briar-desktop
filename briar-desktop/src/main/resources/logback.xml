@@ -11,6 +11,9 @@
 
     <logger name="org.briarproject.briar" level="INFO"/>
     <logger name="org.briarproject.briar.desktop" level="INFO"/>
+    <logger name="org.briarproject.onionwrapper" level="ERROR"/>
+    <logger name="org.briarproject.bramble.lifecycle" level="ERROR"/>
+    <logger name="org.briarproject.bramble.plugin" level="ERROR"/>
 
     <root level="INFO">
         <appender-ref ref="STDOUT"/>

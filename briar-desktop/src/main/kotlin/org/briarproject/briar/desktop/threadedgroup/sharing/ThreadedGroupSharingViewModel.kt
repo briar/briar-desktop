@@ -93,6 +93,12 @@ abstract class ThreadedGroupSharingViewModel(
     override fun onInit() {
         super.onInit()
         loadContacts()
+        runOnDbThreadWithTransaction(true) { txn ->
+            val contacts = contactManager.getContacts(txn)
+            for (c in contacts) {
+                println("${c.id.int} ${c.author.name} ${c.alias}")
+            }
+        }
     }
 
     @UiExecutor
