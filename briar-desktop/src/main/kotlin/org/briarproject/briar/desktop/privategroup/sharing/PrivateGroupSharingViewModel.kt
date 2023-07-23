@@ -218,12 +218,23 @@ class PrivateGroupSharingViewModel @Inject constructor(
         members: List<GroupMemberItem>,
         isCreator: Boolean,
     ) {
+        println("loading sharing status")
         val contacts = contactManager.getContacts(txn)
         if (isCreator) {
             val map = contacts.associate { contact ->
                 contact.id to privateGroupInvitationManager.getSharingStatus(txn, contact, groupId)
             }
+            val idToContact = contacts.associate { contact ->
+                contact.id to contact
+            }
+            map.forEach {
+                val contact = idToContact[it.key]
+                if (contact != null) {
+                    println("${contact.id.int} ${contact.author.name} ${contact.alias}: ${it.value.name}")
+                }
+            }
             val sharing = map.filterValues { it == SHARING }.keys
+            println("shareable: $sharing")
             txn.attach {
                 val online =
                     sharing.fold(0) { acc, it -> if (connectionRegistry.isConnected(it)) acc + 1 else acc }
