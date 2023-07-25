@@ -50,6 +50,7 @@ import java.time.format.DateTimeFormatter
 import java.util.logging.Level.ALL
 import java.util.logging.Level.INFO
 import java.util.logging.Level.WARNING
+import kotlin.system.exitProcess
 
 @NonNls
 private val DEFAULT_DATA_DIR = getProperty("user.home") + separator + ".briar" + separator + "desktop"
@@ -63,6 +64,10 @@ private class Main : CliktCommand(
         private val LOG = KotlinLogging.logger {}
     }
 
+    private val version by option(
+        "--version", // NON-NLS
+        help = i18n("main.help.version")
+    ).flag(default = false)
     private val debug by option(
         "--debug", "-d", // NON-NLS
         help = i18n("main.help.debug")
@@ -109,6 +114,8 @@ private class Main : CliktCommand(
             LOG.i { "  Tag ${BuildData.GIT_TAG}" }
         if (BuildData.GIT_BRANCH == null && BuildData.GIT_TAG == null)
             LOG.i { "  Neither branch nor tag detected" }
+
+        if (version) exitProcess(0)
 
         val dataDir = getDataDir()
         val app =
