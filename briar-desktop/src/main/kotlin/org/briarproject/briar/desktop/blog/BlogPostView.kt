@@ -68,6 +68,7 @@ import org.briarproject.briar.desktop.ui.HorizontalDivider
 import org.briarproject.briar.desktop.ui.Tooltip
 import org.briarproject.briar.desktop.ui.TrustIndicatorShort
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
+import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nF
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 import org.briarproject.briar.desktop.utils.TimeUtils.getFormattedTimestamp
 import org.briarproject.briar.desktop.utils.UiUtils.getContactDisplayName
@@ -166,6 +167,10 @@ private fun BlogPostViewHeader(
                 onAuthorClicked = if (onAuthorClicked == null) null else {
                     { onAuthorClicked(item.header.groupId) }
                 },
+                authorClickTooltip = if (onAuthorClicked == null) null else {
+                    val name = getContactDisplayName(item.header.author.name, item.header.authorInfo.alias)
+                    i18nF("blog.open.from.author", name)
+                },
             )
             if (item is BlogCommentItem) {
                 val postHeader = item.postHeader
@@ -175,6 +180,9 @@ private fun BlogPostViewHeader(
                     timestamp = postHeader.timestamp,
                     onAuthorClicked = if (onAuthorClicked == null) null else {
                         { onAuthorClicked(item.postHeader.groupId) }
+                    },
+                    authorClickTooltip = if (onAuthorClicked == null) null else {
+                        i18nF("blog.open.from.author", item.postHeader.author.name)
                     },
                 )
             }
@@ -188,11 +196,13 @@ private fun BlogPostViewHeader(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun RepeatAuthorView(
     item: BlogPost,
     modifier: Modifier = Modifier,
     onAuthorClicked: (() -> Unit)?,
+    authorClickTooltip: String? = null,
 ) {
     val author = item.author
     val authorInfo = item.authorInfo
@@ -202,36 +212,40 @@ private fun RepeatAuthorView(
         verticalAlignment = CenterVertically,
         modifier = modifier,
     ) {
-        Row(
-            modifier = Modifier.weight(1f)
-                .modifyIf(onAuthorClicked != null, Modifier.clickable { onAuthorClicked?.invoke() }),
-            horizontalArrangement = spacedBy(8.dp),
-            verticalAlignment = CenterVertically,
+        Tooltip(
+            text = authorClickTooltip ?: "",
+            modifier = Modifier.weight(1f),
         ) {
-            // TODO we may eventually want to move this into its own composable or integrate into ProfileCircle
-            Box(
-                contentAlignment = BottomEnd,
-                modifier = Modifier.size(36.dp),
+            Row(
+                modifier = Modifier.modifyIf(onAuthorClicked != null, Modifier.clickable { onAuthorClicked?.invoke() }),
+                horizontalArrangement = spacedBy(8.dp),
+                verticalAlignment = CenterVertically,
             ) {
-                ProfileCircle(36.dp, author.id, authorInfo)
-                if (item is BlogCommentItem) {
-                    Icon(
-                        imageVector = Icons.Default.Repeat,
-                        tint = Color.Black,
-                        contentDescription = i18n("access.blogs.reblog"),
-                        modifier = Modifier.size(16.dp).clip(CircleShape)
-                            .border(1.dp, Color.Black, CircleShape).background(Color.White).padding(2.dp)
-                    )
+                // TODO we may eventually want to move this into its own composable or integrate into ProfileCircle
+                Box(
+                    contentAlignment = BottomEnd,
+                    modifier = Modifier.size(36.dp),
+                ) {
+                    ProfileCircle(36.dp, author.id, authorInfo)
+                    if (item is BlogCommentItem) {
+                        Icon(
+                            imageVector = Icons.Default.Repeat,
+                            tint = Color.Black,
+                            contentDescription = i18n("access.blogs.reblog"),
+                            modifier = Modifier.size(16.dp).clip(CircleShape)
+                                .border(1.dp, Color.Black, CircleShape).background(Color.White).padding(2.dp)
+                        )
+                    }
                 }
+                Text(
+                    modifier = Modifier.weight(1f, fill = false),
+                    text = getContactDisplayName(author.name, authorInfo.alias),
+                    fontWeight = if (authorInfo.status == OURSELVES) FontWeight.Bold else null,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                TrustIndicatorShort(authorInfo.status)
             }
-            Text(
-                modifier = Modifier.weight(1f, fill = false),
-                text = getContactDisplayName(author.name, authorInfo.alias),
-                fontWeight = if (authorInfo.status == OURSELVES) FontWeight.Bold else null,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-            TrustIndicatorShort(authorInfo.status)
         }
         Text(
             text = getFormattedTimestamp(timestamp),
