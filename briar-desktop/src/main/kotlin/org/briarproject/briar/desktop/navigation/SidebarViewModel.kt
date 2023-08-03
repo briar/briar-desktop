@@ -86,6 +86,12 @@ constructor(
 
     val uiMode = _uiMode.asState()
     val account = _account.asState()
+
+    /**
+     * A random number that changes everytime, the user changes the [UiMode] with [setUiMode] to [UiMode.BLOGS].
+     * This can be useful to reset the blog screen to the main blog feed instead of showing an individual blog.
+     * When we have a proper navigation system in place, it can hopefully replace this hack.
+     */
     val blogResetView = _blogResetView.asState()
     val mailboxProblem = _mailboxProblem.asState()
 
