@@ -38,6 +38,7 @@ import org.briarproject.bramble.api.sync.MessageId
 import org.briarproject.briar.desktop.conversation.reallyVisibleItemsInfo
 import org.briarproject.briar.desktop.threadedgroup.ThreadedGroupStrings
 import org.briarproject.briar.desktop.ui.Loader
+import org.briarproject.briar.desktop.ui.UnreadFabs
 import org.briarproject.briar.desktop.ui.isWindowFocused
 
 @Composable
@@ -72,7 +73,13 @@ fun ThreadedGroupConversationContent(
                     )
                 }
             }
-            UnreadFabs(strings, scrollState, state)
+            UnreadFabs(
+                scrollState = scrollState,
+                unreadFabsInfo = state,
+                changeKey = state,
+                contentDescriptionUp = strings.unreadJumpToPrevious,
+                contentDescriptionDown = strings.unreadJumpToNext,
+            )
             VerticalScrollbar(
                 adapter = rememberScrollbarAdapter(scrollState),
                 modifier = Modifier.align(CenterEnd).fillMaxHeight()
