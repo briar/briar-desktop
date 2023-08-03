@@ -41,6 +41,7 @@ import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.threading.UiExecutor
 import org.briarproject.briar.desktop.ui.UnreadFabsInfo
 import org.briarproject.briar.desktop.ui.UnreadPostInfo
+import org.briarproject.briar.desktop.utils.clearAndAddAll
 import org.briarproject.briar.desktop.utils.replaceIf
 import org.briarproject.briar.desktop.viewmodel.EventListenerDbViewModel
 import org.briarproject.briar.desktop.viewmodel.asState
@@ -97,7 +98,7 @@ class FeedViewModel @Inject constructor(
             loadBlogPosts(txn, g)
         }.sorted()
         txn.attach {
-            _allPosts.addAll(posts)
+            _allPosts.clearAndAddAll(posts)
             _isLoading.value = false
         }
     }
