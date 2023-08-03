@@ -18,8 +18,6 @@
 
 package org.briarproject.briar.desktop.ui
 
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material.MaterialTheme
@@ -38,9 +36,7 @@ import org.briarproject.briar.api.identity.AuthorInfo.Status.OURSELVES
 import org.briarproject.briar.desktop.contact.ProfileCircle
 import org.briarproject.briar.desktop.utils.TimeUtils
 import org.briarproject.briar.desktop.utils.UiUtils.getContactDisplayName
-import org.briarproject.briar.desktop.utils.UiUtils.modifyIf
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AuthorView(
     author: Author,
@@ -48,33 +44,26 @@ fun AuthorView(
     timestamp: Long,
     modifier: Modifier = Modifier,
     avatarSize: Dp = 27.dp,
-    onAuthorClicked: (() -> Unit)? = null,
-    authorClickTooltip: String? = null,
 ) {
     Row(
         modifier = modifier,
         horizontalArrangement = spacedBy(8.dp),
         verticalAlignment = CenterVertically,
     ) {
-        Tooltip(
-            text = authorClickTooltip ?: "",
+        Row(
             modifier = Modifier.weight(1f),
+            horizontalArrangement = spacedBy(8.dp),
+            verticalAlignment = CenterVertically,
         ) {
-            Row(
-                modifier = Modifier.modifyIf(onAuthorClicked != null, Modifier.clickable { onAuthorClicked?.invoke() }),
-                horizontalArrangement = spacedBy(8.dp),
-                verticalAlignment = CenterVertically,
-            ) {
-                ProfileCircle(avatarSize, author.id, authorInfo)
-                Text(
-                    modifier = Modifier.weight(1f, fill = false),
-                    text = getContactDisplayName(author.name, authorInfo.alias),
-                    fontWeight = if (authorInfo.status == OURSELVES) Bold else null,
-                    maxLines = 1,
-                    overflow = Ellipsis,
-                )
-                TrustIndicatorShort(authorInfo.status)
-            }
+            ProfileCircle(avatarSize, author.id, authorInfo)
+            Text(
+                modifier = Modifier.weight(1f, fill = false),
+                text = getContactDisplayName(author.name, authorInfo.alias),
+                fontWeight = if (authorInfo.status == OURSELVES) Bold else null,
+                maxLines = 1,
+                overflow = Ellipsis,
+            )
+            TrustIndicatorShort(authorInfo.status)
         }
         Text(
             text = TimeUtils.getFormattedTimestamp(timestamp),

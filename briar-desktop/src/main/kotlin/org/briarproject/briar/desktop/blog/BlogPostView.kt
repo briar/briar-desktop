@@ -174,16 +174,11 @@ private fun BlogPostViewHeader(
             )
             if (item is BlogCommentItem) {
                 val postHeader = item.postHeader
+                // This isn't clickable, because item.type is WRAPPED_POST, so not easy to get the GroupId of the blog
                 AuthorView(
                     author = postHeader.author,
                     authorInfo = postHeader.authorInfo,
                     timestamp = postHeader.timestamp,
-                    onAuthorClicked = if (onAuthorClicked == null) null else {
-                        { onAuthorClicked(item.postHeader.groupId) }
-                    },
-                    authorClickTooltip = if (onAuthorClicked == null) null else {
-                        i18nF("blog.open.from.author", item.postHeader.author.name)
-                    },
                 )
             }
         }
