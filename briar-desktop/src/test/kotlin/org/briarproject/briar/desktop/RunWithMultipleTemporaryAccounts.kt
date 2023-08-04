@@ -49,6 +49,12 @@ internal class RunWithMultipleTemporaryAccounts(
     fun run() {
         LogUtils.setupLogging(ALL)
 
+        printProperty("java.vendor")
+        printProperty("java.version")
+        printProperty("java.vm.name")
+        printProperty("java.vm.vendor")
+        printProperty("java.vm.version")
+
         for (i in names.indices) {
             val name = names[i]
             val app = app(name, DEFAULT_SOCKS_PORT + 2 * i, DEFAULT_CONTROL_PORT + 2 * i)
@@ -72,6 +78,10 @@ internal class RunWithMultipleTemporaryAccounts(
                 start(app, this)
             }
         }
+    }
+
+    private fun printProperty(property: String) {
+        println("$property: ${System.getProperty(property)}")
     }
 
     private fun app(name: String, socksPort: Int, controlPort: Int): BriarDesktopTestApp {
