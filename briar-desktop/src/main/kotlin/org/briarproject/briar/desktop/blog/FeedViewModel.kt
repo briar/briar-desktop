@@ -37,6 +37,7 @@ import org.briarproject.briar.api.blog.BlogManager
 import org.briarproject.briar.api.blog.BlogPostFactory
 import org.briarproject.briar.api.blog.BlogPostHeader
 import org.briarproject.briar.api.blog.event.BlogPostAddedEvent
+import org.briarproject.briar.desktop.blog.sharing.BlogSharingViewModel
 import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.threading.UiExecutor
 import org.briarproject.briar.desktop.ui.UnreadFabsInfo
@@ -52,6 +53,7 @@ class FeedViewModel @Inject constructor(
     private val blogManager: BlogManager,
     private val blogPostFactory: BlogPostFactory,
     private val identityManager: IdentityManager,
+    val blogSharingViewModel: BlogSharingViewModel,
     briarExecutors: BriarExecutors,
     lifecycleManager: LifecycleManager,
     db: TransactionManager,
@@ -79,6 +81,16 @@ class FeedViewModel @Inject constructor(
 
     init {
         runOnDbThreadWithTransaction(true, this::loadAllBlogPosts)
+    }
+
+    override fun onInit() {
+        super.onInit()
+        blogSharingViewModel.onEnterComposition()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        blogSharingViewModel.onExitComposition()
     }
 
     @Suppress("HardCodedStringLiteral")
@@ -136,6 +148,12 @@ class FeedViewModel @Inject constructor(
     @UiExecutor
     fun selectBlog(groupId: GroupId?) {
         _selectedBlog.value = groupId
+        if (groupId != null) {
+            blogSharingViewModel.setGroupId(groupId)
+            // abort re-posting when navigating to somebody else's blog
+            if (_selectedPost.value?.groupId != groupId)
+                _selectedPost.value = null
+        }
     }
 
     @UiExecutor

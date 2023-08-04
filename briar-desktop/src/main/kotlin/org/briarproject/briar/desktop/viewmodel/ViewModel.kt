@@ -1,6 +1,6 @@
 /*
  * Briar Desktop
- * Copyright (C) 2021-2022 The Briar Project
+ * Copyright (C) 2021-2023 The Briar Project
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -64,7 +64,7 @@ abstract class ViewModel {
      * Composable function goes out of scope.
      *
      * This function can be overridden in child classes,
-     * but implementations should always call `super.onInit()` first.
+     * but implementations should always call `super.onCleared()` first.
      *
      * Apart from that, **do not call this function manually anywhere.**
      */

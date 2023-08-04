@@ -37,7 +37,6 @@ import org.briarproject.briar.desktop.viewmodel.ViewModel
 import org.briarproject.briar.desktop.viewmodel.asState
 import org.briarproject.briar.desktop.viewmodel.update
 import javax.inject.Inject
-import kotlin.random.Random
 
 class SidebarViewModel
 @Inject
@@ -80,19 +79,12 @@ constructor(
     private val _uiMode = mutableStateOf(UiMode.CONTACTS)
     private val _account = mutableStateOf<LocalAuthor?>(null)
     private val _mailboxProblem = mutableStateOf(false)
-    private val _blogResetView = mutableStateOf(0L)
 
     private val _messageCount = mutableStateOf(MessageCount())
 
     val uiMode = _uiMode.asState()
     val account = _account.asState()
 
-    /**
-     * A random number that changes everytime, the user changes the [UiMode] with [setUiMode] to [UiMode.BLOGS].
-     * This can be useful to reset the blog screen to the main blog feed instead of showing an individual blog.
-     * When we have a proper navigation system in place, it can hopefully replace this hack.
-     */
-    val blogResetView = _blogResetView.asState()
     val mailboxProblem = _mailboxProblem.asState()
 
     val messageCount = _messageCount.asState()
@@ -100,7 +92,6 @@ constructor(
     @UiExecutor
     fun setUiMode(uiMode: UiMode) {
         _uiMode.value = uiMode
-        if (uiMode == UiMode.BLOGS) _blogResetView.value = Random.nextLong()
         if (uiMode == UiMode.MAILBOX) _mailboxProblem.value = false
     }
 

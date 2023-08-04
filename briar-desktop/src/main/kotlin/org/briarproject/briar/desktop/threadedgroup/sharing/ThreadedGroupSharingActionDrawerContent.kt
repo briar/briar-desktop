@@ -48,7 +48,7 @@ import org.briarproject.briar.api.sharing.SharingManager.SharingStatus.NOT_SUPPO
 import org.briarproject.briar.api.sharing.SharingManager.SharingStatus.SHAREABLE
 import org.briarproject.briar.api.sharing.SharingManager.SharingStatus.SHARING
 import org.briarproject.briar.desktop.contact.ContactItemViewSmall
-import org.briarproject.briar.desktop.threadedgroup.ThreadedGroupStrings
+import org.briarproject.briar.desktop.threadedgroup.SharingStrings
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
 import org.briarproject.briar.desktop.ui.HorizontalDivider
 import org.briarproject.briar.desktop.ui.ListItemView
@@ -59,7 +59,7 @@ import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 fun ThreadedGroupSharingActionDrawerContent(
     close: () -> Unit,
     viewModel: ThreadedGroupSharingViewModel,
-    strings: ThreadedGroupStrings,
+    strings: SharingStrings,
 ) = Column {
     Row(
         verticalAlignment = CenterVertically,

@@ -47,6 +47,7 @@ import org.briarproject.briar.api.attachment.AttachmentHeader
 import org.briarproject.briar.api.attachment.AttachmentReader
 import org.briarproject.briar.api.autodelete.UnexpectedTimerException
 import org.briarproject.briar.api.autodelete.event.ConversationMessagesDeletedEvent
+import org.briarproject.briar.api.blog.BlogSharingManager
 import org.briarproject.briar.api.conversation.ConversationManager
 import org.briarproject.briar.api.conversation.DeletionResult
 import org.briarproject.briar.api.conversation.event.ConversationMessageReceivedEvent
@@ -70,7 +71,6 @@ import org.briarproject.briar.desktop.conversation.ConversationRequestItem.Reque
 import org.briarproject.briar.desktop.threadedgroup.sharing.InvitationSentEvent
 import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.threading.UiExecutor
-import org.briarproject.briar.desktop.utils.KLoggerUtils.e
 import org.briarproject.briar.desktop.utils.KLoggerUtils.i
 import org.briarproject.briar.desktop.utils.KLoggerUtils.logDuration
 import org.briarproject.briar.desktop.utils.KLoggerUtils.w
@@ -97,6 +97,7 @@ constructor(
     private val introductionManager: IntroductionManager,
     private val forumSharingManager: ForumSharingManager,
     private val groupInvitationManager: GroupInvitationManager,
+    private val blogSharingManager: BlogSharingManager,
     private val messagingManager: MessagingManager,
     private val privateMessageFactory: PrivateMessageFactory,
     briarExecutors: BriarExecutors,
@@ -463,8 +464,17 @@ constructor(
                     )
                 }
 
-                BLOG ->
-                    LOG.e { "Blogs are not supported for the time being." }
+                BLOG -> {
+                    require(desktopFeatureFlags.shouldEnableBlogs()) {
+                        "Blog requests are not supported for this build." // NON-NLS
+                    }
+                    blogSharingManager.respondToInvitation(
+                        /* txn = */ txn,
+                        /* c = */ _contactId.value!!,
+                        /* id = */ item.sessionId,
+                        /* accept = */ accept
+                    )
+                }
             }
             // reload all messages to also show request response message
             // todo: might be better to have an event to react to, also for (other) outgoing messages
