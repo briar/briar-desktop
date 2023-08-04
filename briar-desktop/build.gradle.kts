@@ -93,6 +93,7 @@ buildData {
 val tor_version: String by rootProject.extra
 val obfs4proxy_version: String by rootProject.extra
 val snowflake_version: String by rootProject.extra
+val dagger_version: String by rootProject.extra
 
 dependencies {
     currentOs(compose.desktop.currentOs)
@@ -143,13 +144,12 @@ dependencies {
         exclude(group = "net.java.dev.jna", module = "jna")
     }
 
-    val daggerVersion = "2.24"
-    kapt("com.google.dagger:dagger-compiler:$daggerVersion")
+    kapt("com.google.dagger:dagger-compiler:$dagger_version")
 
     testImplementation(kotlin("test-testng"))
     testImplementation(project(path = ":bramble-core", configuration = "testOutput"))
     testImplementation("commons-io:commons-io:2.11.0")
-    kaptTest("com.google.dagger:dagger-compiler:$daggerVersion")
+    kaptTest("com.google.dagger:dagger-compiler:$dagger_version")
 }
 
 // hacky fix for upstream issue when selecting skiko in gradle
