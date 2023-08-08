@@ -1,6 +1,6 @@
 /*
  * Briar Desktop
- * Copyright (C) 2021-2022 The Briar Project
+ * Copyright (C) 2021-2023 The Briar Project
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -34,7 +34,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.input.pointer.PointerIconDefaults
+import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -48,11 +48,11 @@ fun ColoredIconButton(
     contentColor: Color = contentColorFor(color),
     enabled: Boolean = true,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) = IconButton(
     onClick = onClick,
     modifier = modifier
-        .pointerHoverIcon(PointerIconDefaults.Default)
+        .pointerHoverIcon(PointerIcon.Default)
         .background(color, CircleShape)
         .then(Modifier.size(32.dp)),
     enabled = enabled,
@@ -76,13 +76,13 @@ fun ColoredIconButton(
     color: Color = MaterialTheme.colors.primary,
     contentColor: Color = contentColorFor(color),
     enabled: Boolean = true,
-    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
 ) = IconButton(
     icon = icon,
     contentDescription = contentDescription,
     onClick = onClick,
     modifier = modifier
-        .pointerHoverIcon(PointerIconDefaults.Default)
+        .pointerHoverIcon(PointerIcon.Default)
         .background(color, CircleShape)
         .then(Modifier.size(32.dp)),
     iconSize = iconSize,
