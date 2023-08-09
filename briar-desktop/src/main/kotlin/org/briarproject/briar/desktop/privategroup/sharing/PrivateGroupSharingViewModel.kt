@@ -41,15 +41,18 @@ import org.briarproject.bramble.api.identity.LocalAuthor
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.bramble.api.plugin.event.ContactConnectedEvent
 import org.briarproject.bramble.api.plugin.event.ContactDisconnectedEvent
+import org.briarproject.bramble.api.sync.ClientId
 import org.briarproject.bramble.api.sync.GroupId
 import org.briarproject.briar.api.autodelete.AutoDeleteConstants.NO_AUTO_DELETE_TIMER
 import org.briarproject.briar.api.conversation.ConversationManager
 import org.briarproject.briar.api.identity.AuthorManager
 import org.briarproject.briar.api.privategroup.JoinMessageHeader
 import org.briarproject.briar.api.privategroup.PrivateGroupManager
+import org.briarproject.briar.api.privategroup.event.GroupInvitationResponseReceivedEvent
 import org.briarproject.briar.api.privategroup.event.GroupMessageAddedEvent
 import org.briarproject.briar.api.privategroup.invitation.GroupInvitationFactory
 import org.briarproject.briar.api.privategroup.invitation.GroupInvitationManager
+import org.briarproject.briar.api.sharing.SharingManager
 import org.briarproject.briar.api.sharing.SharingManager.SharingStatus.SHAREABLE
 import org.briarproject.briar.api.sharing.SharingManager.SharingStatus.SHARING
 import org.briarproject.briar.api.sharing.event.ContactLeftShareableEvent
@@ -88,6 +91,8 @@ class PrivateGroupSharingViewModel @Inject constructor(
     db,
     eventBus,
 ) {
+
+    override val clientId: ClientId = GroupInvitationManager.CLIENT_ID
 
     private val _isCreator = mutableStateOf(false)
     val isCreator = _isCreator.asState()
@@ -175,7 +180,6 @@ class PrivateGroupSharingViewModel @Inject constructor(
 
         val groupId = _groupId ?: return
         when {
-            // todo: is there any similar leave event we could react to?
             e is GroupMessageAddedEvent && e.groupId == groupId && e.header is JoinMessageHeader -> {
                 reloadMembers()
             }
@@ -183,6 +187,16 @@ class PrivateGroupSharingViewModel @Inject constructor(
             e is ContactAddedEvent || e is ContactRemovedEvent -> {
                 // the newly added or removed contact may be member of the private group
                 reloadMembers()
+            }
+
+            e is GroupInvitationResponseReceivedEvent && e.messageHeader.shareableId == groupId -> {
+                if (e.messageHeader.wasAccepted()) {
+                    _sharingStatus.value += e.contactId to SHARING
+                    val connected = connectionRegistry.isConnected(e.contactId)
+                    _sharingInfo.update { addContact(connected) }
+                } else {
+                    _sharingStatus.value += e.contactId to SHAREABLE
+                }
             }
 
             // todo: update member list on contact alias/avatar changed (may be member)
@@ -211,6 +225,13 @@ class PrivateGroupSharingViewModel @Inject constructor(
             }
         }
     }
+
+    override fun getSharingStatusForContact(
+        txn: Transaction,
+        groupId: GroupId,
+        contact: Contact,
+    ): SharingManager.SharingStatus =
+        privateGroupInvitationManager.getSharingStatus(txn, contact, groupId)
 
     private fun loadSharingStatus(
         txn: Transaction,

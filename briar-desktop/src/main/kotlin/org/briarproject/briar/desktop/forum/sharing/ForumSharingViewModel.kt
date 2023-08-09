@@ -21,6 +21,7 @@ package org.briarproject.briar.desktop.forum.sharing
 import androidx.compose.runtime.derivedStateOf
 import mu.KotlinLogging
 import org.briarproject.bramble.api.connection.ConnectionRegistry
+import org.briarproject.bramble.api.contact.Contact
 import org.briarproject.bramble.api.contact.ContactManager
 import org.briarproject.bramble.api.db.Transaction
 import org.briarproject.bramble.api.db.TransactionManager
@@ -29,11 +30,13 @@ import org.briarproject.bramble.api.event.EventBus
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.bramble.api.plugin.event.ContactConnectedEvent
 import org.briarproject.bramble.api.plugin.event.ContactDisconnectedEvent
+import org.briarproject.bramble.api.sync.ClientId
 import org.briarproject.bramble.api.sync.GroupId
 import org.briarproject.briar.api.conversation.ConversationManager
 import org.briarproject.briar.api.forum.ForumSharingManager
 import org.briarproject.briar.api.forum.event.ForumInvitationResponseReceivedEvent
 import org.briarproject.briar.api.identity.AuthorManager
+import org.briarproject.briar.api.sharing.SharingManager
 import org.briarproject.briar.api.sharing.SharingManager.SharingStatus.SHAREABLE
 import org.briarproject.briar.api.sharing.SharingManager.SharingStatus.SHARING
 import org.briarproject.briar.api.sharing.event.ContactLeftShareableEvent
@@ -69,10 +72,13 @@ class ForumSharingViewModel @Inject constructor(
         private val LOG = KotlinLogging.logger {}
     }
 
+    override val clientId: ClientId = ForumSharingManager.CLIENT_ID
+
     val currentlySharedWith = derivedStateOf {
         _contactList.filter { _sharingStatus.value[it.id] == SHARING }
     }
 
+    @UiExecutor
     override fun reload() {
         _shareableSelected.value = emptySet()
         _sharingMessage.value = ""
@@ -128,6 +134,13 @@ class ForumSharingViewModel @Inject constructor(
             }
         }
     }
+
+    override fun getSharingStatusForContact(
+        txn: Transaction,
+        groupId: GroupId,
+        contact: Contact,
+    ): SharingManager.SharingStatus =
+        forumSharingManager.getSharingStatus(txn, groupId, contact)
 
     private fun loadSharingStatus(txn: Transaction, groupId: GroupId) {
         val map = contactManager.getContacts(txn).associate { contact ->

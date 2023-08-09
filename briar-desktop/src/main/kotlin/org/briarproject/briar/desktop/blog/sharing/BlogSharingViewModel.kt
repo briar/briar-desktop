@@ -22,6 +22,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import mu.KotlinLogging
 import org.briarproject.bramble.api.connection.ConnectionRegistry
+import org.briarproject.bramble.api.contact.Contact
 import org.briarproject.bramble.api.contact.ContactManager
 import org.briarproject.bramble.api.db.Transaction
 import org.briarproject.bramble.api.db.TransactionManager
@@ -30,12 +31,14 @@ import org.briarproject.bramble.api.event.EventBus
 import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.bramble.api.plugin.event.ContactConnectedEvent
 import org.briarproject.bramble.api.plugin.event.ContactDisconnectedEvent
+import org.briarproject.bramble.api.sync.ClientId
 import org.briarproject.bramble.api.sync.GroupId
 import org.briarproject.briar.api.blog.BlogManager
 import org.briarproject.briar.api.blog.BlogSharingManager
 import org.briarproject.briar.api.blog.event.BlogInvitationResponseReceivedEvent
 import org.briarproject.briar.api.conversation.ConversationManager
 import org.briarproject.briar.api.identity.AuthorManager
+import org.briarproject.briar.api.sharing.SharingManager
 import org.briarproject.briar.api.sharing.SharingManager.SharingStatus.SHAREABLE
 import org.briarproject.briar.api.sharing.SharingManager.SharingStatus.SHARING
 import org.briarproject.briar.api.sharing.event.ContactLeftShareableEvent
@@ -68,6 +71,8 @@ class BlogSharingViewModel @Inject constructor(
     db,
     eventBus,
 ) {
+
+    override val clientId: ClientId = BlogSharingManager.CLIENT_ID
 
     companion object {
         private val LOG = KotlinLogging.logger {}
@@ -137,6 +142,13 @@ class BlogSharingViewModel @Inject constructor(
             }
         }
     }
+
+    override fun getSharingStatusForContact(
+        txn: Transaction,
+        groupId: GroupId,
+        contact: Contact,
+    ): SharingManager.SharingStatus =
+        blogSharingManager.getSharingStatus(txn, groupId, contact)
 
     private fun loadSharingStatus(txn: Transaction, groupId: GroupId) {
         val map = contactManager.getContacts(txn).associate { contact ->
