@@ -123,11 +123,13 @@ class PrivateGroupSharingViewModel @Inject constructor(
             val members = privateGroupManager.getMembers(txn, groupId).map {
                 loadGroupMemberItem(it, connectionRegistry)
             }
+            if (isCreator) loadSharingStatus(txn, groupId)
+            else loadSharingStatus(txn, members)
+
             txn.attach {
                 _isCreator.value = isCreator
                 _members.clearAndAddAll(members)
             }
-            loadSharingStatus(txn, groupId, members, isCreator)
         }
     }
 
@@ -233,33 +235,17 @@ class PrivateGroupSharingViewModel @Inject constructor(
     ): SharingManager.SharingStatus =
         privateGroupInvitationManager.getSharingStatus(txn, contact, groupId)
 
-    private fun loadSharingStatus(
+    fun loadSharingStatus(
         txn: Transaction,
-        groupId: GroupId,
         members: List<GroupMemberItem>,
-        isCreator: Boolean,
     ) {
-        val contacts = contactManager.getContacts(txn)
-        if (isCreator) {
-            val map = contacts.associate { contact ->
-                contact.id to privateGroupInvitationManager.getSharingStatus(txn, contact, groupId)
-            }
-            val sharing = map.filterValues { it == SHARING }.keys
-            txn.attach {
-                val online =
-                    sharing.fold(0) { acc, it -> if (connectionRegistry.isConnected(it)) acc + 1 else acc }
-                _sharingStatus.value = map
-                _sharingInfo.value = SharingInfo(sharing.size, online)
-            }
-        } else {
-            val sharing = members.mapNotNull { it.contactId }
-            val map = sharing.associateWith { SHARING }
-            txn.attach {
-                val online =
-                    sharing.fold(0) { acc, it -> if (connectionRegistry.isConnected(it)) acc + 1 else acc }
-                _sharingStatus.value = map
-                _sharingInfo.value = SharingInfo(sharing.size, online)
-            }
+        val sharing = members.mapNotNull { it.contactId }
+        val map = sharing.associateWith { SHARING }
+        txn.attach {
+            val online =
+                sharing.fold(0) { acc, it -> if (connectionRegistry.isConnected(it)) acc + 1 else acc }
+            _sharingStatus.value = map
+            _sharingInfo.value = SharingInfo(sharing.size, online)
         }
     }
 }

@@ -38,6 +38,7 @@ import org.briarproject.briar.api.conversation.ConversationManager
 import org.briarproject.briar.api.identity.AuthorManager
 import org.briarproject.briar.api.sharing.SharingConstants
 import org.briarproject.briar.api.sharing.SharingManager
+import org.briarproject.briar.api.sharing.SharingManager.SharingStatus.SHARING
 import org.briarproject.briar.desktop.contact.ContactItem
 import org.briarproject.briar.desktop.contact.ContactsViewModel
 import org.briarproject.briar.desktop.threading.BriarExecutors
@@ -50,7 +51,7 @@ abstract class ThreadedGroupSharingViewModel(
     contactManager: ContactManager,
     authorManager: AuthorManager,
     conversationManager: ConversationManager,
-    connectionRegistry: ConnectionRegistry,
+    private val connectionRegistry: ConnectionRegistry,
     briarExecutors: BriarExecutors,
     lifecycleManager: LifecycleManager,
     db: TransactionManager,
@@ -142,6 +143,19 @@ abstract class ThreadedGroupSharingViewModel(
         groupId: GroupId,
         contact: Contact,
     ): SharingManager.SharingStatus
+
+    protected open fun loadSharingStatus(txn: Transaction, groupId: GroupId) {
+        val map = contactManager.getContacts(txn).associate { contact ->
+            contact.id to getSharingStatusForContact(txn, groupId, contact)
+        }
+        val sharing = map.filterValues { it == SHARING }.keys
+        txn.attach {
+            val online =
+                sharing.fold(0) { acc, it -> if (connectionRegistry.isConnected(it)) acc + 1 else acc }
+            _sharingStatus.value = map
+            _sharingInfo.value = SharingInfo(sharing.size, online)
+        }
+    }
 
     data class SharingInfo(val total: Int, val online: Int) {
         fun addContact(connected: Boolean) = copy(

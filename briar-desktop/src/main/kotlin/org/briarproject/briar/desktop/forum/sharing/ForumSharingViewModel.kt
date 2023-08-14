@@ -141,17 +141,4 @@ class ForumSharingViewModel @Inject constructor(
         contact: Contact,
     ): SharingManager.SharingStatus =
         forumSharingManager.getSharingStatus(txn, groupId, contact)
-
-    private fun loadSharingStatus(txn: Transaction, groupId: GroupId) {
-        val map = contactManager.getContacts(txn).associate { contact ->
-            contact.id to forumSharingManager.getSharingStatus(txn, groupId, contact)
-        }
-        val sharing = map.filterValues { it == SHARING }.keys
-        txn.attach {
-            val online =
-                sharing.fold(0) { acc, it -> if (connectionRegistry.isConnected(it)) acc + 1 else acc }
-            _sharingStatus.value = map
-            _sharingInfo.value = SharingInfo(sharing.size, online)
-        }
-    }
 }
