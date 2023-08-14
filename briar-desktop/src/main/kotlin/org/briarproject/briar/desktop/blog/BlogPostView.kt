@@ -208,7 +208,7 @@ private fun RepeatAuthorView(
         modifier = modifier,
     ) {
         Tooltip(
-            text = authorClickTooltip ?: "",
+            text = authorClickTooltip,
             modifier = Modifier.weight(1f),
         ) {
             Row(

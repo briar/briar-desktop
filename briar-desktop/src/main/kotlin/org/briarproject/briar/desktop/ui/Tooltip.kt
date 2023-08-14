@@ -1,6 +1,6 @@
 /*
  * Briar Desktop
- * Copyright (C) 2021-2022 The Briar Project
+ * Copyright (C) 2021-2023 The Briar Project
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -21,6 +21,7 @@ package org.briarproject.briar.desktop.ui
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.TooltipArea
 import androidx.compose.foundation.TooltipPlacement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Surface
@@ -34,27 +35,35 @@ import androidx.compose.ui.unit.dp
 @Composable
 @OptIn(ExperimentalFoundationApi::class)
 fun Tooltip(
-    text: String,
+    text: String?,
     modifier: Modifier = Modifier,
     delayMillis: Int = 500,
     tooltipPlacement: TooltipPlacement = TooltipPlacement.CursorPoint(
         offset = DpOffset(0.dp, 16.dp)
     ),
     content: @Composable () -> Unit,
-) = TooltipArea(
-    tooltip = {
-        Surface(
-            modifier = Modifier.shadow(4.dp),
-            shape = RoundedCornerShape(4.dp),
-        ) {
-            Text(
-                text = text,
-                modifier = Modifier.padding(4.dp),
-            )
+) {
+    if (text.isNullOrEmpty()) {
+        Box(modifier = modifier) {
+            content()
         }
-    },
-    delayMillis = delayMillis,
-    tooltipPlacement = tooltipPlacement,
-    modifier = modifier, // todo: use tooltip text for semantic description
-    content = content,
-)
+    } else {
+        TooltipArea(
+            tooltip = {
+                Surface(
+                    modifier = Modifier.shadow(4.dp),
+                    shape = RoundedCornerShape(4.dp),
+                ) {
+                    Text(
+                        text = text,
+                        modifier = Modifier.padding(4.dp),
+                    )
+                }
+            },
+            delayMillis = delayMillis,
+            tooltipPlacement = tooltipPlacement,
+            modifier = modifier, // todo: use tooltip text for semantic description
+            content = content,
+        )
+    }
+}
