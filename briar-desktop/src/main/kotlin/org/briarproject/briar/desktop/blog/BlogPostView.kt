@@ -62,6 +62,7 @@ import org.briarproject.briar.api.blog.MessageType
 import org.briarproject.briar.api.identity.AuthorInfo
 import org.briarproject.briar.api.identity.AuthorInfo.Status.OURSELVES
 import org.briarproject.briar.desktop.contact.ProfileCircle
+import org.briarproject.briar.desktop.contact.ProfileCircleRss
 import org.briarproject.briar.desktop.theme.Blue500
 import org.briarproject.briar.desktop.ui.AuthorView
 import org.briarproject.briar.desktop.ui.HorizontalDivider
@@ -87,14 +88,14 @@ fun main() = preview {
         )
         BlogPostView(post, {}, {})
         val commentPost = getRandomBlogCommentItem(
-            post = post,
+            parent = post,
             comment = "This is a comment on that first blog post.\n\nIt has two lines as well.",
             time = System.currentTimeMillis() - 500_000
         )
         BlogPostView(commentPost, {}, {})
         BlogPostView(
             getRandomBlogCommentItem(
-                post = commentPost,
+                parent = commentPost,
                 comment = "This is a second comment on that first blog post. It has only one line, but a long one.",
                 time = System.currentTimeMillis()
             ),
@@ -175,11 +176,19 @@ private fun BlogPostViewHeader(
             if (item is BlogCommentItem) {
                 val postHeader = item.postHeader
                 // This isn't clickable, because item.type is WRAPPED_POST, so not easy to get the GroupId of the blog
-                AuthorView(
-                    author = postHeader.author,
-                    authorInfo = postHeader.authorInfo,
-                    timestamp = postHeader.timestamp,
-                )
+                if (postHeader.isRssFeed) {
+                    // todo: currently only re-blogged RSS feeds are supported
+                    RssAuthorView(
+                        name = postHeader.author.name,
+                        timestamp = postHeader.timestamp,
+                    )
+                } else {
+                    AuthorView(
+                        author = postHeader.author,
+                        authorInfo = postHeader.authorInfo,
+                        timestamp = postHeader.timestamp,
+                    )
+                }
             }
         }
         if (onItemRepeat != null) IconButton(onClick = { onItemRepeat(item) }) {
@@ -251,6 +260,37 @@ private fun RepeatAuthorView(
     }
 }
 
+@Composable
+private fun RssAuthorView(
+    name: String,
+    timestamp: Long,
+) {
+    Row(
+        horizontalArrangement = spacedBy(8.dp),
+        verticalAlignment = CenterVertically,
+    ) {
+        Row(
+            modifier = Modifier.weight(1f),
+            horizontalArrangement = spacedBy(8.dp),
+            verticalAlignment = CenterVertically,
+        ) {
+            ProfileCircleRss(27.dp)
+            Text(
+                modifier = Modifier.weight(1f, fill = false),
+                text = name,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
+        Text(
+            text = getFormattedTimestamp(timestamp),
+            textAlign = TextAlign.End,
+            style = MaterialTheme.typography.caption,
+            maxLines = 1,
+        )
+    }
+}
+
 internal fun getRandomBlogPostItem(text: String, time: Long) = BlogPostItem(
     header = BlogPostHeader(
         MessageType.POST,
@@ -284,12 +324,12 @@ private fun BlogCommentView(header: BlogCommentHeader, modifier: Modifier = Modi
     }
 }
 
-internal fun getRandomBlogCommentItem(post: BlogPost, comment: String?, time: Long) = BlogCommentItem(
+internal fun getRandomBlogCommentItem(parent: BlogPost, comment: String?, time: Long) = BlogCommentItem(
     header = BlogCommentHeader(
         MessageType.COMMENT,
         GroupId(getRandomId()),
         comment,
-        if (post is BlogCommentItem) post.header else post.postHeader,
+        parent.header,
         MessageId(getRandomId()),
         time,
         System.currentTimeMillis(),
@@ -297,8 +337,8 @@ internal fun getRandomBlogCommentItem(post: BlogPost, comment: String?, time: Lo
         AuthorInfo(AuthorInfo.Status.values().filter { it != AuthorInfo.Status.NONE }.random()),
         Random.nextBoolean(),
     ),
-    postHeader = post.postHeader,
-    text = comment,
+    postHeader = parent.postHeader,
+    text = parent.text,
 )
 
 internal fun getRandomBlogPost(text: String, time: Long): BlogPost {

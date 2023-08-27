@@ -1,6 +1,6 @@
 /*
  * Briar Desktop
- * Copyright (C) 2021-2022 The Briar Project
+ * Copyright (C) 2021-2023 The Briar Project
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -20,15 +20,20 @@ package org.briarproject.briar.desktop.contact
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.RssFeed
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
@@ -49,6 +54,8 @@ fun main() = preview {
     ProfileCircle(90.dp, bytes)
 
     ProfileCircle(90.dp)
+
+    ProfileCircleRss(90.dp)
 }
 
 /**
@@ -130,4 +137,22 @@ fun ProfileCircle(size: Dp, modifier: Modifier = Modifier) {
         drawLine(color, Offset(center, center * 0.2f), Offset(center, center), width)
         drawLine(color, Offset(center, center), Offset(size * 0.7f, size * 0.7f), width)
     }
+}
+
+/**
+ * Display an RSS avatar for RSS feeds.
+ *
+ * @param size the size of the circle.
+ */
+@Composable
+fun ProfileCircleRss(size: Dp) {
+    val modifier = Modifier.size(size).clip(CircleShape)
+        .border(1.dp, MaterialTheme.colors.outline, CircleShape)
+        .background(Color(0xfffc9403))
+    Icon(
+        imageVector = Icons.Default.RssFeed,
+        contentDescription = null,
+        tint = Color.White,
+        modifier = modifier,
+    )
 }
