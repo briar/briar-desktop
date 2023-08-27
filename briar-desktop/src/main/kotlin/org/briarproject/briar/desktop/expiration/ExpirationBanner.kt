@@ -1,6 +1,6 @@
 /*
  * Briar Desktop
- * Copyright (C) 2021-2022 The Briar Project
+ * Copyright (C) 2021-2023 The Briar Project
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -66,7 +66,7 @@ fun ColumnScope.ExpirationBanner(onExpired: () -> Unit) {
 
     var hideTimestamp by remember { mutableStateOf(0L) }
 
-    var showExpirationBanner by remember { mutableStateOf(value = true) }
+    var showExpirationBanner by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         periodicallyCheckIfExpired(

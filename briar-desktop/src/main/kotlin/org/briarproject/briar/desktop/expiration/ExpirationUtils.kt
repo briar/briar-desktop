@@ -1,6 +1,6 @@
 /*
  * Briar Desktop
- * Copyright (C) 2021-2022 The Briar Project
+ * Copyright (C) 2021-2023 The Briar Project
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -28,11 +28,13 @@ import kotlin.time.Duration.Companion.milliseconds
 object ExpirationUtils {
 
     private val EXPIRE_AFTER = BuildData.GIT_TIME + 181.days.inWholeMilliseconds
+    private val SHOW_THRESHOLD = 60.days.inWholeMilliseconds
     private val CHECK_INTERVAL = 1.hours.inWholeMilliseconds
     private val HIDE_INTERVAL = 1.days.inWholeMilliseconds
 
     // for testing uncomment the following instead
     // private val EXPIRE_AFTER = Instant.now().toEpochMilli() + 30.seconds.inWholeMilliseconds
+    // private val SHOW_THRESHOLD = 10.seconds.inWholeMilliseconds
     // private val CHECK_INTERVAL = 1.seconds.inWholeMilliseconds
     // private val HIDE_INTERVAL = 10.seconds.inWholeMilliseconds
 
@@ -42,6 +44,8 @@ object ExpirationUtils {
 
     private fun isExpired() = getMillisLeft() <= 0.milliseconds
 
+    private fun expiryIsFar() = getMillisLeft() > SHOW_THRESHOLD.milliseconds
+
     private fun hideThreshold() = System.currentTimeMillis() - HIDE_INTERVAL
 
     suspend fun periodicallyCheckIfExpired(
@@ -50,7 +54,9 @@ object ExpirationUtils {
         onExpiry: () -> Unit,
     ) {
         while (true) {
-            if (isExpired()) {
+            if (expiryIsFar()) {
+                // do nothing
+            } else if (isExpired()) {
                 onExpiry()
                 break
             } else {
