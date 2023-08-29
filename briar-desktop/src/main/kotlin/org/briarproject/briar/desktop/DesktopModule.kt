@@ -1,6 +1,6 @@
 /*
  * Briar Desktop
- * Copyright (C) 2021-2022 The Briar Project
+ * Copyright (C) 2021-2023 The Briar Project
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -56,7 +56,7 @@ internal class DesktopModule {
     internal fun provideDesktopFeatureFlags() = object : DesktopFeatureFlags {
         override fun shouldEnablePrivateGroups() = true
         override fun shouldEnableForums() = true
-        override fun shouldEnableBlogs() = false
+        override fun shouldEnableBlogs() = true
         override fun shouldEnableTransportSettings() = false
     }
 
