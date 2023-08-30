@@ -18,14 +18,24 @@
 
 package org.briarproject.briar.desktop.blog
 
+import androidx.compose.foundation.VerticalScrollbar
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Rect
@@ -94,12 +104,31 @@ Ordered lists:
     <li>bar1</li>
     <li>bar2</li>
   </ol>
+  <li>test</li>
+</ol>
+Another list:
+<ol>
+  <li>foo</li>
+  <li>direct children<ol><li>child1</li><li>child2</li></ol></li>
+  <li>test</li>
 </ol>
     """.trimIndent()
 
-    SelectionContainer {
-        HtmlText(testHtml) {
-            println(it)
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier.fillMaxSize(),
+    ) {
+        val scrollState = rememberScrollState()
+        VerticalScrollbar(
+            adapter = rememberScrollbarAdapter(scrollState),
+            modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
+        )
+        SelectionContainer(
+            modifier = Modifier.fillMaxWidth().verticalScroll(scrollState).padding(16.dp),
+        ) {
+            HtmlText(testHtml) {
+                println(it)
+            }
         }
     }
 }
@@ -132,6 +161,7 @@ fun HtmlText(
 
     val indentStack = ArrayDeque<IndentInfo>()
     val listNesting = ArrayDeque<ListType>()
+    val listNumbering = ArrayDeque<Int>()
 
     var lastCharWasNewline = true
 
@@ -260,28 +290,40 @@ fun HtmlText(
 
             fun startUnorderedList() {
                 listNesting.push(UNORDERED)
+                listNumbering.push(0)
                 pushIndent(20.sp)
             }
 
             fun endUnorderedList() {
-                popIndent()
                 listNesting.pop()
+                listNumbering.pop()
+                popIndent()
             }
 
             fun startOrderedList() {
                 listNesting.push(ORDERED)
+                listNumbering.push(0)
                 pushIndent(20.sp)
             }
 
             fun endOrderedList() {
-                popIndent()
                 listNesting.pop()
+                listNumbering.pop()
+                popIndent()
             }
 
             fun startBullet() {
                 check(listNesting.isNotEmpty()) { "<li> outside of list" }
-                appendAndUpdateCursor(listBullets[listNesting.size] + " ")
-                pushStringAnnotation("bullet", listNesting.size.toString())
+                val listType = listNesting.top()
+                listNumbering.incrementCurrent()
+                if (listType == UNORDERED) {
+                    appendAndUpdateCursor(listBullets[listNesting.size])
+                    appendAndUpdateCursor(" ")
+                    pushStringAnnotation("bullet", listNesting.size.toString())
+                } else if (listType == ORDERED) {
+                    appendAndUpdateCursor("${listNumbering.top()}. ")
+                    pushStringAnnotation("bullet", listNesting.size.toString())
+                }
             }
 
             fun endBullet() {
@@ -425,6 +467,10 @@ fun <E> ArrayDeque<E>.pop(): E {
 
 fun <E> ArrayDeque<E>.top(): E {
     return last()
+}
+
+fun ArrayDeque<Int>.incrementCurrent() {
+    this[size - 1] = this[size - 1] + 1
 }
 
 private fun AnnotatedString.Builder.pushStyle(style: TextStyle) {
