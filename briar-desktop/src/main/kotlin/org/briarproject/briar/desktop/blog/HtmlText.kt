@@ -47,8 +47,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.briarproject.briar.desktop.blog.ListType.ORDERED
+import org.briarproject.briar.desktop.blog.ListType.UNORDERED
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 import org.intellij.lang.annotations.Language
+import org.jetbrains.annotations.NonNls
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 import org.jsoup.nodes.Node
@@ -56,6 +59,7 @@ import org.jsoup.nodes.TextNode
 import org.jsoup.select.NodeVisitor
 
 fun main() = preview {
+    @NonNls
     @Language("HTML")
     val testHtml = """
 <h1>Headline</h1>
@@ -70,20 +74,18 @@ fun main() = preview {
     contains a <a href="https://google.com">link to Google</a>
 </p>
 <blockquote>This is a block quote<br/>with multiple lines.</blockquote>
-<p><ul>
+<ul>
   <li>foo</li>
   <li>direct children<ul><li>child1</li><li>child2</li></ul></li>
   <ul>
     <li>bar1</li>
     <li>bar2</li>
   </ul>
-</ul></p>
-<p>
+</ul>
 <ul>
   <li>foo</li>
   <li>bar</li>
 </ul>
-</p>
     """.trimIndent()
 
     HtmlText(testHtml) {
@@ -93,8 +95,14 @@ fun main() = preview {
 
 // This file is adapted from https://github.com/jeremyrempel/yahnapp (HtmlText.kt)
 
+enum class ListType {
+    ORDERED,
+    UNORDERED
+}
+
 @OptIn(ExperimentalTextApi::class)
 @Composable
+@Suppress("HardCodedStringLiteral")
 fun HtmlText(
     html: String,
     modifier: Modifier = Modifier,
@@ -105,9 +113,8 @@ fun HtmlText(
 
     data class IndentInfo(val indent: TextUnit, val start: Int)
 
-    val indentStack = mutableListOf<IndentInfo>()
-
-    var listNesting = -1
+    val indentStack = ArrayDeque<IndentInfo>()
+    val listNesting = ArrayDeque<ListType>()
 
     var lastCharWasNewline = true
 
@@ -117,18 +124,17 @@ fun HtmlText(
     //    "br", "p", "blockquote",
 
     // Elements that are currently only partially supported:
-    //    "ul" with "li": no nested lists, no "ul" within another paragraph "p"
+    //    "ul"/"ol" with "li": no nested lists, no "ul" within another paragraph "p"
 
     // Elements we still need to add support for:
-    //    "code", "dd", "dl", "dt",
-    //    "ol", "pre", "small", "span",
+    //    "code", "dd", "dl", "dt", "pre", "small", "span"
 
-    val h1 = MaterialTheme.typography.h1.toSpanStyle()
-    val h2 = MaterialTheme.typography.h2.toSpanStyle()
-    val h3 = MaterialTheme.typography.h3.toSpanStyle()
-    val h4 = MaterialTheme.typography.h4.toSpanStyle()
-    val h5 = MaterialTheme.typography.h5.toSpanStyle()
-    val h6 = MaterialTheme.typography.h6.toSpanStyle()
+    val h1 = MaterialTheme.typography.h1.toParagraphStyle()
+    val h2 = MaterialTheme.typography.h2.toParagraphStyle()
+    val h3 = MaterialTheme.typography.h3.toParagraphStyle()
+    val h4 = MaterialTheme.typography.h4.toParagraphStyle()
+    val h5 = MaterialTheme.typography.h5.toParagraphStyle()
+    val h6 = MaterialTheme.typography.h6.toParagraphStyle()
     val bold = SpanStyle(fontWeight = FontWeight.Bold)
     val italic = SpanStyle(fontStyle = FontStyle.Italic)
     val underline = SpanStyle(textDecoration = TextDecoration.Underline)
@@ -159,7 +165,7 @@ fun HtmlText(
 
                 var combinedIndent = indent
                 if (indentStack.isNotEmpty()) {
-                    val prev = indentStack.last()
+                    val prev = indentStack.top()
                     if (prev.start < cursorPosition) {
                         println("pushIndent: ${prev.start}-$cursorPosition")
                         addStyle(
@@ -172,12 +178,12 @@ fun HtmlText(
                     combinedIndent = (prev.indent.value + indent.value).sp
                 }
 
-                indentStack.add(IndentInfo(combinedIndent, cursorPosition))
+                indentStack.push(IndentInfo(combinedIndent, cursorPosition))
             }
 
             fun popIndent() {
                 check(indentStack.isNotEmpty()) { "nothing to pop from" }
-                val prev = indentStack.removeLast()
+                val prev = indentStack.pop()
                 if (prev.start < cursorPosition) {
                     println("popIndent: ${prev.start}-$cursorPosition")
                     addStyle(
@@ -189,8 +195,8 @@ fun HtmlText(
                 }
 
                 if (indentStack.isNotEmpty()) {
-                    val next = indentStack.removeLast()
-                    indentStack.add(next.copy(start = cursorPosition))
+                    val next = indentStack.pop()
+                    indentStack.push(next.copy(start = cursorPosition))
                 }
             }
 
@@ -236,18 +242,28 @@ fun HtmlText(
             }
 
             fun startUnorderedList() {
+                listNesting.push(UNORDERED)
                 pushIndent(20.sp)
-                listNesting++
             }
 
             fun endUnorderedList() {
                 popIndent()
-                listNesting--
+                listNesting.pop()
+            }
+
+            fun startOrderedList() {
+                listNesting.push(ORDERED)
+                pushIndent(20.sp)
+            }
+
+            fun endOrderedList() {
+                popIndent()
+                listNesting.pop()
             }
 
             fun startBullet() {
-                check(listNesting >= 0) { "<li> outside of list" }
-                pushStringAnnotation("bullet", listNesting.toString())
+                check(listNesting.isNotEmpty()) { "<li> outside of list" }
+                pushStringAnnotation("bullet", listNesting.size.toString())
             }
 
             fun endBullet() {
@@ -290,8 +306,8 @@ fun HtmlText(
                                 "a" -> addLink(node)
 
                                 // lists
-                                // todo: properly support ordered list
-                                "ul", "ol" -> startUnorderedList()
+                                "ul" -> startUnorderedList()
+                                "ol" -> startOrderedList()
                                 "li" -> startBullet()
 
                                 // misc
@@ -318,8 +334,8 @@ fun HtmlText(
 
                             "q" -> endInlineQuote()
 
-                            // todo: properly support ordered list
-                            "ul", "ol" -> endUnorderedList()
+                            "ul" -> endUnorderedList()
+                            "ol" -> endOrderedList()
                             "li" -> endBullet()
 
                             "p" -> endParagraph()
@@ -411,3 +427,16 @@ fun HtmlText(
 
 private fun AnnotatedString.getStringAnnotations(tag: String) =
     getStringAnnotations(tag, 0, length)
+
+
+fun <E> ArrayDeque<E>.push(e: E) {
+    addLast(e)
+}
+
+fun <E> ArrayDeque<E>.pop(): E {
+    return removeLast()
+}
+
+fun <E> ArrayDeque<E>.top(): E {
+    return last()
+}
