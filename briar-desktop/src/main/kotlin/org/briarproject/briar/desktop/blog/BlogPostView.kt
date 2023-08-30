@@ -54,6 +54,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.vladsch.flexmark.html2md.converter.FlexmarkHtmlConverter
 import org.briarproject.bramble.api.sync.GroupId
 import org.briarproject.bramble.api.sync.MessageId
 import org.briarproject.briar.api.blog.BlogCommentHeader
@@ -87,6 +88,38 @@ fun main() = preview {
             time = System.currentTimeMillis() - 999_000
         )
         BlogPostView(post, {}, {})
+        val htmlPost = getRandomBlogPostItem(
+            text = """
+                <h1>HTML post</h1>
+                <p>
+                    This is a html blog post.
+                    It has <a href="https://web.archive.org">one author</a> and no comments.
+                </p>
+                <h2>Lists and other stuff</h2>
+                <ul>
+                    <li>Foo
+                    <li>Bar
+                    <ul>
+                        <li>This is a nested item
+                        <li>And another one
+                    </ul>
+                    <li>Back to the previous level
+                </ul>
+                <p>This is another regular paragraph with some <b>bold</b>, <i>italic</i> and _underlined_ text</p>
+                <p>Now let's have a look at ordered lists:</p>
+                <ol>
+                    <li>Foo
+                    <li>Bar
+                    <ol>
+                        <li>This is a nested item
+                        <li>And another one
+                    </ol>
+                    <li>Back to the previous level
+                </ol>
+            """.trimIndent(),
+            time = System.currentTimeMillis() - 750_000
+        )
+        BlogPostView(htmlPost, {}, {})
         val commentPost = getRandomBlogCommentItem(
             parent = post,
             comment = "This is a comment on that first blog post.\n\nIt has two lines as well.",
@@ -114,6 +147,10 @@ fun BlogPostView(
     onAuthorClicked: ((GroupId) -> Unit)?,
     modifier: Modifier = Modifier,
 ) = Card(modifier = modifier) {
+
+    val text = item.text ?: ""
+    val markdown = FlexmarkHtmlConverter.Builder().build().convert(text)
+
     Row(modifier = Modifier.height(IntrinsicSize.Min)) {
         Column(modifier = Modifier.weight(1f)) {
             BlogPostViewHeader(item, onItemRepeat, onAuthorClicked, Modifier.padding(8.dp))
@@ -123,7 +160,7 @@ fun BlogPostView(
             SelectionContainer {
                 Text(
                     modifier = Modifier.padding(horizontal = 8.dp).fillMaxWidth(),
-                    text = item.text ?: "",
+                    text = markdown,
                     maxLines = if (onItemRepeat == null) 5 else Int.MAX_VALUE,
                     overflow = TextOverflow.Ellipsis,
                 )
