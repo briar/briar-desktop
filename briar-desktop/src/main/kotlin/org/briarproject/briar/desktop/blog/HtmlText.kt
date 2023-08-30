@@ -47,6 +47,7 @@ import androidx.compose.ui.text.ParagraphStyle
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.BaselineShift
@@ -164,6 +165,7 @@ fun HtmlText(
     val listNumbering = ArrayDeque<Int>()
 
     var lastCharWasNewline = true
+    var withinPre = false
 
     // Elements we support:
     //    "h1", "h2", "h3", "h4", "h5", "h6",
@@ -190,9 +192,7 @@ fun HtmlText(
     val subscript = SpanStyle(baselineShift = BaselineShift.Subscript)
     val superscript = SpanStyle(baselineShift = BaselineShift.Superscript)
     val link = SpanStyle(textDecoration = TextDecoration.Underline, color = MaterialTheme.colors.primaryVariant)
-
-    // todo: trim newlines / whitespaces?!
-    // todo: nested paragraphs not possible, but in HTML it is?
+    val monospace = SpanStyle(fontFamily = FontFamily.Monospace) // todo: doesn't work for some reason
 
     val formattedString = remember(html) {
         buildAnnotatedString {
@@ -257,12 +257,25 @@ fun HtmlText(
 
             fun startPre() {
                 pushIndent(20.sp)
+                withinPre = true
+                pushStyle(monospace)
             }
 
             fun endPre() {
                 popIndent()
+                withinPre = false
+                pop()
             }
 
+            fun startCode() {
+                if (!withinPre) pushStyle(monospace)
+            }
+
+            fun endCode() {
+                if (!withinPre) pop()
+            }
+
+            // todo: this should be changed to start/endLink for consistent length
             fun addLink(node: Element) {
                 val start = cursorPosition
                 val end = start + node.text().length
@@ -340,17 +353,21 @@ fun HtmlText(
                 ensureNewline()
             }
 
-            // replace multiple newlines/whitespaces to single whitespace
-            // todo: also trim text (at least) inside <p> tags
-            val cleanHtml = html.replace("\\s+".toRegex(), " ")
-            val doc = Jsoup.parse(cleanHtml)
+            val doc = Jsoup.parse(html)
 
             doc.traverse(object : NodeVisitor {
                 override fun head(node: Node, depth: Int) {
                     when (node) {
                         is TextNode -> {
-                            if (node.text().isNotBlank()) {
-                                appendAndUpdateCursor(node.text())
+                            val text =
+                                if (withinPre) node.wholeText
+                                else node.text()
+                                    // replace multiple newlines/whitespaces to single whitespace
+                                    .replace("\\s+".toRegex(), " ")
+                                    // remove whitespace if first character in new line
+                                    .let { if (lastCharWasNewline) it.trimStart() else it }
+                            if (text.isNotBlank()) {
+                                appendAndUpdateCursor(text)
                             }
                         }
 
@@ -371,6 +388,7 @@ fun HtmlText(
                                 "strike" -> pushStyle(strikethrough)
                                 "sub" -> pushStyle(subscript)
                                 "sup" -> pushStyle(superscript)
+                                "code" -> startCode()
                                 "q" -> startInlineQuote()
                                 "a" -> addLink(node)
 
@@ -405,6 +423,8 @@ fun HtmlText(
                             "b", "strong", "i", "em", "cite", "u", "strike", "sub", "sup",
                             "a",
                             -> pop()
+
+                            "code" -> endCode()
 
                             "q" -> endInlineQuote()
 

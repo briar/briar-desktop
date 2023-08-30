@@ -36,7 +36,7 @@ private val testHtml = """
         drwx------   2 root root  16K Apr  7  2023 lost+found
         </code></pre>
         And here's some more regular text.
-        <p>Then there's more text and another code block:</p>
+        <p>Then there's more text, an <code>inline</code> code and another code block:</p>
         <pre>
         drwxr-xr-x   5 root root 4,0K Nov 17  2023 boot
         drwx------   8 root root 4,0K Mar 29 14:27 root
