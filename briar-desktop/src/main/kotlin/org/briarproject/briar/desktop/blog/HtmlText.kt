@@ -114,15 +114,13 @@ fun HtmlText(
 
     val formattedString = remember(html) {
         buildAnnotatedString {
-            var cursorPosition = 0 // todo: couldn't this be replaced with this.length?
-            fun appendAndUpdateCursor(str: String) {
-                append(str)
-                cursorPosition += str.length
+            fun append(str: String) {
+                this.append(str)
                 lastCharWasNewline = str.last() == '\n'
             }
 
             fun ensureNewline() {
-                if (!lastCharWasNewline) appendAndUpdateCursor("\n")
+                if (!lastCharWasNewline) append("\n")
             }
 
             fun pushIndent(indent: TextUnit) {
@@ -131,37 +129,35 @@ fun HtmlText(
                 var combinedIndent = indent
                 if (indentStack.isNotEmpty()) {
                     val prev = indentStack.top()
-                    if (prev.start < cursorPosition) {
-                        println("pushIndent: ${prev.start}-$cursorPosition")
+                    if (prev.start < length) {
                         addStyle(
                             style = ParagraphStyle(textIndent = TextIndent(prev.indent, prev.indent)),
                             start = prev.start,
-                            end = cursorPosition
+                            end = length
                         )
                         // ensureNewline()
                     }
                     combinedIndent = (prev.indent.value + indent.value).sp
                 }
 
-                indentStack.push(IndentInfo(combinedIndent, cursorPosition))
+                indentStack.push(IndentInfo(combinedIndent, length))
             }
 
             fun popIndent() {
                 check(indentStack.isNotEmpty()) { "nothing to pop from" }
                 val prev = indentStack.pop()
-                if (prev.start < cursorPosition) {
-                    println("popIndent: ${prev.start}-$cursorPosition")
+                if (prev.start < length) {
                     addStyle(
                         style = ParagraphStyle(textIndent = TextIndent(prev.indent, prev.indent)),
                         start = prev.start,
-                        end = cursorPosition
+                        end = length
                     )
                     ensureNewline()
                 }
 
                 if (indentStack.isNotEmpty()) {
                     val next = indentStack.pop()
-                    indentStack.push(next.copy(start = cursorPosition))
+                    indentStack.push(next.copy(start = length))
                 }
             }
 
@@ -204,8 +200,8 @@ fun HtmlText(
                 ),
                 "q" to HtmlNode(
                     // todo: quotation marks should be properly localized
-                    start = { appendAndUpdateCursor("\"") },
-                    end = { appendAndUpdateCursor("\"") }
+                    start = { append("\"") },
+                    end = { append("\"") }
                 ),
                 "a" to HtmlNode(
                     start = { node ->
@@ -252,11 +248,11 @@ fun HtmlText(
                         listNumbering.incrementCurrent()
                         if (listType == UNORDERED) {
                             val bulletType = listNesting.size - 1
-                            appendAndUpdateCursor(listBullets[bulletType % listBullets.size])
-                            appendAndUpdateCursor(" ")
+                            append(listBullets[bulletType % listBullets.size])
+                            append(" ")
                             pushStringAnnotation("bullet", listNesting.size.toString())
                         } else if (listType == ORDERED) {
-                            appendAndUpdateCursor("${listNumbering.top()}. ")
+                            append("${listNumbering.top()}. ")
                             pushStringAnnotation("bullet", listNesting.size.toString())
                         }
                     },
@@ -267,7 +263,7 @@ fun HtmlText(
                 ),
 
                 // misc
-                "br" to HtmlNode(start = { appendAndUpdateCursor("\n") }, end = {}),
+                "br" to HtmlNode(start = { append("\n") }, end = {}),
                 "p" to HtmlNode(
                     start = { pushIndent(0.sp) },
                     end = { popIndent() }
@@ -310,7 +306,7 @@ fun HtmlText(
                                     // remove whitespace if first character in new line
                                     .let { if (lastCharWasNewline) it.trimStart() else it }
                             if (text.isNotBlank()) {
-                                appendAndUpdateCursor(text)
+                                append(text)
                             }
                         }
 
