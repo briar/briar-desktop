@@ -317,7 +317,8 @@ fun HtmlText(
                 val listType = listNesting.top()
                 listNumbering.incrementCurrent()
                 if (listType == UNORDERED) {
-                    appendAndUpdateCursor(listBullets[listNesting.size])
+                    val bulletType = listNesting.size - 1
+                    appendAndUpdateCursor(listBullets[bulletType % listBullets.size])
                     appendAndUpdateCursor(" ")
                     pushStringAnnotation("bullet", listNesting.size.toString())
                 } else if (listType == ORDERED) {
