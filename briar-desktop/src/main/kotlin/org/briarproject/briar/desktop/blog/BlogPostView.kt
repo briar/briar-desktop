@@ -95,6 +95,16 @@ fun main() = preview {
                     This is a html blog post.
                     It has <a href="https://web.archive.org">one author</a> and no comments.
                 </p>
+                <h2>Formatting</h2>
+                <p>
+                    Hello World, here's some formatted text:
+                    <b>bold</b>, <i>italic</i>, <u>underline</u>, <strike>strikethrough</strike>, <b><i><u>all three <strike>or four</strike></u></i></b>
+                </p>
+                <p>
+                    This paragraph<br/>
+                    contains a <a href="https://google.com">link to Google</a>
+                </p>
+                <blockquote>This is a block quote<br/>with multiple lines.</blockquote>
                 <h2>Lists and other stuff</h2>
                 <ul>
                     <li>Foo
