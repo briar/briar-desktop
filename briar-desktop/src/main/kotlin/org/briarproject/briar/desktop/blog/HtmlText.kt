@@ -73,6 +73,7 @@ fun main() = preview {
     contains a <a href="https://google.com">link to Google</a>
 </p>
 <blockquote>This is a block quote<br/>with multiple lines.</blockquote>
+Unordered lists:
 <ul>
   <li>foo</li>
   <li>direct children<ul><li>child1</li><li>child2</li></ul></li>
@@ -85,6 +86,15 @@ fun main() = preview {
   <li>foo</li>
   <li>bar</li>
 </ul>
+Ordered lists:
+<ol>
+  <li>foo</li>
+  <li>direct children<ol><li>child1</li><li>child2</li></ol></li>
+  <ol>
+    <li>bar1</li>
+    <li>bar2</li>
+  </ol>
+</ol>
     """.trimIndent()
 
     SelectionContainer {
