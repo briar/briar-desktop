@@ -87,6 +87,11 @@ fun main() = preview {
             time = System.currentTimeMillis() - 999_000
         )
         BlogPostView(post, {}, {})
+        val htmlPost = getRandomBlogPostItem(
+            text = "<h1>HTML post</h1><p>This is a html blog post.\n\nIt has <a href=\"https://web.archive.org\">one author</a> and no comments.</p>",
+            time = System.currentTimeMillis() - 750_000
+        )
+        BlogPostView(htmlPost, {}, {})
         val commentPost = getRandomBlogCommentItem(
             parent = post,
             comment = "This is a comment on that first blog post.\n\nIt has two lines as well.",
@@ -121,12 +126,16 @@ fun BlogPostView(
             // when https://github.com/JetBrains/compose-jb/issues/2729 is fixed
             Spacer(Modifier.height(8.dp))
             SelectionContainer {
-                Text(
+                HtmlText(
                     modifier = Modifier.padding(horizontal = 8.dp).fillMaxWidth(),
-                    text = item.text ?: "",
+                    html = item.text ?: "",
                     maxLines = if (onItemRepeat == null) 5 else Int.MAX_VALUE,
                     overflow = TextOverflow.Ellipsis,
-                )
+                ) { link ->
+                    // TODO: handle link clicks. Display dialog warning the user about opening an external app
+                    //  with the implication that it can be used to identify the user. Also, make this actually
+                    //  clickable which it is not in the SelectionContainer at the moment.
+                }
             }
             Spacer(Modifier.height(8.dp))
             // if no preview and a comment item, show comments
