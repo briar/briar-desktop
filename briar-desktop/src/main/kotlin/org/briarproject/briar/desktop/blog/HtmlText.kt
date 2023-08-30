@@ -195,19 +195,16 @@ fun HtmlText(
                 if (!withinPre) pop()
             }
 
-            // todo: this should be changed to start/endLink for consistent length
-            fun addLink(node: Element) {
-                val start = cursorPosition
-                val end = start + node.text().length
+            fun startLink(node: Element) {
                 val href = node.attr("href")
 
-                addStringAnnotation(
-                    tag = "link",
-                    start = start,
-                    end = end,
-                    annotation = href
-                )
+                pushStringAnnotation("link", href)
                 pushStyle(link)
+            }
+
+            fun endLink() {
+                pop()
+                pop()
             }
 
             fun startBlockQuote() {
@@ -311,7 +308,7 @@ fun HtmlText(
                                 "small" -> pushStyle(small)
                                 "code" -> startCode()
                                 "q" -> startInlineQuote()
-                                "a" -> addLink(node)
+                                "a" -> startLink(node)
 
                                 // lists
                                 "ul" -> startUnorderedList()
@@ -342,12 +339,11 @@ fun HtmlText(
                             }
 
                             "b", "strong", "i", "em", "cite", "u", "strike", "sub", "sup", "small",
-                            "a",
                             -> pop()
 
                             "code" -> endCode()
-
                             "q" -> endInlineQuote()
+                            "a" -> endLink()
 
                             "ul" -> endUnorderedList()
                             "ol" -> endOrderedList()
