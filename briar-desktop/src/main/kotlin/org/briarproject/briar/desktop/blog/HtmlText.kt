@@ -255,6 +255,14 @@ fun HtmlText(
                 popIndent()
             }
 
+            fun startPre() {
+                pushIndent(20.sp)
+            }
+
+            fun endPre() {
+                popIndent()
+            }
+
             fun addLink(node: Element) {
                 val start = cursorPosition
                 val end = start + node.text().length
@@ -375,6 +383,7 @@ fun HtmlText(
                                 "br" -> appendAndUpdateCursor("\n")
                                 "blockquote" -> startBlockQuote()
                                 "p" -> startParagraph()
+                                "pre" -> startPre()
                                 // else -> throw Exception("Unsupported tag '${node.tagName()}'")
                             }
                         }
@@ -405,6 +414,7 @@ fun HtmlText(
 
                             "p" -> endParagraph()
                             "blockquote" -> endBlockQuote()
+                            "pre" -> endPre()
                         }
                     }
                 }
