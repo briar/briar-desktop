@@ -44,6 +44,7 @@ import androidx.compose.ui.text.style.BaselineShift
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextIndent
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
@@ -69,15 +70,19 @@ fun main() = preview {
     contains a <a href="https://google.com">link to Google</a>
 </p>
 <blockquote>This is a block quote<br/>with multiple lines.</blockquote>
+<p><ul>
+  <li>foo</li>
+  <li>direct children<ul><li>child1</li><li>child2</li></ul></li>
+  <ul>
+    <li>bar1</li>
+    <li>bar2</li>
+  </ul>
+</ul></p>
+<p>
 <ul>
   <li>foo</li>
   <li>bar</li>
 </ul>
-<p>
-<ol>
-  <li>foo</li>
-  <li>bar</li>
-</ol>
 </p>
     """.trimIndent()
 
@@ -97,6 +102,14 @@ fun HtmlText(
     maxLines: Int = Int.MAX_VALUE,
     handleLink: (String) -> Unit,
 ) {
+
+    data class IndentInfo(val indent: TextUnit, val start: Int)
+
+    val indentStack = mutableListOf<IndentInfo>()
+
+    var listNesting = -1
+
+    var lastCharWasNewline = true
 
     // Elements we support:
     //    "h1", "h2", "h3", "h4", "h5", "h6",
@@ -127,8 +140,6 @@ fun HtmlText(
 
     // todo: trim newlines / whitespaces?!
     // todo: nested paragraphs not possible, but in HTML it is?
-    val blockquote = ParagraphStyle(textIndent = TextIndent(20.sp, 20.sp))
-    val paragraph = ParagraphStyle()
 
     val formattedString = remember(html) {
         buildAnnotatedString {
@@ -136,13 +147,59 @@ fun HtmlText(
             fun appendAndUpdateCursor(str: String) {
                 append(str)
                 cursorPosition += str.length
+                lastCharWasNewline = str.last() == '\n'
             }
 
-            fun addParagraph() {
-                pushStyle(paragraph)
-                if (cursorPosition > 0) {
-                    appendAndUpdateCursor("\n")
+            fun ensureNewline() {
+                if (!lastCharWasNewline) appendAndUpdateCursor("\n")
+            }
+
+            fun pushIndent(indent: TextUnit) {
+                check(indent.isSp) { "only TextUnit.sp allowed" }
+
+                var combinedIndent = indent
+                if (indentStack.isNotEmpty()) {
+                    val prev = indentStack.last()
+                    if (prev.start < cursorPosition) {
+                        println("pushIndent: ${prev.start}-$cursorPosition")
+                        addStyle(
+                            style = ParagraphStyle(textIndent = TextIndent(prev.indent, prev.indent)),
+                            start = prev.start,
+                            end = cursorPosition
+                        )
+                        // ensureNewline()
+                    }
+                    combinedIndent = (prev.indent.value + indent.value).sp
                 }
+
+                indentStack.add(IndentInfo(combinedIndent, cursorPosition))
+            }
+
+            fun popIndent() {
+                check(indentStack.isNotEmpty()) { "nothing to pop from" }
+                val prev = indentStack.removeLast()
+                if (prev.start < cursorPosition) {
+                    println("popIndent: ${prev.start}-$cursorPosition")
+                    addStyle(
+                        style = ParagraphStyle(textIndent = TextIndent(prev.indent, prev.indent)),
+                        start = prev.start,
+                        end = cursorPosition
+                    )
+                    ensureNewline()
+                }
+
+                if (indentStack.isNotEmpty()) {
+                    val next = indentStack.removeLast()
+                    indentStack.add(next.copy(start = cursorPosition))
+                }
+            }
+
+            fun startParagraph() {
+                pushIndent(0.sp)
+            }
+
+            fun endParagraph() {
+                popIndent()
             }
 
             fun addLink(node: Element) {
@@ -160,16 +217,16 @@ fun HtmlText(
             }
 
             fun startBlockQuote() {
-                pushStyle(blockquote)
+                pushIndent(20.sp)
                 pushStringAnnotation("quote", "")
             }
 
             fun endBlockQuote() {
                 pop()
-                pop()
+                popIndent()
             }
 
-            // todo: this should be properly localized
+            // todo: quotation marks should be properly localized
             fun startInlineQuote() {
                 appendAndUpdateCursor("\"")
             }
@@ -179,23 +236,29 @@ fun HtmlText(
             }
 
             fun startUnorderedList() {
-                pushStyle(blockquote)
+                pushIndent(20.sp)
+                listNesting++
             }
 
             fun endUnorderedList() {
-                pop()
+                popIndent()
+                listNesting--
             }
 
             fun startBullet() {
-                pushStringAnnotation("bullet", "")
+                check(listNesting >= 0) { "<li> outside of list" }
+                pushStringAnnotation("bullet", listNesting.toString())
             }
 
             fun endBullet() {
                 pop()
-                appendAndUpdateCursor("\n")
+                ensureNewline()
             }
 
-            val doc = Jsoup.parse(html)
+            // replace multiple newlines/whitespaces to single whitespace
+            // todo: also trim text (at least) inside <p> tags
+            val cleanHtml = html.replace("\\s+".toRegex(), " ")
+            val doc = Jsoup.parse(cleanHtml)
 
             doc.traverse(object : NodeVisitor {
                 override fun head(node: Node, depth: Int) {
@@ -227,13 +290,14 @@ fun HtmlText(
                                 "a" -> addLink(node)
 
                                 // lists
-                                "ul" -> startUnorderedList()
+                                // todo: properly support ordered list
+                                "ul", "ol" -> startUnorderedList()
                                 "li" -> startBullet()
 
                                 // misc
                                 "br" -> appendAndUpdateCursor("\n")
                                 "blockquote" -> startBlockQuote()
-                                "p" -> addParagraph()
+                                "p" -> startParagraph()
                                 // else -> throw Exception("Unsupported tag '${node.tagName()}'")
                             }
                         }
@@ -249,14 +313,16 @@ fun HtmlText(
                         when (node.tagName()) {
                             "h1", "h2", "h3", "h4", "h5", "h6",
                             "b", "strong", "i", "em", "cite", "u", "strike", "sub", "sup",
-                            "a", "p",
+                            "a",
                             -> pop()
 
                             "q" -> endInlineQuote()
 
-                            "ul" -> endUnorderedList()
+                            // todo: properly support ordered list
+                            "ul", "ol" -> endUnorderedList()
                             "li" -> endBullet()
 
+                            "p" -> endParagraph()
                             "blockquote" -> endBlockQuote()
                         }
                     }
@@ -267,7 +333,13 @@ fun HtmlText(
 
     val textMeasurer = rememberTextMeasurer()
     // todo: doesn't respect actual text size, but also cannot be changed currently
-    val textLayoutResult = remember { textMeasurer.measure("\u2022") }
+    val listBullets = remember {
+        listOf(
+            textMeasurer.measure("\u2022"),
+            textMeasurer.measure("\u25e6"),
+            textMeasurer.measure("\u25aa"),
+        )
+    }
     val color = MaterialTheme.colors.onSurface
 
     var onDraw: DrawScope.() -> Unit by remember { mutableStateOf({}) }
@@ -297,13 +369,19 @@ fun HtmlText(
                     right = 0f
                 )
             }
+
+            data class BulletInfo(val rect: Rect, val nestingLevel: Int)
+
             val bullets = formattedString.getStringAnnotations("bullet").map {
                 val line = layoutResult.getLineForOffset(it.start)
-                Rect(
-                    top = layoutResult.getLineTop(line),
-                    bottom = layoutResult.getLineBottom(line),
-                    left = 0f,
-                    right = layoutResult.getLineLeft(line)
+                BulletInfo(
+                    rect = Rect(
+                        top = layoutResult.getLineTop(line),
+                        bottom = layoutResult.getLineBottom(line),
+                        left = layoutResult.getLineLeft(line),
+                        right = layoutResult.getLineLeft(line)
+                    ),
+                    nestingLevel = it.item.toInt()
                 )
             }
             onDraw = {
@@ -316,12 +394,13 @@ fun HtmlText(
                     )
                 }
                 bullets.forEach {
+                    val bullet = listBullets[it.nestingLevel % listBullets.size]
                     drawText(
-                        textLayoutResult = textLayoutResult,
+                        textLayoutResult = bullet,
                         color = color,
                         topLeft = Offset(
-                            it.center.x - textLayoutResult.size.width / 2,
-                            it.center.y - textLayoutResult.size.height / 2,
+                            it.rect.left - 10.dp.toPx() - bullet.size.width / 2,
+                            it.rect.center.y - bullet.size.height / 2,
                         ),
                     )
                 }
