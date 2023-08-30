@@ -19,6 +19,7 @@
 package org.briarproject.briar.desktop.blog
 
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -27,7 +28,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
@@ -36,10 +36,8 @@ import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.ParagraphStyle
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.BaselineShift
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextIndent
@@ -88,8 +86,10 @@ fun main() = preview {
 </ul>
     """.trimIndent()
 
-    HtmlText(testHtml) {
-        println(it)
+    SelectionContainer {
+        HtmlText(testHtml) {
+            println(it)
+        }
     }
 }
 
@@ -99,6 +99,12 @@ enum class ListType {
     ORDERED,
     UNORDERED
 }
+
+val listBullets = listOf(
+    "\u2022",
+    "\u25e6",
+    "\u25aa",
+)
 
 @OptIn(ExperimentalTextApi::class)
 @Composable
@@ -263,6 +269,7 @@ fun HtmlText(
 
             fun startBullet() {
                 check(listNesting.isNotEmpty()) { "<li> outside of list" }
+                appendAndUpdateCursor(listBullets[listNesting.size] + " ")
                 pushStringAnnotation("bullet", listNesting.size.toString())
             }
 
@@ -347,17 +354,6 @@ fun HtmlText(
         }
     }
 
-    val textMeasurer = rememberTextMeasurer()
-    // todo: doesn't respect actual text size, but also cannot be changed currently
-    val listBullets = remember {
-        listOf(
-            textMeasurer.measure("\u2022"),
-            textMeasurer.measure("\u25e6"),
-            textMeasurer.measure("\u25aa"),
-        )
-    }
-    val color = MaterialTheme.colors.onSurface
-
     var onDraw: DrawScope.() -> Unit by remember { mutableStateOf({}) }
 
     ClickableText(
@@ -386,20 +382,6 @@ fun HtmlText(
                 )
             }
 
-            data class BulletInfo(val rect: Rect, val nestingLevel: Int)
-
-            val bullets = formattedString.getStringAnnotations("bullet").map {
-                val line = layoutResult.getLineForOffset(it.start)
-                BulletInfo(
-                    rect = Rect(
-                        top = layoutResult.getLineTop(line),
-                        bottom = layoutResult.getLineBottom(line),
-                        left = layoutResult.getLineLeft(line),
-                        right = layoutResult.getLineLeft(line)
-                    ),
-                    nestingLevel = it.item.toInt()
-                )
-            }
             onDraw = {
                 quotes.forEach {
                     val line = it.copy(left = it.left + 10.dp.toPx(), right = it.right + 11.dp.toPx())
@@ -407,17 +389,6 @@ fun HtmlText(
                         color = Color.Green,
                         topLeft = line.topLeft,
                         size = line.size,
-                    )
-                }
-                bullets.forEach {
-                    val bullet = listBullets[it.nestingLevel % listBullets.size]
-                    drawText(
-                        textLayoutResult = bullet,
-                        color = color,
-                        topLeft = Offset(
-                            it.rect.left - 10.dp.toPx() - bullet.size.width / 2,
-                            it.rect.center.y - bullet.size.height / 2,
-                        ),
                     )
                 }
             }
