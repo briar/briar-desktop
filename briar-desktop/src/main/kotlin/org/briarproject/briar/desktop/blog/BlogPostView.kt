@@ -88,7 +88,35 @@ fun main() = preview {
         )
         BlogPostView(post, {}, {})
         val htmlPost = getRandomBlogPostItem(
-            text = "<h1>HTML post</h1><p>This is a html blog post.\n\nIt has <a href=\"https://web.archive.org\">one author</a> and no comments.</p>",
+            text = """
+        <h1>Headline</h1>
+        <p>some text</p>
+        <h2>second headline</h2>
+        <p>
+            Hello World
+            <b>bold</b>, <i>italic</i>, <u>underline</u>, <b><i><u>all three</u></i></b>,
+            also <strike>strikethrough</strike>
+        </p>
+        <p>
+            This paragraph<br/>
+            contains a <a href="https://google.com">link to Google</a>
+        </p>
+        <p>
+        Some fancy formatting: <sub>subscript</sub> and <sup>superscript</sup> are supported.
+        </p>
+        <blockquote>
+            Something very important, worth citing
+        </blockquote>
+        <code>
+            a code block
+        </code>
+        <p>
+            <ol>
+                <li>foo</li>
+                <li>bar</li>
+            </ol>
+        </p>
+            """.trimIndent(),
             time = System.currentTimeMillis() - 750_000
         )
         BlogPostView(htmlPost, {}, {})

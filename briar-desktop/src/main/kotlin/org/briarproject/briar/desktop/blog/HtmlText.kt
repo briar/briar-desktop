@@ -78,7 +78,8 @@ fun main() = preview {
   <li>foo</li>
   <li>bar</li>
 </ol>
-</p>""".trimIndent()
+</p>
+    """.trimIndent()
 
     HtmlText(testHtml) {
         println(it)
