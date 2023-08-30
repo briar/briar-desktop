@@ -144,6 +144,7 @@ dependencies {
         exclude(group = "net.java.dev.jna", module = "jna")
     }
 
+    implementation("com.vladsch.flexmark:flexmark-all:0.64.8")
     implementation("com.vladsch.flexmark:flexmark-html2md-converter:0.64.8")
 
     kapt("com.google.dagger:dagger-compiler:$dagger_version")

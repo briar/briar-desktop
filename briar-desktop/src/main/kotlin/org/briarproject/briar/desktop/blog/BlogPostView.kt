@@ -54,7 +54,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.vladsch.flexmark.ast.Text
 import com.vladsch.flexmark.html2md.converter.FlexmarkHtmlConverter
+import com.vladsch.flexmark.parser.Parser
+import com.vladsch.flexmark.util.ast.Document
+import com.vladsch.flexmark.util.ast.NodeVisitor
+import com.vladsch.flexmark.util.ast.VisitHandler
+import com.vladsch.flexmark.util.ast.Visitor
+import com.vladsch.flexmark.util.data.MutableDataSet
 import org.briarproject.bramble.api.sync.GroupId
 import org.briarproject.bramble.api.sync.MessageId
 import org.briarproject.briar.api.blog.BlogCommentHeader
@@ -79,6 +86,7 @@ import org.briarproject.briar.desktop.utils.getRandomAuthor
 import org.briarproject.briar.desktop.utils.getRandomId
 import org.briarproject.briar.desktop.utils.getRandomString
 import kotlin.random.Random
+
 
 @Suppress("HardCodedStringLiteral")
 fun main() = preview {
@@ -139,6 +147,25 @@ fun main() = preview {
     }
 }
 
+class MarkdownVisitor {
+
+    fun run(document: Document) {
+        visitor.visit(document)
+    }
+
+    // example of visitor for a node or nodes, just add VisitHandlers<> to the list
+    // any node type not handled by the visitor will default to visiting its children
+    var visitor: NodeVisitor = NodeVisitor(
+        VisitHandler(Text::class.java, Visitor { text: Text -> visit(text) })
+    )
+
+    fun visit(text: Text) {
+        val string = text.getChars().unescape()
+        // TODO: do stuff with string
+        visitor.visitChildren(text)
+    }
+}
+
 @Composable
 @OptIn(ExperimentalFoundationApi::class)
 fun BlogPostView(
@@ -150,6 +177,13 @@ fun BlogPostView(
 
     val text = item.text ?: ""
     val markdown = FlexmarkHtmlConverter.Builder().build().convert(text)
+
+    val options = MutableDataSet()
+    val parser: Parser = Parser.builder(options).build()
+    val md = parser.parse(markdown)
+
+    val visitor = MarkdownVisitor()
+    visitor.run(md)
 
     Row(modifier = Modifier.height(IntrinsicSize.Min)) {
         Column(modifier = Modifier.weight(1f)) {
