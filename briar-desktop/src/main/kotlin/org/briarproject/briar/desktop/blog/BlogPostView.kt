@@ -26,10 +26,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement.spacedBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -54,6 +52,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.halilibo.richtext.markdown.Markdown
+import com.halilibo.richtext.ui.RichText
+import com.vladsch.flexmark.html2md.converter.FlexmarkHtmlConverter
 import org.briarproject.bramble.api.sync.GroupId
 import org.briarproject.bramble.api.sync.MessageId
 import org.briarproject.briar.api.blog.BlogCommentHeader
@@ -87,6 +88,11 @@ fun main() = preview {
             time = System.currentTimeMillis() - 999_000
         )
         BlogPostView(post, {}, {})
+        val htmlPost = getRandomBlogPostItem(
+            text = "<h1>HTML post</h1><p>This is a html blog post.\n\nIt has <a href=\"https://web.archive.org\">one author</a> and no comments.</p>",
+            time = System.currentTimeMillis() - 750_000
+        )
+        BlogPostView(htmlPost, {}, {})
         val commentPost = getRandomBlogCommentItem(
             parent = post,
             comment = "This is a comment on that first blog post.\n\nIt has two lines as well.",
@@ -114,19 +120,23 @@ fun BlogPostView(
     onAuthorClicked: ((GroupId) -> Unit)?,
     modifier: Modifier = Modifier,
 ) = Card(modifier = modifier) {
-    Row(modifier = Modifier.height(IntrinsicSize.Min)) {
+
+    val text = item.text ?: ""
+    val markdown = FlexmarkHtmlConverter.Builder().build().convert(text)
+
+    // TODO: cannot use `Row(modifier = Modifier.height(IntrinsicSize.Min))` here. Will lead to runtime error
+    Row {
         Column(modifier = Modifier.weight(1f)) {
             BlogPostViewHeader(item, onItemRepeat, onAuthorClicked, Modifier.padding(8.dp))
             // should be changed back to verticalArrangement = spacedBy(8.dp) on the containing Column
             // when https://github.com/JetBrains/compose-jb/issues/2729 is fixed
             Spacer(Modifier.height(8.dp))
-            SelectionContainer {
-                Text(
-                    modifier = Modifier.padding(horizontal = 8.dp).fillMaxWidth(),
-                    text = item.text ?: "",
-                    maxLines = if (onItemRepeat == null) 5 else Int.MAX_VALUE,
-                    overflow = TextOverflow.Ellipsis,
-                )
+            //SelectionContainer {
+            // TODO: cannot use the options below concerning maxLines and overflow
+            // maxLines = if (onItemRepeat == null) 5 else Int.MAX_VALUE,
+            // overflow = TextOverflow.Ellipsis,
+            RichText(modifier = Modifier.padding(horizontal = 8.dp).fillMaxWidth()) {
+                Markdown(markdown)
             }
             Spacer(Modifier.height(8.dp))
             // if no preview and a comment item, show comments
@@ -141,7 +151,8 @@ fun BlogPostView(
             modifier = Modifier.width(8.dp),
         ) {
             AnimatedVisibility(visible = !item.isRead) {
-                Box(modifier = Modifier.fillMaxSize().background(Blue500))
+                // TODO: cannot use fillMaxHeight() here
+                Box(modifier = Modifier.height(50.dp).fillMaxWidth().background(Blue500))
             }
         }
     }
@@ -301,7 +312,8 @@ internal fun getRandomBlogPostItem(text: String, time: Long) = BlogPostItem(
         getRandomAuthor(),
         AuthorInfo(AuthorInfo.Status.values().filter { it != AuthorInfo.Status.NONE }.random()),
         Random.nextBoolean() && Random.nextBoolean() && Random.nextBoolean(),
-        Random.nextBoolean(),
+        false,
+        //Random.nextBoolean(),
     ),
     text = text,
 )

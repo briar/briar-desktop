@@ -144,6 +144,9 @@ dependencies {
         exclude(group = "net.java.dev.jna", module = "jna")
     }
 
+    implementation("com.vladsch.flexmark:flexmark-html2md-converter:0.64.8")
+    implementation("com.halilibo.compose-richtext:richtext-commonmark:0.17.0")
+
     kapt("com.google.dagger:dagger-compiler:$dagger_version")
 
     testImplementation(kotlin("test-testng"))
