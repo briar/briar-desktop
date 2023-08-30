@@ -31,7 +31,6 @@ import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.ParagraphStyle
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -68,7 +67,6 @@ val listBullets = listOf(
     "\u25aa",
 )
 
-@OptIn(ExperimentalTextApi::class)
 @Composable
 @Suppress("HardCodedStringLiteral")
 fun HtmlText(
@@ -167,108 +165,136 @@ fun HtmlText(
                 }
             }
 
-            fun startParagraph() {
-                pushIndent(0.sp)
+            data class HtmlNode(
+                val start: (node: Element) -> Unit,
+                val end: () -> Unit = { pop() },
+            )
+
+            val strong = HtmlNode(start = { pushStyle(bold) })
+            val em = HtmlNode(start = { pushStyle(italic) })
+            fun pushHeader(style: TextStyle) {
+                pushStyle(style.toParagraphStyle())
+                pushStyle(style.toSpanStyle())
             }
 
-            fun endParagraph() {
-                popIndent()
+            fun popHeader() {
+                pop(); pop()
             }
 
-            fun startPre() {
-                pushIndent(20.sp)
-                withinPre = true
-                pushStyle(monospace)
-            }
+            val nodes = mapOf(
+                // headers
+                "h1" to HtmlNode(start = { pushHeader(h1) }, end = ::popHeader),
+                "h2" to HtmlNode(start = { pushHeader(h2) }, end = ::popHeader),
+                "h3" to HtmlNode(start = { pushHeader(h3) }, end = ::popHeader),
+                "h4" to HtmlNode(start = { pushHeader(h4) }, end = ::popHeader),
+                "h5" to HtmlNode(start = { pushHeader(h5) }, end = ::popHeader),
+                "h6" to HtmlNode(start = { pushHeader(h6) }, end = ::popHeader),
 
-            fun endPre() {
-                popIndent()
-                withinPre = false
-                pop()
-            }
+                // inline formatting
+                "b" to strong, "strong" to strong,
+                "i" to em, "em" to em, "cite" to em,
+                "u" to HtmlNode(start = { pushStyle(underline) }),
+                "strike" to HtmlNode(start = { pushStyle(strikethrough) }),
+                "sub" to HtmlNode(start = { pushStyle(subscript) }),
+                "sup" to HtmlNode(start = { pushStyle(superscript) }),
+                "small" to HtmlNode(start = { pushStyle(small) }),
+                "code" to HtmlNode(
+                    start = { if (!withinPre) pushStyle(monospace) },
+                    end = { if (!withinPre) pop() }
+                ),
+                "q" to HtmlNode(
+                    // todo: quotation marks should be properly localized
+                    start = { appendAndUpdateCursor("\"") },
+                    end = { appendAndUpdateCursor("\"") }
+                ),
+                "a" to HtmlNode(
+                    start = { node ->
+                        val href = node.attr("href")
 
-            fun startCode() {
-                if (!withinPre) pushStyle(monospace)
-            }
+                        pushStringAnnotation("link", href)
+                        pushStyle(link)
+                    },
+                    end = {
+                        pop()
+                        pop()
+                    }
+                ),
 
-            fun endCode() {
-                if (!withinPre) pop()
-            }
+                // lists
+                "ul" to HtmlNode(
+                    start = {
+                        listNesting.push(UNORDERED)
+                        listNumbering.push(0)
+                        pushIndent(20.sp)
+                    },
+                    end = {
+                        listNesting.pop()
+                        listNumbering.pop()
+                        popIndent()
+                    }
+                ),
+                "ol" to HtmlNode(
+                    start = {
+                        listNesting.push(ORDERED)
+                        listNumbering.push(0)
+                        pushIndent(20.sp)
+                    },
+                    end = {
+                        listNesting.pop()
+                        listNumbering.pop()
+                        popIndent()
+                    }
+                ),
+                "li" to HtmlNode(
+                    start = {
+                        check(listNesting.isNotEmpty()) { "<li> outside of list" }
+                        val listType = listNesting.top()
+                        listNumbering.incrementCurrent()
+                        if (listType == UNORDERED) {
+                            val bulletType = listNesting.size - 1
+                            appendAndUpdateCursor(listBullets[bulletType % listBullets.size])
+                            appendAndUpdateCursor(" ")
+                            pushStringAnnotation("bullet", listNesting.size.toString())
+                        } else if (listType == ORDERED) {
+                            appendAndUpdateCursor("${listNumbering.top()}. ")
+                            pushStringAnnotation("bullet", listNesting.size.toString())
+                        }
+                    },
+                    end = {
+                        pop()
+                        ensureNewline()
+                    }
+                ),
 
-            fun startLink(node: Element) {
-                val href = node.attr("href")
-
-                pushStringAnnotation("link", href)
-                pushStyle(link)
-            }
-
-            fun endLink() {
-                pop()
-                pop()
-            }
-
-            fun startBlockQuote() {
-                pushIndent(20.sp)
-                pushStringAnnotation("quote", "")
-            }
-
-            fun endBlockQuote() {
-                pop()
-                popIndent()
-            }
-
-            // todo: quotation marks should be properly localized
-            fun startInlineQuote() {
-                appendAndUpdateCursor("\"")
-            }
-
-            fun endInlineQuote() {
-                appendAndUpdateCursor("\"")
-            }
-
-            fun startUnorderedList() {
-                listNesting.push(UNORDERED)
-                listNumbering.push(0)
-                pushIndent(20.sp)
-            }
-
-            fun endUnorderedList() {
-                listNesting.pop()
-                listNumbering.pop()
-                popIndent()
-            }
-
-            fun startOrderedList() {
-                listNesting.push(ORDERED)
-                listNumbering.push(0)
-                pushIndent(20.sp)
-            }
-
-            fun endOrderedList() {
-                listNesting.pop()
-                listNumbering.pop()
-                popIndent()
-            }
-
-            fun startBullet() {
-                check(listNesting.isNotEmpty()) { "<li> outside of list" }
-                val listType = listNesting.top()
-                listNumbering.incrementCurrent()
-                if (listType == UNORDERED) {
-                    val bulletType = listNesting.size - 1
-                    appendAndUpdateCursor(listBullets[bulletType % listBullets.size])
-                    appendAndUpdateCursor(" ")
-                    pushStringAnnotation("bullet", listNesting.size.toString())
-                } else if (listType == ORDERED) {
-                    appendAndUpdateCursor("${listNumbering.top()}. ")
-                    pushStringAnnotation("bullet", listNesting.size.toString())
-                }
-            }
-
-            fun endBullet() {
-                pop()
-                ensureNewline()
-            }
+                // misc
+                "br" to HtmlNode(start = { appendAndUpdateCursor("\n") }, end = {}),
+                "p" to HtmlNode(
+                    start = { pushIndent(0.sp) },
+                    end = { popIndent() }
+                ),
+                "blockquote" to HtmlNode(
+                    start = {
+                        pushIndent(20.sp)
+                        pushStringAnnotation("quote", "")
+                    },
+                    end = {
+                        pop()
+                        popIndent()
+                    }
+                ),
+                "pre" to HtmlNode(
+                    start = {
+                        pushIndent(20.sp)
+                        withinPre = true
+                        pushStyle(monospace)
+                    },
+                    end = {
+                        popIndent()
+                        withinPre = false
+                        pop()
+                    }
+                )
+            )
 
             val doc = Jsoup.parse(html)
 
@@ -289,39 +315,7 @@ fun HtmlText(
                         }
 
                         is Element -> {
-                            when (node.tagName()) {
-                                // headers
-                                "h1" -> pushStyle(h1)
-                                "h2" -> pushStyle(h2)
-                                "h3" -> pushStyle(h3)
-                                "h4" -> pushStyle(h4)
-                                "h5" -> pushStyle(h5)
-                                "h6" -> pushStyle(h6)
-
-                                // inline formatting
-                                "b", "strong" -> pushStyle(bold)
-                                "i", "em", "cite" -> pushStyle(italic)
-                                "u" -> pushStyle(underline)
-                                "strike" -> pushStyle(strikethrough)
-                                "sub" -> pushStyle(subscript)
-                                "sup" -> pushStyle(superscript)
-                                "small" -> pushStyle(small)
-                                "code" -> startCode()
-                                "q" -> startInlineQuote()
-                                "a" -> startLink(node)
-
-                                // lists
-                                "ul" -> startUnorderedList()
-                                "ol" -> startOrderedList()
-                                "li" -> startBullet()
-
-                                // misc
-                                "br" -> appendAndUpdateCursor("\n")
-                                "blockquote" -> startBlockQuote()
-                                "p" -> startParagraph()
-                                "pre" -> startPre()
-                                // else -> throw Exception("Unsupported tag '${node.tagName()}'")
-                            }
+                            nodes[node.tagName()]?.let { it.start(node) }
                         }
 
                         else -> {
@@ -332,27 +326,7 @@ fun HtmlText(
 
                 override fun tail(node: Node, depth: Int) {
                     if (node is Element) {
-                        when (node.tagName()) {
-                            "h1", "h2", "h3", "h4", "h5", "h6" -> {
-                                pop()
-                                pop()
-                            }
-
-                            "b", "strong", "i", "em", "cite", "u", "strike", "sub", "sup", "small",
-                            -> pop()
-
-                            "code" -> endCode()
-                            "q" -> endInlineQuote()
-                            "a" -> endLink()
-
-                            "ul" -> endUnorderedList()
-                            "ol" -> endOrderedList()
-                            "li" -> endBullet()
-
-                            "p" -> endParagraph()
-                            "blockquote" -> endBlockQuote()
-                            "pre" -> endPre()
-                        }
+                        nodes[node.tagName()]?.let { it.end() }
                     }
                 }
             })
@@ -418,9 +392,4 @@ fun <E> ArrayDeque<E>.top(): E {
 
 fun ArrayDeque<Int>.incrementCurrent() {
     this[size - 1] = this[size - 1] + 1
-}
-
-private fun AnnotatedString.Builder.pushStyle(style: TextStyle) {
-    pushStyle(style.toParagraphStyle())
-    pushStyle(style.toSpanStyle())
 }
