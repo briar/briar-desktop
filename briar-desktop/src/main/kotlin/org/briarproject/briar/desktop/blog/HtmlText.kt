@@ -67,53 +67,53 @@ import org.jsoup.nodes.Node
 import org.jsoup.nodes.TextNode
 import org.jsoup.select.NodeVisitor
 
-fun main() = preview {
-    @NonNls
-    @Language("HTML")
-    val testHtml = """
-<h1>Headline</h1>
-<p>some text</p>
-<h2>second headline</h2>
-<p>
-    Hello World
-    <b>bold</b>, <i>italic</i>, <u>underline</u>, <strike>strikethrough</strike>, <b><i><u>all three <strike>or four</strike></u></i></b>
-</p>
-<p>
-    This paragraph<br/>
-    contains a <a href="https://google.com">link to Google</a>
-</p>
-<blockquote>This is a block quote<br/>with multiple lines.</blockquote>
-Unordered lists:
-<ul>
-  <li>foo</li>
-  <li>direct children<ul><li>child1</li><li>child2</li></ul></li>
-  <ul>
-    <li>bar1</li>
-    <li>bar2</li>
-  </ul>
-</ul>
-<ul>
-  <li>foo</li>
-  <li>bar</li>
-</ul>
-Ordered lists:
-<ol>
-  <li>foo</li>
-  <li>direct children<ol><li>child1</li><li>child2</li></ol></li>
-  <ol>
-    <li>bar1</li>
-    <li>bar2</li>
-  </ol>
-  <li>test</li>
-</ol>
-Another list:
-<ol>
-  <li>foo</li>
-  <li>direct children<ol><li>child1</li><li>child2</li></ol></li>
-  <li>test</li>
-</ol>
-    """.trimIndent()
+@NonNls
+@Language("HTML")
+private val testHtml = """
+        <h1>Headline</h1>
+        <p>some text</p>
+        <h2>second headline</h2>
+        <p>
+            Hello World
+            <b>bold</b>, <i>italic</i>, <u>underline</u>, <strike>strikethrough</strike>, <b><i><u>all three <strike>or four</strike></u></i></b>
+        </p>
+        <p>
+            This paragraph<br/>
+            contains a <a href="https://google.com">link to Google</a>
+        </p>
+        <blockquote>This is a block quote<br/>with multiple lines.</blockquote>
+        Unordered lists:
+        <ul>
+          <li>foo</li>
+          <li>direct children<ul><li>child1</li><li>child2</li></ul></li>
+          <ul>
+            <li>bar1</li>
+            <li>bar2</li>
+          </ul>
+        </ul>
+        <ul>
+          <li>foo</li>
+          <li>bar</li>
+        </ul>
+        Ordered lists:
+        <ol>
+          <li>foo</li>
+          <li>direct children<ol><li>child1</li><li>child2</li></ol></li>
+          <ol>
+            <li>bar1</li>
+            <li>bar2</li>
+          </ol>
+          <li>test</li>
+        </ol>
+        Another list:
+        <ol>
+          <li>foo</li>
+          <li>direct children<ol><li>child1</li><li>child2</li></ol></li>
+          <li>test</li>
+        </ol>
+""".trimIndent()
 
+fun main() = preview {
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier.fillMaxSize(),
@@ -456,7 +456,6 @@ fun HtmlText(
 
 private fun AnnotatedString.getStringAnnotations(tag: String) =
     getStringAnnotations(tag, 0, length)
-
 
 fun <E> ArrayDeque<E>.push(e: E) {
     addLast(e)
