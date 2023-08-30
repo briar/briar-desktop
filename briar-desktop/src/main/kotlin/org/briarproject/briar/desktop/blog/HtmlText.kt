@@ -35,6 +35,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.ParagraphStyle
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -135,12 +136,12 @@ fun HtmlText(
     // Elements we still need to add support for:
     //    "code", "dd", "dl", "dt", "pre", "small", "span"
 
-    val h1 = MaterialTheme.typography.h1.toParagraphStyle()
-    val h2 = MaterialTheme.typography.h2.toParagraphStyle()
-    val h3 = MaterialTheme.typography.h3.toParagraphStyle()
-    val h4 = MaterialTheme.typography.h4.toParagraphStyle()
-    val h5 = MaterialTheme.typography.h5.toParagraphStyle()
-    val h6 = MaterialTheme.typography.h6.toParagraphStyle()
+    val h1 = MaterialTheme.typography.h1
+    val h2 = MaterialTheme.typography.h2
+    val h3 = MaterialTheme.typography.h3
+    val h4 = MaterialTheme.typography.h4
+    val h5 = MaterialTheme.typography.h5
+    val h6 = MaterialTheme.typography.h6
     val bold = SpanStyle(fontWeight = FontWeight.Bold)
     val italic = SpanStyle(fontStyle = FontStyle.Italic)
     val underline = SpanStyle(textDecoration = TextDecoration.Underline)
@@ -334,7 +335,11 @@ fun HtmlText(
                 override fun tail(node: Node, depth: Int) {
                     if (node is Element) {
                         when (node.tagName()) {
-                            "h1", "h2", "h3", "h4", "h5", "h6",
+                            "h1", "h2", "h3", "h4", "h5", "h6" -> {
+                                pop()
+                                pop()
+                            }
+
                             "b", "strong", "i", "em", "cite", "u", "strike", "sub", "sup",
                             "a",
                             -> pop()
@@ -410,4 +415,9 @@ fun <E> ArrayDeque<E>.pop(): E {
 
 fun <E> ArrayDeque<E>.top(): E {
     return last()
+}
+
+private fun AnnotatedString.Builder.pushStyle(style: TextStyle) {
+    pushStyle(style.toParagraphStyle())
+    pushStyle(style.toSpanStyle())
 }
