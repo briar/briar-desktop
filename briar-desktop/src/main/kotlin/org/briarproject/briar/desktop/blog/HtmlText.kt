@@ -18,24 +18,13 @@
 
 package org.briarproject.briar.desktop.blog
 
-import androidx.compose.foundation.VerticalScrollbar
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.text.ClickableText
-import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Rect
@@ -56,83 +45,15 @@ import androidx.compose.ui.text.style.TextIndent
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import org.briarproject.briar.desktop.blog.ListType.ORDERED
 import org.briarproject.briar.desktop.blog.ListType.UNORDERED
-import org.briarproject.briar.desktop.utils.PreviewUtils.preview
-import org.intellij.lang.annotations.Language
-import org.jetbrains.annotations.NonNls
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 import org.jsoup.nodes.Node
 import org.jsoup.nodes.TextNode
 import org.jsoup.select.NodeVisitor
-
-@NonNls
-@Language("HTML")
-private val testHtml = """
-        <h1>Headline</h1>
-        <p>some text</p>
-        <h2>second headline</h2>
-        <p>
-            Hello World
-            <b>bold</b>, <i>italic</i>, <u>underline</u>, <strike>strikethrough</strike>, <b><i><u>all three <strike>or four</strike></u></i></b>
-        </p>
-        <p>
-            This paragraph<br/>
-            contains a <a href="https://google.com">link to Google</a>
-        </p>
-        <blockquote>This is a block quote<br/>with multiple lines.</blockquote>
-        Unordered lists:
-        <ul>
-          <li>foo</li>
-          <li>direct children<ul><li>child1</li><li>child2</li></ul></li>
-          <ul>
-            <li>bar1</li>
-            <li>bar2</li>
-          </ul>
-        </ul>
-        <ul>
-          <li>foo</li>
-          <li>bar</li>
-        </ul>
-        Ordered lists:
-        <ol>
-          <li>foo</li>
-          <li>direct children<ol><li>child1</li><li>child2</li></ol></li>
-          <ol>
-            <li>bar1</li>
-            <li>bar2</li>
-          </ol>
-          <li>test</li>
-        </ol>
-        Another list:
-        <ol>
-          <li>foo</li>
-          <li>direct children<ol><li>child1</li><li>child2</li></ol></li>
-          <li>test</li>
-        </ol>
-""".trimIndent()
-
-fun main() = preview {
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier.fillMaxSize(),
-    ) {
-        val scrollState = rememberScrollState()
-        VerticalScrollbar(
-            adapter = rememberScrollbarAdapter(scrollState),
-            modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
-        )
-        SelectionContainer(
-            modifier = Modifier.fillMaxWidth().verticalScroll(scrollState).padding(16.dp),
-        ) {
-            HtmlText(testHtml) {
-                println(it)
-            }
-        }
-    }
-}
 
 // This file is adapted from https://github.com/jeremyrempel/yahnapp (HtmlText.kt)
 
@@ -169,14 +90,12 @@ fun HtmlText(
 
     // Elements we support:
     //    "h1", "h2", "h3", "h4", "h5", "h6",
-    //    "a", "b"/"strong", "i"/"em"/"cite", "u", "strike", "sub", "sup", "q",
-    //    "br", "p", "blockquote",
+    //    "a", "b"/"strong", "i"/"em"/"cite", "u", "strike", "sub", "sup", "q", "small"
+    //    "ul", "ol", "li"
+    //    "br", "p", "blockquote", "pre",
 
-    // Elements that are currently only partially supported:
-    //    "ul"/"ol" with "li": no nested lists, no "ul" within another paragraph "p"
-
-    // Elements we still need to add support for:
-    //    "code", "dd", "dl", "dt", "pre", "small", "span"
+    // Elements from Jsoup's safelist we could still add support for:
+    //    "dd", "dl", "dt", "span"
 
     val h1 = MaterialTheme.typography.h1
     val h2 = MaterialTheme.typography.h2
@@ -191,6 +110,7 @@ fun HtmlText(
     // todo: combination underline + strikethrough not working
     val subscript = SpanStyle(baselineShift = BaselineShift.Subscript)
     val superscript = SpanStyle(baselineShift = BaselineShift.Superscript)
+    val small = SpanStyle(fontSize = 0.8.em)
     val link = SpanStyle(textDecoration = TextDecoration.Underline, color = MaterialTheme.colors.primaryVariant)
     val monospace = SpanStyle(fontFamily = FontFamily.Monospace) // todo: doesn't work for some reason
 
@@ -388,6 +308,7 @@ fun HtmlText(
                                 "strike" -> pushStyle(strikethrough)
                                 "sub" -> pushStyle(subscript)
                                 "sup" -> pushStyle(superscript)
+                                "small" -> pushStyle(small)
                                 "code" -> startCode()
                                 "q" -> startInlineQuote()
                                 "a" -> addLink(node)
@@ -420,7 +341,7 @@ fun HtmlText(
                                 pop()
                             }
 
-                            "b", "strong", "i", "em", "cite", "u", "strike", "sub", "sup",
+                            "b", "strong", "i", "em", "cite", "u", "strike", "sub", "sup", "small",
                             "a",
                             -> pop()
 
