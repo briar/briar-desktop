@@ -478,7 +478,7 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
     }
 
     private fun createBlogPosts(contactIds: List<ContactId>) {
-        val postHtml = """
+        val postHtmlBriar = """
             <h1>A blog post with HTML</h1>
             <p>This is a post written in HTML</p>
             <p>It contains <a href="https://briarproject.org">a link to the Briar website</a>.</p>
@@ -489,10 +489,21 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
             </ul>
         """.trimIndent()
 
+        val postHtmlDuckDuckGo = """
+            <h1>Yet another blog post</h1>
+            <p>This is a post written in HTML</p>
+            <p>It contains <a href="https://duckduckgo.com">a link to DuckDuckGo</a>.</p>
+            <ul>
+              <li> Clicking it should open a dialog,
+              <li> that dialog should warn you about opening links,
+              <li> and offer to open it using your default browser.
+            </ul>
+        """.trimIndent()
+
         // Add blog posts for contacts
-        contactIds.forEach { contactId ->
+        contactIds.forEachIndexed { index, contactId ->
             // add one blog per contact
-            val author = localAuthors[contactId] ?: return@forEach
+            val author = localAuthors[contactId] ?: return@forEachIndexed
             val blog = blogFactory.createBlog(author)
             blogManager.addBlog(blog)
 
@@ -501,7 +512,7 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
                 clock.currentTimeMillis() - 500_000,
                 null,
                 author,
-                postHtml
+                if (index % 2 == 0) postHtmlBriar else postHtmlDuckDuckGo
             )
             blogManager.addLocalPost(post)
         }
@@ -516,7 +527,7 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
             clock.currentTimeMillis() - 500_000,
             null,
             author,
-            postHtml
+            postHtmlBriar
         )
         blogManager.addLocalPost(post)
     }
