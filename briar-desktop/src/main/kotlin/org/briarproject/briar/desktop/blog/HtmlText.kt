@@ -18,21 +18,26 @@
 
 package org.briarproject.briar.desktop.blog
 
-import androidx.compose.foundation.text.ClickableText
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.text.BasicText
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.ParagraphStyle
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
@@ -67,6 +72,7 @@ val listBullets = listOf(
     "\u25aa",
 )
 
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class)
 @Composable
 @Suppress("HardCodedStringLiteral")
 fun HtmlText(
@@ -330,22 +336,28 @@ fun HtmlText(
     }
 
     var onDraw: DrawScope.() -> Unit by remember { mutableStateOf({}) }
+    var lastLayoutResult: TextLayoutResult? by remember { mutableStateOf(null) }
 
-    ClickableText(
+    BasicText(
         text = formattedString,
-        modifier = modifier.drawBehind { onDraw() },
+        modifier = modifier
+            .drawBehind { onDraw() }
+            // workaround for https://github.com/JetBrains/compose-multiplatform/issues/1450
+            // todo: when fixed, change to ClickableText and move logic to onClick parameter
+            .onPointerEvent(PointerEventType.Release) {
+                val offset = lastLayoutResult?.getOffsetForPosition(it.changes.first().position) ?: 0
+                formattedString
+                    .getStringAnnotations(tag = "link", start = offset, end = offset)
+                    .firstOrNull()
+                    ?.let { annotation ->
+                        handleLink(annotation.item)
+                    }
+            },
         overflow = overflow,
         maxLines = maxLines,
         style = MaterialTheme.typography.body1.copy(color = MaterialTheme.colors.onSurface),
-        onClick = { offset ->
-            formattedString
-                .getStringAnnotations(start = offset, end = offset)
-                .firstOrNull { it.tag == "link" }
-                ?.let { annotation ->
-                    handleLink(annotation.item)
-                }
-        },
         onTextLayout = { layoutResult ->
+            lastLayoutResult = layoutResult
             val quotes = formattedString.getStringAnnotations("quote").map {
                 val firstLine = layoutResult.getLineForOffset(it.start)
                 val lastLine = layoutResult.getLineForOffset(it.end - 1)
