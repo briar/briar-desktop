@@ -478,13 +478,46 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
     }
 
     private fun createBlogPosts(contactIds: List<ContactId>) {
+        val postHtml = """
+            <h1>A blog post with HTML</h1>
+            <p>This is a post written in HTML</p>
+            <p>It contains <a href="https://briarproject.org">a link to the Briar website</a>.</p>
+            <ul>
+              <li> Clicking it should open a dialog,
+              <li> that dialog should warn you about opening links,
+              <li> and offer to open it using your default browser.
+            </ul>
+        """.trimIndent()
+
+        // Add blog posts for contacts
         contactIds.forEach { contactId ->
             // add one blog per contact
             val author = localAuthors[contactId] ?: return@forEach
             val blog = blogFactory.createBlog(author)
             blogManager.addBlog(blog)
 
-            // blogPostFactory.createBlogPost(blog.id, 0L, null, author, getRandomString())
+            val post = blogPostFactory.createBlogPost(
+                blog.id,
+                clock.currentTimeMillis() - 500_000,
+                null,
+                author,
+                postHtml
+            )
+            blogManager.addLocalPost(post)
         }
+
+        // Add blog post on personal blog
+        val author = identityManager.localAuthor
+        val blog = blogManager.getPersonalBlog(author)
+        blogManager.addBlog(blog)
+
+        val post = blogPostFactory.createBlogPost(
+            blog.id,
+            clock.currentTimeMillis() - 500_000,
+            null,
+            author,
+            postHtml
+        )
+        blogManager.addLocalPost(post)
     }
 }
