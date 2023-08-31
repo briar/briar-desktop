@@ -80,7 +80,7 @@ fun LinkClickedDialog(
     val clipboardManager = LocalClipboardManager.current
     AlertDialog(
         title = {
-            Text(i18n("link.warning.title"))
+            Text(i18n("link.warning.title"), style = MaterialTheme.typography.h6)
         },
         onDismissRequest = onDismissed,
         text = {
