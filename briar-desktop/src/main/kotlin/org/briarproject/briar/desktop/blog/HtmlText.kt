@@ -322,7 +322,7 @@ fun HtmlText(
                         }
 
                         else -> {
-                            throw Exception("Unknown node type")
+                            // Elements like Comment, CData. Just ignore them
                         }
                     }
                 }

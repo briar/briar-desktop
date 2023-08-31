@@ -29,6 +29,7 @@ private val testHtml = """
         <h1>Headline</h1>
         <p>some text</p>
         <h2>second headline</h2>
+        <!-- foo -->
         <p>
             Hello World
             <b>bold</b>, <i>italic</i>, <u>underline</u>, <strike>strikethrough</strike>, <b><i><u>all three <strike>or four</strike></u></i></b>
