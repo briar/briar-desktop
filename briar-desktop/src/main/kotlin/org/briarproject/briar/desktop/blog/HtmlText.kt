@@ -174,12 +174,14 @@ fun HtmlText(
 
             val strong = HtmlNode(start = { pushStyle(bold) })
             val em = HtmlNode(start = { pushStyle(italic) })
+
             fun pushHeader(style: TextStyle) {
                 pushStyle(style.toParagraphStyle())
                 pushStyle(style.toSpanStyle())
             }
 
             fun popHeader() {
+                // we push two styles above, so we need to pop twice
                 pop(); pop()
             }
 

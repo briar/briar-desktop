@@ -28,6 +28,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.ButtonType
 import androidx.compose.material.DialogButton
@@ -45,7 +46,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
-import org.briarproject.briar.desktop.theme.codeBackground
+import org.briarproject.briar.desktop.theme.surfaceVariant
 import org.briarproject.briar.desktop.ui.Tooltip
 import org.briarproject.briar.desktop.utils.DesktopUtils.browseLinkIfSupported
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
@@ -88,9 +89,10 @@ fun LinkClickedDialog(
             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 Text(i18n("link.warning.intro"))
                 Box(
-                    modifier = Modifier.background(MaterialTheme.colors.codeBackground).fillMaxWidth().clickable {
-                        clipboardManager.setText(AnnotatedString(link))
-                    }
+                    modifier = Modifier.background(MaterialTheme.colors.surfaceVariant, RoundedCornerShape(4.dp))
+                        .fillMaxWidth().clickable {
+                            clipboardManager.setText(AnnotatedString(link))
+                        }
                 ) {
                     Text(
                         text = link,
