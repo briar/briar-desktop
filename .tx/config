@@ -1,10 +1,13 @@
 [main]
-host = https://www.transifex.com
-lang_map = zh-Hans: zh_CN, zh-Hant: zh_TW, nb_NO: nb
+host     = https://www.transifex.com
+lang_map = zh-Hant: zh_TW, nb_NO: nb, zh-Hans: zh_CN
 
-[briar.briar-desktop]
-file_filter = briar-desktop/src/main/resources/strings/BriarDesktop_<lang>.properties
-minimum_perc = 50
-source_file = briar-desktop/src/main/resources/strings/BriarDesktop.properties
-source_lang = en
-type = UNICODEPROPERTIES
+[o:otf:p:briar:r:briar-desktop]
+file_filter            = briar-desktop/src/main/resources/strings/BriarDesktop_<lang>.properties
+source_file            = briar-desktop/src/main/resources/strings/BriarDesktop.properties
+source_lang            = en
+type                   = UNICODEPROPERTIES
+minimum_perc           = 50
+replace_edited_strings = false
+keep_translations      = false
+
