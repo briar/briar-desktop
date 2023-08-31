@@ -30,7 +30,6 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Rect
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
@@ -118,6 +117,7 @@ fun HtmlText(
     val small = SpanStyle(fontSize = 0.8.em)
     val link = SpanStyle(textDecoration = TextDecoration.Underline, color = MaterialTheme.colors.primaryVariant)
     val monospace = SpanStyle(fontFamily = FontFamily.Monospace) // todo: doesn't work for some reason
+    val colorBlockquote = MaterialTheme.colors.secondary
 
     val formattedString = remember(html) {
         buildAnnotatedString {
@@ -382,7 +382,7 @@ fun HtmlText(
                 quotes.forEach {
                     val line = it.copy(left = it.left + 10.dp.toPx(), right = it.right + 11.dp.toPx())
                     drawRect(
-                        color = Color.Green,
+                        color = colorBlockquote,
                         topLeft = line.topLeft,
                         size = line.size,
                     )
