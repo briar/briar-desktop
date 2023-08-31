@@ -227,7 +227,7 @@ class FeedViewModel @Inject constructor(
         if (readIds.isNotEmpty()) {
             runOnDbThreadWithTransaction(false) { txn ->
                 readIds.forEach { id ->
-                    blogManager.setReadFlag(txn, id, false)
+                    blogManager.setReadFlag(txn, id, true)
                 }
                 txn.attach {
                     eventBus.broadcast(BlogPostsReadEvent(readIds.size))
