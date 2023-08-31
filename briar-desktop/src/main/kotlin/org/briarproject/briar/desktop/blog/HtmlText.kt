@@ -137,14 +137,16 @@ fun HtmlText(
                 if (indentStack.isNotEmpty()) {
                     val prev = indentStack.top()
                     if (prev.start < length) {
+                        ensureNewline()
                         addStyle(
                             style = ParagraphStyle(textIndent = TextIndent(prev.indent, prev.indent)),
                             start = prev.start,
                             end = length
                         )
-                        // ensureNewline()
                     }
                     combinedIndent = (prev.indent.value + indent.value).sp
+                } else if (length > 1) {
+                    ensureNewline()
                 }
 
                 indentStack.push(IndentInfo(combinedIndent, length))
@@ -154,12 +156,12 @@ fun HtmlText(
                 check(indentStack.isNotEmpty()) { "nothing to pop from" }
                 val prev = indentStack.pop()
                 if (prev.start < length) {
+                    ensureNewline()
                     addStyle(
                         style = ParagraphStyle(textIndent = TextIndent(prev.indent, prev.indent)),
                         start = prev.start,
                         end = length
                     )
-                    ensureNewline()
                 }
 
                 if (indentStack.isNotEmpty()) {
@@ -177,13 +179,12 @@ fun HtmlText(
             val em = HtmlNode(start = { pushStyle(italic) })
 
             fun pushHeader(style: TextStyle) {
-                pushStyle(style.toParagraphStyle())
                 pushStyle(style.toSpanStyle())
             }
 
             fun popHeader() {
-                // we push two styles above, so we need to pop twice
-                pop(); pop()
+                ensureNewline()
+                pop()
             }
 
             fun startList(type: ListType) {
@@ -260,14 +261,11 @@ fun HtmlText(
                             val bulletType = listNesting.size - 1
                             append(listBullets[bulletType % listBullets.size])
                             append(" ")
-                            pushStringAnnotation("bullet", listNesting.size.toString())
                         } else if (listType == ORDERED) {
                             append("${listNumbering.top()}. ")
-                            pushStringAnnotation("bullet", listNesting.size.toString())
                         }
                     },
                     end = {
-                        pop()
                         ensureNewline()
                     }
                 ),
