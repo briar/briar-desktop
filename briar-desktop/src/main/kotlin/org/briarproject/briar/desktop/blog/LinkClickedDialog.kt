@@ -47,12 +47,9 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import org.briarproject.briar.desktop.theme.codeBackground
 import org.briarproject.briar.desktop.ui.Tooltip
+import org.briarproject.briar.desktop.utils.DesktopUtils.browseLinkIfSupported
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
-import java.awt.Desktop
-import java.awt.Desktop.getDesktop
-import java.awt.Desktop.isDesktopSupported
-import java.net.URI
 
 @Suppress("HardCodedStringLiteral")
 fun main() = preview("visible" to true) {
@@ -65,9 +62,7 @@ fun main() = preview("visible" to true) {
         },
         onConfirmed = {
             setBooleanParameter("visible", false)
-            if (isDesktopSupported() && getDesktop().isSupported(Desktop.Action.BROWSE)) {
-                getDesktop().browse(URI(link))
-            }
+            browseLinkIfSupported(link)
         }
     )
 }

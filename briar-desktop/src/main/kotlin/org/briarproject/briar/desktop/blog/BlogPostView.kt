@@ -86,7 +86,7 @@ fun main() = preview {
             text = "This is a normal blog post.\n\nIt has one author and no comments.",
             time = System.currentTimeMillis() - 999_000
         )
-        BlogPostView(post, {}, {})
+        BlogPostView(post, {}, {}, {})
         val htmlPost = getRandomBlogPostItem(
             text = """
         <h1>Headline</h1>
@@ -119,13 +119,13 @@ fun main() = preview {
             """.trimIndent(),
             time = System.currentTimeMillis() - 750_000
         )
-        BlogPostView(htmlPost, {}, {})
+        BlogPostView(htmlPost, {}, {}, {})
         val commentPost = getRandomBlogCommentItem(
             parent = post,
             comment = "This is a comment on that first blog post.\n\nIt has two lines as well.",
             time = System.currentTimeMillis() - 500_000
         )
-        BlogPostView(commentPost, {}, {})
+        BlogPostView(commentPost, {}, {}, {})
         BlogPostView(
             getRandomBlogCommentItem(
                 parent = commentPost,
@@ -134,8 +134,9 @@ fun main() = preview {
             ),
             null,
             null,
+            null,
         )
-        BlogPostView(getRandomBlogPost(getRandomString(1337), 1337), null, null)
+        BlogPostView(getRandomBlogPost(getRandomString(1337), 1337), null, null, null)
     }
 }
 
@@ -145,6 +146,7 @@ fun BlogPostView(
     item: BlogPost,
     onItemRepeat: ((BlogPost) -> Unit)?,
     onAuthorClicked: ((GroupId) -> Unit)?,
+    onLinkClicked: ((String) -> Unit)?,
     modifier: Modifier = Modifier,
 ) = Card(modifier = modifier) {
     Row(modifier = Modifier.height(IntrinsicSize.Min)) {
@@ -160,9 +162,7 @@ fun BlogPostView(
                     maxLines = if (onItemRepeat == null) 5 else Int.MAX_VALUE,
                     overflow = TextOverflow.Ellipsis,
                 ) { link ->
-                    // TODO: handle link clicks. Display dialog warning the user about opening an external app
-                    //  with the implication that it can be used to identify the user. Also, make this actually
-                    //  clickable which it is not in the SelectionContainer at the moment.
+                    onLinkClicked?.invoke(link)
                 }
             }
             Spacer(Modifier.height(8.dp))

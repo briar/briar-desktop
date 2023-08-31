@@ -54,12 +54,22 @@ import org.briarproject.briar.desktop.threadedgroup.sharing.ThreadedGroupSharing
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
 import org.briarproject.briar.desktop.ui.HorizontalDivider
 import org.briarproject.briar.desktop.ui.getInfoDrawerHandler
+import org.briarproject.briar.desktop.utils.DesktopUtils.browseLinkIfSupported
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18nF
 import org.briarproject.briar.desktop.viewmodel.viewModel
 
 @Composable
 fun BlogScreen(viewModel: FeedViewModel = viewModel()) {
+    LinkClickedDialog(
+        link = viewModel.clickedLink.value,
+        visible = viewModel.openLinkWarningDialogVisible.value,
+        onDismissed = { viewModel.dismissOpenLinkWarningDialog() },
+        onConfirmed = {
+            viewModel.dismissOpenLinkWarningDialog()
+            browseLinkIfSupported(viewModel.clickedLink.value)
+        },
+    )
     Scaffold(
         topBar = {
             // only show header if some blog is selected
@@ -93,6 +103,7 @@ fun BlogScreen(viewModel: FeedViewModel = viewModel()) {
                         onItemSelected = viewModel::selectPost,
                         onBlogSelected = if (viewModel.selectedBlog.value == null) viewModel::selectBlog else null,
                         onBlogPostsVisible = viewModel::onPostsVisible,
+                        onLinkClicked = viewModel::showOpenLinkWarningDialog,
                         modifier = Modifier.padding(padding)
                     )
                 }

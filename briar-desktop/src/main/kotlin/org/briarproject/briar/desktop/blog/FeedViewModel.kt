@@ -79,6 +79,12 @@ class FeedViewModel @Inject constructor(
     private val _selectedBlog = mutableStateOf<GroupId?>(null)
     val selectedBlog = _selectedBlog.asState()
 
+    private val _openLinkWarningDialogVisible = mutableStateOf(false)
+    val openLinkWarningDialogVisible = _openLinkWarningDialogVisible.asState()
+
+    private val _clickedLink = mutableStateOf("")
+    val clickedLink = _clickedLink.asState()
+
     init {
         runOnDbThreadWithTransaction(true, this::loadAllBlogPosts)
     }
@@ -262,5 +268,14 @@ class FeedViewModel @Inject constructor(
             }
         }
         return UnreadPostInfo(firstUnread, num)
+    }
+
+    fun showOpenLinkWarningDialog(link: String) {
+        _clickedLink.value = link
+        _openLinkWarningDialogVisible.value = true
+    }
+
+    fun dismissOpenLinkWarningDialog() {
+        _openLinkWarningDialogVisible.value = false
     }
 }

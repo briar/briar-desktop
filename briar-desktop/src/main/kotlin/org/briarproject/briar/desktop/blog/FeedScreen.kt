@@ -66,6 +66,7 @@ fun main() = preview(
         },
         onItemSelected = {},
         onBlogSelected = {},
+        onLinkClicked = {},
         onBlogPostsVisible = {},
     )
 }
@@ -77,6 +78,7 @@ fun FeedScreen(
     onItemSelected: (BlogPost) -> Unit,
     onBlogSelected: ((GroupId) -> Unit)?,
     onBlogPostsVisible: (List<MessageId>) -> Unit,
+    onLinkClicked: ((String) -> Unit)?,
     modifier: Modifier = Modifier,
 ) {
     val scrollState = rememberLazyListState()
@@ -98,6 +100,7 @@ fun FeedScreen(
                     item = item,
                     onItemRepeat = onItemSelected,
                     onAuthorClicked = onBlogSelected,
+                    onLinkClicked = onLinkClicked,
                     modifier = Modifier
                         .heightIn(min = HEADER_SIZE)
                         .fillMaxWidth()

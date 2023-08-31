@@ -87,6 +87,7 @@ fun BlogInput(
                         item = selectedBlogPost,
                         onItemRepeat = null,
                         onAuthorClicked = null,
+                        onLinkClicked = null,
                     )
                 }
                 IconButton(
