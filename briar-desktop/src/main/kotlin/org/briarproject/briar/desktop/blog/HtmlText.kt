@@ -318,8 +318,6 @@ fun HtmlText(
                             val text =
                                 if (withinPre) node.wholeText
                                 else node.text()
-                                    // replace multiple newlines/whitespaces to single whitespace
-                                    .replace("\\s+".toRegex(), " ")
                                     // remove whitespace if first character in new line
                                     .let { if (lastCharWasNewline) it.trimStart() else it }
                             if (text.isNotBlank()) {
