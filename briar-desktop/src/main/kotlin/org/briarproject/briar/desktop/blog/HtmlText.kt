@@ -97,9 +97,10 @@ fun HtmlText(
     //    "a", "b"/"strong", "i"/"em"/"cite", "u", "strike", "sub", "sup", "q", "small"
     //    "ul", "ol", "li"
     //    "br", "p", "blockquote", "pre",
+    //    "dd", "dl", "dt",
 
     // Elements from Jsoup's safelist we could still add support for:
-    //    "dd", "dl", "dt", "span"
+    //    "span"
 
     val h1 = MaterialTheme.typography.h1
     val h2 = MaterialTheme.typography.h2
@@ -298,7 +299,16 @@ fun HtmlText(
                         withinPre = false
                         pop()
                     }
-                )
+                ),
+                // Implementation for description lists. Ignore "dl" and just add indent for "dt" and "dd".
+                "dt" to HtmlNode(
+                    start = { pushIndent(0.sp) },
+                    end = { popIndent() }
+                ),
+                "dd" to HtmlNode(
+                    start = { pushIndent(20.sp) },
+                    end = { popIndent() }
+                ),
             )
 
             val doc = Jsoup.parse(html)
