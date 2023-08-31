@@ -19,6 +19,7 @@
 package org.briarproject.briar.desktop.blog
 
 import androidx.compose.foundation.VerticalScrollbar
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -30,6 +31,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment.Companion.CenterEnd
@@ -39,6 +41,7 @@ import kotlinx.coroutines.delay
 import org.briarproject.bramble.api.sync.GroupId
 import org.briarproject.bramble.api.sync.MessageId
 import org.briarproject.briar.desktop.conversation.reallyVisibleItemsInfo
+import org.briarproject.briar.desktop.theme.surfaceVariant
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
 import org.briarproject.briar.desktop.ui.UnreadFabs
 import org.briarproject.briar.desktop.ui.UnreadFabsInfo
@@ -90,7 +93,7 @@ fun FeedScreen(
     Box(modifier = modifier.fillMaxSize()) {
         LazyColumn(
             state = scrollState,
-            modifier = Modifier.padding(end = 8.dp).selectableGroup()
+            modifier = Modifier.padding(end = 8.dp).background(MaterialTheme.colors.surfaceVariant).selectableGroup()
         ) {
             items(
                 items = posts,
