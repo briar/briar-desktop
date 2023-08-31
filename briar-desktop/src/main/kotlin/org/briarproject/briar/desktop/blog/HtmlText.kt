@@ -183,6 +183,18 @@ fun HtmlText(
                 pop(); pop()
             }
 
+            fun startList(type: ListType) {
+                listNesting.push(type)
+                listNumbering.push(0)
+                pushIndent(20.sp)
+            }
+
+            fun endList() {
+                listNesting.pop()
+                listNumbering.pop()
+                popIndent()
+            }
+
             val nodes = mapOf(
                 // headers
                 "h1" to HtmlNode(start = { pushHeader(h1) }, end = ::popHeader),
@@ -224,32 +236,21 @@ fun HtmlText(
 
                 // lists
                 "ul" to HtmlNode(
-                    start = {
-                        listNesting.push(UNORDERED)
-                        listNumbering.push(0)
-                        pushIndent(20.sp)
-                    },
-                    end = {
-                        listNesting.pop()
-                        listNumbering.pop()
-                        popIndent()
-                    }
+                    start = { startList(UNORDERED) },
+                    end = { endList() }
                 ),
                 "ol" to HtmlNode(
-                    start = {
-                        listNesting.push(ORDERED)
-                        listNumbering.push(0)
-                        pushIndent(20.sp)
-                    },
-                    end = {
-                        listNesting.pop()
-                        listNumbering.pop()
-                        popIndent()
-                    }
+                    start = { startList(ORDERED) },
+                    end = { endList() }
                 ),
                 "li" to HtmlNode(
                     start = {
-                        check(listNesting.isNotEmpty()) { "<li> outside of list" }
+                        if (listNesting.isEmpty()) {
+                            // Be lenient and allow a bit of broken HTML, <li> without
+                            // a <ul>: let's pretend there was a <ul>; that seems to be
+                            // browsers usually do.
+                            startList(UNORDERED)
+                        }
                         val listType = listNesting.top()
                         listNumbering.incrementCurrent()
                         if (listType == UNORDERED) {
