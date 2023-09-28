@@ -25,7 +25,7 @@ plugins {
     kotlin("jvm") version "1.7.20"
     kotlin("kapt") version "1.7.20"
     id("org.jetbrains.compose") version "1.4.3"
-    id("de.mobanisto.pinpit") version "0.5.0"
+    id("de.mobanisto.pinpit") version "0.9.0"
     id("java")
     id("idea")
     id("org.jlleitschuh.gradle.ktlint") version "10.1.0"
@@ -185,7 +185,7 @@ pinpit.desktop {
         mainClass = "org.briarproject.briar.desktop.MainKt"
         nativeDistributions {
             jvmVendor = "adoptium"
-            jvmVersion = "17.0.6+10"
+            jvmVersion = "17.0.9+9"
 
             packageName = appName
             packageVersion = version.toString()
