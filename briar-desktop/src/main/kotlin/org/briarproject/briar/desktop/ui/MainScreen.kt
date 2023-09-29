@@ -54,11 +54,12 @@ fun MainScreen(viewModel: SidebarViewModel = viewModel()) {
         CompositionLocalProvider(LocalInfoDrawerHandler provides drawerHandler) {
             Row {
                 BriarSidebar(
-                    viewModel.account.value,
-                    viewModel.uiMode.value,
-                    viewModel::setUiMode,
-                    viewModel.messageCount.value,
-                    viewModel.mailboxProblem.value,
+                    account = viewModel.account.value,
+                    uiMode = viewModel.uiMode.value,
+                    setUiMode = viewModel::setUiMode,
+                    messageCount = viewModel.messageCount.value,
+                    torPluginState = viewModel.torPluginState.value,
+                    hasMailboxProblem = viewModel.mailboxProblem.value,
                 )
                 VerticalDivider()
                 when (viewModel.uiMode.value) {

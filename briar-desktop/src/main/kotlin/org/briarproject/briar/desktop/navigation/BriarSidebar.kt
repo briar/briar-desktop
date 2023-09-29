@@ -18,8 +18,11 @@
 
 package org.briarproject.briar.desktop.navigation
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -29,6 +32,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Badge
 import androidx.compose.material.BadgedBox
 import androidx.compose.material.Icon
@@ -38,15 +42,22 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.BottomEnd
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import org.briarproject.bramble.api.identity.LocalAuthor
+import org.briarproject.bramble.api.identity.Author
+import org.briarproject.bramble.api.plugin.Plugin
 import org.briarproject.briar.desktop.contact.ProfileCircle
 import org.briarproject.briar.desktop.navigation.SidebarButtonState.None
 import org.briarproject.briar.desktop.navigation.SidebarButtonState.UnreadMessages
 import org.briarproject.briar.desktop.navigation.SidebarButtonState.Warning
+import org.briarproject.briar.desktop.theme.Lime500
+import org.briarproject.briar.desktop.theme.Orange500
+import org.briarproject.briar.desktop.theme.outline
 import org.briarproject.briar.desktop.theme.sidebarSurface
+import org.briarproject.briar.desktop.ui.Tooltip
 import org.briarproject.briar.desktop.ui.UiMode
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.getConfiguration
@@ -55,10 +66,11 @@ val SIDEBAR_WIDTH = 56.dp
 
 @Composable
 fun BriarSidebar(
-    account: LocalAuthor?,
+    account: Author?,
     uiMode: UiMode,
     setUiMode: (UiMode) -> Unit,
     messageCount: SidebarViewModel.MessageCount,
+    torPluginState: Plugin.State,
     hasMailboxProblem: Boolean,
 ) {
     @Composable
@@ -83,7 +95,7 @@ fun BriarSidebar(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         // profile button
-        account?.let { ProfileCircle(size = 45.dp, it.id.bytes) }
+        SideBarAvatar(account, torPluginState)
 
         Spacer(Modifier.height(4.dp))
 
@@ -106,6 +118,36 @@ fun BriarSidebar(
         BriarSidebarButton(UiMode.SETTINGS)
         BriarSidebarButton(UiMode.ABOUT)
     }
+}
+
+@Composable
+@OptIn(ExperimentalFoundationApi::class)
+private fun SideBarAvatar(account: Author?, torPluginState: Plugin.State) = Box {
+    ProfileCircle(size = 45.dp, account?.id?.bytes ?: ByteArray(0))
+    Tooltip(
+        text = torPluginState.getString(),
+        modifier = Modifier.align(BottomEnd),
+    ) {
+        Box(
+            modifier = Modifier
+                .size(16.dp)
+                .border(1.dp, MaterialTheme.colors.outline, CircleShape)
+                .background(torPluginState.getIconColor(), CircleShape)
+        )
+    }
+}
+
+@Composable
+private fun Plugin.State.getIconColor(): Color {
+    return if (this == Plugin.State.ACTIVE) Lime500
+    else if (this == Plugin.State.ENABLING) Orange500
+    else MaterialTheme.colors.sidebarSurface
+}
+
+private fun Plugin.State.getString(): String {
+    return if (this == Plugin.State.ACTIVE) i18n("transports.tor.active")
+    else if (this == Plugin.State.ENABLING) i18n("transports.tor.enabling")
+    else i18n("transports.tor.inactive")
 }
 
 sealed class SidebarButtonState {

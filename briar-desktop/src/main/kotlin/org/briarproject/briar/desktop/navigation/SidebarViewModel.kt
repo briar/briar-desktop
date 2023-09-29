@@ -22,9 +22,14 @@ import androidx.compose.runtime.mutableStateOf
 import org.briarproject.bramble.api.event.Event
 import org.briarproject.bramble.api.event.EventBus
 import org.briarproject.bramble.api.event.EventListener
+import org.briarproject.bramble.api.identity.Author
 import org.briarproject.bramble.api.identity.IdentityManager
-import org.briarproject.bramble.api.identity.LocalAuthor
 import org.briarproject.bramble.api.mailbox.event.MailboxProblemEvent
+import org.briarproject.bramble.api.plugin.Plugin
+import org.briarproject.bramble.api.plugin.PluginManager
+import org.briarproject.bramble.api.plugin.TorConstants
+import org.briarproject.bramble.api.plugin.TransportId
+import org.briarproject.bramble.api.plugin.event.TransportStateEvent
 import org.briarproject.briar.desktop.threading.UiExecutor
 import org.briarproject.briar.desktop.ui.MessageCounter
 import org.briarproject.briar.desktop.ui.MessageCounterData
@@ -43,9 +48,13 @@ class SidebarViewModel
 constructor(
     private val identityManager: IdentityManager,
     private val messageCounter: MessageCounter,
+    private val pluginManager: PluginManager,
     private val eventBus: EventBus,
 ) : EventListener, ViewModel() {
     private var listensToEventBus = false
+
+    private val _torPluginState = mutableStateOf(getTransportState(TorConstants.ID))
+    val torPluginState = _torPluginState.asState()
 
     override fun onInit() {
         super.onInit()
@@ -64,6 +73,7 @@ constructor(
 
     override fun eventOccurred(e: Event) {
         if (e is MailboxProblemEvent) _mailboxProblem.value = true
+        else if (e is TransportStateEvent && e.transportId == TorConstants.ID) _torPluginState.value = e.state
     }
 
     private fun onMessageCounterUpdated(data: MessageCounterData) {
@@ -77,7 +87,7 @@ constructor(
     }
 
     private val _uiMode = mutableStateOf(UiMode.CONTACTS)
-    private val _account = mutableStateOf<LocalAuthor?>(null)
+    private val _account = mutableStateOf<Author?>(null)
     private val _mailboxProblem = mutableStateOf(false)
 
     private val _messageCount = mutableStateOf(MessageCount())
@@ -97,6 +107,11 @@ constructor(
 
     private fun loadAccountInfo() {
         _account.value = identityManager.localAuthor
+    }
+
+    private fun getTransportState(id: TransportId): Plugin.State {
+        val plugin = pluginManager.getPlugin(id)
+        return if (plugin == null) Plugin.State.STARTING_STOPPING else plugin.state
     }
 
     data class MessageCount(
