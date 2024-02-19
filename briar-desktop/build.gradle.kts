@@ -1,6 +1,6 @@
 /*
  * Briar Desktop
- * Copyright (C) 2021-2023 The Briar Project
+ * Copyright (C) 2021-2024 The Briar Project
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -77,7 +77,7 @@ sourceSets {
     }
 }
 
-val versionCode = "0.6.0"
+val versionCode = "0.6.1"
 val buildType = if (project.hasProperty("buildType")) project.properties["buildType"] else "snapshot"
 group = "app.briar.desktop"
 version = "$versionCode-$buildType"
