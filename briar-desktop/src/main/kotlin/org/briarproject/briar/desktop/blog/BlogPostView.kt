@@ -60,6 +60,7 @@ import org.briarproject.briar.api.blog.BlogCommentHeader
 import org.briarproject.briar.api.blog.BlogPostHeader
 import org.briarproject.briar.api.blog.MessageType
 import org.briarproject.briar.api.identity.AuthorInfo
+import org.briarproject.briar.api.identity.AuthorInfo.Status.NONE
 import org.briarproject.briar.api.identity.AuthorInfo.Status.OURSELVES
 import org.briarproject.briar.desktop.contact.ProfileCircle
 import org.briarproject.briar.desktop.contact.ProfileCircleRss
@@ -267,7 +268,8 @@ private fun RepeatAuthorView(
                     contentAlignment = BottomEnd,
                     modifier = Modifier.size(36.dp),
                 ) {
-                    ProfileCircle(36.dp, author.id, authorInfo)
+                    if (item.header.isRssFeed) ProfileCircleRss(36.dp)
+                    else ProfileCircle(36.dp, author.id, authorInfo)
                     if (item is BlogCommentItem) {
                         Icon(
                             imageVector = Icons.Default.Repeat,
@@ -285,7 +287,7 @@ private fun RepeatAuthorView(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
-                TrustIndicatorShort(authorInfo.status)
+                if (authorInfo.status != NONE) TrustIndicatorShort(authorInfo.status)
             }
         }
         Text(
@@ -336,7 +338,7 @@ internal fun getRandomBlogPostItem(text: String, time: Long) = BlogPostItem(
         time,
         System.currentTimeMillis(),
         getRandomAuthor(),
-        AuthorInfo(AuthorInfo.Status.values().filter { it != AuthorInfo.Status.NONE }.random()),
+        AuthorInfo(AuthorInfo.Status.values().filter { it != NONE }.random()),
         Random.nextBoolean() && Random.nextBoolean() && Random.nextBoolean(),
         Random.nextBoolean(),
     ),
@@ -371,7 +373,7 @@ internal fun getRandomBlogCommentItem(parent: BlogPost, comment: String?, time: 
         time,
         System.currentTimeMillis(),
         getRandomAuthor(),
-        AuthorInfo(AuthorInfo.Status.values().filter { it != AuthorInfo.Status.NONE }.random()),
+        AuthorInfo(AuthorInfo.Status.values().filter { it != NONE }.random()),
         Random.nextBoolean(),
     ),
     postHeader = parent.postHeader,
