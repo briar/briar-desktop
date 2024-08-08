@@ -21,6 +21,12 @@ after_script:
   - rm -f $GRADLE_USER_HOME/caches/modules-2/modules-2.lock
   - rm -fr $GRADLE_USER_HOME/caches/*/plugin-resolution/
 
+cache:
+  key: "$CI_COMMIT_REF_SLUG"
+  paths:
+    - .gradle/wrapper
+    - .gradle/caches
+
 check:
   # checks ktlint and runs unit tests
   stage: test
