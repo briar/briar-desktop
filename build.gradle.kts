@@ -34,7 +34,7 @@ buildscript {
 
     // keep version here in sync when updating briar
     extra.apply {
-        set("kotlin_version", "1.8.20") // todo: different version used in Briar-Desktop?!
+        set("kotlin_version", "1.9.10") // todo: different version used in Briar-Desktop?!
         set("dagger_version", "2.51.1")
         set("okhttp_version", "4.12.0")
         set("jackson_version", "2.13.4")
