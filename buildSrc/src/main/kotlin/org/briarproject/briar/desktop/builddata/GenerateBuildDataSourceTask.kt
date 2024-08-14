@@ -43,6 +43,12 @@ open class GenerateBuildDataSourceTask : AbstractBuildDataTask() {
 
     companion object {
         val LICENSES = buildMap {
+            put(UnversionedArtifact("androidx.annotation", "annotation-jvm"), "Apache 2.0")
+            put(UnversionedArtifact("androidx.arch.core", "core-common"), "Apache 2.0")
+            put(UnversionedArtifact("androidx.collection", "collection-jvm"), "Apache 2.0")
+            put(UnversionedArtifact("androidx.lifecycle", "lifecycle-common-jvm"), "Apache 2.0")
+            put(UnversionedArtifact("androidx.lifecycle", "lifecycle-runtime-desktop"), "Apache 2.0")
+            put(UnversionedArtifact("androidx.lifecycle", "lifecycle-viewmodel-desktop"), "Apache 2.0")
             put(UnversionedArtifact("ch.qos.logback", "logback-classic"), "EPL 1.0/LGPL 2.1")
             put(UnversionedArtifact("ch.qos.logback", "logback-core"), "EPL 1.0/LGPL 2.1")
             put(UnversionedArtifact("com.fasterxml.jackson.core", "jackson-annotations"), "Apache 2.0")
@@ -74,6 +80,10 @@ open class GenerateBuildDataSourceTask : AbstractBuildDataTask() {
             put(UnversionedArtifact("org.bytedeco", "javacpp"), "Apache 2.0")
             put(UnversionedArtifact("org.jdom", "jdom2"), "JDOM (Apache without acknowledgment clause)")
             put(UnversionedArtifact("org.jetbrains", "annotations"), "Apache 2.0")
+            put(
+                UnversionedArtifact("org.jetbrains.androidx.lifecycle", "lifecycle-runtime-compose-desktop"),
+                "Apache 2.0"
+            )
             put(UnversionedArtifact("org.jetbrains.compose.animation", "animation-core-desktop"), "Apache 2.0")
             put(UnversionedArtifact("org.jetbrains.compose.animation", "animation-desktop"), "Apache 2.0")
             put(UnversionedArtifact("org.jetbrains.compose.desktop", "desktop-jvm"), "Apache 2.0")
