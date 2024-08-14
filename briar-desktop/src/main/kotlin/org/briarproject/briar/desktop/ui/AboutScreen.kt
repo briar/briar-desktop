@@ -31,6 +31,7 @@ import androidx.compose.ui.Alignment.Companion.CenterStart
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Alignment.Companion.TopStart
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -228,10 +229,10 @@ private fun LibraryEntry(artifact: Artifact) =
             // Add tiny cells in between so that one can select a row, copy and paste
             // it somewhere and appear like "group:artifact:version license".
             Cell(colSizesLibraries[0], artifact.group)
-            Cell(MIN_VALUE, ":")
+            Cell(MIN_VALUE, ":", color = Color.Transparent)
             VerticalDivider()
             Cell(colSizesLibraries[1], artifact.artifact)
-            Cell(MIN_VALUE, ":")
+            Cell(MIN_VALUE, ":", color = Color.Transparent)
             VerticalDivider()
             Cell(colSizesLibraries[2], artifact.version)
             Cell(MIN_VALUE, "\t")
@@ -241,10 +242,11 @@ private fun LibraryEntry(artifact: Artifact) =
     }
 
 @Composable
-private fun RowScope.Cell(size: Float, text: String) =
+private fun RowScope.Cell(size: Float, text: String, color: Color = Color.Unspecified) =
     Box(modifier = Modifier.weight(size).fillMaxHeight()) {
         Text(
             text = text,
+            color = color,
             modifier = Modifier.fillMaxWidth().padding(8.dp).align(CenterStart)
         )
     }
