@@ -36,7 +36,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Shape
@@ -63,7 +62,6 @@ import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
  * @param errorMessage Message to be shown beneath the text field in case of error
  * @param showErrorWhen Show error only if the given focus state has been passed, even if [isError] is true
  */
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun OutlinedTextField(
     value: String,
@@ -88,7 +86,7 @@ fun OutlinedTextField(
     maxLines: Int = Int.MAX_VALUE,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     shape: Shape = MaterialTheme.shapes.small,
-    colors: TextFieldColors = TextFieldDefaults.outlinedTextFieldColors()
+    colors: TextFieldColors = TextFieldDefaults.outlinedTextFieldColors(),
 ) {
     var initialFocusState by remember { mutableStateOf(FROM_START) }
     val showError by derivedStateOf { isError && initialFocusState >= showErrorWhen }
@@ -156,7 +154,6 @@ enum class InitialFocusState { FROM_START, AFTER_FIRST_FOCUSSED, AFTER_FOCUS_LOS
  *
  * @param visualTransformation Visual transformation is only applied when password is hidden
  */
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun OutlinedPasswordTextField(
     value: String,
@@ -179,7 +176,7 @@ fun OutlinedPasswordTextField(
     maxLines: Int = Int.MAX_VALUE,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     shape: Shape = MaterialTheme.shapes.small,
-    colors: TextFieldColors = TextFieldDefaults.outlinedTextFieldColors()
+    colors: TextFieldColors = TextFieldDefaults.outlinedTextFieldColors(),
 ) {
     var isPasswordVisible by remember { mutableStateOf(false) }
 

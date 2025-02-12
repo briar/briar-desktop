@@ -27,7 +27,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusManager
@@ -49,7 +48,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun TextField(
     value: String,
@@ -70,7 +68,7 @@ fun TextField(
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     shape: Shape =
         MaterialTheme.shapes.small.copy(bottomEnd = ZeroCornerSize, bottomStart = ZeroCornerSize),
-    colors: TextFieldColors = TextFieldDefaults.textFieldColors()
+    colors: TextFieldColors = TextFieldDefaults.textFieldColors(),
 ) {
     var textFieldValueState by remember { mutableStateOf(TextFieldValue(text = value)) }
     val textFieldValue = textFieldValueState.copy(text = value)
@@ -128,10 +126,9 @@ object TextFieldExt {
 
     // tab navigation for multi-line TextField is broken upstream
     // see https://github.com/JetBrains/compose-jb/issues/109
-    @OptIn(ExperimentalComposeUiApi::class)
     @Composable
     fun Modifier.moveFocusOnTab(
-        focusManager: FocusManager = LocalFocusManager.current
+        focusManager: FocusManager = LocalFocusManager.current,
     ) = onPreviewKeyEvent {
         if (it.type == KeyEventType.KeyDown && it.key == Key.Tab) {
             focusManager.moveFocus(

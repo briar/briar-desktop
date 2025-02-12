@@ -127,7 +127,7 @@ object TestUtils {
         )
 
         // Contact exchange succeeded
-        LOG.info("Contact exchange succeeded")
+        LOG.info { "Contact exchange succeeded" }
     }
 
     private fun addContact(

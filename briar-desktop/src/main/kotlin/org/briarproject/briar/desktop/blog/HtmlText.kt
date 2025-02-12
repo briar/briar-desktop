@@ -18,7 +18,6 @@
 
 package org.briarproject.briar.desktop.blog
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -71,7 +70,7 @@ val listBullets = listOf(
     "\u25aa",
 )
 
-@OptIn(ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 @Suppress("HardCodedStringLiteral")
 fun HtmlText(

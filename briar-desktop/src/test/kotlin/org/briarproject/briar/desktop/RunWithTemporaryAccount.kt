@@ -21,7 +21,6 @@
 package org.briarproject.briar.desktop
 
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.window.application
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.briarproject.bramble.BrambleCoreEagerSingletons
@@ -49,7 +48,6 @@ internal class RunWithTemporaryAccount(
         private val LOG = KotlinLogging.logger {}
     }
 
-    @OptIn(ExperimentalComposeUiApi::class)
     fun run() {
         LogUtils.setupLogging(ALL)
 

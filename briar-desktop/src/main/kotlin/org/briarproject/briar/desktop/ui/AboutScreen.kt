@@ -20,7 +20,7 @@ import androidx.compose.material.Tab
 import androidx.compose.material.TabRow
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -68,7 +68,7 @@ fun AboutScreen(
     AboutScreen()
 
     IconButton(
-        icon = Icons.Filled.ArrowBack,
+        icon = Icons.AutoMirrored.Filled.ArrowBack,
         contentDescription = i18n("access.return_to_previous_screen"),
         onClick = onBackButton,
         modifier = Modifier.align(TopStart)

@@ -33,13 +33,12 @@ import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.TextFieldExt.moveFocusOnTab
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Send
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment.Companion.Top
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
@@ -53,7 +52,6 @@ import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.StringUtils.takeUtf8
 
 @Composable
-@OptIn(ExperimentalComposeUiApi::class)
 fun ThreadedGroupConversationInput(
     strings: ThreadedGroupStrings,
     selectedThreadItem: ThreadItem?,
@@ -130,7 +128,7 @@ fun ThreadedGroupConversationInput(
             ),
             trailingIcon = {
                 IconButton(
-                    icon = Icons.Filled.Send,
+                    icon = Icons.AutoMirrored.Filled.Send,
                     iconTint = MaterialTheme.colors.sendButton,
                     contentDescription = i18n("access.message.send"),
                     onClick = onSendAction,

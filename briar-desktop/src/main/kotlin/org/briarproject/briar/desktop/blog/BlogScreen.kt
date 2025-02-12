@@ -35,7 +35,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.runtime.Composable
@@ -138,7 +138,7 @@ private fun BlogHeader(
                 verticalAlignment = CenterVertically,
             ) {
                 IconButton(
-                    icon = Icons.Filled.ArrowBack,
+                    icon = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = i18n("blog.back"),
                     onClick = onBackClick,
                 )

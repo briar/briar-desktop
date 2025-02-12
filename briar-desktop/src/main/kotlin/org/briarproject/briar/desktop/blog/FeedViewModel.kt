@@ -102,10 +102,10 @@ class FeedViewModel @Inject constructor(
     @Suppress("HardCodedStringLiteral")
     override fun eventOccurred(e: Event) {
         if (e is BlogPostAddedEvent) {
-            LOG.info("Blog post added")
+            LOG.info { "Blog post added" }
             onBlogPostAdded(e.header, e.isLocal)
         } else if (e is GroupRemovedEvent && e.group.clientId == BlogManager.CLIENT_ID) {
-            LOG.info("Blog removed")
+            LOG.info { "Blog removed" }
             onBlogRemoved(e.group.id)
         }
     }

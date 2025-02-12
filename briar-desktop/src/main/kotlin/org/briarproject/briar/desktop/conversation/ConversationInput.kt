@@ -33,15 +33,14 @@ import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.TextFieldExt.moveFocusOnTab
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Send
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.input.pointer.PointerIcon
@@ -79,7 +78,6 @@ fun main() = preview {
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun ConversationInput(
     text: String,
@@ -126,7 +124,7 @@ fun ConversationInput(
             },
             trailingIcon = {
                 IconButton(
-                    icon = Icons.Filled.Send,
+                    icon = Icons.AutoMirrored.Filled.Send,
                     iconTint = MaterialTheme.colors.sendButton,
                     contentDescription = i18n("access.message.send"),
                     onClick = onSend,

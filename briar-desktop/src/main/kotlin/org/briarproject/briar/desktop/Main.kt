@@ -18,7 +18,6 @@
 
 package org.briarproject.briar.desktop
 
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.window.application
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.Context
@@ -95,7 +94,6 @@ private class Main : CliktCommand(
         help = i18n("main.help.tor.port.control")
     ).int().default(DEFAULT_CONTROL_PORT)
 
-    @OptIn(ExperimentalComposeUiApi::class)
     override fun run() {
         val level = if (debug) ALL else when (verbosity) {
             0 -> WARNING

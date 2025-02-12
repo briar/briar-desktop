@@ -29,7 +29,7 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.BottomStart
@@ -61,7 +61,7 @@ fun StartupScreenScaffold(
     showBackButton: Boolean = false,
     onBackButton: () -> Unit = {},
     onShowAbout: () -> Unit = {},
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) = Box {
     Column(
         modifier = Modifier.padding(16.dp).fillMaxSize(),
@@ -73,7 +73,7 @@ fun StartupScreenScaffold(
 
     if (showBackButton) {
         IconButton(
-            icon = Icons.Filled.ArrowBack,
+            icon = Icons.AutoMirrored.Filled.ArrowBack,
             contentDescription = i18n("access.return_to_previous_screen"),
             onClick = onBackButton,
             modifier = Modifier.align(TopStart)

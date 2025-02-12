@@ -35,7 +35,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -63,7 +62,6 @@ import androidx.compose.ui.Alignment.Companion.BottomCenter
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterEnd
 import androidx.compose.ui.Alignment.Companion.CenterVertically
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -275,7 +273,6 @@ private fun AddContactDialogContent(
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun AddContactErrorDialog(error: AddContactError, onErrorDialogDismissed: () -> Unit) {
     val (type, title, message) = errorMessage(error)
@@ -367,7 +364,6 @@ private fun OwnLink(
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun ContactLink(
     remoteHandshakeLink: String,

@@ -32,7 +32,7 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.runtime.Composable
@@ -78,7 +78,7 @@ fun main() = preview {
 
 @Composable
 fun ErrorScreen(
-    viewHolder: ErrorSubViewModel
+    viewHolder: ErrorSubViewModel,
 ) = ErrorScreen(viewHolder.error, viewHolder.onBackButton)
 
 @Composable
@@ -135,7 +135,7 @@ fun ErrorScreen(
 
         if (onBackButton != null) {
             IconButton(
-                icon = Icons.Filled.ArrowBack,
+                icon = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = i18n("access.return_to_previous_screen"),
                 onClick = onBackButton
             )

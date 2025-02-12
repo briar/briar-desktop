@@ -27,8 +27,8 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowLeft
-import androidx.compose.material.icons.filled.ArrowRight
+import androidx.compose.material.icons.automirrored.filled.ArrowLeft
+import androidx.compose.material.icons.automirrored.filled.ArrowRight
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
@@ -83,7 +83,7 @@ fun ContactDropDown(
                         modifier = Modifier.align(CenterVertically)
                     )
                     Icon(
-                        Icons.Filled.ArrowRight,
+                        Icons.AutoMirrored.Filled.ArrowRight,
                         i18n("access.contacts.dropdown.connections.expand"),
                         modifier = Modifier.align(CenterVertically)
                     )
@@ -98,7 +98,7 @@ fun ContactDropDown(
                     modifier = Modifier.align(CenterVertically)
                 )
                 Icon(
-                    Icons.Filled.ArrowRight,
+                    Icons.AutoMirrored.Filled.ArrowRight,
                     i18n("access.contacts.dropdown.contacts.expand"),
                     modifier = Modifier.align(CenterVertically)
                 )
@@ -126,7 +126,7 @@ fun ContactDropDown(
         DropdownMenuItem(onClick = { setState(State.MAIN) }) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Icon(
-                    Icons.Filled.ArrowLeft,
+                    Icons.AutoMirrored.Filled.ArrowLeft,
                     i18n("back"),
                     modifier = Modifier.align(CenterVertically)
                 )

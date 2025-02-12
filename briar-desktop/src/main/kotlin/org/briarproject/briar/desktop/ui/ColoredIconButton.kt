@@ -30,7 +30,6 @@ import androidx.compose.material.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -39,7 +38,6 @@ import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun ColoredIconButton(
     onClick: () -> Unit,
@@ -65,7 +63,6 @@ fun ColoredIconButton(
     )
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun ColoredIconButton(
     icon: ImageVector,

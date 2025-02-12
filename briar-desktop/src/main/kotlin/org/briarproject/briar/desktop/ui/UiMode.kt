@@ -19,7 +19,7 @@
 package org.briarproject.briar.desktop.ui
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ChromeReaderMode
+import androidx.compose.material.icons.automirrored.filled.ChromeReaderMode
 import androidx.compose.material.icons.filled.Contacts
 import androidx.compose.material.icons.filled.Forum
 import androidx.compose.material.icons.filled.Group
@@ -33,7 +33,7 @@ enum class UiMode(val icon: ImageVector, val contentDescriptionKey: String) {
     CONTACTS(Icons.Filled.Contacts, "access.mode.contacts"),
     GROUPS(Icons.Filled.Group, "access.mode.groups"),
     FORUMS(Icons.Filled.Forum, "access.mode.forums"),
-    BLOGS(Icons.Filled.ChromeReaderMode, "access.mode.blogs"),
+    BLOGS(Icons.AutoMirrored.Filled.ChromeReaderMode, "access.mode.blogs"),
     TRANSPORTS(Icons.Filled.WifiTethering, "access.mode.transports"),
     MAILBOX(MailboxIcon, "access.mode.mailbox"),
     SETTINGS(Icons.Filled.Settings, "access.mode.settings"),
