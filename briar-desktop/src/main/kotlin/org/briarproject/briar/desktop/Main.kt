@@ -21,6 +21,8 @@ package org.briarproject.briar.desktop
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.window.application
 import com.github.ajalt.clikt.core.CliktCommand
+import com.github.ajalt.clikt.core.Context
+import com.github.ajalt.clikt.core.main
 import com.github.ajalt.clikt.parameters.options.counted
 import com.github.ajalt.clikt.parameters.options.default
 import com.github.ajalt.clikt.parameters.options.flag
@@ -57,12 +59,13 @@ private val DEFAULT_DATA_DIR = getProperty("user.home") + separator + ".briar" +
 
 private class Main : CliktCommand(
     name = "briar-desktop", // NON-NLS
-    help = i18n("main.help.title")
 ) {
 
     companion object {
         private val LOG = KotlinLogging.logger {}
     }
+
+    override fun help(context: Context): String = i18n("main.help.title")
 
     private val version by option(
         "--version", // NON-NLS

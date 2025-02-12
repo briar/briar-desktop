@@ -129,7 +129,7 @@ dependencies {
     // needed to access Dispatchers.Swing for EventExecutor
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.6.4")
 
-    implementation("com.github.ajalt.clikt:clikt:3.4.0")
+    implementation("com.github.ajalt.clikt:clikt:5.0.3")
     implementation("com.ibm.icu:icu4j:76.1")
     implementation("net.java.dev.jna:jna:5.16.0")
 
