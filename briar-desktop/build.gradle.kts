@@ -31,6 +31,7 @@ plugins {
     id("idea")
     id("org.jlleitschuh.gradle.ktlint") version "10.1.0"
     id("org.briarproject.briar.desktop.build-data-gradle-plugin")
+    id("com.github.ben-manes.versions") version "0.52.0"
 }
 
 // We need to create separate Gradle configurations for Pinpit here. For each supported
