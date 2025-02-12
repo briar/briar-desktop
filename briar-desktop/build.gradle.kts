@@ -22,9 +22,10 @@ import org.briarproject.briar.desktop.os.currentOS
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.9.10"
-    kotlin("kapt") version "1.9.10"
+    kotlin("jvm") version "2.1.10"
+    kotlin("kapt") version "2.1.10"
     id("org.jetbrains.compose") version "1.7.3"
+    id("org.jetbrains.kotlin.plugin.compose") version "2.1.10"
     id("de.mobanisto.pinpit") version "0.9.0"
     id("java")
     id("idea")
