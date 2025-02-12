@@ -18,8 +18,6 @@
 
 package org.briarproject.briar.desktop.testdata
 
-import androidx.compose.ui.ExperimentalComposeUiApi
-import androidx.compose.ui.res.ResourceLoader
 import mu.KotlinLogging
 import org.briarproject.bramble.api.FormatException
 import org.briarproject.bramble.api.client.ClientHelper
@@ -71,6 +69,7 @@ import org.briarproject.briar.desktop.testdata.forum.PostAuthor
 import org.briarproject.briar.desktop.testdata.forum.forums
 import org.briarproject.briar.desktop.utils.KLoggerUtils.i
 import org.briarproject.briar.desktop.utils.KLoggerUtils.w
+import org.briarproject.briar.desktop.utils.ResourceUtils.getResourceAsStream
 import java.io.IOException
 import java.io.InputStream
 import java.time.LocalDateTime
@@ -406,9 +405,8 @@ class DeterministicTestDataCreatorImpl @Inject internal constructor(
         }
     }
 
-    @OptIn(ExperimentalComposeUiApi::class)
     private fun image(imageResource: String): InputStream {
-        val input = ResourceLoader.Default.load(imageResource)
+        val input = getResourceAsStream(imageResource)
         val image = input.use {
             ImageIO.read(input)
         }

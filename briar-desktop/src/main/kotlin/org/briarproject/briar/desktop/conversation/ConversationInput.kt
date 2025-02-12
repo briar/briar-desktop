@@ -26,7 +26,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.AlertDialog
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -47,25 +46,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
-import androidx.compose.ui.res.ResourceLoader
-import androidx.compose.ui.res.loadImageBitmap
 import androidx.compose.ui.unit.dp
 import org.briarproject.briar.desktop.theme.sendButton
 import org.briarproject.briar.desktop.ui.ColoredIconButton
 import org.briarproject.briar.desktop.ui.HorizontalDivider
 import org.briarproject.briar.desktop.ui.LocalWindowScope
 import org.briarproject.briar.desktop.utils.ImagePicker.pickImageUsingDialog
+import org.briarproject.briar.desktop.utils.ImageUtils.loadImageBitmap
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
+import org.briarproject.briar.desktop.utils.ResourceUtils.getResourceAsStream
 
 @Suppress("HardCodedStringLiteral")
-@OptIn(ExperimentalMaterialApi::class, ExperimentalComposeUiApi::class)
 fun main() = preview {
-    val bitmap = ResourceLoader.Default.load("images/logo_circle.png").use {
+    val bitmap = getResourceAsStream("/images/logo_circle.png")?.use {
         loadImageBitmap(it)
     }
     val (text, updateText) = remember { mutableStateOf("Lorem ipsum.") }
-    val (image, updateImage) = remember { mutableStateOf<ImageBitmap?>(bitmap) }
+    val (image, updateImage) = remember { mutableStateOf(bitmap) }
     var dialogVisible by remember { mutableStateOf(false) }
     var sentText by remember { mutableStateOf("") }
     ConversationInput(text, updateText, image, updateImage) {

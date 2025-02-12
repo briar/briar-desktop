@@ -24,7 +24,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     kotlin("jvm") version "1.9.10"
     kotlin("kapt") version "1.9.10"
-    id("org.jetbrains.compose") version "1.6.11"
+    id("org.jetbrains.compose") version "1.7.3"
     id("de.mobanisto.pinpit") version "0.9.0"
     id("java")
     id("idea")
@@ -166,7 +166,7 @@ tasks.test {
 }
 
 tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "11"
+    kotlinOptions.jvmTarget = "17"
     kotlinOptions.freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
 }
 

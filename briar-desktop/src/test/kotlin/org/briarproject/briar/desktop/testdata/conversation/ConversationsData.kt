@@ -45,7 +45,7 @@ val conversations = conversations {
             date = "2022-01-21 10:13:05"
         }
         outgoing {
-            images = listOf("images/do-it-now.png")
+            images = listOf("/images/do-it-now.png")
             read = true
             date = "2022-01-21 10:13:15"
         }
@@ -141,7 +141,7 @@ val conversations = conversations {
         }
         incoming {
             text = "Check out my latest diagrams"
-            images = listOf("images/voronoi1.png")
+            images = listOf("/images/voronoi1.png")
             read = true
             date = start.plusSeconds(120)
         }
@@ -153,12 +153,12 @@ val conversations = conversations {
         outgoing {
             text = "I've also made some"
             images = listOf(
-                "images/voronoi2.png",
-                "images/voronoi3.png",
-                "images/voronoi4.png",
-                "images/voronoi2.png",
-                "images/voronoi3.png",
-                "images/voronoi4.png",
+                "/images/voronoi2.png",
+                "/images/voronoi3.png",
+                "/images/voronoi4.png",
+                "/images/voronoi2.png",
+                "/images/voronoi3.png",
+                "/images/voronoi4.png",
             )
             read = true
             date = start.plusSeconds(250)

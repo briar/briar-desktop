@@ -23,7 +23,6 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.res.loadImageBitmap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.swing.Swing
 import kotlinx.coroutines.withContext
@@ -34,6 +33,7 @@ import org.briarproject.briar.api.identity.AuthorInfo
 import org.briarproject.briar.desktop.threading.BriarExecutors
 import org.briarproject.briar.desktop.threading.UiExecutor
 import org.briarproject.briar.desktop.ui.LocalAvatarManager
+import org.briarproject.briar.desktop.utils.ImageUtils.loadImageBitmap
 import javax.inject.Inject
 
 class AvatarManager @Inject constructor(

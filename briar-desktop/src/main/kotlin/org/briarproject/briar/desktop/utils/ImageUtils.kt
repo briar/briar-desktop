@@ -19,10 +19,11 @@
 package org.briarproject.briar.desktop.utils
 
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.res.loadImageBitmap
+import androidx.compose.ui.graphics.toComposeImageBitmap
 import org.briarproject.bramble.api.db.Transaction
 import org.briarproject.briar.api.attachment.AttachmentHeader
 import org.briarproject.briar.api.attachment.AttachmentReader
+import java.io.InputStream
 
 object ImageUtils {
 
@@ -35,5 +36,9 @@ object ImageUtils {
         attachment.stream.use {
             return loadImageBitmap(it)
         }
+    }
+
+    fun loadImageBitmap(it: InputStream): ImageBitmap {
+        return org.jetbrains.skia.Image.makeFromEncoded(it.readAllBytes()).toComposeImageBitmap()
     }
 }
