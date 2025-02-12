@@ -19,7 +19,7 @@
 package org.briarproject.briar.desktop.forum
 
 import androidx.compose.runtime.mutableStateListOf
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.briarproject.bramble.api.db.Transaction
 import org.briarproject.bramble.api.db.TransactionManager
 import org.briarproject.bramble.api.event.Event

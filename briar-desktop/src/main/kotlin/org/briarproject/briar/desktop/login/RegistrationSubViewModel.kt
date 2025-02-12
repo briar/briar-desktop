@@ -20,7 +20,7 @@ package org.briarproject.briar.desktop.login
 
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.briarproject.bramble.api.account.AccountManager
 import org.briarproject.bramble.api.crypto.PasswordStrengthEstimator
 import org.briarproject.bramble.api.crypto.PasswordStrengthEstimator.QUITE_WEAK

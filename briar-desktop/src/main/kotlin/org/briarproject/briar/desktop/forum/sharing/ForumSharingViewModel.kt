@@ -19,7 +19,7 @@
 package org.briarproject.briar.desktop.forum.sharing
 
 import androidx.compose.runtime.derivedStateOf
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.briarproject.bramble.api.connection.ConnectionRegistry
 import org.briarproject.bramble.api.contact.Contact
 import org.briarproject.bramble.api.contact.ContactManager

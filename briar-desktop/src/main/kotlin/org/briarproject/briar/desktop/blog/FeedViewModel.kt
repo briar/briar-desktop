@@ -21,7 +21,7 @@ package org.briarproject.briar.desktop.blog
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.briarproject.bramble.api.db.DatabaseExecutor
 import org.briarproject.bramble.api.db.Transaction
 import org.briarproject.bramble.api.db.TransactionManager

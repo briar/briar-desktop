@@ -65,7 +65,7 @@ open class GenerateBuildDataSourceTask : AbstractBuildDataTask() {
             put(UnversionedArtifact("com.squareup.okio", "okio-jvm"), "Apache 2.0")
             put(UnversionedArtifact("de.mobanisto", "toast4j"), "MIT")
             put(UnversionedArtifact("de.jangassen", "jfa"), "Apache 2.0")
-            put(UnversionedArtifact("io.github.microutils", "kotlin-logging-jvm"), "Apache 2.0")
+            put(UnversionedArtifact("io.github.oshai", "kotlin-logging-jvm"), "Apache 2.0")
             put(UnversionedArtifact("javax.inject", "javax.inject"), "Apache 2.0")
             put(UnversionedArtifact("net.i2p.crypto", "eddsa"), "CC0 1.0")
             put(UnversionedArtifact("net.java.dev.jna", "jna"), "Apache 2.0/LGPL 2.1")

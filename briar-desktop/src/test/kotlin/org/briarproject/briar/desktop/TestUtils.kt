@@ -20,7 +20,7 @@
 
 package org.briarproject.briar.desktop
 
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.briarproject.bramble.api.Bytes.compare
 import org.briarproject.bramble.api.FormatException
 import org.briarproject.bramble.api.contact.PendingContactId

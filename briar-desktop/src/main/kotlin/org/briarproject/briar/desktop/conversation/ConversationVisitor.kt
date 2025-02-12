@@ -18,7 +18,7 @@
 
 package org.briarproject.briar.desktop.conversation
 
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.briarproject.bramble.api.db.DatabaseExecutor
 import org.briarproject.bramble.api.db.DbException
 import org.briarproject.bramble.api.db.Transaction

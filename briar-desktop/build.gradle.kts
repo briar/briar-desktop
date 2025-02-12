@@ -130,15 +130,15 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.6.4")
 
     implementation("com.github.ajalt.clikt:clikt:3.4.0")
-    implementation("com.ibm.icu:icu4j:70.1")
-    implementation("net.java.dev.jna:jna:5.13.0")
+    implementation("com.ibm.icu:icu4j:76.1")
+    implementation("net.java.dev.jna:jna:5.16.0")
 
     implementation(project(path = ":briar-core", configuration = "default"))
     implementation(project(path = ":bramble-java", configuration = "default"))
 
-    implementation("io.github.microutils:kotlin-logging-jvm:3.0.4")
-    implementation("org.slf4j:jul-to-slf4j:2.0.5")
-    implementation("ch.qos.logback:logback-classic:1.4.5")
+    implementation("io.github.oshai:kotlin-logging-jvm:7.0.4")
+    implementation("org.slf4j:jul-to-slf4j:2.0.16")
+    implementation("ch.qos.logback:logback-classic:1.5.16")
     implementation("de.mobanisto:toast4j:0.2.0")
     implementation("de.jangassen:jfa:1.2.0") {
         // not excluding this leads to a strange error during build:
@@ -150,7 +150,7 @@ dependencies {
 
     testImplementation(kotlin("test-testng"))
     testImplementation(project(path = ":bramble-core", configuration = "testOutput"))
-    testImplementation("commons-io:commons-io:2.11.0")
+    testImplementation("commons-io:commons-io:2.18.0")
     kaptTest("com.google.dagger:dagger-compiler:$dagger_version")
 }
 

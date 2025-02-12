@@ -23,7 +23,7 @@ package org.briarproject.briar.desktop
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.window.application
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.briarproject.bramble.BrambleCoreEagerSingletons
 import org.briarproject.bramble.api.lifecycle.Service
 import org.briarproject.bramble.api.lifecycle.ServiceException

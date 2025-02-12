@@ -18,7 +18,7 @@
 
 package org.briarproject.briar.desktop.attachment.media
 
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.briarproject.briar.api.attachment.MediaConstants.MAX_IMAGE_SIZE
 import org.briarproject.briar.desktop.utils.KLoggerUtils.i
 import java.awt.geom.AffineTransform

@@ -18,7 +18,7 @@
 
 package org.briarproject.briar.desktop.utils
 
-import mu.KLogger
+import io.github.oshai.kotlinlogging.KLogger
 import org.briarproject.bramble.util.LogUtils
 import org.jetbrains.annotations.NonNls
 

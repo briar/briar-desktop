@@ -19,7 +19,7 @@
 package org.briarproject.briar.desktop.utils
 
 import com.ibm.icu.text.MessageFormat
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.briarproject.briar.desktop.utils.KLoggerUtils.w
 import java.util.Locale
 import java.util.MissingResourceException

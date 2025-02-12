@@ -19,7 +19,7 @@
 package org.briarproject.briar.desktop.contact.add.remote
 
 import androidx.compose.runtime.mutableStateOf
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.briarproject.bramble.api.FormatException
 import org.briarproject.bramble.api.contact.ContactManager
 import org.briarproject.bramble.api.contact.HandshakeLinkConstants

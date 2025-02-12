@@ -19,7 +19,7 @@
 package org.briarproject.briar.desktop.mailbox
 
 import androidx.compose.runtime.mutableStateOf
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.briarproject.bramble.api.Consumer
 import org.briarproject.bramble.api.db.TransactionManager
 import org.briarproject.bramble.api.event.Event

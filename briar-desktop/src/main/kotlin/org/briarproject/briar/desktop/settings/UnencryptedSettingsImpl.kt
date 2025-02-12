@@ -18,7 +18,7 @@
 
 package org.briarproject.briar.desktop.settings
 
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.briarproject.bramble.api.lifecycle.IoExecutor
 import org.briarproject.briar.desktop.settings.UnencryptedSettings.Language
 import org.briarproject.briar.desktop.settings.UnencryptedSettings.Language.DEFAULT

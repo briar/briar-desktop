@@ -19,7 +19,7 @@
 package org.briarproject.briar.desktop.contact
 
 import androidx.compose.runtime.mutableStateListOf
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.briarproject.bramble.api.connection.ConnectionRegistry
 import org.briarproject.bramble.api.contact.Contact
 import org.briarproject.bramble.api.contact.ContactId

@@ -20,7 +20,7 @@ package org.briarproject.briar.desktop.utils
 
 import androidx.compose.ui.awt.ComposeWindow
 import androidx.compose.ui.graphics.ImageBitmap
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.briarproject.briar.desktop.utils.ImageUtils.loadImageBitmap
 import org.briarproject.briar.desktop.utils.KLoggerUtils.d
 import org.briarproject.briar.desktop.utils.KLoggerUtils.w

@@ -21,7 +21,7 @@ import de.mobanisto.toast4j.ToastBuilder
 import de.mobanisto.toast4j.ToastHandle
 import de.mobanisto.toast4j.Toaster
 import de.mobanisto.wintoast.WinToastTemplate.WinToastTemplateType
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.briarproject.briar.desktop.BuildData
 import org.briarproject.briar.desktop.notification.AbstractNotificationProvider
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n

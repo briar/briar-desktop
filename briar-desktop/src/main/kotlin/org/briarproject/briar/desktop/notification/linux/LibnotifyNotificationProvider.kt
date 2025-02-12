@@ -21,7 +21,7 @@ import com.sun.jna.Library
 import com.sun.jna.Native
 import com.sun.jna.Pointer
 import com.sun.jna.ptr.PointerByReference
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.briarproject.briar.desktop.Strings
 import org.briarproject.briar.desktop.notification.AbstractNotificationProvider
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n

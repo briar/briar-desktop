@@ -17,7 +17,7 @@
  */
 package org.briarproject.briar.desktop.notification
 
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.briarproject.briar.desktop.utils.AudioUtils.loadAudioFromResource
 import org.briarproject.briar.desktop.utils.AudioUtils.play
 import org.briarproject.briar.desktop.utils.KLoggerUtils.e
