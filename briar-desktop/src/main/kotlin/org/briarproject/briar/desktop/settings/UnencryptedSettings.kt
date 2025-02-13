@@ -39,8 +39,8 @@ interface UnencryptedSettings : UnencryptedSettingsReadOnly {
         DEFAULT, EN,
 
         // languages as present in resources
-        AR, BG, CA, CS, DE, ES, FA, FR, GL, HE, HU, IS, IT, JA, KA, KO, LT, MY, NB,
-        NL, PL, PT_PT, PT_BR, RO, RU, SK, SQ, SV, TR, UK, ZH_CN, ZH_TW;
+        AR, BG, BN, CA, CS, DE, ES, ES_CU, FA, FR, GL, HE, HU, IS, IT, JA, KA, KO, LT,
+        MY, NB, NL, PL, PT_PT, PT_BR, RO, RU, SK, SQ, SV, TR, UK, ZH_CN, ZH_TW;
 
         val locale: Locale by lazy {
             if (this == DEFAULT)
