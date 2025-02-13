@@ -93,8 +93,7 @@ buildData {
 }
 
 val tor_version: String by rootProject.extra
-val obfs4proxy_version: String by rootProject.extra
-val snowflake_version: String by rootProject.extra
+val lyrebird_version: String by rootProject.extra
 val dagger_version: String by rootProject.extra
 
 dependencies {
@@ -106,24 +105,19 @@ dependencies {
     macosX64(compose.desktop.macos_x64)
 
     currentOs("org.briarproject:tor-${currentOS.id}:$tor_version")
-    currentOs("org.briarproject:obfs4proxy-${currentOS.id}:$obfs4proxy_version")
-    currentOs("org.briarproject:snowflake-${currentOS.id}:$snowflake_version")
+    currentOs("org.briarproject:lyrebird-${currentOS.id}:$lyrebird_version")
 
     linuxX64("org.briarproject:tor-linux:$tor_version")
-    linuxX64("org.briarproject:obfs4proxy-linux:$obfs4proxy_version")
-    linuxX64("org.briarproject:snowflake-linux:$snowflake_version")
+    linuxX64("org.briarproject:lyrebird-linux:$lyrebird_version")
 
     windowsX64("org.briarproject:tor-windows:$tor_version")
-    windowsX64("org.briarproject:obfs4proxy-windows:$obfs4proxy_version")
-    windowsX64("org.briarproject:snowflake-windows:$snowflake_version")
+    windowsX64("org.briarproject:lyrebird-windows:$lyrebird_version")
 
     macosArm64("org.briarproject:tor-macos:$tor_version")
-    macosArm64("org.briarproject:obfs4proxy-macos:$obfs4proxy_version")
-    macosArm64("org.briarproject:snowflake-macos:$snowflake_version")
+    macosArm64("org.briarproject:lyrebird-macos:$lyrebird_version")
 
     macosX64("org.briarproject:tor-macos:$tor_version")
-    macosX64("org.briarproject:obfs4proxy-macos:$obfs4proxy_version")
-    macosX64("org.briarproject:snowflake-macos:$snowflake_version")
+    macosX64("org.briarproject:lyrebird-macos:$lyrebird_version")
 
     implementation(compose.materialIconsExtended)
     // needed to access Dispatchers.Swing for EventExecutor
