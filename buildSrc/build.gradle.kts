@@ -17,15 +17,16 @@
  */
 
 @file:Suppress("HardCodedStringLiteral")
+
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
+    // TODO: updating this to the same version as the main build file does not work
     kotlin("jvm") version "1.6.10"
-    id("org.jlleitschuh.gradle.ktlint") version "10.1.0"
 }
 
 tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "11"
+    kotlinOptions.jvmTarget = "17"
 }
 
 repositories {
