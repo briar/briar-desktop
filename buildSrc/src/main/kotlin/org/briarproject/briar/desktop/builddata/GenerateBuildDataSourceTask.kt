@@ -198,9 +198,10 @@ open class GenerateBuildDataSourceTask : AbstractBuildDataTask() {
         val coreCommitToTag = mapCommitsToTags(gitBriar)
 
         // Get latest core tag
-        val coreReleaseTag = getLastReleaseTag(gitBriar, coreCommitToTag)
+        val tagPrefix = "beta" // TODO: change back to "release" when possible
+        val coreReleaseTag = getLastTagWithPrefix(gitBriar, coreCommitToTag, tagPrefix)
             ?: throw GradleException("Unable to determine last core release tag")
-        val coreVersion = coreReleaseTag.name.substring("refs/tags/release-".length)
+        val coreVersion = coreReleaseTag.name.substring("refs/tags/$tagPrefix-".length) + " ($tagPrefix)"
 
         // Get direct and transitive dependencies
         val artifacts = mutableListOf<VersionedArtifact>()
@@ -272,16 +273,16 @@ open class GenerateBuildDataSourceTask : AbstractBuildDataTask() {
         return iterator.next()
     }
 
-    private fun getLastReleaseTag(git: Git, commitToTag: Map<RevCommit, Ref>): Ref? {
-        // We used to use just the most recent release tag, however that might return
+    private fun getLastTagWithPrefix(git: Git, commitToTag: Map<RevCommit, Ref>, prefix: String): Ref? {
+        // We used to use just the most recent tag, however that might return
         // a more recent version than we're actually using. Hence traverse the history and
-        // use the first release tag found in the history starting from the current HEAD.
+        // use the first tag found in the history starting from the current HEAD.
         val commits = git.log().call()
         val iterator: Iterator<RevCommit> = commits.iterator()
         while (iterator.hasNext()) {
             val commit = iterator.next()
             val tag = commitToTag[commit]
-            if (tag != null && tag.name.startsWith("refs/tags/release-")) {
+            if (tag != null && tag.name.startsWith("refs/tags/$prefix-")) {
                 return tag
             }
         }
