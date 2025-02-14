@@ -129,6 +129,7 @@ private fun GeneralInfo() {
         add(Entry("Commit time", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(commitTime))) // NON-NLS
         add(Entry(i18n("about.website"), Strings.WEBSITE, true))
         add(Entry(i18n("about.contact"), Strings.EMAIL, true))
+        add(Entry(i18n("about.liberapay"), Strings.LIBERAPAY, true))
     }
 
     VerticallyScrollableArea { scrollState ->

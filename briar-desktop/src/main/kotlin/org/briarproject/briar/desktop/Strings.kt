@@ -27,4 +27,5 @@ object Strings {
     const val LICENSE = "GNU Affero General Public License v3"
     const val WEBSITE = "https://briarproject.org"
     const val EMAIL = "desktop@briarproject.org"
+    const val LIBERAPAY = "https://liberapay.com/Briar/"
 }
