@@ -41,7 +41,7 @@ It is also possible to run from the command line using Gradle with a
 different *default* language setting:
 
 ```
-GRADLE_OPTS="-Duser.language=fr -Duser.country=FR" ./gradlew run
+GRADLE_OPTS="-Duser.language=fr -Duser.country=FR" ./gradlew pinpitRun
 ```
 
 ## Threading
