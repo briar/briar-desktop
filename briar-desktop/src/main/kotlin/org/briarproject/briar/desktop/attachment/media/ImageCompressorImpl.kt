@@ -64,8 +64,8 @@ class ImageCompressorImpl @Inject internal constructor() : ImageCompressor {
         val scaled = if (factor != 1) scaleDown(withoutAlpha, factor) else withoutAlpha
 
         // After that, compress image. Try with maximum quality and reduce until we can compress below
-        // a size of [MAX_IMAGE_SIZE]. We try quality levels 100, 90, ..., 20, 10.
-        for (quality in 100 downTo 1 step 10) {
+        // a size of [MAX_IMAGE_SIZE]. We try quality levels 100, 90, ..., 20, 10, 9, 8, ..., 2, 1.
+        for (quality in (100 downTo 1 step 10) + (9 downTo 1 step 1)) {
             val jpgWriter = ImageIO.getImageWritersByFormatName("jpg").next()
             jpgWriter.output = ImageIO.createImageOutputStream(out)
 
