@@ -47,6 +47,25 @@ class ImageCompressorTest {
     }
 
     @Test
+    fun `can compress voronoi diagram with 1000 sites`() {
+        // load image
+        val input = Thread.currentThread().contextClassLoader.getResourceAsStream("images/voronoi1000.png")
+        val image = input.use {
+            ImageIO.read(input)
+        }
+        println("image size: ${image.width}x${image.height}")
+
+        // compress image
+        val compressed = compressor.compressImage(image)
+
+        // reload compressed image
+        val reloaded = compressed.use {
+            ImageIO.read(compressed)
+        }
+        println("image size: ${reloaded.width}x${reloaded.height}")
+    }
+
+    @Test
     fun `can compress quasar`() {
         // load image
         val url = "https://upload.wikimedia.org/wikipedia/commons/3/38/Artist%27s_rendering_ULAS_J1120%2B0641.jpg"
