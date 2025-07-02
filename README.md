@@ -164,3 +164,9 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 ## Reproducing the forum spam issue
 
 Run `TestRandomConversationsWithHugeForums`
+
+If you know more weird symbols that might be responsible, look for this line
+
+    // TODO: add more weird symbols here
+
+in file `ModifiedTestDataCreatorImpl` and add them there.

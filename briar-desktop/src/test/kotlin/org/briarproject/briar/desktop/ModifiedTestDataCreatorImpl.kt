@@ -624,6 +624,7 @@ class ModifiedTestDataCreatorImpl @Inject internal constructor(
         }
 
     private fun getRandomText(length: Int): String {
+        // TODO: add more weird symbols here
         val emojis = Character.toString(0x1F308) +
             Character.toString(0x1F984) +
             Character.toString(0xFDFD) +
