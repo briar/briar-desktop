@@ -5,8 +5,8 @@
 
 A desktop program for [Briar](https://briar.app), bringing secure messaging to your desktop and mobile devices.
 
-![Screenshot showing a private chat](./utils/screenshots/briar-desktop-1.png)
-![Screenshot showing a forum](./utils/screenshots/briar-desktop-2.png)
+![Screenshot showing a private chat](utils/screenshots/briar-desktop-1.png)
+![Screenshot showing a forum](utils/screenshots/briar-desktop-2.png)
 
 ## Installation
 
