@@ -32,7 +32,6 @@ import org.briarproject.bramble.api.lifecycle.LifecycleManager
 import org.briarproject.bramble.api.lifecycle.ShutdownManager
 import org.briarproject.bramble.api.properties.TransportPropertyManager
 import org.briarproject.briar.BriarCoreEagerSingletons
-import org.briarproject.briar.BriarCoreModule
 import org.briarproject.briar.api.forum.ForumManager
 import org.briarproject.briar.api.forum.ForumSharingManager
 import org.briarproject.briar.api.introduction.IntroductionManager
@@ -51,7 +50,7 @@ import javax.inject.Singleton
 @Component(
     modules = [
         BrambleCoreModule::class,
-        BriarCoreModule::class,
+        ModifiedBriarCoreModule::class,
         DesktopTestModule::class,
     ]
 )
