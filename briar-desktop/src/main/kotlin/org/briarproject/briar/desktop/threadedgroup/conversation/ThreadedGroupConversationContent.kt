@@ -54,15 +54,17 @@ fun ThreadedGroupConversationContent(
     is Loaded -> {
         val scrollState = rememberLazyListState()
         // scroll to item if needed
+        println("Scroll state: ${state.scrollTo}")
         if (state.scrollTo != null) LaunchedEffect(state) {
             val index = state.posts.indexOfFirst { it.id == state.scrollTo }
+            println("Trying to scroll to index: $index")
             if (index != -1) scrollState.scrollToItem(index, -50)
         }
         val maxNestingLevel = getMaxNestingLevel()
         Box(modifier = modifier.fillMaxSize()) {
             LazyColumn(
                 state = scrollState,
-                modifier = Modifier.padding(end = 8.dp).selectableGroup()
+                modifier = Modifier.fillMaxSize().padding(end = 8.dp).selectableGroup()
             ) {
                 items(state.posts, key = { item -> item.id }) { item ->
                     ThreadItemView(
