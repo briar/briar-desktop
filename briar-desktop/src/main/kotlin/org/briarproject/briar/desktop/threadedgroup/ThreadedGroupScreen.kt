@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import org.briarproject.briar.desktop.conversation.Explainer
 import org.briarproject.briar.desktop.threadedgroup.conversation.ThreadedGroupConversationScreen
 import org.briarproject.briar.desktop.threadedgroup.conversation.ThreadedGroupDropdownMenu
+import org.briarproject.briar.desktop.threadedgroup.sharing.ThreadedGroupSharingViewModel
 import org.briarproject.briar.desktop.ui.ColoredIconButton
 import org.briarproject.briar.desktop.ui.VerticalDivider
 import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
@@ -68,6 +69,7 @@ fun <VM : ThreadedGroupListViewModel<*, *>> ThreadedGroupScreen(
                 onFilterSet = viewModel::setFilterBy,
                 onGroupItemSelected = viewModel::selectGroup,
                 onAddButtonClicked = { addDialogVisible = true },
+                viewModel.threadViewModel.sharingViewModel,
             )
             VerticalDivider()
             Column(modifier = Modifier.weight(1f).fillMaxHeight()) {

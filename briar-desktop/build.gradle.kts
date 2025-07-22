@@ -263,6 +263,10 @@ pinpit.desktop {
                     arch = "arm64"
                     format = "tar.gz"
                 }
+                distributableArchive {
+                    arch = "x64"
+                    format = "tar.gz"
+                }
             }
             windows {
                 dirChooser = true

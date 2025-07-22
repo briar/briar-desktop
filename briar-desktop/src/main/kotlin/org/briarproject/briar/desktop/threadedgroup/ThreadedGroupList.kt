@@ -18,6 +18,7 @@
 
 package org.briarproject.briar.desktop.threadedgroup
 
+import androidx.compose.foundation.ContextMenuItem
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -42,12 +43,18 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import org.briarproject.bramble.api.sync.GroupId
 import org.briarproject.briar.desktop.forum.ForumStrings
+import org.briarproject.briar.desktop.forum.sharing.ForumSharingViewModel
 import org.briarproject.briar.desktop.theme.surfaceVariant
+import org.briarproject.briar.desktop.threadedgroup.sharing.ThreadedGroupSharingActionDrawerContent
+import org.briarproject.briar.desktop.threadedgroup.sharing.ThreadedGroupSharingViewModel
 import org.briarproject.briar.desktop.ui.Constants.COLUMN_WIDTH
 import org.briarproject.briar.desktop.ui.Constants.HEADER_SIZE
+import org.briarproject.briar.desktop.ui.ContextMenuAreaDataProvider
 import org.briarproject.briar.desktop.ui.ListItemView
 import org.briarproject.briar.desktop.ui.SearchTextField
 import org.briarproject.briar.desktop.ui.VerticallyScrollableArea
+import org.briarproject.briar.desktop.ui.getInfoDrawerHandler
+import org.briarproject.briar.desktop.utils.InternationalizationUtils.i18n
 import org.briarproject.briar.desktop.utils.PreviewUtils.preview
 import java.time.Instant
 
@@ -103,6 +110,7 @@ fun main() = preview {
         onFilterSet = setFilterBy,
         onGroupItemSelected = setSelected,
         onAddButtonClicked = {},
+        sharingViewModel = null
     )
 }
 
@@ -115,6 +123,7 @@ fun ThreadedGroupList(
     onFilterSet: (String) -> Unit,
     onGroupItemSelected: (ThreadedGroupItem) -> Unit,
     onAddButtonClicked: () -> Unit,
+    sharingViewModel: ThreadedGroupSharingViewModel?,
 ) = Column(
     modifier = Modifier.fillMaxHeight().width(COLUMN_WIDTH).background(MaterialTheme.colors.surfaceVariant),
 ) {
@@ -149,15 +158,47 @@ fun ThreadedGroupList(
                     // let divider start at horizontal position of text
                     dividerOffsetFromStart = (16 + 36 + 12).dp,
                 ) {
-                    ThreadedGroupItemView(
-                        strings = strings,
-                        threadedGroupItem = item,
-                        modifier = Modifier
-                            .heightIn(min = HEADER_SIZE)
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp)
-                            .padding(start = 16.dp, end = 8.dp)
-                    )
+                    if (sharingViewModel is ForumSharingViewModel) {
+                        val infoDrawerHandler = getInfoDrawerHandler()
+                        val forumSharingViewModel = sharingViewModel
+                        ContextMenuAreaDataProvider(
+                            items = {
+                                listOf(
+                                    ContextMenuItem(i18n("forum.sharing.action.title")) {
+                                        forumSharingViewModel.setGroupId(item.id)
+                                        println("item id: " + item.id)
+                                        infoDrawerHandler.open {
+                                            ThreadedGroupSharingActionDrawerContent(
+                                                close = infoDrawerHandler::close,
+                                                viewModel = forumSharingViewModel,
+                                                strings = ForumStrings,
+                                            )
+                                        }
+                                    }
+                                )
+                            }
+                        ) {
+                            ThreadedGroupItemView(
+                                strings = strings,
+                                threadedGroupItem = item,
+                                modifier = Modifier
+                                    .heightIn(min = HEADER_SIZE)
+                                    .fillMaxWidth()
+                                    .padding(vertical = 8.dp)
+                                    .padding(start = 16.dp, end = 8.dp)
+                            )
+                        }
+                    } else {
+                        ThreadedGroupItemView(
+                            strings = strings,
+                            threadedGroupItem = item,
+                            modifier = Modifier
+                                .heightIn(min = HEADER_SIZE)
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp)
+                                .padding(start = 16.dp, end = 8.dp)
+                        )
+                    }
                 }
             }
         }
