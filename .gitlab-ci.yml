@@ -50,16 +50,19 @@ b_package_linux_x64:
       pinpitPackageDefaultDebUbuntuBionicX64
       pinpitPackageDefaultDebUbuntuFocalX64
       pinpitPackageDefaultDebUbuntuJammyX64
+      pinpitPackageDefaultAppImageLinuxX64
     - ls -lrth briar-desktop/build/pinpit/jars/Briar-linux-*.jar
     - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-18.04-x64-*.deb
     - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-20.04-x64-*.deb
     - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-22.04-x64-*.deb
     - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-debian-bullseye-x64-*.deb
+    - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/x64/appImage/briar-desktop-x64-*.AppImage
     - mv briar-desktop/build/pinpit/jars/Briar-linux-*.jar ./briar-desktop-linux.jar
     - mv briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-18.04-x64-*.deb ./briar-desktop-ubuntu-18.04.deb
     - mv briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-20.04-x64-*.deb ./briar-desktop-ubuntu-20.04.deb
     - mv briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-22.04-x64-*.deb ./briar-desktop-ubuntu-22.04.deb
     - mv briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-debian-bullseye-x64-*.deb ./briar-desktop-debian-bullseye.deb
+    - mv briar-desktop/build/pinpit/binaries/main-default/linux/x64/appImage/briar-desktop-x64-*.AppImage ./briar-desktop-x64.AppImage
   artifacts:
     paths:
       - briar-desktop-linux.jar
@@ -67,6 +70,7 @@ b_package_linux_x64:
       - briar-desktop-ubuntu-18.04.deb
       - briar-desktop-ubuntu-20.04.deb
       - briar-desktop-ubuntu-22.04.deb
+      - briar-desktop-x64.AppImage
     expire_in: 2 days
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
@@ -77,11 +81,15 @@ b_package_linux_arm:
   script:
     - ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-17-openjdk-amd64 --no-daemon -PbuildType=nightly
       pinpitPackageDefaultDistributableTarGzLinuxArm64
+      pinpitPackageDefaultAppImageLinuxArm64
     - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/arm64/distributableArchive/briar-desktop-arm64-*.tar.gz
+    - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/arm64/appImage/briar-desktop-arm64-*.AppImage
     - mv briar-desktop/build/pinpit/binaries/main-default/linux/arm64/distributableArchive/briar-desktop-arm64-*.tar.gz ./briar-desktop-linux-arm64.tar.gz
+    - mv briar-desktop/build/pinpit/binaries/main-default/linux/arm64/appImage/briar-desktop-arm64-*.AppImage ./briar-desktop-arm64.AppImage
   artifacts:
     paths:
       - briar-desktop-linux-arm64.tar.gz
+      - briar-desktop-arm64.AppImage
     expire_in: 2 days
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
@@ -139,16 +147,19 @@ rb_package_linux_x64:
       pinpitPackageDefaultDebUbuntuBionicX64
       pinpitPackageDefaultDebUbuntuFocalX64
       pinpitPackageDefaultDebUbuntuJammyX64
+      pinpitPackageDefaultAppImageLinuxX64
     - ls -lrth briar-desktop/build/pinpit/jars/Briar-linux-*.jar
     - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-18.04-x64-*.deb
     - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-20.04-x64-*.deb
     - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-22.04-x64-*.deb
     - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-debian-bullseye-x64-*.deb
+    - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/x64/appImage/briar-desktop-x64-*.AppImage
     - mv briar-desktop/build/pinpit/jars/Briar-linux-*.jar ./briar-desktop-linux.jar
     - mv briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-18.04-x64-*.deb ./briar-desktop-ubuntu-18.04.deb
     - mv briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-20.04-x64-*.deb ./briar-desktop-ubuntu-20.04.deb
     - mv briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-22.04-x64-*.deb ./briar-desktop-ubuntu-22.04.deb
     - mv briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-debian-bullseye-x64-*.deb ./briar-desktop-debian-bullseye.deb
+    - mv briar-desktop/build/pinpit/binaries/main-default/linux/x64/appImage/briar-desktop-x64-*.AppImage ./briar-desktop-x64.AppImage
   artifacts:
     paths:
       - briar-desktop-linux.jar
@@ -156,6 +167,7 @@ rb_package_linux_x64:
       - briar-desktop-ubuntu-18.04.deb
       - briar-desktop-ubuntu-20.04.deb
       - briar-desktop-ubuntu-22.04.deb
+      - briar-desktop-x64.AppImage
     expire_in: 2 days
   only:
     - tags
@@ -166,11 +178,15 @@ rb_package_linux_arm:
   script:
     - ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-17-openjdk-amd64 --no-daemon -PbuildType=beta
       pinpitPackageDefaultDistributableTarGzLinuxArm64
+      pinpitPackageDefaultAppImageLinuxArm64
     - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/arm64/distributableArchive/briar-desktop-arm64-*.tar.gz
+    - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/arm64/appImage/briar-desktop-arm64-*.AppImage
     - mv briar-desktop/build/pinpit/binaries/main-default/linux/arm64/distributableArchive/briar-desktop-arm64-*.tar.gz ./briar-desktop-linux-arm64.tar.gz
+    - mv briar-desktop/build/pinpit/binaries/main-default/linux/arm64/appImage/briar-desktop-arm64-*.AppImage ./briar-desktop-arm64.AppImage
   artifacts:
     paths:
       - briar-desktop-linux-arm64.tar.gz
+      - briar-desktop-arm64.AppImage
     expire_in: 2 days
   only:
     - tags

@@ -26,7 +26,7 @@ plugins {
     kotlin("kapt") version "2.1.10"
     id("org.jetbrains.compose") version "1.7.3"
     id("org.jetbrains.kotlin.plugin.compose") version "2.1.10"
-    id("de.mobanisto.pinpit") version "0.9.0"
+    id("de.mobanisto.pinpit") version "0.10.0"
     id("java")
     id("idea")
     id("org.jlleitschuh.gradle.ktlint") version "10.1.0"
@@ -262,6 +262,12 @@ pinpit.desktop {
                 distributableArchive {
                     arch = "arm64"
                     format = "tar.gz"
+                }
+                appImage {
+                    arch = "x64"
+                }
+                appImage {
+                    arch = "arm64"
                 }
             }
             windows {
