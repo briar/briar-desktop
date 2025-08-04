@@ -259,6 +259,16 @@ pinpit.desktop {
                         "xdg-utils", "libnotify4"
                     )
                 }
+                deb("DebianBookwormX64") {
+                    qualifier = "debian-bookworm"
+                    arch = "x64"
+                    depends(
+                        // determined by pinpitSuggestDebDependencies
+                        "libc6", "libexpat1", "zlib1g",
+                        // manually added
+                        "xdg-utils", "libnotify4"
+                    )
+                }
                 deb("DebianBullseyeX64") {
                     qualifier = "debian-bullseye"
                     arch = "x64"

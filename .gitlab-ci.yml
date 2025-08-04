@@ -47,6 +47,7 @@ b_package_linux_x64:
     - ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-17-openjdk-amd64 --no-daemon -PbuildType=nightly
       pinpitPackageDefaultUberJarForLinuxX64
       pinpitPackageDefaultDebDebianBullseyeX64
+      pinpitPackageDefaultDebDebianBookwormX64
       pinpitPackageDefaultDebUbuntuBionicX64
       pinpitPackageDefaultDebUbuntuFocalX64
       pinpitPackageDefaultDebUbuntuJammyX64
@@ -58,6 +59,7 @@ b_package_linux_x64:
     - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-22.04-x64-*.deb
     - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-24.04-x64-*.deb
     - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-debian-bullseye-x64-*.deb
+    - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-debian-bookworm-x64-*.deb
     - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/x64/appImage/briar-desktop-x64-*.AppImage
     - mv briar-desktop/build/pinpit/jars/Briar-linux-*.jar ./briar-desktop-linux.jar
     - mv briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-18.04-x64-*.deb ./briar-desktop-ubuntu-18.04.deb
@@ -65,6 +67,7 @@ b_package_linux_x64:
     - mv briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-22.04-x64-*.deb ./briar-desktop-ubuntu-22.04.deb
     - mv briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-24.04-x64-*.deb ./briar-desktop-ubuntu-24.04.deb
     - mv briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-debian-bullseye-x64-*.deb ./briar-desktop-debian-bullseye.deb
+    - mv briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-debian-bookworm-x64-*.deb ./briar-desktop-debian-bookworm.deb
     - mv briar-desktop/build/pinpit/binaries/main-default/linux/x64/appImage/briar-desktop-x64-*.AppImage ./briar-desktop-x64.AppImage
   artifacts:
     paths:
@@ -147,6 +150,7 @@ rb_package_linux_x64:
     - ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-17-openjdk-amd64 --no-daemon -PbuildType=beta
       pinpitPackageDefaultUberJarForLinuxX64
       pinpitPackageDefaultDebDebianBullseyeX64
+      pinpitPackageDefaultDebDebianBookwormX64
       pinpitPackageDefaultDebUbuntuBionicX64
       pinpitPackageDefaultDebUbuntuFocalX64
       pinpitPackageDefaultDebUbuntuJammyX64
@@ -158,6 +162,7 @@ rb_package_linux_x64:
     - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-22.04-x64-*.deb
     - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-24.04-x64-*.deb
     - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-debian-bullseye-x64-*.deb
+    - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-debian-bookworm-x64-*.deb
     - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/x64/appImage/briar-desktop-x64-*.AppImage
     - mv briar-desktop/build/pinpit/jars/Briar-linux-*.jar ./briar-desktop-linux.jar
     - mv briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-18.04-x64-*.deb ./briar-desktop-ubuntu-18.04.deb
@@ -165,6 +170,7 @@ rb_package_linux_x64:
     - mv briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-22.04-x64-*.deb ./briar-desktop-ubuntu-22.04.deb
     - mv briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-24.04-x64-*.deb ./briar-desktop-ubuntu-24.04.deb
     - mv briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-debian-bullseye-x64-*.deb ./briar-desktop-debian-bullseye.deb
+    - mv briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-debian-bookworm-x64-*.deb ./briar-desktop-debian-bookworm.deb
     - mv briar-desktop/build/pinpit/binaries/main-default/linux/x64/appImage/briar-desktop-x64-*.AppImage ./briar-desktop-x64.AppImage
   artifacts:
     paths:
