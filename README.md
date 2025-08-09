@@ -40,22 +40,36 @@ For Debian- and Ubuntu-based Linux distributions, a set of .deb files is availab
 Depending on which version of Debian/Ubuntu your OS is based on,
 you can choose the right .deb file:
 
-* [Ubuntu 22.04](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop-ubuntu-22.04.deb?job=b_package_linux_x64)
-* [Ubuntu 20.04](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop-ubuntu-20.04.deb?job=b_package_linux_x64)
-* [Debian stable (bullseye)](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop-debian-bullseye.deb?job=b_package_linux_x64)
-* [Ubuntu 18.04](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop-ubuntu-18.04.deb?job=b_package_linux_x64)
+* [Ubuntu 24.04 (Noble)](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop-ubuntu-24.04.deb?job=b_package_linux_x64)
+* [Ubuntu 22.04 (Jammy)](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop-ubuntu-22.04.deb?job=b_package_linux_x64)
+* [Ubuntu 20.04 (Focal)](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop-ubuntu-20.04.deb?job=b_package_linux_x64)
+* [Ubuntu 18.04 (Bionic)](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop-ubuntu-18.04.deb?job=b_package_linux_x64)
+* [Debian stable (bookworm)](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop-debian-bookworm.deb?job=b_package_linux_x64)
+* [Debian oldstable (bullseye)](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop-debian-bullseye.deb?job=b_package_linux_x64)
 
 Here are some examples of popular distributions and their respective .deb file:
 
-* Ubuntu 22.04 and compatible:
-  Linux Mint 21.X (Vanessa, Vera), elementaryOS 7.X (Horus), Trisquel 11 (Aramo)
-* Ubuntu 20.04 and compatible:
+* Ubuntu 24.04 (Noble) and compatible:
+  Linux Mint 22.X (Wilma, Xia), elementaryOS 8.X (Circe), Trisquel 12 (Ecne)
+* Ubuntu 22.04 (Jammy) and compatible:
+  Linux Mint 21.X (Vanessa, Vera, Victoria, Virginia), elementaryOS 7.X (Horus), Trisquel 11 (Aramo)
+* Ubuntu 20.04 (Focal) and compatible:
   Linux Mint 20.X (Ulyana, Ulyssa, Uma, Una), elementaryOS 6.X (Odin, Jólnir), Trisquel 10 (Nabia)
-* Debian stable (bullseye) and compatible:
-  MX Linux MX-21
-* Ubuntu 18.04 and compatible:
+* Ubuntu 18.04 (Bionic) and compatible:
   Linux Mint 19.X (Tara, Tessa, Tina, Tricia), elementaryOS 5.X (Juno, Hera), Trisquel 9 (
   Etiona)
+* Debian stable (bookworm) and compatible:
+  MX Linux MX-23 (Libretto)
+* Debian oldstable (bullseye) and compatible:
+  MX Linux MX-21 (Wildflower)
+
+#### AppImage for X64 and ARM 64
+
+For other Linux distributions or users not willing to install a debian package,
+we also provide AppImage binaries:
+
+* [AppImage X64](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop-x64.AppImage?job=b_package_linux_x64)
+* [AppImage ARM64](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop-arm64.AppImage?job=b_package_linux_arm)
 
 #### Tarball for Linux ARM 64
 
