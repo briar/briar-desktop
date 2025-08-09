@@ -73,9 +73,11 @@ b_package_linux_x64:
     paths:
       - briar-desktop-linux.jar
       - briar-desktop-debian-bullseye.deb
+      - briar-desktop-debian-bookworm.deb
       - briar-desktop-ubuntu-18.04.deb
       - briar-desktop-ubuntu-20.04.deb
       - briar-desktop-ubuntu-22.04.deb
+      - briar-desktop-ubuntu-24.04.deb
       - briar-desktop-x64.AppImage
     expire_in: 2 days
   rules:
@@ -176,9 +178,11 @@ rb_package_linux_x64:
     paths:
       - briar-desktop-linux.jar
       - briar-desktop-debian-bullseye.deb
+      - briar-desktop-debian-bookworm.deb
       - briar-desktop-ubuntu-18.04.deb
       - briar-desktop-ubuntu-20.04.deb
       - briar-desktop-ubuntu-22.04.deb
+      - briar-desktop-ubuntu-24.04.deb
       - briar-desktop-x64.AppImage
     expire_in: 2 days
   only:
