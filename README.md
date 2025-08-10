@@ -40,10 +40,10 @@ For Debian- and Ubuntu-based Linux distributions, a set of .deb files is availab
 Depending on which version of Debian/Ubuntu your OS is based on,
 you can choose the right .deb file:
 
-* [Ubuntu 24.04 (Noble)](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop-ubuntu-24.04.deb?job=b_package_linux_x64)
-* [Ubuntu 22.04 (Jammy)](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop-ubuntu-22.04.deb?job=b_package_linux_x64)
-* [Ubuntu 20.04 (Focal)](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop-ubuntu-20.04.deb?job=b_package_linux_x64)
-* [Ubuntu 18.04 (Bionic)](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop-ubuntu-18.04.deb?job=b_package_linux_x64)
+* [Ubuntu 24.04 (Noble)](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop-ubuntu-24.04.deb?job=b_package_ubuntu_x64)
+* [Ubuntu 22.04 (Jammy)](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop-ubuntu-22.04.deb?job=b_package_ubuntu_x64)
+* [Ubuntu 20.04 (Focal)](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop-ubuntu-20.04.deb?job=b_package_ubuntu_x64)
+* [Ubuntu 18.04 (Bionic)](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop-ubuntu-18.04.deb?job=b_package_ubuntu_x64)
 * [Debian stable (bookworm)](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop-debian-bookworm.deb?job=b_package_linux_x64)
 * [Debian oldstable (bullseye)](https://code.briarproject.org/briar/briar-desktop/-/jobs/artifacts/main/raw/briar-desktop-debian-bullseye.deb?job=b_package_linux_x64)
 
