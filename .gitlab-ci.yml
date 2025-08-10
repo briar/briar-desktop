@@ -40,6 +40,33 @@ check:
       when: always
     - when: always
 
+b_package_ubuntu_x64:
+  image: briar/ci-image-android:ubuntu-20
+  stage: build
+  script:
+    - ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-17-openjdk-amd64 --no-daemon -PbuildType=nightly
+      pinpitPackageDefaultDebUbuntuBionicX64
+      pinpitPackageDefaultDebUbuntuFocalX64
+      pinpitPackageDefaultDebUbuntuJammyX64
+      pinpitPackageDefaultDebUbuntuNobleX64
+    - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-18.04-x64-*.deb
+    - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-20.04-x64-*.deb
+    - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-22.04-x64-*.deb
+    - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-24.04-x64-*.deb
+    - mv briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-18.04-x64-*.deb ./briar-desktop-ubuntu-18.04.deb
+    - mv briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-20.04-x64-*.deb ./briar-desktop-ubuntu-20.04.deb
+    - mv briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-22.04-x64-*.deb ./briar-desktop-ubuntu-22.04.deb
+    - mv briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-24.04-x64-*.deb ./briar-desktop-ubuntu-24.04.deb
+  artifacts:
+    paths:
+      - briar-desktop-ubuntu-18.04.deb
+      - briar-desktop-ubuntu-20.04.deb
+      - briar-desktop-ubuntu-22.04.deb
+      - briar-desktop-ubuntu-24.04.deb
+    expire_in: 2 days
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+
 b_package_linux_x64:
   image: briar/ci-image-android:ubuntu-20
   stage: build
@@ -48,24 +75,12 @@ b_package_linux_x64:
       pinpitPackageDefaultUberJarForLinuxX64
       pinpitPackageDefaultDebDebianBullseyeX64
       pinpitPackageDefaultDebDebianBookwormX64
-      pinpitPackageDefaultDebUbuntuBionicX64
-      pinpitPackageDefaultDebUbuntuFocalX64
-      pinpitPackageDefaultDebUbuntuJammyX64
-      pinpitPackageDefaultDebUbuntuNobleX64
       pinpitPackageDefaultAppImageLinuxX64
     - ls -lrth briar-desktop/build/pinpit/jars/Briar-linux-*.jar
-    - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-18.04-x64-*.deb
-    - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-20.04-x64-*.deb
-    - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-22.04-x64-*.deb
-    - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-24.04-x64-*.deb
     - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-debian-bullseye-x64-*.deb
     - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-debian-bookworm-x64-*.deb
     - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/x64/appImage/briar-desktop-x64-*.AppImage
     - mv briar-desktop/build/pinpit/jars/Briar-linux-*.jar ./briar-desktop-linux.jar
-    - mv briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-18.04-x64-*.deb ./briar-desktop-ubuntu-18.04.deb
-    - mv briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-20.04-x64-*.deb ./briar-desktop-ubuntu-20.04.deb
-    - mv briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-22.04-x64-*.deb ./briar-desktop-ubuntu-22.04.deb
-    - mv briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-24.04-x64-*.deb ./briar-desktop-ubuntu-24.04.deb
     - mv briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-debian-bullseye-x64-*.deb ./briar-desktop-debian-bullseye.deb
     - mv briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-debian-bookworm-x64-*.deb ./briar-desktop-debian-bookworm.deb
     - mv briar-desktop/build/pinpit/binaries/main-default/linux/x64/appImage/briar-desktop-x64-*.AppImage ./briar-desktop-x64.AppImage
@@ -74,10 +89,6 @@ b_package_linux_x64:
       - briar-desktop-linux.jar
       - briar-desktop-debian-bullseye.deb
       - briar-desktop-debian-bookworm.deb
-      - briar-desktop-ubuntu-18.04.deb
-      - briar-desktop-ubuntu-20.04.deb
-      - briar-desktop-ubuntu-22.04.deb
-      - briar-desktop-ubuntu-24.04.deb
       - briar-desktop-x64.AppImage
     expire_in: 2 days
   rules:
@@ -145,6 +156,33 @@ b_package_macos:
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
 
+rb_package_ubuntu_x64:
+  image: briar/ci-image-android:ubuntu-20
+  stage: releasebuild
+  script:
+    - ./gradlew -Dorg.gradle.java.home=/usr/lib/jvm/java-17-openjdk-amd64 --no-daemon -PbuildType=beta
+      pinpitPackageDefaultDebUbuntuBionicX64
+      pinpitPackageDefaultDebUbuntuFocalX64
+      pinpitPackageDefaultDebUbuntuJammyX64
+      pinpitPackageDefaultDebUbuntuNobleX64
+    - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-18.04-x64-*.deb
+    - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-20.04-x64-*.deb
+    - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-22.04-x64-*.deb
+    - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-24.04-x64-*.deb
+    - mv briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-18.04-x64-*.deb ./briar-desktop-ubuntu-18.04.deb
+    - mv briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-20.04-x64-*.deb ./briar-desktop-ubuntu-20.04.deb
+    - mv briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-22.04-x64-*.deb ./briar-desktop-ubuntu-22.04.deb
+    - mv briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-24.04-x64-*.deb ./briar-desktop-ubuntu-24.04.deb
+  artifacts:
+    paths:
+      - briar-desktop-ubuntu-18.04.deb
+      - briar-desktop-ubuntu-20.04.deb
+      - briar-desktop-ubuntu-22.04.deb
+      - briar-desktop-ubuntu-24.04.deb
+    expire_in: 2 days
+  only:
+    - tags
+
 rb_package_linux_x64:
   image: briar/ci-image-android:ubuntu-20
   stage: releasebuild
@@ -153,24 +191,12 @@ rb_package_linux_x64:
       pinpitPackageDefaultUberJarForLinuxX64
       pinpitPackageDefaultDebDebianBullseyeX64
       pinpitPackageDefaultDebDebianBookwormX64
-      pinpitPackageDefaultDebUbuntuBionicX64
-      pinpitPackageDefaultDebUbuntuFocalX64
-      pinpitPackageDefaultDebUbuntuJammyX64
-      pinpitPackageDefaultDebUbuntuNobleX64
       pinpitPackageDefaultAppImageLinuxX64
     - ls -lrth briar-desktop/build/pinpit/jars/Briar-linux-*.jar
-    - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-18.04-x64-*.deb
-    - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-20.04-x64-*.deb
-    - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-22.04-x64-*.deb
-    - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-24.04-x64-*.deb
     - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-debian-bullseye-x64-*.deb
     - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-debian-bookworm-x64-*.deb
     - ls -lrth briar-desktop/build/pinpit/binaries/main-default/linux/x64/appImage/briar-desktop-x64-*.AppImage
     - mv briar-desktop/build/pinpit/jars/Briar-linux-*.jar ./briar-desktop-linux.jar
-    - mv briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-18.04-x64-*.deb ./briar-desktop-ubuntu-18.04.deb
-    - mv briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-20.04-x64-*.deb ./briar-desktop-ubuntu-20.04.deb
-    - mv briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-22.04-x64-*.deb ./briar-desktop-ubuntu-22.04.deb
-    - mv briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-ubuntu-24.04-x64-*.deb ./briar-desktop-ubuntu-24.04.deb
     - mv briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-debian-bullseye-x64-*.deb ./briar-desktop-debian-bullseye.deb
     - mv briar-desktop/build/pinpit/binaries/main-default/linux/x64/deb/briar-desktop-debian-bookworm-x64-*.deb ./briar-desktop-debian-bookworm.deb
     - mv briar-desktop/build/pinpit/binaries/main-default/linux/x64/appImage/briar-desktop-x64-*.AppImage ./briar-desktop-x64.AppImage
@@ -179,10 +205,6 @@ rb_package_linux_x64:
       - briar-desktop-linux.jar
       - briar-desktop-debian-bullseye.deb
       - briar-desktop-debian-bookworm.deb
-      - briar-desktop-ubuntu-18.04.deb
-      - briar-desktop-ubuntu-20.04.deb
-      - briar-desktop-ubuntu-22.04.deb
-      - briar-desktop-ubuntu-24.04.deb
       - briar-desktop-x64.AppImage
     expire_in: 2 days
   only:
