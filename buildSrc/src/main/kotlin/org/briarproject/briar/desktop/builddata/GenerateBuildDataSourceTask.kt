@@ -18,14 +18,12 @@
 
 package org.briarproject.briar.desktop.builddata
 
-import com.google.common.collect.HashMultimap
-import com.google.common.collect.Multimap
+import org.briarproject.briar.desktop.builddata.GitUtil.getLastCommit
+import org.briarproject.briar.desktop.builddata.GitUtil.getLastTagWithPrefix
+import org.briarproject.briar.desktop.builddata.GitUtil.mapCommitsToTags
 import org.eclipse.jgit.api.Git
 import org.eclipse.jgit.lib.Constants
-import org.eclipse.jgit.lib.Ref
 import org.eclipse.jgit.revwalk.RevCommit
-import org.eclipse.jgit.revwalk.RevTag
-import org.eclipse.jgit.revwalk.RevWalk
 import org.eclipse.jgit.submodule.SubmoduleWalk
 import org.gradle.api.GradleException
 import org.gradle.api.GradleScriptException
@@ -188,7 +186,7 @@ open class GenerateBuildDataSourceTask : AbstractBuildDataTask() {
         // Get current tag, if any
         var gitTag: String? = null
         val prefixTags = "refs/tags/"
-        val tags = commitToTags[first]
+        val tags = commitToTags[first.name]
         // NOTE: we do not break ties here yet. Currently, we do not have a practice of
         //   creating multiple tags pointing to the same commit as we do in briar core.
         tags.forEach { tag ->
@@ -250,63 +248,6 @@ open class GenerateBuildDataSourceTask : AbstractBuildDataTask() {
             content.toByteArray(StandardCharsets.UTF_8)
         )
         Files.copy(input, file, StandardCopyOption.REPLACE_EXISTING)
-    }
-
-    // It is quite common at least in briar core that alpha/beta/release tags point to
-    // the same commit. Hence, there is no one-to-one relationship between commits and
-    // tags, in reality a commit can map to multiple tags. That is why we use a multimap
-    // here.
-    private fun mapCommitsToTags(git: Git): Multimap<RevCommit, Ref> {
-        // Build list of tags ordered by creation date. We do this to make sure that when we map
-        // commits to tags below, a commit that has multiple tags pointing to it maps to the latest tag
-        // (like a beta tag that is later promoted to a release tag).
-        val walk = RevWalk(git.repository)
-
-        val tagsByCreationDate = git.tagList().call().filter { tag ->
-            // Skip all tags that are not annotated ones
-            walk.parseAny(tag.objectId) is RevTag
-        }.sortedBy { tag ->
-            val revTag = walk.parseTag(tag.objectId)
-            revTag.taggerIdent.`when`
-        }
-
-        // Build map of commits to tags that point to them
-        val commitToTag = HashMultimap.create<RevCommit, Ref>()
-        tagsByCreationDate.forEach { tag ->
-            val peeled = git.repository.refDatabase.peel(tag)
-            val call = git.log().add(peeled.peeledObjectId).call()
-            val commit = call.iterator().next()
-            commitToTag.put(commit, tag)
-        }
-
-        return commitToTag
-    }
-
-    private fun getLastCommit(git: Git): RevCommit {
-        val commits = git.log().call()
-        val iterator: Iterator<RevCommit> = commits.iterator()
-        if (!iterator.hasNext()) {
-            throw NoSuchElementException()
-        }
-        return iterator.next()
-    }
-
-    private fun getLastTagWithPrefix(git: Git, commitToTag: Multimap<RevCommit, Ref>, prefix: String): Ref? {
-        // We used to use just the most recent tag, however that might return
-        // a more recent version than we're actually using. Hence, traverse the history and
-        // use the first tag found in the history starting from the current HEAD.
-        val commits = git.log().call()
-        val iterator: Iterator<RevCommit> = commits.iterator()
-        while (iterator.hasNext()) {
-            val commit = iterator.next()
-            val tags = commitToTag[commit]
-            tags.forEach { tag ->
-                if (tag.name.startsWith("refs/tags/$prefix-")) {
-                    return tag
-                }
-            }
-        }
-        return null
     }
 
     private fun createSource(
