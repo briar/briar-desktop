@@ -69,7 +69,10 @@ class ImageCompressorTest {
     fun `can compress quasar`() {
         // load image
         val url = "https://upload.wikimedia.org/wikipedia/commons/3/38/Artist%27s_rendering_ULAS_J1120%2B0641.jpg"
-        val input = URL(url).openStream()
+        val connection = URL(url).openConnection()
+        // apparently Wikimedia blocks Java User Agents since a while, so we need to emulate a browser
+        connection.setRequestProperty("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36")
+        val input = connection.inputStream
         val image = input.use {
             ImageIO.read(input)
         }
