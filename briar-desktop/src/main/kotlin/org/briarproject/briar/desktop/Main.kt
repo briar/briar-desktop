@@ -116,6 +116,12 @@ private class Main : CliktCommand(
         if (BuildData.GIT_BRANCH == null && BuildData.GIT_TAG == null)
             LOG.i { "  Neither branch nor tag detected" }
 
+        println("*".repeat(80))
+        println("* Please consider funding development and maintenance of Briar and Briar Desktop")
+        println("* Bitcoin | BCH: 1NZCKkUCtJV2U2Y9hDb9uq8S7ksFCFGR6K")
+        println("* Liberapay: https://liberapay.com/Briar/")
+        println("*".repeat(80))
+
         if (version) exitProcess(0)
 
         val dataDir = getDataDir()
