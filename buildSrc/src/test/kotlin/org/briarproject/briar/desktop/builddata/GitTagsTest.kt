@@ -72,7 +72,7 @@ class GitTagsTest {
         val coreVersion = coreReleaseTag.name.substring("refs/tags/$tagPrefix-".length)
 
         // This will need to be adapted whenever we upgrade briar core
-        assertEquals("1.5.17", coreVersion)
+        assertEquals("1.5.19", coreVersion)
     }
 
     @Test

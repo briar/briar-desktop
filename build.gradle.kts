@@ -39,14 +39,14 @@ buildscript {
         set("dagger_version", "2.51.1")
         set("okhttp_version", "4.12.0")
         set("jackson_version", "2.13.4")
-        set("tor_version", "0.4.8.22")
+        set("tor_version", "0.4.9.11")
         set("lyrebird_version", "0.6.2")
         set("jsoup_version", "1.15.3")
         set("bouncy_castle_version", "1.82")
         set("junit_version", "4.13.2")
         set("jmock_version", "2.12.0")
         set("mockwebserver_version", "4.10.0")
-        set("onionwrapper_version", "0.1.4")
+        set("onionwrapper_version", "0.1.6")
     }
 }
 
